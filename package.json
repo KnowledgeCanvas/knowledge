@@ -1,0 +1,22 @@
+{
+  "name": "knowledge-canvas",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RobRoyce/knowledge-canvas.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RobRoyce/knowledge-canvas/issues"
+  },
+  "homepage": "https://github.com/RobRoyce/knowledge-canvas#readme",
+  "dependencies": {
+    "electron": "^13.1.6"
+  }
+}
