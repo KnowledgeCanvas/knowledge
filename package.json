@@ -2,8 +2,15 @@
   "name": "knowledge-canvas",
   "version": "1.0.0",
   "description": "",
-  "main": "index.ts",
+  "private": true,
+  "workspaces": [
+    "kc-electron"
+  ],
+  "main": "kc-electron/dist/electron.js",
   "scripts": {
+    "build": "yarn workspaces run build",
+    "clean": "rm -rf kc-electron/dist",
+    "start": "yarn run build && electron .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
