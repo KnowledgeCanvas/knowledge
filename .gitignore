@@ -2,3 +2,5 @@ node_modules/
 .idea/
 /kc-electron/dist/
 /kc-electron/node_modules/
+/kc-workspace/dist/
+/kc-workspace/node_modules
