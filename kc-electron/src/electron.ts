@@ -1,5 +1,7 @@
 const {app, BrowserWindow} = require('electron')
 const path = require('path')
+const MAIN_ENTRY = path.join(app.getAppPath(), 'kc-workspace', 'dist', 'main', 'index.html')
+const SETUP_ENTRY = path.join(app.getAppPath(), 'kc-workspace', 'dist', 'setup', 'index.html')
 
 function createWindow() {
     console.log(__dirname)
@@ -10,13 +12,8 @@ function createWindow() {
             preload: path.join(app.getAppPath(), 'kc-electron', 'dist', 'preload.js')
         }
     })
-    win.loadFile('kc-app/index.html')
+    win.loadFile(MAIN_ENTRY)
 }
-
-app.whenReady().then(() => {
-    createWindow()
-})
-
 
 app.on('window-all-closed', function () {
     if (process.platform !== 'darwin') app.quit()

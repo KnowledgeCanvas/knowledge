@@ -1,6 +1,6 @@
 # Getting Started
 
-1. Make sure you have Node and Yarn installed.
+1. Make sure you have Node (>=14.17.3), NPM, and Yarn installed.
 
 2. Install node modules using the following command:
 ```shell

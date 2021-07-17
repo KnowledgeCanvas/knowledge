@@ -2,14 +2,15 @@
   "name": "kc-electron",
   "version": "1.0.0",
   "description": "",
-  "main": "src/electron.ts",
+  "private": true,
+  "main": "./dist/electron.js",
   "scripts": {
     "build": "webpack --config webpack.prod.js",
     "build-dev": "webpack --config webpack.dev.js",
     "clean": "rm -rf ./dist",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "watch-electron": "webpack --config webpack.dev.js --watch",
-    "watch-electron-prod": "webpack --config webpack.prod.js --watch"
+    "watch-electron": "webpack --config webpack.prod.js --watch",
+    "watch-electron-dev": "webpack --config webpack.dev.js --watch"
   },
   "author": "",
   "license": "ISC",

@@ -6,6 +6,7 @@
   "private": true,
   "scripts": {
     "build": "echo BUILD_SCRIPT_NOT_IMPLEMENTED_YET",
+    "build-dev": "echo BUILD_SCRIPT_NOT_IMPLEMENTED_YET",
     "clean": "rm -rf ./dist"
   }
 }
