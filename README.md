@@ -11,3 +11,8 @@ yarn install
 ```shell
 yarn run start
 ```
+
+4. (OPTIONAL) clean the project and delete build files:
+```shell
+yarn run clean
+```

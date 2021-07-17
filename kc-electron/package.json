@@ -6,6 +6,7 @@
   "scripts": {
     "build": "webpack --config webpack.prod.js",
     "build-dev": "webpack --config webpack.dev.js",
+    "clean": "rm -rf ./dist",
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch-electron": "webpack --config webpack.dev.js --watch",
     "watch-electron-prod": "webpack --config webpack.prod.js --watch"

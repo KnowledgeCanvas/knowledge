@@ -1,0 +1,11 @@
+{
+  "name": "kc-search",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "build": "echo BUILD_SCRIPT_NOT_IMPLEMENTED_YET",
+    "clean": "rm -rf ./dist"
+  }
+}

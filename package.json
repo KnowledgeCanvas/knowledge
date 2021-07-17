@@ -4,12 +4,14 @@
   "description": "",
   "private": true,
   "workspaces": [
-    "kc-electron"
+    "kc-electron",
+    "kc-app",
+    "kc-search"
   ],
   "main": "kc-electron/dist/electron.js",
   "scripts": {
     "build": "yarn workspaces run build",
-    "clean": "rm -rf kc-electron/dist",
+    "clean": "yarn workspaces run clean",
     "start": "yarn run build && electron .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
