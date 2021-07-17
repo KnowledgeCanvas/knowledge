@@ -5,8 +5,10 @@ import json
 
 AUTH_FILE = "auth.json"
 SAMPLE_FILE = "sample.json"
+USER_AGENT = "knowledge-canvas/0.0.1"
+DOCUMENTS_DIR = "documents"
+ignore = ["...","the","as","a","to","or","with","in","also","is","and","of"]
 
-ignore = ["...","the","as","a","to","or"]
 
 
 
@@ -24,7 +26,8 @@ def main():
         key = auth_data["key"]
         engine = auth_data["engine"]
         query = "HEVC"
-        response = requests.get(f"https://www.googleapis.com/customsearch/v1?key={key}&cx={engine}&q={query}")
+        headers = {"User-Agent", USER_AGENT}
+        response = requests.get(f"https://www.googleapis.com/customsearch/v1?key={key}&cx={engine}&q={query}",headers=headers)
         with open(SAMPLE_FILE,"w") as fp:
             fp.write(response.text)
     
@@ -34,21 +37,40 @@ def main():
         print("loading results from file")
         results = json.load(fp)
 
+    # make dir for saved documents
+    if not os.path.exists(DOCUMENTS_DIR):
+        os.mkdir(DOCUMENTS_DIR)
     snippet_words = []
-    
+    headers = {"User-Agent", USER_AGENT}
+
     for item in results["items"]:
-        print(item["link"])
+        # download each of the linked documents
+        path = os.path.join(DOCUMENTS_DIR,f"{item['cacheId']}.html")
+        if not os.path.exists(path):
+            print("getting",item["link"])
+            print("saving to",str(path))
+            response = requests.get(item["link"])
+            with open(path,"w") as fp:
+                fp.write(response.text)
+        
         snippet_words.extend([w.lower() for w in item["snippet"].split()])
+    # Tika extract the text from the downloaded documents and perform analysis on those
+    # find terms and do some more searches to build the web
     
+
+    ### basic finding terms demo ###
+
     # we would wand some kind of system that finds common terms
     # such as two or more words that frequently appear together 
     unique_words = list(set(snippet_words))
     word_counts = {}
     for word in unique_words:
         word_counts[word] = snippet_words.count(word)
-    # filter for words that appear in at least half of the results
-    word_counts = [(k,v) for k,v in word_counts.items() if v >= (len(results["items"])//2) and not k in ignore]
+    # filter for words that appear in at least 1/3 of the results
+    word_counts = [(k,v) for k,v in word_counts.items() if v >= (len(results["items"])//3) and not k in ignore]
     word_counts = list(sorted(word_counts,key=lambda p: p[1], reverse=True))
+    
+    # these are the terms that we could do additional searches on
     terms = [k for k,_ in word_counts]
     print(terms)
     
