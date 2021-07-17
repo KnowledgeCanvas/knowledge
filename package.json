@@ -5,15 +5,18 @@
   "private": true,
   "workspaces": [
     "kc-electron",
-    "kc-app",
+    "kc-workspace",
     "kc-search"
   ],
   "main": "kc-electron/dist/electron.js",
   "scripts": {
     "build": "yarn workspaces run build",
+    "build-dev": "yarn workspaces run build-dev",
     "clean": "yarn workspaces run clean",
-    "start": "yarn run build && electron .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch-main": "cd kc-workspace && yarn run watch-main",
+    "watch-electron": "cd kc-electron && yarn run watch-electron"
   },
   "repository": {
     "type": "git",
