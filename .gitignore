@@ -3,3 +3,7 @@ node_modules/
 auth.json
 sample.json
 documents/
+/kc-electron/dist/
+/kc-electron/node_modules/
+/kc-workspace/dist/
+/kc-workspace/node_modules

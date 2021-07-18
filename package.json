@@ -2,9 +2,21 @@
   "name": "knowledge-canvas",
   "version": "1.0.0",
   "description": "",
-  "main": "index.ts",
+  "private": true,
+  "workspaces": [
+    "kc-electron",
+    "kc-workspace",
+    "kc-search"
+  ],
+  "main": "kc-electron/dist/electron.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "yarn workspaces run build",
+    "build-dev": "yarn workspaces run build-dev",
+    "clean": "yarn workspaces run clean",
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch-main": "cd kc-workspace && yarn run watch-main",
+    "watch-electron": "cd kc-electron && yarn run watch-electron"
   },
   "repository": {
     "type": "git",
