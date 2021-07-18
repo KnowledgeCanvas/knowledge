@@ -16,3 +16,20 @@ yarn run start
 ```shell
 yarn run clean
 ```
+
+# Create distributable binaries for MacOS and Windows
+
+1. Build the project:
+```shell
+yarn build
+```
+
+2. Pack the project:
+```shell
+yarn pack
+```
+
+3. Create the distributables:
+```shell
+yarn dist
+```

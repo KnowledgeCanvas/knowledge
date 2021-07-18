@@ -1,5 +1,10 @@
-declare const app: any, BrowserWindow: any;
+declare const app: any, BrowserWindow: any, ipcMain: any, dialog: any;
 declare const path: any;
-declare const MAIN_ENTRY: any;
-declare const SETUP_ENTRY: any;
-declare function createWindow(): void;
+declare const settingsService: any;
+declare let appEnv: any;
+declare const DEBUG: boolean;
+declare const MAIN_ENTRY: string;
+declare const SETUP_ENTRY: string;
+declare const windows: Set<unknown>;
+declare function createMainWindow(): any;
+declare const createStartupWindow: () => any;
