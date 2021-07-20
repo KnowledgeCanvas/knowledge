@@ -4,14 +4,14 @@
   "description": "",
   "private": true,
   "workspaces": [
-    "kc-electron",
-    "kc-workspace"
+    "kc_electron",
+    "kc_workspace"
   ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/RobRoyce/knowledge-canvas.git"
   },
-  "main": "kc-electron/dist/electron.js",
+  "main": "kc_electron/dist/electron.js",
   "scripts": {
     "build": "yarn workspaces run build",
     "build-dev": "yarn workspaces run build-dev",
@@ -19,10 +19,10 @@
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
     "purge": "rm -rf node_modules && yarn workspaces run purge",
-    "start": "electron .",
+    "start": "yarn build-dev && electron .",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "watch-main": "cd kc-workspace && yarn run watch-main",
-    "watch-electron": "cd kc-electron && yarn run watch-electron"
+    "watch-main": "cd kc_workspace && yarn run watch-main",
+    "watch-electron": "cd kc_electron && yarn run watch-electron"
   },
   "dependencies": {},
   "devDependencies": {},
@@ -33,8 +33,8 @@
       "buildResources": "resources"
     },
     "files": [
-      "kc-workspace/dist/**/*",
-      "kc-electron/dist/**/*",
+      "kc_workspace/dist/**/*",
+      "kc_electron/dist/**/*",
       "resources/**/*"
     ],
     "extraResources": [

@@ -1,0 +1,54 @@
+<div>
+  <mat-sidenav-container class="sidenav-container">
+    <mat-sidenav #drawer [attr.role]="'navigation'" [mode]="'side'"
+                 [opened]="true"
+                 class="sidenav"
+                 fixedInViewport>
+
+      <mat-toolbar>
+        <!--        <img alt="Company Logo" src="assets/app.png" style="max-height: 40px"/>-->
+      </mat-toolbar>
+
+      <mat-divider></mat-divider>
+
+      <div>
+        <mat-nav-list>
+          <a mat-list-item routerLink="/app-file-upload" routerLinkActive="active">Files</a>
+          <a mat-list-item routerLink="/app-website-extraction" routerLinkActive="active">Web Content</a>
+        </mat-nav-list>
+      </div>
+    </mat-sidenav>
+
+
+    <mat-sidenav-content class="app-sidenav-content">
+
+      <mat-toolbar color="primary" class="app-top-toolbar">
+        <div class="app-toolbar-container">
+                <span>
+                    <button (click)="drawer.toggle()" mat-icon-button>
+                        <mat-icon>menu</mat-icon>
+                    </button>
+                </span>
+          <span class="right">
+                <button mat-icon-button routerLink="/app-settings" routerLinkActive="active">
+                    <mat-icon>settings</mat-icon>
+                </button>
+                </span>
+        </div>
+      </mat-toolbar>
+
+<!--      <h1>Knowledge Canvas</h1>-->
+<!--      Node.js <span id="node-version"></span>-->
+<!--      Chromium <span id="chrome-version"></span>-->
+<!--      and Electron <span id="electron-version"></span>-->
+
+      <div class="wrapper">
+        <router-outlet></router-outlet>
+      </div>
+
+      <footer class="footer center">
+        © 2021 All Rights Reserved
+      </footer>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>

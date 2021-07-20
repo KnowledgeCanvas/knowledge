@@ -135,6 +135,15 @@
   dependencies:
     tslib "^2.2.0"
 
+"@angular/cdk@12.1.2":
+  version "12.1.2"
+  resolved "https://registry.yarnpkg.com/@angular/cdk/-/cdk-12.1.2.tgz#5c2407324d860737374d873bd4381bf7f90f8a61"
+  integrity sha512-ALupZejZDsVYcbNZcEH1cV8SDgVBL40FAwDnlSZxCgd0HOBHH0ZqQV+8z0uCQeMatoNM+SwmJ8Y1JXYh9Bqfiw==
+  dependencies:
+    tslib "^2.2.0"
+  optionalDependencies:
+    parse5 "^5.0.0"
+
 "@angular/cli@~12.1.2":
   version "12.1.2"
   resolved "https://registry.yarnpkg.com/@angular/cli/-/cli-12.1.2.tgz#31bedb867bbfec5cf49b18b0666077c25f8a8e41"
@@ -205,6 +214,13 @@
   version "12.1.2"
   resolved "https://registry.yarnpkg.com/@angular/forms/-/forms-12.1.2.tgz#92ac2cc88f6c007aa5121d9a64a027d1fdc6b97f"
   integrity sha512-cJ8zoaQpOtjTwPc0ObH6qXM0k9MWl+8eGL3jDtf01n0ByZXWFZ+2oQHmU64rO8sJntUR8LPvbXFJRMNd0ZpdsQ==
+  dependencies:
+    tslib "^2.2.0"
+
+"@angular/material@12.1.2":
+  version "12.1.2"
+  resolved "https://registry.yarnpkg.com/@angular/material/-/material-12.1.2.tgz#8353ae15579030e3677d0716897164d686e7491b"
+  integrity sha512-DpqnvwnVqaudFRXTNyJR8r/gbKG4RtE3RGc6q4FgdN9SOfRh/q/yYyNnOUnbCwPgLTmkfGz+bj7++GA8gzhSkg==
   dependencies:
     tslib "^2.2.0"
 
@@ -1363,7 +1379,7 @@
   resolved "https://registry.yarnpkg.com/@types/jasmine/-/jasmine-3.8.1.tgz#8feebf4035d1e4c6a6ed4d27f3bbd285d8d0da91"
   integrity sha512-ioRNoJvv0eXL1c9BZKpnywZWb5YflhaSiF3IOp9deyoh30MOwkB3bNuzi4UW76EFEhcmqpoEpdWhcUAAilomTw==
 
-"@types/json-schema@*", "@types/json-schema@^7.0.5", "@types/json-schema@^7.0.7":
+"@types/json-schema@*", "@types/json-schema@^7.0.5", "@types/json-schema@^7.0.8":
   version "7.0.8"
   resolved "https://registry.yarnpkg.com/@types/json-schema/-/json-schema-7.0.8.tgz#edf1bf1dbf4e04413ca8e5b17b3b7d7d54b59818"
   integrity sha512-YSBPTLTVm2e2OoQIDYx8HaeWJ5tTToLH67kXR7zYNGupXMEHa2++G8k+DczX2cFVgalypqtyZIcU19AFcmOpmg==
@@ -2694,9 +2710,9 @@ color-name@~1.1.4:
   integrity sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==
 
 colord@^2.0.1:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/colord/-/colord-2.1.0.tgz#28cd9d6ac874dff97ef5ec1432c5c0b4e58e49c7"
-  integrity sha512-H5sDP9XDk2uP+x/xSGkgB9SEFc1bojdI5DMKU0jmSXQtml2GIe48dj1DcSS0e53QQAHn+JKqUXbGeGX24xWD7w==
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/colord/-/colord-2.2.0.tgz#1b6b97ad3d0845f179d1dbd401158bc3cf062eff"
+  integrity sha512-LNYryRuHYAiq+5/22oIblna5nWztTm6LM4xGvvpB42jYQgE1AhmW/dN+rhem8L3tVz0B/Ej2zuDB8zlaS1OSWw==
 
 colorette@^1.2.1, colorette@^1.2.2:
   version "1.2.2"
@@ -3538,9 +3554,9 @@ electron-publish@22.11.7:
     mime "^2.5.2"
 
 electron-to-chromium@^1.3.723:
-  version "1.3.779"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.779.tgz#de55492a756deec63424f89fbe62aec9776f0e6d"
-  integrity sha512-nreave0y/1Qhmo8XtO6C/LpawNyC6U26+q7d814/e+tIqUK073pM+4xW7WUXyqCRa5K4wdxHmNMBAi8ap9nEew==
+  version "1.3.780"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.780.tgz#f946e10dc0005a3b59b9afa2d2c92f5c421f7fc5"
+  integrity sha512-2KQ9OYm9WMUNpAPA/4aerURl3hwRc9tNlpsiEj3Y8Gf7LVf26NzyLIX2v0hSagQwrS9+cWab+28A2GPKDoVNRA==
 
 electron@^13.1.6:
   version "13.1.7"
@@ -4198,9 +4214,9 @@ glob-parent@^5.1.2, glob-parent@~5.1.2:
     is-glob "^4.0.1"
 
 glob-parent@^6.0.0:
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/glob-parent/-/glob-parent-6.0.0.tgz#f851b59b388e788f3a44d63fab50382b2859c33c"
-  integrity sha512-Hdd4287VEJcZXUwv1l8a+vXC1GjOQqXe+VS30w/ypihpcnu9M1n3xeYeJu5CBpeEQj2nAab2xxz28GuA3vp4Ww==
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/glob-parent/-/glob-parent-6.0.1.tgz#42054f685eb6a44e7a7d189a96efa40a54971aa7"
+  integrity sha512-kEVjS71mQazDBHKcsq4E9u/vUzaLcw1A8EtUeydawvIWQCJM0qQ08G1H7/XTjFUulla6XQiDOG6MXSaG0HDKog==
   dependencies:
     is-glob "^4.0.1"
 
@@ -6338,6 +6354,11 @@ parse5-sax-parser@^6.0.1:
   dependencies:
     parse5 "^6.0.1"
 
+parse5@^5.0.0:
+  version "5.1.1"
+  resolved "https://registry.yarnpkg.com/parse5/-/parse5-5.1.1.tgz#f68e4e5ba1852ac2cadc00f4555fff6c2abb6178"
+  integrity sha512-ugq4DFI0Ptb+WWjAdOK16+u/nHfiIrcE+sh8kZMaM0WllQKLI9rOUq6c2b7cwPkXdzfQESqvoqK6ug7U/Yyzug==
+
 parse5@^6.0.1:
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/parse5/-/parse5-6.0.1.tgz#e1a1c085c569b3dc08321184f19a39cc27f7c30b"
@@ -7267,9 +7288,9 @@ readdirp@~3.6.0:
     picomatch "^2.2.1"
 
 rechoir@^0.7.0:
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/rechoir/-/rechoir-0.7.0.tgz#32650fd52c21ab252aa5d65b19310441c7e03aca"
-  integrity sha512-ADsDEH2bvbjltXEP+hTIAmeFekTFK0V2BTxMkok6qILyAJEXV0AFfoWcAq4yfll5VdIMd/RVXq0lR+wQi5ZU3Q==
+  version "0.7.1"
+  resolved "https://registry.yarnpkg.com/rechoir/-/rechoir-0.7.1.tgz#9478a96a1ca135b5e88fc027f03ee92d6c645686"
+  integrity sha512-/njmZ8s1wVeR6pjTZ+0nCnv8SpZNRMT2D1RLOJQESlYFDBvwpTA4KWJpZ+sBJ4+vhjILRcK7JIFdGCdxEAAitg==
   dependencies:
     resolve "^1.9.0"
 
@@ -7633,11 +7654,11 @@ schema-utils@^2.6.5, schema-utils@^2.7.0:
     ajv-keywords "^3.5.2"
 
 schema-utils@^3.0.0, schema-utils@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/schema-utils/-/schema-utils-3.1.0.tgz#95986eb604f66daadeed56e379bfe7a7f963cdb9"
-  integrity sha512-tTEaeYkyIhEZ9uWgAjDerWov3T9MgX8dhhy2r0IGeeX4W8ngtGl1++dUve/RUqzuaASSh7shwCDJjEzthxki8w==
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/schema-utils/-/schema-utils-3.1.1.tgz#bc74c4b6b6995c1d88f76a8b77bea7219e0c8281"
+  integrity sha512-Y5PQxS4ITlC+EahLuXaY86TXfR7Dc5lw294alXOq86JAHCihAIZfqv8nNCWvaEJvaC51uN9hbLGeV0cFBdH+Fw==
   dependencies:
-    "@types/json-schema" "^7.0.7"
+    "@types/json-schema" "^7.0.8"
     ajv "^6.12.5"
     ajv-keywords "^3.5.2"
 
@@ -8872,9 +8893,9 @@ webpack-sources@^1.1.0, webpack-sources@^1.2.0, webpack-sources@^1.3.0:
     source-map "~0.6.1"
 
 webpack-sources@^2.3.0:
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/webpack-sources/-/webpack-sources-2.3.0.tgz#9ed2de69b25143a4c18847586ad9eccb19278cfa"
-  integrity sha512-WyOdtwSvOML1kbgtXbTDnEW0jkJ7hZr/bDByIwszhWd/4XX1A3XMkrbFMsuH4+/MfLlZCUzlAdg4r7jaGKEIgQ==
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/webpack-sources/-/webpack-sources-2.3.1.tgz#570de0af163949fe272233c2cefe1b56f74511fd"
+  integrity sha512-y9EI9AO42JjEcrTJFOYmVywVZdKVUfOvDUPsJea5GIr1JOEGFVqwlY2K098fFoIjOkDzHn2AjRvM8dsBZu+gCA==
   dependencies:
     source-list-map "^2.0.1"
     source-map "^0.6.1"
