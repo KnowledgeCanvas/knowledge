@@ -7,3 +7,4 @@ documents/
 /kc-electron/node_modules/
 /kc-workspace/dist/
 /kc-workspace/node_modules
+.DS_Store
