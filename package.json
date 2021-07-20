@@ -4,31 +4,52 @@
   "description": "",
   "private": true,
   "workspaces": [
-    "kc-electron",
-    "kc-workspace",
-    "kc-search"
+    "kc_electron",
+    "kc_workspace"
   ],
-  "main": "kc-electron/dist/electron.js",
-  "scripts": {
-    "build": "yarn workspaces run build",
-    "build-dev": "yarn workspaces run build-dev",
-    "clean": "yarn workspaces run clean",
-    "start": "electron .",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "watch-main": "cd kc-workspace && yarn run watch-main",
-    "watch-electron": "cd kc-electron && yarn run watch-electron"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/RobRoyce/knowledge-canvas.git"
   },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/RobRoyce/knowledge-canvas/issues"
+  "main": "kc_electron/dist/electron.js",
+  "scripts": {
+    "build": "yarn workspaces run build",
+    "build-dev": "yarn workspaces run build-dev",
+    "clean": "rm -rf ./dist && yarn workspaces run clean",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "purge": "rm -rf node_modules && yarn workspaces run purge",
+    "start": "yarn build-dev && electron .",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch-main": "cd kc_workspace && yarn run watch-main",
+    "watch-electron": "cd kc_electron && yarn run watch-electron"
   },
-  "homepage": "https://github.com/RobRoyce/knowledge-canvas#readme",
-  "dependencies": {
-    "electron": "^13.1.6"
+  "dependencies": {},
+  "devDependencies": {},
+  "build": {
+    "appId": "com.knowledgecanvas.app",
+    "productName": "Knowledge Canvas Application",
+    "directories": {
+      "buildResources": "resources"
+    },
+    "files": [
+      "kc_workspace/dist/**/*",
+      "kc_electron/dist/**/*",
+      "resources/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "resources/app.env",
+        "to": "app.env"
+      }
+    ],
+    "mac": {
+      "category": "knowledge.canvas.app"
+    },
+    "win": {
+      "target": [
+        "portable"
+      ]
+    }
   }
 }

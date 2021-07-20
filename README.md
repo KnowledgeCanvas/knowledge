@@ -9,10 +9,28 @@ yarn install
 
 3. Build and run the project:
 ```shell
-yarn run start
+yarn build
+yarn start
 ```
 
 4. (OPTIONAL) clean the project and delete build files:
 ```shell
-yarn run clean
+yarn clean
+```
+
+# Create distributable binaries for MacOS and Windows
+
+1. Build the project:
+```shell
+yarn build
+```
+
+2. Pack the project:
+```shell
+yarn pack
+```
+
+3. Create the distributables:
+```shell
+yarn dist
 ```
