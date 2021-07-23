@@ -4,3 +4,4 @@ node_modules/
 /kc_electron/node_modules/
 /kc_workspace/dist/
 /kc_workspace/node_modules
+__pycache__

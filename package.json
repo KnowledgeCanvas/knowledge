@@ -19,7 +19,7 @@
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
     "purge": "rm -rf node_modules && yarn workspaces run purge",
-    "start": "yarn build-dev && electron .",
+    "start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch-main": "cd kc_workspace && yarn run watch-main",
     "watch-electron": "cd kc_electron && yarn run watch-electron"
