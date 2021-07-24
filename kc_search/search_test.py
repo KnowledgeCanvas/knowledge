@@ -2,20 +2,31 @@ import os
 import sys
 import requests
 import json
+from hashlib import md5 as hash
+import shutil
 
 AUTH_FILE = "auth.json"
-SAMPLE_FILE = "sample.json"
 USER_AGENT = "knowledge-canvas/0.0.1"
 DOCUMENTS_DIR = "documents"
 ignore = ["...","the","as","a","to","or","with","in","also","is","and","of"]
+RAW_FORMATS = ["pdf","docx","png","jpeg","jpg"]
 
 
 
 
-def main():
+def main(query):
+    # make a hash of the query so we can store it as the directory name
+    query_hash = hash(query.encode()).hexdigest()
+
+    # create a directory to store the results in 
+    results_dir = os.path.join(DOCUMENTS_DIR,query_hash)
+    results_cache = os.path.join(results_dir,"search_results.json")
+    os.makedirs(results_dir,exist_ok=True)
+    
     results = ""
+    
     # if the sample search file does not exist, generate one
-    if not os.path.exists(SAMPLE_FILE):
+    if not os.path.exists(results_cache):
         print("fetching results from web")
         if not os.path.exists(AUTH_FILE):
             print(f"ask dev jasper for {AUTH_FILE}, or create your own with a key from your google account",file=sys.stderr)
@@ -25,33 +36,45 @@ def main():
             auth_data = json.load(fp)
         key = auth_data["key"]
         engine = auth_data["engine"]
-        query = "HEVC"
-        headers = {"User-Agent", USER_AGENT}
+        headers = {"User-Agent": USER_AGENT}
         response = requests.get(f"https://www.googleapis.com/customsearch/v1?key={key}&cx={engine}&q={query}",headers=headers)
-        with open(SAMPLE_FILE,"w") as fp:
+        with open(results_cache,"w") as fp:
             fp.write(response.text)
     
     # read in json search from saved file
     # this is just a temporary measure to reduce queries while testing
-    with open(SAMPLE_FILE) as fp:
+    with open(results_cache) as fp:
         print("loading results from file")
         results = json.load(fp)
 
     # make dir for saved documents
-    if not os.path.exists(DOCUMENTS_DIR):
-        os.mkdir(DOCUMENTS_DIR)
+    if not os.path.exists(results_dir):
+        os.mkdir(results_dir)
     snippet_words = []
-    headers = {"User-Agent", USER_AGENT}
+    headers = {"User-Agent": USER_AGENT}
 
     for item in results["items"]:
         # download each of the linked documents
-        path = os.path.join(DOCUMENTS_DIR,f"{item['cacheId']}.html")
+        link = item["link"]
+        formatted_link = item["formattedUrl"]
+        name = f"{item['displayLink']}_{os.path.basename(formatted_link[:-1] if link.endswith('/') else formatted_link)}"
+        raw = name.split(".")[-1] in RAW_FORMATS
+        
+        if raw:
+            path = os.path.join(results_dir,os.path.basename(link))
+        else:
+            path = os.path.join(results_dir,f"{name}.html")
+        
         if not os.path.exists(path):
-            print("getting",item["link"])
+            print("getting",link)
             print("saving to",str(path))
-            response = requests.get(item["link"])
-            with open(path,"w") as fp:
-                fp.write(response.text)
+            response = requests.get(link,stream=raw)
+            if raw:
+                with open(path,"wb") as fp:
+                    shutil.copyfileobj(response.raw,fp)
+            else:
+                with open(path,"w") as fp:
+                    fp.write(response.text)
         
         snippet_words.extend([w.lower() for w in item["snippet"].split()])
     # Tika extract the text from the downloaded documents and perform analysis on those
@@ -78,4 +101,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main(" ".join(sys.argv[1:]))
