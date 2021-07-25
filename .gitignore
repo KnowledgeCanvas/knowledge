@@ -1,7 +1,12 @@
 node_modules/
 .idea/
-/kc_electron/dist/
-/kc_electron/node_modules/
-/kc_workspace/dist/
-/kc_workspace/node_modules
+auth.json
+sample.json
+documents/
+/kc-electron/dist/
+/kc-electron/node_modules/
+/kc-workspace/dist/
+/kc-workspace/node_modules
+.DS_Store
 __pycache__
+
