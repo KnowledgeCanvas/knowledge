@@ -7153,6 +7153,11 @@ pupa@^2.1.1:
   dependencies:
     escape-goat "^2.0.0"
 
+python-shell@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/python-shell/-/python-shell-3.0.0.tgz#4eb04b6e7e8878e715b9ccd782b15194555dd074"
+  integrity sha512-vlIkpJBwkhtG8d2rBbPEweg+3UXdkoduRZ0jLbIX3efYutBjTdmdmMrEQCQy9tkabH36yUjOhwTPFkH3BvoYZQ==
+
 qjobs@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/qjobs/-/qjobs-1.2.0.tgz#c45e9c61800bd087ef88d7e256423bdd49e5d071"

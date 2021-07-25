@@ -1,0 +1,24 @@
+<div class="container">
+  <form [formGroup]="searchForm" (keydown.enter)="EnterSubmit($event)">
+
+    <div class="row">
+      <div class="col s12">
+        <h1>Search the Web</h1>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col s12">
+        <mat-form-field appearance="fill">
+          <input matInput placeholder="Search" [formControl]="searchTerm">
+          <mat-icon matPrefix>search</mat-icon>
+          <mat-hint>Enter a search term and press Enter</mat-hint>
+        </mat-form-field>
+      </div>
+    </div>
+
+    {{searchResults}}
+
+
+  </form>
+</div>

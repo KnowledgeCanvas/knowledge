@@ -8,3 +8,5 @@ documents/
 /kc-workspace/dist/
 /kc-workspace/node_modules
 .DS_Store
+__pycache__
+

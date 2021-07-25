@@ -1,14 +1,16 @@
-const {app, BrowserWindow, ipcMain, dialog} = require('electron')
-const path = require('path')
+const {app, BrowserWindow, ipcMain, dialog, webContents} = require('electron')
 import {SettingsModel} from "./app/model/settings.model";
 
+const path = require('path')
+const scriptService = require('./app/controller/script.service');
 const settingsService = require('./app/controller/settings.service');
-let appEnv = settingsService.getSettings();
 
 const DEBUG: boolean = true;
 const MAIN_ENTRY: string = path.join(app.getAppPath(), 'kc_workspace', 'dist', 'main', 'index.html')
 const SETUP_ENTRY: string = path.join(app.getAppPath(), 'kc_workspace', 'dist', 'setup', 'index.html')
-const windows = new Set();
+
+let win: typeof BrowserWindow;
+let appEnv = settingsService.getSettings();
 
 console.log('Dirname: ', __dirname);
 
@@ -21,30 +23,30 @@ function createMainWindow() {
         width: WIDTH ? WIDTH : 900,
         height: HEIGHT ? HEIGHT : 1300,
         webPreferences: {
-            nodeIntegration: true,
+            nodeIntegration: false, // is default value after Electron v5
+            contextIsolation: true, // protect against prototype pollution
+            enableRemoteModule: false, // turn off remote
             preload: path.join(app.getAppPath(), 'kc_electron', 'dist', 'preload.js')
         }
     };
 
-    let mainWindow: typeof BrowserWindow = new BrowserWindow(config);
+    win = new BrowserWindow(config);
 
     // TODO: Determine if the following is the best we can do for page load failure
     // We need to explicitly reload the index upon refresh (note this is only needed in Electron)
-    mainWindow.webContents.on('did-fail-load', () => {
-        mainWindow.loadFile(MAIN_ENTRY);
+    win.webContents.on('did-fail-load', () => {
+        win.loadFile(MAIN_ENTRY);
     })
 
     // Destroy window on close
-    mainWindow.on('closed', function () {
-        windows.delete(mainWindow);
-        mainWindow = null;
+    win.on('closed', function () {
+        win = null;
     });
 
-    windows.add(mainWindow);
-    mainWindow.loadFile(MAIN_ENTRY);
-    mainWindow.show();
+    win.loadFile(MAIN_ENTRY);
+    win.show();
 
-    return mainWindow;
+    return win;
 }
 
 
@@ -59,7 +61,9 @@ const createStartupWindow = exports.createStartupWindow = () => {
         resizable: true,
         // autoHideMenuBar: true,
         webPreferences: {
-            nodeIntegration: true
+            nodeIntegration: false, // is default value after Electron v5
+            contextIsolation: true, // protect against prototype pollution
+            enableRemoteModule: false, // turn off remote
         }
     });
 
@@ -73,7 +77,6 @@ const createStartupWindow = exports.createStartupWindow = () => {
 
     // TODO: Account for the fact that the user can close this window at any time, even if the setup is not complete.
     newWindow.on('close', () => {
-        windows.delete(newWindow);
         newWindow = null;
         appEnv = settingsService.getSettings();
 
@@ -90,7 +93,6 @@ const createStartupWindow = exports.createStartupWindow = () => {
         }
     })
 
-    windows.add(newWindow);
     newWindow.show()
     return newWindow;
 }
@@ -112,3 +114,12 @@ app.whenReady().then(() => {
         if (BrowserWindow.getAllWindows().length === 0) createMainWindow()
     })
 })
+
+ipcMain.on("app-search-python", (event: any, args: object) => {
+    console.log('Search invoked on search term: ', args);
+    scriptService.runPythonScript('search', args).then((value: string) => {
+        win.webContents.send("app-search-python-results", value);
+    }).catch((reason: any) => {
+        console.error(reason);
+    });
+});

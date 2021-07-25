@@ -13,8 +13,14 @@
 
       <div>
         <mat-nav-list>
+          <a mat-list-item routerLink="/" routerLinkActive="active">Dashboard</a>
+          <mat-divider></mat-divider>
+          <div mat-subheader>Discover</div>
           <a mat-list-item routerLink="/app-file-upload" routerLinkActive="active">Files</a>
-          <a mat-list-item routerLink="/app-website-extraction" routerLinkActive="active">Web Content</a>
+          <a mat-list-item routerLink="/app-search" routerLinkActive="active">Search</a>
+          <a mat-list-item routerLink="/app-website-extraction" routerLinkActive="active">Web Sites</a>
+          <mat-divider></mat-divider>
+          <div mat-subheader>Context</div>
         </mat-nav-list>
       </div>
     </mat-sidenav>
@@ -36,11 +42,6 @@
                 </span>
         </div>
       </mat-toolbar>
-
-<!--      <h1>Knowledge Canvas</h1>-->
-<!--      Node.js <span id="node-version"></span>-->
-<!--      Chromium <span id="chrome-version"></span>-->
-<!--      and Electron <span id="electron-version"></span>-->
 
       <div class="wrapper">
         <router-outlet></router-outlet>
