@@ -1,70 +1,14 @@
 <div class="container">
   <form [formGroup]="options">
+
     <div class="row">
       <div class="col s12">
         <h1>Upload Files</h1>
       </div>
     </div>
+
     <app-file-upload-drag-and-drop></app-file-upload-drag-and-drop>
-    <br>
-    <div class="row">
-      <div class="col s12">
-        <h2>Advanced</h2><br>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col s12">
-        <h3>File 1</h3>
-        <hr>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col s2">
-        <mat-checkbox [formControl]="rename">Rename:</mat-checkbox>
-      </div>
-      <div class="col s10">
-        <mat-form-field appearance="standard">
-          <input matInput [formControl]="rename_to" placeholder="original_filename.pdf">
-        </mat-form-field>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col s4">
-        <mat-checkbox [formControl]="summarize">Summarize</mat-checkbox>
-      </div>
-      <div class="col s4">
-        <mat-checkbox [formControl]="visualizations">Generate Visualizations</mat-checkbox>
-      </div>
-      <div class="col s4">
-        <mat-checkbox [formControl]="extractMetadata">Extract Metadata</mat-checkbox>
-      </div>
-    </div>
-
-    <!--    <div>-->
-    <!--      <label>Float label: </label>-->
-    <!--      <mat-radio-group [formControl]="floatLabelControl">-->
-    <!--        <mat-radio-button value="auto">Auto</mat-radio-button>-->
-    <!--        <mat-radio-button value="always">Always</mat-radio-button>-->
-    <!--      </mat-radio-group>-->
-    <!--    </div>-->
-
-
-    <!--    <mat-form-field appearance="fill" [floatLabel]="floatLabelControl.value">-->
-    <!--      <mat-label>Both a label and a placeholder</mat-label>-->
-    <!--      <input matInput placeholder="Simple placeholder">-->
-    <!--    </mat-form-field>-->
-
-    <!--    <mat-form-field appearance="fill"-->
-    <!--                    [hideRequiredMarker]="hideRequiredControl.value"-->
-    <!--                    [floatLabel]="floatLabelControl.value">-->
-    <!--      <mat-select required>-->
-    <!--        <mat-option>&#45;&#45; None &#45;&#45;</mat-option>-->
-    <!--        <mat-option value="option">Option</mat-option>-->
-    <!--      </mat-select>-->
-    <!--      <mat-label>-->
-    <!--        <mat-icon>favorite</mat-icon>-->
-    <!--        <b> Fancy</b> <i> label</i></mat-label>-->
-    <!--    </mat-form-field>-->
+    <app-file-upload-advanced hidden></app-file-upload-advanced>
 
   </form>
 </div>
