@@ -20,13 +20,25 @@ import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatSelectModule} from "@angular/material/select";
 import {MatOptionModule} from "@angular/material/core";
 import {MatInputModule} from "@angular/material/input";
+import { FileUploadAdvancedComponent } from './ingest/file-upload/file-upload-advanced/file-upload-advanced.component';
+import { WebsiteExtractionFormComponent } from './ingest/website-extraction/website-extraction-form/website-extraction-form.component';
+import { SearchComponent } from './search/search.component';
+import { DragAndDropDirective } from './ingest/file-upload/directives/drag-and-drop.directive';
+import { SettingsComponent } from './settings/settings.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     FileUploadComponent,
     WebsiteExtractionComponent,
-    FileUploadDragAndDropComponent
+    FileUploadDragAndDropComponent,
+    FileUploadAdvancedComponent,
+    WebsiteExtractionFormComponent,
+    SearchComponent,
+    DragAndDropDirective,
+    SettingsComponent,
+    DashboardComponent
   ],
   imports: [
     BrowserModule,
@@ -50,3 +62,9 @@ import {MatInputModule} from "@angular/material/input";
   bootstrap: [AppComponent]
 })
 export class AppModule { }
+
+declare global {
+  interface Window {
+    api?: any;
+  }
+}

@@ -1,1 +1,42 @@
-<input type="file" class="file-upload" onchange="console.log(event.target.files)">
+<!--Created using: https://medium.com/@tarekabdelkhalek/how-to-create-a-drag-and-drop-file-uploading-in-angular-78d9eba0b854-->
+
+<div class="row">
+  <div class="col s12">
+    <div class="dropzone" appDragAndDrop (fileDropped)="onFileDropped($event)">
+      <input type="file" #fileDropRef id="fileDropRef" multiple (change)="fileBrowseHandler($event)"/>
+      <mat-icon id="fileUploadIcon">file_upload</mat-icon>
+      <h3>Drag and drop file(s) here</h3>
+      <h3>or</h3>
+      <label for="fileDropRef">Browse for file(s)</label>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col s12">
+    <div class="files-list">
+      <div class="single-file" *ngFor="let file of files; let i = index">
+        <mat-icon>file_present</mat-icon>
+        <div class="info">
+          <h4 class="name">
+            {{ file?.name }}
+          </h4>
+          <p class="size">
+            {{ formatBytes(file?.size) }}
+          </p>
+          <!--          <app-progress [progress]="file?.progress"></app-progress>-->
+        </div>
+        <mat-icon class="delete" (click)="deleteFile(i)">delete</mat-icon>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col s12 center">
+    <div class="uploadButton" *ngIf="files.length > 0">
+      <button mat-button mat-raised-button color="primary" (click)="submit()">
+        Submit
+      </button>
+    </div>
+  </div>
+</div>
+
