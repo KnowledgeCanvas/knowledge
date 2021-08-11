@@ -1,0 +1,632 @@
+{
+  "results": [
+    {
+      "kind": "customsearch#result",
+      "title": "Knowledge base - Wikipedia",
+      "htmlTitle": "\u003cb\u003eKnowledge base\u003c/b\u003e - Wikipedia",
+      "link": "https://en.wikipedia.org/wiki/Knowledge_base",
+      "displayLink": "en.wikipedia.org",
+      "snippet": "A knowledge base (KB) is a technology used to store complex structured and unstructured information used by a computer system. The initial use of the term ...",
+      "htmlSnippet": "A \u003cb\u003eknowledge base\u003c/b\u003e (\u003cb\u003eKB\u003c/b\u003e) is a technology used to store complex structured and unstructured information used by a computer system. The initial use of the term&nbsp;...",
+      "cacheId": "1xrC7mQLXuMJ",
+      "formattedUrl": "https://en.wikipedia.org/wiki/Knowledge_base",
+      "htmlFormattedUrl": "https://en.wikipedia.org/wiki/\u003cb\u003eKnowledge\u003c/b\u003e_\u003cb\u003ebase\u003c/b\u003e",
+      "pagemap": {
+        "metatags": [
+          {
+            "referrer": "origin",
+            "og:type": "website",
+            "og:title": "Knowledge base - Wikipedia"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "customsearch#result",
+      "title": "What is a knowledge base | Atlassian | Atlassian",
+      "htmlTitle": "What is a \u003cb\u003eknowledge base\u003c/b\u003e | Atlassian | Atlassian",
+      "link": "https://www.atlassian.com/itsm/knowledge-management/what-is-a-knowledge-base",
+      "displayLink": "www.atlassian.com",
+      "snippet": "What is a knowledge base? ... A knowledge base is a self-serve online library of information about a product, service, department, or topic. The data in your ...",
+      "htmlSnippet": "What is a \u003cb\u003eknowledge base\u003c/b\u003e? ... A \u003cb\u003eknowledge base\u003c/b\u003e is a self-serve online library of information about a product, service, department, or topic. The data in your&nbsp;...",
+      "cacheId": "pB-89Keax7sJ",
+      "formattedUrl": "https://www.atlassian.com/itsm/knowledge.../what-is-a-knowledge-base",
+      "htmlFormattedUrl": "https://www.atlassian.com/itsm/\u003cb\u003eknowledge\u003c/b\u003e.../what-is-a-\u003cb\u003eknowledge\u003c/b\u003e-\u003cb\u003ebase\u003c/b\u003e",
+      "pagemap": {
+        "metatags": [
+          {
+            "msapplication-tilecolor": "#ffffff",
+            "theme-color": "#205081",
+            "og:type": "website",
+            "twitter:card": "summary",
+            "og:site_name": "Atlassian",
+            "author": "Atlassian",
+            "og:title": "What is a knowledge base | Atlassian | Atlassian",
+            "msapplication-tileimage": "https://wac-cdn.atlassian.com/assets/img/favicons/atlassian/mstile-144x144.png",
+            "fb:pages": "115407078489594",
+            "og:description": "Learn about the value of a knowledge base and 7 tips to build your own knowledge base.",
+            "twitter:site": "@Atlassian",
+            "viewport": "width=device-width, initial-scale=1",
+            "og:url": "https://www.atlassian.com/itsm/knowledge-management/what-is-a-knowledge-base"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "customsearch#result",
+      "title": "Knowledge Base 101: Definition, Benefits, Examples, and Tips",
+      "htmlTitle": "\u003cb\u003eKnowledge Base\u003c/b\u003e 101: Definition, Benefits, Examples, and Tips",
+      "link": "https://www.helpscout.com/playlists/knowledge-base/",
+      "displayLink": "www.helpscout.com",
+      "snippet": "A knowledge base is a published collection of documentation that typically includes answers to frequently asked questions, how-to guides, and troubleshooting ...",
+      "htmlSnippet": "A \u003cb\u003eknowledge base\u003c/b\u003e is a published collection of documentation that typically includes answers to frequently asked questions, how-to guides, and troubleshooting&nbsp;...",
+      "cacheId": "7ApeB8x_Qg8J",
+      "formattedUrl": "https://www.helpscout.com/playlists/knowledge-base/",
+      "htmlFormattedUrl": "https://www.helpscout.com/playlists/\u003cb\u003eknowledge\u003c/b\u003e-\u003cb\u003ebase\u003c/b\u003e/",
+      "pagemap": {
+        "thumbnail": [
+          {
+            "src": "https://hs-marketing.imgix.net/images/uploads/knowledge-base-hero.png?auto=compress&fit=scale&w=1600&dpr=1"
+          }
+        ],
+        "question": [
+          {
+            "name": "What is a knowledge base?"
+          },
+          {
+            "name": "What is a knowledge base used for?"
+          }
+        ],
+        "answer": [
+          {
+            "text": "A knowledge base is a published collection of documentation that typically includes answers to frequently asked questions, how-to guides, and troubleshooting instructions. Its purpose is to..."
+          },
+          {
+            "text": "Some types of knowledge bases are intended purely for machines to learn from. Other types — the types we’re referring to in this article — are built for people to use and learn from...."
+          }
+        ],
+        "imageobject": [
+          {
+            "width": "300",
+            "url": "https://www.helpscout.com/images/data/helpscout-logo.png",
+            "height": "60"
+          },
+          {
+            "width": "1040",
+            "url": "https://www.helpscout.com/images/uploads/knowledge-base-hero.png",
+            "height": "585"
+          }
+        ],
+        "person": [
+          {
+            "name": "Mathew Patterson"
+          }
+        ],
+        "organization": [
+          {
+            "name": "Help Scout",
+            "url": "https://www.helpscout.com/"
+          }
+        ],
+        "metatags": [
+          {
+            "og:image": "https://hs-marketing.imgix.net/images/uploads/knowledge-base-hero.png?auto=compress&fit=scale&w=1600&dpr=1",
+            "theme-color": "#FFFFFF",
+            "thumbnail": "https://hs-marketing.imgix.net/images/uploads/knowledge-base-hero.png?auto=compress&fit=scale&w=1600&dpr=1",
+            "og:type": "article",
+            "twitter:card": "summary_large_image",
+            "twitter:title": "Knowledge Base 101: Definition, Benefits, Examples, and Tips - Help Scout",
+            "author": "Help Scout",
+            "og:title": "Knowledge Base 101: Definition, Benefits, Examples, and Tips - Help Scout",
+            "og:description": "Learn what a knowledge base is and discover how to plan, create, and deliver effective help center content to create better customer experiences.",
+            "twitter:creator": "@mrpatto",
+            "twitter:image": "https://hs-marketing.imgix.net/images/uploads/knowledge-base-hero.png?auto=compress&fit=scale&w=1600&dpr=1",
+            "article:tag": "customer-service",
+            "twitter:site": "@helpscout",
+            "viewport": "width=device-width, initial-scale=1, shrink-to-fit=no",
+            "twitter:description": "Learn what a knowledge base is and discover how to plan, create, and deliver effective help center content to create better customer experiences.",
+            "og:url": "https://www.helpscout.com/playlists/knowledge-base/"
+          }
+        ],
+        "cse_image": [
+          {
+            "src": "https://hs-marketing.imgix.net/images/uploads/knowledge-base-hero.png?auto=compress&fit=scale&w=1600&dpr=1",
+            "width": "300",
+            "type": "1",
+            "height": "168"
+          }
+        ],
+        "blogposting": [
+          {
+            "articlebody": "What is a knowledge base?What is a knowledge base used for?Why is a knowledge base important?How to create a knowledge baseHow to create knowledge base contentMaking your knowledge base accessibleH...",
+            "datemodified": "2020-11-13T20:34:13.045Z",
+            "articlesection": "customer-service",
+            "description": "Learn what a knowledge base is and discover how to plan, create, and deliver effective help center content to create better customer experiences.",
+            "headline": "Knowledge Base 101: Definition, Benefits, Examples, and Tips",
+            "datepublished": "2019-12-19T00:00:00.000Z"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "customsearch#result",
+      "title": "Microsoft Support",
+      "htmlTitle": "Microsoft Support",
+      "link": "https://support.microsoft.com/",
+      "displayLink": "support.microsoft.com",
+      "snippet": "Microsoft is here to help you with products including Office, Windows, Surface, and more. Find articles, videos, training, tutorials, and more.",
+      "htmlSnippet": "Microsoft is here to help you with products including Office, Windows, Surface, and more. Find articles, videos, training, tutorials, and more.",
+      "cacheId": "jaRXGHgTjQ4J",
+      "formattedUrl": "https://support.microsoft.com/",
+      "htmlFormattedUrl": "https://support.microsoft.com/",
+      "pagemap": {
+        "organization": [
+          {
+            "name": "Microsoft",
+            "logo": "https://img-prod-cms-rt-microsoft-com.akamaized.net/cms/api/am/imageFileData/RE1Mu3b?ver=5c31",
+            "url": "Microsoft"
+          }
+        ],
+        "metatags": [
+          {
+            "og:image": "//support.office.com/SocImages/SOC_SharingImage_720x405.png",
+            "ms.pltfrm": "OCPub",
+            "awa-title": "Microsoft Support",
+            "awa-isdeeplinkingenabled": "False",
+            "contentlocation": "https://osiprodwusodcspstoa01.blob.core.windows.net",
+            "ms.sitesec": "Support",
+            "awa-pagescope": "o365ww",
+            "ms.lang": "en",
+            "ms.sitever": "1601432237650",
+            "360-site-verification": "6cc44c63f0485333da3d68c64f40327e",
+            "awa-userflightingid": "f5726f25-1d7a-44a2-9d28-57011e921a22",
+            "baidu-site-verification": "OEtL59dJdg",
+            "ms.loc": "US",
+            "awa-variationid": "ECS",
+            "ms.prod": "Office",
+            "ms.pagetype": "Home",
+            "awa-market": "en-US",
+            "msvalidate.01": "807DB211F373FA8944F95197B4C49C4A",
+            "awa-pagetype": "Home",
+            "awa-stv": "1601432237650",
+            "yandex-verification": "4b769cdaed4df4ab",
+            "awa-themename": "Legacy",
+            "awa-asst": "S.HP.smc-home",
+            "ms.ocpub.assetid": "S.HP.smc-home",
+            "awa-env": "Production",
+            "awa-prdct": "office.com",
+            "awa-expid": "P-E-81319-C1-36;P-E-89755-2-5;P-E-81324-3-14;P-E-65407-2-13;P-E-86658-2-7;P-E-86151-4-5;P-E-82494-5-17;P-E-84907-3-6;P-E-84745-C1-5;P-E-84744-C1-6;P-E-85251-3-5;P-E-84748-2-5;P-E-84747-C1-5;P-E-84746-2-5;P-E-84399-C1-5;P-E-84692-2-7;P-E-82513-2-10;P-E-82505-2-13;P-E-55055-2-107;P-E-82511-4-10;P-E-83317-2-10;P-E-83971-C1-6;P-E-76786-C1-18;P-E-75575-2-7;P-E-73628-C1-12;P-E-72824-2-7;P-R-85662-1-2;P-R-85265-4-8;P-R-81586-2-6;P-R-80816-1-2;P-R-80813-1-2;P-R-73296-2-15;P-R-72164-1-2;P-R-63397-1-9;P-R-68455-1-2",
+            "awa-isassistedhelpenabled": "False",
+            "viewport": "width=device-width, initial-scale=1.0",
+            "ms.correlationid": "e3f1a26f-1a11-4dac-9b4b-5e7aa900abc2",
+            "awa-selfhelpexp": "win10m365_uhf",
+            "format-detection": "telephone=no"
+          }
+        ],
+        "videoobject": [
+          {
+            "duration": "00:02:15",
+            "embedurl": "https://eus-streaming-video-rt-microsoft-com.akamaized.net/51e203bd-a709-4164-8298-4679bd089499/7681de4d-3499-4eb4-a645-87ff2847_3400.mp4",
+            "contenturl": "https://eus-streaming-video-rt-microsoft-com.akamaized.net/51e203bd-a709-4164-8298-4679bd089499/7681de4d-3499-4eb4-a645-87ff2847_3400.mp4",
+            "name": "What is Microsoft 365?",
+            "thumbnailurl": "https://img-prod-cms-rt-microsoft-com.akamaized.net/cms/api/am/imageFileData/RE4sOli"
+          }
+        ],
+        "cse_image": [
+          {
+            "src": "//support.office.com/SocImages/SOC_SharingImage_720x405.png"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "customsearch#result",
+      "title": "Creating & Managing a Knowledge Base: The Ultimate Guide",
+      "htmlTitle": "Creating &amp; Managing a \u003cb\u003eKnowledge Base\u003c/b\u003e: The Ultimate Guide",
+      "link": "https://www.hubspot.com/knowledge-base",
+      "displayLink": "www.hubspot.com",
+      "snippet": "A knowledge base is a library of information about your product or service. It helps customers find answers to solve problems on their own and — if you do it right ...",
+      "htmlSnippet": "A \u003cb\u003eknowledge base\u003c/b\u003e is a library of information about your product or service. It helps customers find answers to solve problems on their own and — if you do it right&nbsp;...",
+      "cacheId": "NcE3jAa718gJ",
+      "formattedUrl": "https://www.hubspot.com/knowledge-base",
+      "htmlFormattedUrl": "https://www.hubspot.com/\u003cb\u003eknowledge\u003c/b\u003e-\u003cb\u003ebase\u003c/b\u003e",
+      "pagemap": {
+        "cse_thumbnail": [
+          {
+            "src": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRCZ1LUKJvvjoanxS-MVam9jM8E98dX8gWnU_j2X6jblNxRad0eJouhC-yR",
+            "width": "310",
+            "height": "163"
+          }
+        ],
+        "metatags": [
+          {
+            "p:domain_verify": "7f4fa0f1fccc171fd4d5af64f062521c",
+            "og:image": "https://www.hubspot.com/hubfs/assets/hubspot.com/buzz/HubSpotOpenGraph.png",
+            "twitter:title": "Creating & Managing a Knowledge Base: The Ultimate Guide",
+            "theme-color": "#FF7A59",
+            "twitter:card": "summary_large_image",
+            "og:image:width": "1206",
+            "msvalidate.01": "C5553ABFC995043D86E2C15CA3DADD34",
+            "author": "HubSpot",
+            "og:title": "Creating & Managing a Knowledge Base: The Ultimate Guide",
+            "og:image:height": "633",
+            "og:description": "A knowledge base lets you educate customers, proactively provide support, and improve customer success and understanding across the board.",
+            "fb:pages": "6039999393",
+            "twitter:image": "https://www.hubspot.com/hubfs/assets/hubspot.com/buzz/HubSpotOpenGraph.png",
+            "viewport": "width=device-width, initial-scale=1",
+            "twitter:description": "A knowledge base lets you educate customers, proactively provide support, and improve customer success and understanding across the board.",
+            "og:url": "https://www.hubspot.com/knowledge-base",
+            "twitter:account_id": "14458280"
+          }
+        ],
+        "cse_image": [
+          {
+            "src": "https://www.hubspot.com/hubfs/assets/hubspot.com/buzz/HubSpotOpenGraph.png"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "customsearch#result",
+      "title": "How to Build a Knowledge Base That Actually Provides Value",
+      "htmlTitle": "How to Build a \u003cb\u003eKnowledge Base\u003c/b\u003e That Actually Provides Value",
+      "link": "https://helpjuice.com/blog/knowledge-base",
+      "displayLink": "helpjuice.com",
+      "snippet": "Mar 13, 2019 ... A knowledge base is a centralized 'hub' where all information related to a company as well as its products or services can be stored, organized, ...",
+      "htmlSnippet": "Mar 13, 2019 \u003cb\u003e...\u003c/b\u003e A \u003cb\u003eknowledge base\u003c/b\u003e is a centralized &#39;hub&#39; where all information related to a company as well as its products or services can be stored, organized,&nbsp;...",
+      "cacheId": "glC0v6w5AxIJ",
+      "formattedUrl": "https://helpjuice.com/blog/knowledge-base",
+      "htmlFormattedUrl": "https://helpjuice.com/blog/\u003cb\u003eknowledge\u003c/b\u003e-\u003cb\u003ebase\u003c/b\u003e",
+      "pagemap": {
+        "cse_thumbnail": [
+          {
+            "src": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9qLS8wnrF4_QyXZnCc6aoqyL0ZLDzkDpRGGqqqvtfk7YV4ZQAqtwsxHQ",
+            "width": "247",
+            "height": "204"
+          }
+        ],
+        "metatags": [
+          {
+            "og:image": "https://static.helpjuice.com/helpjuice_production/uploads/upload/image/4752/direct/1552680856666-Customer%20Expectations%20Help%20Online.png",
+            "og:type": "website",
+            "twitter:card": "summary_large_image",
+            "twitter:title": "How to Build a Knowledge Base That Actually Provides Value",
+            "og:title": "How to Build a Knowledge Base That Actually Provides Value",
+            "csrf-param": "authenticity_token",
+            "og:description": "Knowledge bases (KB) are much more than self-service libraries of information. Learn exactly what a KB is as well as how to build an effective one.",
+            "twitter:image": "https://static.helpjuice.com/helpjuice_production/uploads/upload/image/4752/direct/1552680856666-Customer%20Expectations%20Help%20Online.png",
+            "twitter:site": "@helpjuice",
+            "viewport": "width=device-width, initial-scale=1",
+            "twitter:description": "Knowledge bases (KB) are much more than self-service libraries of information. Learn exactly what a KB is as well as how to build an effective one.",
+            "csrf-token": "FaFP3kGxFcCXvf4TqOHHBAXylosNREat+WAjLbVbijfzKgyHfzn7bn/Pe8xFmv7ZU9pEEYN/MyP4B+qzRF5tIA==",
+            "og:url": "https://helpjuice.com/blog/knowledge-base"
+          }
+        ],
+        "cse_image": [
+          {
+            "src": "https://static.helpjuice.com/helpjuice_production/uploads/upload/image/4752/direct/1552680856666-Customer%20Expectations%20Help%20Online.png"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "customsearch#result",
+      "title": "13 Best Knowledge Base Software for 2021",
+      "htmlTitle": "13 Best \u003cb\u003eKnowledge Base\u003c/b\u003e Software for 2021",
+      "link": "https://www.zendesk.com/service/help-center/knowledge-base-software/",
+      "displayLink": "www.zendesk.com",
+      "snippet": "A knowledge base is a searchable directory of content about your products or services and how they are used. Knowledge bases include content, in various ...",
+      "htmlSnippet": "A \u003cb\u003eknowledge base\u003c/b\u003e is a searchable directory of content about your products or services and how they are used. \u003cb\u003eKnowledge bases\u003c/b\u003e include content, in various&nbsp;...",
+      "cacheId": "aeNjjQ4-5-cJ",
+      "formattedUrl": "https://www.zendesk.com/service/help-center/knowledge-base-software/",
+      "htmlFormattedUrl": "https://www.zendesk.com/service/help-center/\u003cb\u003eknowledge\u003c/b\u003e-\u003cb\u003ebase\u003c/b\u003e-software/",
+      "pagemap": {
+        "cse_thumbnail": [
+          {
+            "src": "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcTdIp62r-rYc0z5Vv-bLl5DKXifW3XrI9Luc_7x1UtiSavTUUSmlf0KqfQS",
+            "width": "263",
+            "height": "191"
+          }
+        ],
+        "organization": [
+          {
+            "url": "https://www.zendesk.com/",
+            "sameas": "https://www.twitter.com/zendesk"
+          }
+        ],
+        "metatags": [
+          {
+            "og:image": "https://d26a57ydsghvgx.cloudfront.net/product/images/knowledge-base-branded-canva.png",
+            "og:type": "article",
+            "naver-site-verification": "0280b3893b4fa7c8bbe9bc24ef61756c9dccec97",
+            "og:site_name": "Zendesk",
+            "viewport": "width=device-width, initial-scale=1",
+            "og:title": "13 Best Knowledge Base Software for 2021",
+            "og:locale": "en_US",
+            "og:url": "https://www.zendesk.com/service/help-center/knowledge-base-software/",
+            "og:description": "Check out the best customer service software and apps to proactively engage customers and answer all customer queries."
+          }
+        ],
+        "cse_image": [
+          {
+            "src": "https://d26a57ydsghvgx.cloudfront.net/product/images/knowledge-base-branded-canva.png"
+          }
+        ],
+        "listitem": [
+          {
+            "item": "Home",
+            "name": "Home",
+            "position": "1"
+          },
+          {
+            "item": "Service",
+            "name": "Service",
+            "position": "2"
+          },
+          {
+            "item": "Help Center",
+            "name": "Help Center",
+            "position": "3"
+          },
+          {
+            "name": "Knowledge Base Software",
+            "position": "4"
+          },
+          {
+            "name": "Zendesk",
+            "position": "1",
+            "url": "https://www.zendesk.com/service/help-center/knowledge-base-software/#section-1"
+          },
+          {
+            "name": "Wix Answers",
+            "position": "2",
+            "url": "https://www.zendesk.com/service/help-center/knowledge-base-software/#section-2"
+          },
+          {
+            "name": "Intellum Platform",
+            "position": "3",
+            "url": "https://www.zendesk.com/service/help-center/knowledge-base-software/#section-3"
+          },
+          {
+            "name": "Bloomfire",
+            "position": "4",
+            "url": "https://www.zendesk.com/service/help-center/knowledge-base-software/#section-4"
+          },
+          {
+            "name": "USU Knowledge Center",
+            "position": "5",
+            "url": "https://www.zendesk.com/service/help-center/knowledge-base-software/#section-5"
+          },
+          {
+            "name": "Guru",
+            "position": "6",
+            "url": "https://www.zendesk.com/service/help-center/knowledge-base-software/#section-6"
+          },
+          {
+            "name": "Stack Overflow for Teams",
+            "position": "7",
+            "url": "https://www.zendesk.com/service/help-center/knowledge-base-software/#section-7"
+          },
+          {
+            "name": "Zoho Desk",
+            "position": "8",
+            "url": "https://www.zendesk.com/service/help-center/knowledge-base-software/#section-8"
+          },
+          {
+            "name": "Document 360",
+            "position": "9",
+            "url": "https://www.zendesk.com/service/help-center/knowledge-base-software/#section-9"
+          },
+          {
+            "name": "Notion",
+            "position": "10",
+            "url": "https://www.zendesk.com/service/help-center/knowledge-base-software/#section-10"
+          },
+          {
+            "name": "MangoApps",
+            "position": "11",
+            "url": "https://www.zendesk.com/service/help-center/knowledge-base-software/#section-11"
+          },
+          {
+            "name": "HappyFox",
+            "position": "12",
+            "url": "https://www.zendesk.com/service/help-center/knowledge-base-software/#section-12"
+          },
+          {
+            "name": "Slab",
+            "position": "13",
+            "url": "https://www.zendesk.com/service/help-center/knowledge-base-software/#section-13"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "customsearch#result",
+      "title": "Knowledge Base",
+      "htmlTitle": "\u003cb\u003eKnowledge Base\u003c/b\u003e",
+      "link": "https://www.tableau.com/support/knowledgebase",
+      "displayLink": "www.tableau.com",
+      "snippet": "Server · Getting Started · Best Practices · Authentication · Content Management · Data Connections · Exports & Subcriptions · Installations, Upgrades, Backups, ...",
+      "htmlSnippet": "Server &middot; Getting Started &middot; Best Practices &middot; Authentication &middot; Content Management &middot; Data Connections &middot; Exports &amp; Subcriptions &middot; Installations, Upgrades, Backups,&nbsp;...",
+      "cacheId": "mTIK8vilDV8J",
+      "formattedUrl": "https://www.tableau.com/support/knowledgebase",
+      "htmlFormattedUrl": "https://www.tableau.com/support/\u003cb\u003eknowledgebase\u003c/b\u003e",
+      "pagemap": {
+        "WebPage": [
+          {
+            "name": "Knowledge Base"
+          }
+        ],
+        "metatags": [
+          {
+            "breadcrumb_l1_url": "https://www.tableau.com/support",
+            "twitter:card": "summary",
+            "twitter:title": "Knowledge Base",
+            "og:type": "article",
+            "og:site_name": "Tableau",
+            "handheldfriendly": "true",
+            "twitter:url": "https://www.tableau.com/support/knowledgebase",
+            "datamodel:audience_role": "dm_audience_role_all_audience_roles",
+            "og:title": "Knowledge Base",
+            "datamodel:department": "dm_department_all_departments",
+            "twitter:creator": "@tableau",
+            "datamodel:language": "en-US",
+            "viewport": "width=device-width, initial-scale=1.0",
+            "mobileoptimized": "width",
+            "breadcrumb_l1_text": "Support & Services",
+            "og:url": "https://www.tableau.com/support/knowledgebase",
+            "datamodel:industry": "dm_industry_all_industries"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "customsearch#result",
+      "title": "Knowledge Base Software | ProProfs",
+      "htmlTitle": "\u003cb\u003eKnowledge Base\u003c/b\u003e Software | ProProfs",
+      "link": "https://www.proprofs.com/knowledgebase/",
+      "displayLink": "www.proprofs.com",
+      "snippet": "Easily create online knowledge base, user manuals, documentation & more · Provide instant 24/7 self-help · Limit access or keep it public · Improve team ...",
+      "htmlSnippet": "Easily create online \u003cb\u003eknowledge base\u003c/b\u003e, user manuals, documentation &amp; more &middot; Provide instant 24/7 self-help &middot; Limit access or keep it public &middot; Improve team&nbsp;...",
+      "cacheId": "SZL87JZKAfgJ",
+      "formattedUrl": "https://www.proprofs.com/knowledgebase/",
+      "htmlFormattedUrl": "https://www.proprofs.com/\u003cb\u003eknowledgebase\u003c/b\u003e/",
+      "pagemap": {
+        "cse_thumbnail": [
+          {
+            "src": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROJX967lozYeNp_fV6l8GfNEU_52k4uBzBXpFj4tC-rE296NxZGDQDHAIj",
+            "width": "243",
+            "height": "207"
+          }
+        ],
+        "question": [
+          {
+            "name": "What is a knowledge base software?"
+          },
+          {
+            "name": "How to create a knowledge base"
+          },
+          {
+            "name": "How to select the best customer support knowledge base software"
+          },
+          {
+            "name": "What are the benefits of knowledge base software?"
+          },
+          {
+            "name": "What is the purpose of a knowledge base?"
+          }
+        ],
+        "answer": [
+          {
+            "text": "A knowledge base software equips you with the right tools to build online documentation, guides, manuals, FAQs, and other types of knowledge bases for your product, service, or organization...."
+          },
+          {
+            "text": "Creating a knowledge base is easy. Select a template of your choice, write from scratch, or upload your existing content, add images and videos, customize it with your brand name and logo,..."
+          },
+          {
+            "text": "Look for a tool that offers features such as a simple MS Word-like text editor, customization options for branding, roles and permission settings, workflows, conditional content, and so on...."
+          },
+          {
+            "text": "A robust knowledge base tool benefits you on four major fronts 1) it helps you reduce customer support tickets by up to 80 percent 2) improves employee collaboration 3) streamlines business..."
+          },
+          {
+            "text": "There are five key purposes that companies use a knowledge base software for - 1) empower customers and employees with self-help 2) reduce support tickets, both internal and external 4) enhance..."
+          }
+        ],
+        "metatags": [
+          {
+            "og:type": "website",
+            "twitter:card": "summary",
+            "fb:app_id": "245239755671229",
+            "og:site_name": "ProProfs knowledgebase",
+            "twitter:site": "@proprofs",
+            "viewport": "initial-scale=1.0, maximum-scale=1.0, user-scalable=no,width=device-width",
+            "og:title": "Knowledge Base Software | ProProfs",
+            "og:url": "https://www.proprofs.com/knowledgebase/",
+            "og:description": "Knowledge base software for reducing customer support tickets & answering customer queries quickly. Start your free Trial today"
+          }
+        ],
+        "videoobject": [
+          {
+            "embedurl": "https://www.youtube.com/embed/r0uiE3gg97A?autoplay=1&rel=0",
+            "uploaddate": "2017-04-13T10:54:40.000Z",
+            "name": "ProProfs Knowledgebase Software",
+            "description": "Use ProProfs Knowledge Base to create online FAQ's, help centers, online guides, manuals, support docs, and more. Help customers quickly find answers to their questions on your site without...",
+            "thumbnailurl": "https://media.proprofs.com/images/QM/user_images/2474396/KB.png"
+          },
+          {
+            "embedurl": "3.36 How to Create a Stunning Knowledge Base in 5 Minutes",
+            "uploaddate": "2019-03-17T10:54:40.000Z",
+            "name": "How to Create a Stunning Knowledge Base in 5 Minutes",
+            "description": "Setting up a knowledge base is super easy with ProProfs Knowledge Base software. Create both public and private knowledge bases for your customers and employees. Pick from a range of beautiful...",
+            "thumbnailurl": "new-ui/img/video-thumbnail/create_kb.jpg?v=1"
+          },
+          {
+            "embedurl": "2.36 What Is a Knowledge Base & How It Works?",
+            "uploaddate": "2019-03-19T10:54:40.000Z",
+            "name": "What Is a Knowledge Base & How It Works?",
+            "description": "Studies indicate that most people prefer self-help to find answers to their questions, and this is what a knowledge base helps businesses achieve. A knowledge base is an online repository of...",
+            "thumbnailurl": "new-ui/img/video-thumbnail/kb_how_it_work.jpg?v=1"
+          },
+          {
+            "embedurl": "2.20 How to Create Help Sites, FAQs, Manuals & Wiki",
+            "uploaddate": "2019-03-17T10:54:40.000Z",
+            "name": "How to Create Help Sites, FAQs, Manuals & Wiki",
+            "description": "Need to create help sites, FAQs, manuals, knowledge bases, or wiki? Worry not. ProProfs Knowledge Base software helps you build structured help sites with Google-like search ability to provide...",
+            "thumbnailurl": "new-ui/img/video-thumbnail/create_help_manuals.jpg?v=1"
+          },
+          {
+            "embedurl": "1.25 Why Use Knowledge Base Software?",
+            "uploaddate": "2014-05-12T10:54:40.000Z",
+            "name": "Why Use Knowledge Base Software?",
+            "description": "Answering repeated customer queries is a task for customer support representatives. It not only leaves them exhausted but also degrades the quality of responses they provide. Providing customers...",
+            "thumbnailurl": "new-ui/img/video-thumbnail/why_use_kb.jpg?v=1"
+          }
+        ],
+        "cse_image": [
+          {
+            "src": "https://www.proprofs.com/knowledgebase/new-ui/img/new-tab/1.png"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "customsearch#result",
+      "title": "Indiana University Knowledge Base",
+      "htmlTitle": "Indiana University \u003cb\u003eKnowledge Base\u003c/b\u003e",
+      "link": "https://kb.iu.edu/",
+      "displayLink": "kb.iu.edu",
+      "snippet": "Find answers to questions about information technology at Indiana University.",
+      "htmlSnippet": "Find answers to questions about information technology at Indiana University.",
+      "cacheId": "YZHGhSqygoMJ",
+      "formattedUrl": "https://kb.iu.edu/",
+      "htmlFormattedUrl": "https://\u003cb\u003ekb\u003c/b\u003e.iu.edu/",
+      "pagemap": {
+        "cse_thumbnail": [
+          {
+            "src": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSRVEZy5mqh89GoqDO8xyKoyQEA1gphpKqANVGY_iiLxMl9goO2GYrUwEc",
+            "width": "137",
+            "height": "77"
+          }
+        ],
+        "collegeoruniversity": [
+          {
+            "name": "Indiana University",
+            "url": "Indiana University"
+          }
+        ],
+        "metatags": [
+          {
+            "copyright": "Copyright 2021, The Trustees of Indiana University",
+            "viewport": "width=device-width, initial-scale=1"
+          }
+        ],
+        "cse_image": [
+          {
+            "src": "https://rest.kb.iu.edu/image/a183c.jpg"
+          }
+        ]
+      }
+    }
+  ]
+}

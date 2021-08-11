@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {FormControl, FormGroup} from "@angular/forms";
+import {FormControl} from "@angular/forms";
 
 @Component({
   selector: 'app-website-extraction-form',
@@ -15,5 +15,4 @@ export class WebsiteExtractionFormComponent implements OnInit {
 
   ngOnInit(): void {
   }
-
 }

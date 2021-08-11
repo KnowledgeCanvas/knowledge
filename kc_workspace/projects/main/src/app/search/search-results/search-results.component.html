@@ -1,0 +1,43 @@
+<div class="row search-results-header" *ngIf="googleSearchResults.length > 0">
+  <div class="col s4 left">
+    Displaying <b>{{googleSearchResults?.length}}</b> results:
+  </div>
+  <div class="col s2 right">
+    <button mat-button (click)="clearResults()">
+      Clear Results
+    </button>
+  </div>
+</div>
+<div *ngIf="googleSearchResults.length > 0">
+  <div>
+    <div class="cdk-virtual-scroll-data-source">
+      <div cdk-scrollable class="search-result-viewport">
+        <div cdkDropList
+             cdkDropListOrientation="horizontal"
+             [cdkDropListData]="googleSearchResults"
+             (cdkDropListDropped)="drop($event)"
+             cdkDropListSortingDisabled
+             id="search-results-list"
+             class="search-result-list">
+          <div cdkDrag
+               *ngFor="let item of googleSearchResults"
+               [cdkDragData]="item"
+               class="search-result-container truncated search-result-container"
+               (click)="displayContextPopup(item)"
+               [matTooltipClass]="{'tool-tip':true}"
+               matTooltip="{{item.title}}
+
+{{item.snippet}}
+
+Click for details, or drag into canvas to save
+              " matTooltipPosition="below">
+            <img *ngIf="item.icon" class="search-result-icon" [src]="item.icon" alt="">
+            <img *ngIf="!item.icon" class="search-result-icon" src="{{item.iconUrl}}" alt="">
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

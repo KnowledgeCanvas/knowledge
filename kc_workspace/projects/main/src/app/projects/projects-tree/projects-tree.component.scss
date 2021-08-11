@@ -1,0 +1,14 @@
+.mat-tree-node:nth-child(even) {
+  background-color: #F0F0F0;
+}
+.mat-tree-node:nth-child(odd) {
+  background-color: #FBFCFD;
+}
+
+.mat-tree-node {
+  cursor: pointer;
+}
+
+.mat-tree {
+  background-color: #E3E6F5;
+}

@@ -1,10 +1,14 @@
+@import "projects/main/src/theme";
+
 .app-sidenav-content {
   flex: 1 1 auto;
   height: 100%;
 }
 
 .app-top-toolbar {
-  background: #4051B5;
+  text-align: center;
+  background: $kc-primary-color-med;
+  z-index: 100;
 }
 
 .app-toolbar-container {

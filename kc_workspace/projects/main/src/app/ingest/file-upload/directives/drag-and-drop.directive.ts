@@ -1,3 +1,4 @@
+// Adapted from: https://medium.com/@tarekabdelkhalek/how-to-create-a-drag-and-drop-file-uploading-in-angular-78d9eba0b854
 import {Directive, HostBinding, HostListener, Output, EventEmitter} from '@angular/core';
 
 @Directive({

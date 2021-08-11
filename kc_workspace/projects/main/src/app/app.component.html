@@ -1,7 +1,7 @@
 <div>
   <mat-sidenav-container class="sidenav-container">
     <mat-sidenav #drawer [attr.role]="'navigation'" [mode]="'side'"
-                 [opened]="true"
+                 [opened]="false"
                  class="sidenav"
                  fixedInViewport>
 
@@ -15,31 +15,29 @@
         <mat-nav-list>
           <a mat-list-item routerLink="/" routerLinkActive="active">Dashboard</a>
           <mat-divider></mat-divider>
-          <div mat-subheader>Discover</div>
-          <a mat-list-item routerLink="/app-file-upload" routerLinkActive="active">Files</a>
-          <a mat-list-item routerLink="/app-search" routerLinkActive="active">Search</a>
-          <a mat-list-item routerLink="/app-website-extraction" routerLinkActive="active">Web Sites</a>
-          <mat-divider></mat-divider>
-          <div mat-subheader>Context</div>
+          <a mat-list-item routerLink="/app-files" routerLinkActive="active">Files</a>
         </mat-nav-list>
       </div>
     </mat-sidenav>
 
 
     <mat-sidenav-content class="app-sidenav-content">
-
-      <mat-toolbar color="primary" class="app-top-toolbar">
+      <mat-toolbar color="accent" class="app-top-toolbar">
         <div class="app-toolbar-container">
-                <span>
-                    <button (click)="drawer.toggle()" mat-icon-button>
-                        <mat-icon>menu</mat-icon>
-                    </button>
-                </span>
+          <span class="left">
+            <button (click)="drawer.toggle()" mat-icon-button>
+                <mat-icon>menu</mat-icon>
+            </button>
+          </span>
+          <span>
+          <img src="assets/img/img.png"
+               alt="" style="max-height: 48px"/>
+          </span>
           <span class="right">
-                <button mat-icon-button routerLink="/app-settings" routerLinkActive="active">
-                    <mat-icon>settings</mat-icon>
-                </button>
-                </span>
+            <button mat-icon-button routerLink="/app-settings" routerLinkActive="active">
+                <mat-icon>settings</mat-icon>
+            </button>
+          </span>
         </div>
       </mat-toolbar>
 

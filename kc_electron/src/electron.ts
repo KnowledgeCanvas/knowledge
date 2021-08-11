@@ -1,6 +1,7 @@
-const {app, BrowserWindow, ipcMain, dialog, webContents} = require('electron')
+const {app, BrowserWindow, ipcMain, dialog, webContents, shell} = require('electron')
 import {SettingsModel} from "./app/model/settings.model";
-
+const fs = require('fs');
+const os = require('os')
 const path = require('path')
 const scriptService = require('./app/controller/script.service');
 const settingsService = require('./app/controller/settings.service');
@@ -18,10 +19,14 @@ function createMainWindow() {
     console.log('Startup URL entry point is: ', MAIN_ENTRY);
     let WIDTH: number = parseInt(appEnv.DEFAULT_WINDOW_WIDTH);
     let HEIGHT: number = parseInt(appEnv.DEFAULT_WINDOW_HEIGHT);
+    console.log('Starting with window sizes: ', WIDTH, HEIGHT);
     const config = {
         show: false,
-        width: WIDTH ? WIDTH : 900,
-        height: HEIGHT ? HEIGHT : 1300,
+        width: WIDTH ? WIDTH : 1280,
+        height: HEIGHT ? HEIGHT : 1000,
+        title: 'Knowledge Canvas',
+        minHeight: 1000,
+        minWidth: 1280,
         webPreferences: {
             nodeIntegration: false, // is default value after Electron v5
             contextIsolation: true, // protect against prototype pollution
@@ -42,6 +47,11 @@ function createMainWindow() {
     win.on('closed', function () {
         win = null;
     });
+
+    // win.webContents.on('new-window', (event: any, url: string) => {
+    //     event.preventDefault();
+    //     shell.openExternal(url);
+    // });
 
     win.loadFile(MAIN_ENTRY);
     win.show();
@@ -107,11 +117,11 @@ app.whenReady().then(() => {
     if (appEnv?.firstRun) {
         createStartupWindow();
     } else {
-        createMainWindow();
+        win = createMainWindow();
     }
 
     app.on('activate', function () {
-        if (BrowserWindow.getAllWindows().length === 0) createMainWindow()
+        if (BrowserWindow.getAllWindows().length === 0) createMainWindow();
     })
 })
 
@@ -122,4 +132,60 @@ ipcMain.on("app-search-python", (event: any, args: object) => {
     }).catch((reason: any) => {
         console.error(reason);
     });
+});
+
+ipcMain.on("app-extract-webpage", (event: any, args: any) => {
+    if (args.url && args.filename) {
+        console.log('Attempting to extract from webpage: ', args?.url);
+        const pdfPath = path.join(os.homedir(), 'Desktop', args.filename+'.pdf');
+
+        const options = {
+            width: 1280,
+            height: 1000,
+            marginsType: 0,
+            pageSize: 'A4',
+            printBackground: true,
+            fullscreenable: false,
+            printSelectionOnly: false,
+            landscape: false,
+            parent: win,
+            show: false
+        }
+
+        const window = new BrowserWindow(options);
+        window.loadURL(args.url);
+
+        window.on('close', () => {
+           console.log('Window was closed...');
+        });
+
+        window.webContents.once('dom-ready', () => {
+            console.log('DOM ready, waiting 3 seconds for renderer to catch up...');
+            setTimeout(() => {
+                console.log('Calling printToPDF with options: ', options);
+                window.webContents.printToPDF(options).then((data: any) => {
+                    console.log('PDF has been retrieved... attempting to write to file...');
+
+                    fs.writeFile(pdfPath, data, (error: any) => {
+                        if (error) {
+                            console.error('Unable to write PDF to ', pdfPath);
+                            console.error(error);
+                            throw error;
+                        }
+                        console.log(`Wrote PDF successfully to ${pdfPath}`);
+                    });
+
+                    win.webContents.send("app-extract-webpage-results", pdfPath);
+                    window.close();
+                }).catch((error: any) => {
+                    console.log(`Failed to write PDF to ${pdfPath}: `, error);
+                    win.webContents.send("app-extract-webpage-results", error);
+                    window.close();
+                });
+            }, 2000);
+        });
+
+    } else {
+        win.webContents.send("app-extract-webpage-results", false);
+    }
 });

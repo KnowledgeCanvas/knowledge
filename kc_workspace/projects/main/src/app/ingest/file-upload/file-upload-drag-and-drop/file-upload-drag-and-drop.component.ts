@@ -1,4 +1,7 @@
+// Adapted from: https://medium.com/@tarekabdelkhalek/how-to-create-a-drag-and-drop-file-uploading-in-angular-78d9eba0b854
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {FileService} from "../../../../../../shared/src/services/file/file.service";
+import {MatDialogRef} from "@angular/material/dialog";
 
 @Component({
   selector: 'app-file-upload-drag-and-drop',
@@ -7,9 +10,9 @@ import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 })
 export class FileUploadDragAndDropComponent implements OnInit {
   @ViewChild("fileDropRef", {static: false}) fileDropEl: ElementRef;
-  files: any[] = [];
+  files: File[] = [];
 
-  constructor() {
+  constructor(private fileService: FileService, private dialogRef: MatDialogRef<any>) {
     this.fileDropEl = new ElementRef(null);
   }
 
@@ -37,10 +40,6 @@ export class FileUploadDragAndDropComponent implements OnInit {
    * @param index (File index)
    */
   deleteFile(index: number) {
-    if (this.files[index].progress < 100) {
-      console.log("Upload in progress.");
-      return;
-    }
     this.files.splice(index, 1);
   }
 
@@ -62,5 +61,12 @@ export class FileUploadDragAndDropComponent implements OnInit {
 
   submit() {
     console.log('Submitting with files: ', this.files);
+    let fileList: File[] = [];
+
+    this.fileService.uploadFile(this.files)
+
+    this.fileService.getFiles();
+
+    this.dialogRef.close();
   }
 }

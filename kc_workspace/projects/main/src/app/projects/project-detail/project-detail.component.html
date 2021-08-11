@@ -1,0 +1,13 @@
+<div *ngIf="!project">
+  <div class="row">
+    <div class="col s12 center">
+      <h1>Select or create a Project to view its details.</h1>
+    </div>
+  </div>
+</div>
+<div *ngIf="project">
+  <div cdkDropListGroup class="project-detail-container">
+    <app-search-results></app-search-results>
+    <app-canvas></app-canvas>
+  </div>
+</div>

@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
+import {FileService} from "../../../../../shared/src/services/file/file.service";
+
 
 @Component({
   selector: 'app-file-upload',
@@ -15,7 +17,7 @@ export class FileUploadComponent implements OnInit {
   rename_to = new FormControl();
 
 
-  constructor(fb: FormBuilder) {
+  constructor(fb: FormBuilder, private fileService: FileService) {
     this.options = fb.group({
       rename: this.rename,
       rename_to: this.rename_to,

@@ -1,0 +1,125 @@
+@import "projects/main/src/theme";
+
+.cdk-virtual-scroll-data-source .canvas-node-container {
+  align-content: center;
+  align-items: center;
+  background-color: #fff;
+  border-radius: 32px;
+  border: solid 1px #1c1c1c;
+  box-shadow: inset 0 0 2px 0 rgba(255,255,255,.4), inset 0 0 3px 0 rgba(0,0,0,.4), inset 0 0 3px 5px rgba(0,0,0,.05), 2px 2px 4px 0 rgba(0,0,0,.25);
+  box-sizing: border-box;
+  cursor: pointer;
+  display: flex;
+  flex-basis: 0;
+  flex-direction: column;
+  flex-grow: 1;
+  flex-wrap: nowrap;
+  font-size: 14px;
+  height: 32px;
+  justify-content: center;
+  margin: 8px;
+  max-height: 32px;
+  max-width: 32px;
+  min-height: 32px;
+  min-width: 32px;
+  overflow: hidden;
+  padding: 10px;
+  text-overflow: fade;
+  white-space: pre-wrap;
+  width: 32px;
+  writing-mode: horizontal-tb;
+}
+
+.tool-tip {
+  max-width: unset !important;
+  width: 100%;
+  min-width: 250px !important;
+  font-size: 24px;
+  white-space: pre-wrap;
+  border:1px solid gray;
+  z-index: 100;
+}
+
+.knowledge-canvas-sidebar {
+  height: 100%;
+  border: 2px;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-content: center;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.knowledge-canvas-sidebar-title {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 48px;
+  min-height: 48px;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-content: center;
+  border-bottom: solid 1px lightgrey;
+}
+
+.canvas-add-node {
+  background-color: $kc-secondary-color-dark !important;
+  cursor: pointer;
+}
+
+.cdk-virtual-scroll-data-source .project-knowledge-source-viewport {
+  height: inherit;
+  overflow-y: scroll;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-content: center;
+  align-items: stretch;
+  justify-content: flex-start;
+}
+
+.cdk-virtual-scroll-data-source .project-knowledge-source-viewport .cdk-virtual-scroll-content-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.search-result-dialog-icon {
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  min-height: 32px !important;
+  max-width: 32px !important;
+  max-height: 32px !important;
+}
+
+.cdk-virtual-scroll-content-wrapper {
+  height: 100% !important;
+}
+.cdk-virtual-scroll-content-wrapper {
+  height: 100% !important;
+}
+.cdk-virtual-scroll-data-source {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-content: center;
+  justify-content: flex-start;
+  align-items: stretch;
+  border-right: solid 1px lightgrey;
+}
+
+.cdk-virtual-scroll-orientation-vertical .cdk-virtual-scroll-content-wrapper {
+  min-width: 100%;
+  height: 100%;
+}
+
+.search-result-icon {
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  min-height: 32px !important;
+  max-width: 32px !important;
+  max-height: 32px !important;
+}

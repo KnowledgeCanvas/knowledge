@@ -1,0 +1,18 @@
+input, input[type=password]{
+  all: unset;
+  width: 100%;
+}
+
+input:focus, input:disabled, input[type=password] {
+  border-bottom: none !important;
+  -webkit-box-shadow: none !important;
+  box-shadow: none !important;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+button {
+  margin: 10px 10px;
+}

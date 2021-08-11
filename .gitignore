@@ -3,10 +3,11 @@ node_modules/
 auth.json
 sample.json
 documents/
+dist/
 /kc-electron/dist/
 /kc-electron/node_modules/
 /kc-workspace/dist/
 /kc-workspace/node_modules
 .DS_Store
 __pycache__
-
+/kc_nlp/src/.ipynb_checkpoints/

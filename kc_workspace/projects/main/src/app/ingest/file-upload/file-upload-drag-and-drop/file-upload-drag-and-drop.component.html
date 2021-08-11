@@ -1,13 +1,13 @@
-<!--Created using: https://medium.com/@tarekabdelkhalek/how-to-create-a-drag-and-drop-file-uploading-in-angular-78d9eba0b854-->
-
+<!--Adapted from: https://medium.com/@tarekabdelkhalek/how-to-create-a-drag-and-drop-file-uploading-in-angular-78d9eba0b854-->
 <div class="row">
   <div class="col s12">
     <div class="dropzone" appDragAndDrop (fileDropped)="onFileDropped($event)">
-      <input type="file" #fileDropRef id="fileDropRef" multiple (change)="fileBrowseHandler($event)"/>
+      <input type="file" class="dropzone-input" #fileDropRef id="fileDropRef" multiple
+             (change)="fileBrowseHandler($event)"/>
       <mat-icon id="fileUploadIcon">file_upload</mat-icon>
       <h3>Drag and drop file(s) here</h3>
       <h3>or</h3>
-      <label for="fileDropRef">Browse for file(s)</label>
+      <button mat-raised-button class="dropzone-input-button">Browse for file(s)</button>
     </div>
   </div>
 </div>
@@ -20,10 +20,6 @@
           <h4 class="name">
             {{ file?.name }}
           </h4>
-          <p class="size">
-            {{ formatBytes(file?.size) }}
-          </p>
-          <!--          <app-progress [progress]="file?.progress"></app-progress>-->
         </div>
         <mat-icon class="delete" (click)="deleteFile(i)">delete</mat-icon>
       </div>

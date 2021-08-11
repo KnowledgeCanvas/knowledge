@@ -1,0 +1,25 @@
+<div class="row">
+  <div class="col s3">
+    <b>Filename</b>
+  </div>
+  <div class="col s1" style="margin: 0">
+    <b>Size</b>
+  </div>
+  <div class="col">
+    <b>Path</b>
+  </div>
+</div>
+<hr>
+<div *ngFor="let file of files">
+  <div class="row">
+    <div class="col s3 file-title">
+      {{file.title}}
+    </div>
+    <div class="col s1 file-size" style="margin: 0" *ngIf="file.size">
+      {{file.size/1024 | number : '1.0-0'}}KB
+    </div>
+    <div class="col file-path">
+      {{file.filename}}
+    </div>
+  </div>
+</div>

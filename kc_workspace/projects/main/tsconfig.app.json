@@ -3,6 +3,8 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "../../out-tsc/app",
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
     "types": []
   },
   "files": [

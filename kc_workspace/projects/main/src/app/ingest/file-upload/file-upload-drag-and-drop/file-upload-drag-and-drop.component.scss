@@ -1,3 +1,5 @@
+@import "projects/main/src/theme";
+
 .dropzone {
   width: 450px;
   height: 200px;
@@ -6,6 +8,10 @@
   border: dashed 1px #979797;
   position: relative;
   margin: 0 auto;
+}
+
+.dropzone-input {
+  cursor: pointer;
 }
 
 input {
@@ -18,12 +24,8 @@ input {
   left: 0;
 }
 
-label {
-  color: white;
-  width: 183px;
-  height: 44px;
-  border-radius: 21.5px;
-  background-color: #db202f;
+.dropzone-input-button {
+  background-color: $kc-secondary-color-dark;
   padding: 8px 16px;
 }
 
@@ -59,8 +61,6 @@ h3 {
       cursor: pointer;
       align-self: flex-end;
     }
-
-
     display: flex;
     flex-grow: 1;
 

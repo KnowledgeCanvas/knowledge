@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
+import {ExtractionService} from "../../extraction/extraction.service";
 
 @Component({
   selector: 'app-website-extraction',
@@ -17,7 +18,7 @@ export class WebsiteExtractionComponent implements OnInit {
   rename_to = new FormControl();
   url = new FormControl();
 
-  constructor(fb: FormBuilder) {
+  constructor(fb: FormBuilder, private extractionService: ExtractionService) {
     this.options = fb.group({
       rename: this.rename,
       rename_to: this.rename_to,
@@ -28,11 +29,14 @@ export class WebsiteExtractionComponent implements OnInit {
       preserveSourceContent: this.preserveSourceContent,
       url: this.url
     });
-
-    this.url.setValue('www.google.com');
   }
 
   ngOnInit(): void {
+  }
+
+  EnterSubmit($event: any) {
+    console.log('Enter button pressed with url: ', this.url.value);
+    this.extractionService.extractWebpage(this.url.value, 'Unknown Title');
   }
 
 }
