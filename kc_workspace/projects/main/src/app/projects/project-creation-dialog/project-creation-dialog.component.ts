@@ -2,55 +2,72 @@ import {Component, Inject, OnInit} from '@angular/core';
 import {ProjectCreationRequest} from "../../../../../shared/src/models/project.model";
 import {ProjectService} from "../../../../../shared/src/services/projects/project.service";
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {FormBuilder, FormGroup} from "@angular/forms";
 
 @Component({
-    selector: 'app-project-creation-dialog',
-    templateUrl: './project-creation-dialog.component.html',
-    styleUrls: ['./project-creation-dialog.component.scss']
+  selector: 'app-project-creation-dialog',
+  templateUrl: './project-creation-dialog.component.html',
+  styleUrls: ['./project-creation-dialog.component.scss']
 })
 
 export class ProjectCreationDialogComponent implements OnInit {
-    public project: ProjectCreationRequest;
+  project: ProjectCreationRequest;
+  types = [
+    {value: 'default', displayValue: 'Default'},
+    {value: 'school', displayValue: 'School'},
+    {value: 'work', displayValue: 'Work'},
+    {value: 'hobby', displayValue: 'Hobby'}
+  ]
+  selectedType: 'school' | 'work' | 'hobby' | 'default' = 'default';
+  uploadToggle: boolean = false;
+  private formGroup: FormGroup;
 
-    constructor(private projectService: ProjectService,
-                public dialogRef: MatDialogRef<ProjectCreationDialogComponent>,
-                @Inject(MAT_DIALOG_DATA) public data: string) {
-        this.project = {
-            name: ''
-        };
+  constructor(private projectService: ProjectService,
+              public dialogRef: MatDialogRef<ProjectCreationDialogComponent>,
+              @Inject(MAT_DIALOG_DATA) public data: string,
+              formBuilder: FormBuilder) {
+    this.project = {
+      name: '',
+      topics: [],
+      type: 'default'
+    };
+
+    this.formGroup = formBuilder.group({
+      uploadToggle: '',
+    });
+  }
+
+  ngOnInit(): void {
+    this.init();
+  }
+
+
+  create(): void {
+    if (this.project?.name) {
+      this.project.type = this.selectedType;
+      this.projectService.newProject(this.project);
+      this.dialogRef.close();
     }
+  }
 
-    ngOnInit(): void {
-        this.init();
+  dismiss(): void {
+    this.dialogRef.close();
+  }
+
+  init(): void {
+    this.project = {name: ''};
+
+    if (this.data) {
+      this.project.parentId = this.data;
     }
+  }
 
-    create(): void {
-        if (this.project?.name) {
-          console.log('Creating new project: ', this.project);
-          this.projectService.newProject(this.project);
-          this.projectService.refreshTree();
-          this.dialogRef.close();
-            // this.projectService.newProject(this.project).subscribe(result => {
-            //     this.projectService.refreshTree();
-            //     this.dialogRef.close(result);
-            // }, error => {
-            //     console.error('ProjectCreationDialog: Failed to create project with CreationRequest: ', this.project);
-            // });
-        }
-    }
 
-    dismiss(): void {
-        this.dialogRef.close();
-    }
+  addTopic($event: string[]) {
+    this.project.topics = [...$event];
+  }
 
-    init(): void {
-        this.project = {
-            name: ''
-        };
+  onFileSelected() {
 
-        if (this.data) {
-            this.project.parentId = this.data;
-        }
-    }
-
+  }
 }

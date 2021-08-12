@@ -21,6 +21,8 @@
     "purge": "rm -rf node_modules && yarn workspaces run purge",
     "start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1",
+    "watch-all": "(yarn watch-electron &) ; (yarn watch-main &)",
+    "watch-all-dev": "(yarn watch-electron-dev &) ; (yarn watch-main-dev &)",
     "watch-main": "cd kc_workspace && yarn run watch-main",
     "watch-main-dev": "cd kc_workspace && yarn run watch-main-dev",
     "watch-electron": "cd kc_electron && yarn run watch-electron",

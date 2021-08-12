@@ -39,6 +39,7 @@ export class ProjectsTreeComponent implements OnInit {
 
   subscribeToProjects(): void {
     this.projectService.allProjects.subscribe(data => {
+      console.log('All projects: ', data);
       this.dataSource.data = data;
       this.treeControl.expandAll();
     });
@@ -76,7 +77,7 @@ export class ProjectsTreeComponent implements OnInit {
     if (parentId) {
       const dialogRef = this.matDialog.open(ProjectCreationDialogComponent, {
         data: parentId,
-        width: '40%'
+        width: '65%'
       });
       dialogRef.afterClosed().subscribe(result => {
         if (result && result.id) {
@@ -89,7 +90,7 @@ export class ProjectsTreeComponent implements OnInit {
       });
     } else {
       const dialogRef = this.matDialog.open(ProjectCreationDialogComponent, {
-        width: '40%'
+        width: '65%'
       });
       dialogRef.afterClosed().subscribe(result => {
         if (result && result.id) {
@@ -104,19 +105,7 @@ export class ProjectsTreeComponent implements OnInit {
 
   }
 
-  // TODO: Keeping this here as a teplate for later
-  // newAgent(parentId: string): void {
-  //     const dialogRef = this.matDialog.open(AgentCreationDialogComponent, {
-  //         width: '50%',
-  //         data: parentId
-  //     });
-  //     dialogRef.afterClosed().subscribe(result => {
-  //         this.projectService.setCurrentProject(parentId);
-  //     });
-  // }
-
   selectProject(id: string): void {
-    console.log('Project selected with id: ', id);
     this.projectService.setCurrentProject(id);
   }
 
@@ -127,8 +116,8 @@ export class ProjectsTreeComponent implements OnInit {
 
     const options = {
       title: 'Delete Project?',
-      message: 'You will not be able to recover this project once it is deleted. All Agents, Transformers, and' +
-        ' Sub-Projects will be deleted with it. Continue?',
+      message: 'You will not be able to recover this project once it is deleted. All information and associated data' +
+        ' will be unrecoverable. Continue?',
       cancelText: 'CANCEL',
       confirmText: 'YES, DELETE PROJECT'
     };

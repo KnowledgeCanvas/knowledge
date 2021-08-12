@@ -23,7 +23,7 @@ export class ProjectDetailComponent implements OnInit {
   readonly separatorKeysCodes: number[] = [ENTER, COMMA];
   selectable = true;
   removable = true;
-  tags?: string[] = [];
+  topics?: string[] = [];
   searchHidden: boolean = true;
 
 
@@ -32,14 +32,13 @@ export class ProjectDetailComponent implements OnInit {
   }
 
   reset(): void {
-      this.tags = [];
+      this.topics = [];
       this.project = null;
 
       this.projectService.currentProject.subscribe(project => {
-        console.log('Current project changed to: ', project);
           if (project?.name && project?.id !== '') {
               this.project = project;
-              this.tags = project.tags;
+              this.topics = project.topics;
           } else {
               this.project = null;
           }
@@ -51,7 +50,7 @@ export class ProjectDetailComponent implements OnInit {
   //     const value = event.value;
   //
   //     if ((value || '').trim()) {
-  //         this.tags?.push(value.trim());
+  //         this.topics?.push(value.trim());
   //     }
   //
   //     if (input) {
@@ -61,9 +60,9 @@ export class ProjectDetailComponent implements OnInit {
   // }
   //
   // removeTag(tag: string): void {
-  //     const index = this.tags?.indexOf(tag);
+  //     const index = this.topics?.indexOf(tag);
   //     if (index && index >= 0) {
-  //         this.tags?.splice(index, 1);
+  //         this.topics?.splice(index, 1);
   //     }
   //
   //     this.updateProject();
@@ -75,7 +74,7 @@ export class ProjectDetailComponent implements OnInit {
   //         description: this.project?.description,
   //         id: this.project?.id ? this.project.id : '0',
   //         name: this.project?.name,
-  //         tags: this.project?.tags
+  //         topics: this.project?.topics
   //     };
   //     this.projectService.updateProject(payload).subscribe(project => {
   //     }, error => {

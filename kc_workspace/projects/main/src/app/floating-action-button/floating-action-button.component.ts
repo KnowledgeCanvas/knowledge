@@ -71,7 +71,6 @@ export class FloatingActionButtonComponent implements OnInit {
   openDialog(component: any, config: {}) {
     const dialogRef = this.dialog.open(component, config);
     dialogRef.afterClosed().subscribe(result => {
-      console.log('Dialog was closed with result: ', result);
     })
   }
 

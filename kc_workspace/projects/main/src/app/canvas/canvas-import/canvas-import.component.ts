@@ -10,7 +10,6 @@ import {ProjectModel} from "../../../../../shared/src/models/project.model";
 export class CanvasImportComponent implements OnInit {
 
   constructor(private dialogRef: MatDialogRef<any>, @Inject(MAT_DIALOG_DATA) public data: ProjectModel) {
-    console.log('Dialog with project: ', data);
   }
 
   ngOnInit(): void {

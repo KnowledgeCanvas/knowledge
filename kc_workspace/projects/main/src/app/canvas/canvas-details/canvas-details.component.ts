@@ -33,7 +33,6 @@ export class CanvasDetailsComponent implements OnInit {
       }
     ];
     this.projectService.currentProject.subscribe(project => {
-      console.log('Canvas details component Current project changed to: ', project);
       if (project?.name && project?.id !== '') {
         this.project = project;
       } else {

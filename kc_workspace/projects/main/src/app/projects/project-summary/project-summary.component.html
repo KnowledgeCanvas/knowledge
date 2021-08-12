@@ -2,8 +2,4 @@
   <h1 class="project-detail-overview-title">{{currentProject.name}}</h1>
   <button class="project-detail-overview-info" mat-icon-button (click)="getInfo()"><mat-icon>info</mat-icon></button>
 </div>
-<div class="row">
-  <div class="col s12">
-
-  </div>
-</div>
+<app-project-topic-list [parentId]="currentProject.id"></app-project-topic-list>

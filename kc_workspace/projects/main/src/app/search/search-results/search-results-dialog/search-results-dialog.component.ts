@@ -78,7 +78,7 @@ export class SearchResultsDialogComponent implements OnInit {
 
 
   importSource() {
-    console.log('Importing result to project', this.data);
+    console.log('Importing result to project', this.currentProject?.name, this.data);
     if (this.currentProject?.id) {
       this.projectService.addKnowledgeSource(this.currentProject.id, this.data);
       this.searchService.remove(this.data);

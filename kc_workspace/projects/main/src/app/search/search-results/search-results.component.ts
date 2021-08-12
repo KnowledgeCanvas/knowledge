@@ -26,7 +26,6 @@ export class SearchResultsComponent implements OnInit {
 
   ngOnInit(): void {
     this.subscription = this.searchService.currentMessage.subscribe((results) => {
-      console.log('Subscription updated with data: ', results);
       for (let res of results) {
         res.ingestType = 'google';
         res.googleItem = res;
@@ -57,7 +56,6 @@ export class SearchResultsComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       this.ref.markForCheck();
-      console.log('Dialog was closed with result: ', result);
     })
   }
 

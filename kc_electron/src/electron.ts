@@ -1,10 +1,13 @@
-const {app, BrowserWindow, ipcMain, dialog, webContents, shell} = require('electron')
+const {app, BrowserWindow, ipcMain, dialog, webContents, shell} = require('electron');
 import {SettingsModel} from "./app/model/settings.model";
+
 const fs = require('fs');
-const os = require('os')
-const path = require('path')
+const os = require('os');
+const path = require('path');
+
 const scriptService = require('./app/controller/script.service');
 const settingsService = require('./app/controller/settings.service');
+const uuid = require('uuid');
 
 const DEBUG: boolean = true;
 const MAIN_ENTRY: string = path.join(app.getAppPath(), 'kc_workspace', 'dist', 'main', 'index.html')
@@ -134,10 +137,45 @@ ipcMain.on("app-search-python", (event: any, args: object) => {
     });
 });
 
+ipcMain.on("app-generate-uuid", (event: any, args: any) => {
+    let ids = [];
+    if (!args.quantity) {
+        console.log("No quantity specified for UUID generation... setting to 1");
+        args.quantity = 1;
+    }
+
+    for (let i = 0; i < args.quantity; i++) {
+        let id = uuid.v4();
+        if (i === 0) {
+            ids = [id];
+        } else {
+            ids.push(id);
+        }
+    }
+
+    console.log('New uuid generated: ', ids);
+    win.webContents.send("app-generate-uuid-results", ids);
+});
+
+ipcMain.on("app-get-settings", (event: any, args: object) => {
+    console.log('Getting settings...');
+    appEnv = settingsService.getSettings();
+    win.webContents.send("app-get-settings-results", appEnv);
+});
+
+ipcMain.on("app-save-settings", (event: any, args: any) => {
+    console.log('Saving settings: ', args);
+    appEnv = {...appEnv, ...args};
+    settingsService.setSettings(appEnv).then((settings: SettingsModel) => {
+        appEnv = settings;
+    });
+    win.webContents.send("app-save-settings-results", appEnv);
+});
+
 ipcMain.on("app-extract-webpage", (event: any, args: any) => {
     if (args.url && args.filename) {
         console.log('Attempting to extract from webpage: ', args?.url);
-        const pdfPath = path.join(os.homedir(), 'Desktop', args.filename+'.pdf');
+        const pdfPath = path.join(os.homedir(), 'Desktop', args.filename + '.pdf');
 
         const options = {
             width: 1280,
@@ -156,7 +194,7 @@ ipcMain.on("app-extract-webpage", (event: any, args: any) => {
         window.loadURL(args.url);
 
         window.on('close', () => {
-           console.log('Window was closed...');
+            console.log('Window was closed...');
         });
 
         window.webContents.once('dom-ready', () => {

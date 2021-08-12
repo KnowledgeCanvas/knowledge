@@ -2,11 +2,19 @@
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
-  align-content: center;
+  align-content: stretch;
 }
 
 .project-detail-overview-title {
   margin: 20px;
+}
+
+.project-topic-list {
+  width: 100%;
+}
+
+app-project-topic-list {
+  width: 100%;
 }

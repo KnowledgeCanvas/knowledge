@@ -10,17 +10,16 @@ import {FilesComponent} from "./files/files.component";
 
 const routes: Routes = [
   // Lazy loading should occur here
+  {path: '', redirectTo: '/app-dashboard', pathMatch: 'full'},
   {path: 'app-dashboard', component: DashboardComponent, children: [
       {path: '', component: CanvasDetailsOverviewComponent, outlet: 'project-detail-router'},
       {path: 'app-canvas-details-overview', component: CanvasDetailsOverviewComponent, outlet: 'project-detail-router'},
-      {path: 'app-knowledge-source-view', component: KnowledgeSourceViewComponent, outlet: 'project-detail-router'}
-    ]},
-  {path: '', redirectTo: '/app-dashboard', pathMatch: 'full'},
+      {path: 'app-knowledge-source-view', component: KnowledgeSourceViewComponent, outlet: 'project-detail-router'}]},
   {path: 'app-files', component: FilesComponent},
   {path: 'app-search', component: SearchComponent},
   {path: 'app-website-extraction', component: WebsiteExtractionComponent},
-  {path: 'app-settings', component: SettingsComponent}
-
+  {path: 'app-settings', component: SettingsComponent},
+  {path: '**', redirectTo: '/app-dashboard'}
 ];
 
 @NgModule({

@@ -11,7 +11,7 @@ export class FileService {
   uploadFile(files: File[], projectId?: string) {
     for (let file of files) {
       let tmp: FileModel = {
-        filename: file.path,
+        filename: (file as any).path,
         size: file.size,
         title: file.name,
         ingestType: 'file'

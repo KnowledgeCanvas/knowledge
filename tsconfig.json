@@ -3,9 +3,14 @@
     "target": "ES2015",
     "module": "commonjs",
     "strict": true,
+    "experimentalDecorators": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
+    "strictTemplates": true,
     "forceConsistentCasingInFileNames": true
+  },
+  "angularCompilerOptions": {
+    "strictTemplates": true
   },
   "$schema": "https://json.schemastore.org/tsconfig",
   "display": "Recommended"

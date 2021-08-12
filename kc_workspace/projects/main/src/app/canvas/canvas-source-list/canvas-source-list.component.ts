@@ -22,7 +22,6 @@ export class CanvasSourceListComponent implements OnInit {
               private projectService: ProjectService,
               private ref: ChangeDetectorRef) {
     this.projectService.currentProject.subscribe(project => {
-      console.log('Canvas source list component Current project changed to: ', project);
       if (project?.name && project?.id !== '') {
         this.project = project;
         this.canvasNodes = [];
@@ -48,12 +47,10 @@ export class CanvasSourceListComponent implements OnInit {
 
     if (this.project && this.project.id && this.canvasNodes) {
       this.project.knowledgeSource = this.canvasNodes;
-
       let projectUpdate: ProjectUpdateRequest = {
         id: this.project.id,
         knowledgeSource: this.canvasNodes
       }
-
       this.projectService.updateProject(projectUpdate);
     }
   }
@@ -66,7 +63,6 @@ export class CanvasSourceListComponent implements OnInit {
       data: node
     });
     dialogRef.afterClosed().subscribe(result => {
-      console.log('Dialog was closed with result: ', result);
       this.ref.markForCheck();
       if (result !== undefined) {
         this.canvasDropService.drop(result)
@@ -77,12 +73,10 @@ export class CanvasSourceListComponent implements OnInit {
   addSource() {
     console.log('Add source');
     const dialogRef = this.dialog.open(CanvasImportComponent, {
-      width: '50%',
-      height: '65%',
+      width: '65%',
       data: this.project
     });
     dialogRef.afterClosed().subscribe((result) => {
-      console.log('Dialog closed with ', result);
     })
   }
 

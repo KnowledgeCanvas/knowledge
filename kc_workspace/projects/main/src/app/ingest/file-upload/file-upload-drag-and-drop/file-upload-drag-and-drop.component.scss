@@ -1,11 +1,11 @@
 @import "projects/main/src/theme";
 
 .dropzone {
-  width: 450px;
-  height: 200px;
-  padding: 2rem;
+  width: 100%;
+  height: 100%;
+  padding: 20px 0;
   text-align: center;
-  border: dashed 1px #979797;
+  border: 1px dashed #979797;
   position: relative;
   margin: 0 auto;
 }

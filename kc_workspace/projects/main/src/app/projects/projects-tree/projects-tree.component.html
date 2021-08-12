@@ -9,7 +9,7 @@
         <button [attr.aria-label]="'Toggle ' + node.item" mat-icon-button matTreeNodeToggle>
             <mat-icon class="mat-icon-rtl-mirror">{{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}</mat-icon>
         </button>
-        <span *ngIf="node.id === activeProject?.id"><b>{{node.name}} ●</b></span>
+        <span *ngIf="node.id === activeProject?.id"><b>{{node.name}}</b></span>
         <span *ngIf="node.id !== activeProject?.id">{{node.name}}</span>
         <span class="fill-space"> </span>
         <button [matMenuTriggerFor]="menu" mat-icon-button>
@@ -34,7 +34,7 @@
     // Nodes with no children are forced to work normal hours during quarantine
     <mat-tree-node (click)="selectProject(node.id)" *matTreeNodeDef="let node" matTreeNodePadding matTreeNodeToggle>
         <span><button disabled mat-icon-button></button></span>
-        <span *ngIf="node.id === activeProject?.id"><b>{{node.name}} ●</b></span>
+        <span *ngIf="node.id === activeProject?.id"><b>{{node.name}}</b></span>
         <span *ngIf="node.id !== activeProject?.id">{{node.name}}</span>
         <span class="fill-space"></span>
         <button [matMenuTriggerFor]="menu" class="project-tree-context-menu" mat-icon-button>

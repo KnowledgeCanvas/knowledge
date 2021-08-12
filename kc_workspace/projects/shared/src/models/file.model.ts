@@ -3,6 +3,7 @@ import {KnowledgeSourceModel} from "./knowledge.source.model";
 export interface FileModel extends KnowledgeSourceModel {
   filename?: string,
   size?: number,
+  path?: string,
   accessTime?: string,
   modificationTime?: string,
   creationTime?: string
