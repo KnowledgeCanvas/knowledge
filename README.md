@@ -18,6 +18,15 @@ yarn start
 yarn clean
 ```
 
+# Using Watchers for Real-Time Development
+This will allow you to refresh the application and see changes in real-time, without having to recompile Electron 
+and Angular code (the watchers auto-compile as files are changed/saved).
+1. Follow steps 1-2 above
+2. Build, run, and watch the project:
+```shell
+yarn run watch-all-dev
+```
+
 # Create distributable binaries for MacOS and Windows
 
 1. Build the project:
