@@ -2,11 +2,7 @@ import {Component, Input, OnInit, ViewEncapsulation} from '@angular/core';
 import {ProjectModel} from "../../../../../shared/src/models/project.model";
 import {ProjectService} from "../../../../../shared/src/services/projects/project.service";
 import {MatSnackBar} from "@angular/material/snack-bar";
-import {TopicModel} from "../../../../../shared/src/models/topic.model";
 
-export interface ProjectTags {
-  name: string;
-}
 
 @Component({
   selector: 'app-project-detail',
@@ -20,7 +16,7 @@ export class ProjectDetailComponent implements OnInit {
   isExpanded = true;
   addOnBlur = true;
   selectable = true;
-  topics?: TopicModel[] = [];
+  topics?: string[] = [];
 
   constructor(private projectService: ProjectService, private snackBar: MatSnackBar) {
     this.reset();

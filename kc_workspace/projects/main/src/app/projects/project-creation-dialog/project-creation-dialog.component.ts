@@ -58,7 +58,7 @@ export class ProjectCreationDialogComponent implements OnInit {
           description: "The Knowledge Canvas automatically generated this folder based on the project type you chose!",
           knowledgeSource: [],
           name: "Homework",
-          topics: homeworkTopic ? [homeworkTopic] : [],
+          topics: homeworkTopic ? [homeworkTopic.name] : [],
           type: 'school'
         };
         this.project.subProjects = [homework];
@@ -83,7 +83,7 @@ export class ProjectCreationDialogComponent implements OnInit {
   }
 
 
-  addTopic($event: TopicModel[]) {
+  addTopic($event: string[]) {
     this.project.topics = [...$event];
   }
 

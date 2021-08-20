@@ -220,9 +220,9 @@ export class ProjectService {
     // Handle topic removal
     if (projectUpdate.removeTopic && projectUpdate.removeTopic.length > 0) {
       if (projectToUpdate.topics) {
-        let removeTopics: TopicModel[] = projectUpdate.removeTopic;
+        let removeTopics: string[] = projectUpdate.removeTopic;
         for (let topic of removeTopics) {
-          projectToUpdate.topics = projectToUpdate.topics.filter(t => t.id.value !== topic.id.value);
+          projectToUpdate.topics = projectToUpdate.topics.filter(t => t !== topic);
         }
       }
     }

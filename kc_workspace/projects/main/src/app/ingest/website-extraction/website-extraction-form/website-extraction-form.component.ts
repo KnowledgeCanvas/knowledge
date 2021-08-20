@@ -22,7 +22,7 @@ export class WebsiteExtractionFormComponent implements OnInit {
   panelOpenState = false;
   validUrl: boolean = false;
   title: string = '';
-  topics: TopicModel[] = [];
+  topics: string[] = [];
   icon: any;
   validating: boolean = false;
 
@@ -70,7 +70,6 @@ export class WebsiteExtractionFormComponent implements OnInit {
   emplaceIds() {
     this.websiteKS.topics = [];
     if (this.topics.length > 0) {
-      let uuids = this.uuidService.generate(this.topics.length);
       for (let i = 0; i < this.topics.length; i++) {
         this.websiteKS.topics.push(this.topics[i]);
       }
@@ -95,7 +94,7 @@ export class WebsiteExtractionFormComponent implements OnInit {
     this.outKS.emit(this.websiteKS);
   }
 
-  topicEvent(topics: TopicModel[]) {
+  topicEvent(topics: string[]) {
     this.topics = topics;
   }
 }

@@ -13,7 +13,7 @@ export class ProjectModel {
   readonly dateModified: string = '';
   readonly parentId?: UuidModel = {value: ''};
   subprojects?: string[] = [];
-  topics?: TopicModel[] = [];
+  topics?: string[] = [];
   type: ProjectType;
   knowledgeSource?: KnowledgeSourceModel[] = [];
 
@@ -34,7 +34,7 @@ export interface ProjectCreationRequest {
   description?: string;
   knowledgeSource?: KnowledgeSourceModel[];
   authors?: string[];
-  topics?: TopicModel[];
+  topics?: string[];
   type: ProjectType;
   subProjects?: ProjectCreationRequest[]
 }
@@ -44,9 +44,9 @@ export interface ProjectUpdateRequest {
   name?: string;
   description?: string;
   authors?: string[];
-  addTopic?: TopicModel[];
-  removeTopic?: TopicModel[];
-  updateTopic?: TopicModel[];
+  addTopic?: string[];
+  removeTopic?: string[];
+  updateTopic?: string[];
   addKnowledgeSource?: KnowledgeSourceModel[];
   removeKnowledgeSource?: KnowledgeSourceModel[];
   updateKnowledgeSource?: KnowledgeSourceModel[];

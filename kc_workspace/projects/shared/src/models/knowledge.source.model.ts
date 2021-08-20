@@ -15,7 +15,6 @@ export type SourceReference = 'search' | 'list' | 'extract';
 export type SourceType = 'article'
 
 export class KnowledgeSourceModel {
-  RDF?: SourceType;
   associatedProjects?: UuidModel[];
   authors?: AuthorModel[];
   readonly dateAccessed: string;
@@ -31,7 +30,7 @@ export class KnowledgeSourceModel {
   snippet?: string;
   sourceRef?: SourceReference;
   title: string;
-  topics?: TopicModel[];
+  topics?: string[];
   websiteItem?: WebsiteModel;
 
   constructor(title: string, id: UuidModel, ingestType: IngestType) {
