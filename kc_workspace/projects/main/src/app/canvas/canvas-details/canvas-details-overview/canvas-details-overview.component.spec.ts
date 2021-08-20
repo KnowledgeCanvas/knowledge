@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CanvasDetailsOverviewComponent } from './canvas-details-overview.component';
+import {HttpClient} from "@angular/common/http";
 
 describe('CanvasDetailsOverviewComponent', () => {
   let component: CanvasDetailsOverviewComponent;
@@ -8,7 +9,11 @@ describe('CanvasDetailsOverviewComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CanvasDetailsOverviewComponent ]
+      declarations: [ CanvasDetailsOverviewComponent ],
+      providers: [{
+        provide: HttpClient,
+        useValue: {}
+      }]
     })
     .compileComponents();
   });

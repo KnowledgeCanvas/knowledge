@@ -6,25 +6,15 @@
 
 <div class="row">
   <div class="col s12">
-    <mat-form-field appearance="standard">
+    <mat-form-field appearance="standard" (keyup.enter)="create()">
       <mat-label>Name</mat-label>
-      <input [(ngModel)]="project.name" matInput>
+      <input [(ngModel)]="project.name" matInput required>
       <mat-hint>Give your project a descriptive name.</mat-hint>
     </mat-form-field>
   </div>
 </div>
 
-<app-project-topic-list [parentId]="undefined" (topicEvent)="addTopic($event)"></app-project-topic-list>
-
-<div class="row">
-  <div class="col s12">
-    <mat-form-field appearance="standard">
-      <mat-label>Description</mat-label>
-      <textarea [(ngModel)]="project.description" matInput></textarea>
-      <mat-hint>Describe the purpose of the project.</mat-hint>
-    </mat-form-field>
-  </div>
-</div>
+<!--<app-project-topic-list [parentId]="undefined" (topicEvent)="addTopic($event)"></app-project-topic-list>-->
 
 <div class="row">
   <div class="col s12">
@@ -44,20 +34,63 @@
 
 <div class="row">
   <div class="col s12">
-    <h4>Import Knowledge Sources</h4>
-    <p>The Knowledge Canvas works by comparing various knowledge sources. Uploading files that are relevant to your
-      project will help the Knowledge Canvas help you learn faster and recommend better content. Currently, we only
-      support PDF uploads.
-    </p>
+    <mat-accordion>
+      <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            Advanced
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <div class="row" [hidden]="panelOpenState === false">
+          <div class="col s12">
+            <mat-form-field appearance="standard">
+              <mat-label>Description</mat-label>
+              <textarea [(ngModel)]="project.description" matInput></textarea>
+              <mat-hint>Describe the purpose of the project.</mat-hint>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <!--        TODO: Reinstate -->
+        <!--        <div class="row" [hidden]="panelOpenState === false">-->
+        <!--          <div class="col s12">-->
+        <!--            <p *ngIf="selectedType === 'school'">Upload course material and other knowledge sources.</p>-->
+        <!--            <p *ngIf="selectedType !== 'school'">Upload docs, reference material, and other knowledge sources .</p>-->
+        <!--          </div>-->
+        <!--        </div>-->
+
+        <!--        <div class="row center" *ngIf="selectedType === 'school'" [hidden]="panelOpenState === false">-->
+        <!--          <div class="col s6 center">-->
+        <!--            <button mat-raised-button>Syllabus</button>-->
+        <!--          </div>-->
+        <!--          <div class="col s6 center">-->
+        <!--            <button mat-raised-button>Textbook</button>-->
+        <!--          </div>-->
+        <!--        </div>-->
+
+        <!--        <div class="row center" *ngIf="selectedType !== 'school'" [hidden]="panelOpenState === false">-->
+        <!--          <div class="col s6 center">-->
+        <!--            <button mat-raised-button>Reference Material #1</button>-->
+        <!--          </div>-->
+        <!--          <div class="col s6 center">-->
+        <!--            <button mat-raised-button>Reference Material #2</button>-->
+        <!--          </div>-->
+        <!--        </div>-->
+
+        <!--        <div class="row center" [hidden]="panelOpenState === false">-->
+        <!--          <div class="col s6 center">-->
+        <!--            <button mat-raised-button>Knowledge Source #1</button>-->
+        <!--          </div>-->
+        <!--          <div class="col s6 center">-->
+        <!--            <button mat-raised-button>Knowledge Source #2</button>-->
+        <!--          </div>-->
+        <!--        </div>-->
+
+      </mat-expansion-panel>
+    </mat-accordion>
   </div>
 </div>
-
-<div class="row">
-  <div class="col s12">
-    <app-file-upload></app-file-upload>
-  </div>
-</div>
-
 
 <div class="row">
   <div class="col right">

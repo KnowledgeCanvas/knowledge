@@ -1,6 +1,8 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { SearchResultsComponent } from './search-results.component';
+import {SearchResultsComponent} from './search-results.component';
+import {MatDialog} from "@angular/material/dialog";
+import {HttpClient} from "@angular/common/http";
 
 describe('SearchResultsComponent', () => {
   let component: SearchResultsComponent;
@@ -8,9 +10,19 @@ describe('SearchResultsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SearchResultsComponent ]
+      declarations: [SearchResultsComponent],
+      providers: [
+        {
+          provide: MatDialog,
+          useValue: {}
+        },
+        {
+          provide: HttpClient,
+          useValue: {}
+        }
+      ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

@@ -1,6 +1,7 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { FloatingActionButtonComponent } from './floating-action-button.component';
+import {FloatingActionButtonComponent} from './floating-action-button.component';
+import {MatDialog} from "@angular/material/dialog";
 
 describe('FloatingActionButtonComponent', () => {
   let component: FloatingActionButtonComponent;
@@ -8,9 +9,13 @@ describe('FloatingActionButtonComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ FloatingActionButtonComponent ]
+      declarations: [FloatingActionButtonComponent],
+      providers: [{
+        provide: MatDialog,
+        useValue: {}
+      }]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

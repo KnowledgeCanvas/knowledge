@@ -29,7 +29,8 @@
             "inlineStyleLanguage": "scss",
             "assets": [
               "projects/main/src/favicon.ico",
-              "projects/main/src/assets"
+              "projects/main/src/assets",
+              "projects/main/src/assets/img"
             ],
             "styles": [
               "../node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
@@ -98,7 +99,8 @@
             "inlineStyleLanguage": "scss",
             "assets": [
               "projects/main/src/favicon.ico",
-              "projects/main/src/assets"
+              "projects/main/src/assets",
+              "projects/main/src/assets/img"
             ],
             "styles": [
               "../node_modules/@angular/material/prebuilt-themes/indigo-pink.css",

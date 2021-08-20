@@ -1,6 +1,7 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { FileUploadAdvancedComponent } from './file-upload-advanced.component';
+import {FileUploadAdvancedComponent} from './file-upload-advanced.component';
+import {FormBuilder} from "@angular/forms";
 
 describe('FileUploadAdvancedComponent', () => {
   let component: FileUploadAdvancedComponent;
@@ -8,9 +9,12 @@ describe('FileUploadAdvancedComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ FileUploadAdvancedComponent ]
+      declarations: [FileUploadAdvancedComponent],
+      providers: [
+        FormBuilder
+      ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

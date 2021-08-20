@@ -1,0 +1,26 @@
+.ks-thumbnail-container {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: center;
+}
+
+.ks-image-thumbnail {
+  max-height: 200px;
+  max-width: 200px;
+  z-index: 100;
+}
+
+.electron-browser-view {
+  width: 99%;
+  min-height: 50vh;
+  border-width: 2px;
+  border-color: black;
+  border-style: dotted;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+}

@@ -30,8 +30,7 @@ class SettingsService {
         }
 
         // TODO: Filter the settings that we don't want to expose in a more systematic way
-        delete settings.AWS_SECRET_ACCESS_KEY;
-        delete appEnv.AWS_SECRET_ACCESS_KEY;
+        delete settings.googleApiKey;
 
         appEnv = {
             ...appEnv,

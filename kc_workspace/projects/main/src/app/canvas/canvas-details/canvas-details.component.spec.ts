@@ -1,6 +1,8 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { CanvasDetailsComponent } from './canvas-details.component';
+import {CanvasDetailsComponent} from './canvas-details.component';
+import {HttpClient} from "@angular/common/http";
+import {Router} from "@angular/router";
 
 describe('CanvasDetailsComponent', () => {
   let component: CanvasDetailsComponent;
@@ -8,9 +10,16 @@ describe('CanvasDetailsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CanvasDetailsComponent ]
+      declarations: [CanvasDetailsComponent],
+      providers: [{
+        provide: HttpClient,
+        useValue: {}
+      }, {
+        provide: Router,
+        useValue: {}
+      }]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

@@ -3,8 +3,10 @@
 <!--</span>-->
 <!--<span class="fill-space"></span>-->
 <mat-drawer-container autosize class="projects-container">
-  <mat-drawer class="projects-container-sidebar" mode="side" opened>
-    <app-projects-sidebar></app-projects-sidebar>
+  <mat-drawer class="projects-container-sidebar" mode="side" opened disableClose>
+    <div class="projects-container-overflow">
+      <app-projects-sidebar></app-projects-sidebar>
+    </div>
   </mat-drawer>
   <mat-drawer-content>
     <div class="projects-container-content">

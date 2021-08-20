@@ -1,56 +1,69 @@
-<button (click)="newProject()" mat-button>+</button>
-<button (click)="treeControl.expandAll()" mat-button><mat-icon>unfold_more</mat-icon></button>
-<button (click)="treeControl.collapseAll()" mat-button><mat-icon>unfold_less</mat-icon></button>
-<button (click)="refreshTree()" mat-icon-button><mat-icon>refresh</mat-icon></button>
+<div class="projects-tree-controls-container">
+  <button (click)="newProject()" mat-icon-button>
+    <mat-icon>add</mat-icon>
+  </button>
+  <button (click)="treeControl.expandAll()" mat-icon-button>
+    <mat-icon>unfold_more</mat-icon>
+  </button>
+  <button (click)="treeControl.collapseAll()" mat-icon-button>
+    <mat-icon>unfold_less</mat-icon>
+  </button>
+  <button (click)="refreshTree()" mat-icon-button>
+    <mat-icon>refresh</mat-icon>
+  </button>
+</div>
 
 <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
-    // Nodes with children get a fancy expand/chevron button
-    <mat-tree-node (click)="selectProject(node.id)" *matTreeNodeDef="let node; when: hasChild" matTreeNodePadding>
-        <button [attr.aria-label]="'Toggle ' + node.item" mat-icon-button matTreeNodeToggle>
-            <mat-icon class="mat-icon-rtl-mirror">{{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}</mat-icon>
-        </button>
-        <span *ngIf="node.id === activeProject?.id"><b>{{node.name}}</b></span>
-        <span *ngIf="node.id !== activeProject?.id">{{node.name}}</span>
-        <span class="fill-space"> </span>
-        <button [matMenuTriggerFor]="menu" mat-icon-button>
-            <mat-icon style="opacity: 0.4">more_vert</mat-icon>
-        </button>
+  <mat-tree-node (click)="selectProject(node.id)" *matTreeNodeDef="let node; when: hasChild" matTreeNodePadding
+                 [ngClass]="{ 'background-highlight': activeId === node.id }">
+    <button [attr.aria-label]="'Toggle ' + node.item" mat-icon-button matTreeNodeToggle>
+      <mat-icon
+        class="mat-icon-rtl-mirror">{{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}</mat-icon>
+    </button>
+    <!--    <span *ngIf="node.id === activeId"><b>{{node.name}}</b></span>-->
+    <!--    <span *ngIf="node.id !== activeId">{{node.name}}</span>-->
+    <span>{{node.name}}</span>
+    <span class="fill-space"> </span>
+    <button [matMenuTriggerFor]="menu" mat-icon-button>
+      <mat-icon style="opacity: 0.4">more_vert</mat-icon>
+    </button>
 
-        <mat-menu #menu="matMenu">
-            <button (click)="newProject(node.id)" mat-menu-item>
-                <mat-icon>create_new_folder</mat-icon>
-                New Subproject
-            </button>
-            <mat-divider></mat-divider>
+    <mat-menu #menu="matMenu">
+      <button (click)="newProject(node.id)" mat-menu-item>
+        <mat-icon>create_new_folder</mat-icon>
+        New Subproject
+      </button>
+      <mat-divider></mat-divider>
 
-            <mat-divider></mat-divider>
-            <button (click)="delete(node.id)" mat-menu-item>
-                <mat-icon color="warn">delete</mat-icon>
-                Delete
-            </button>
-        </mat-menu>
-    </mat-tree-node>
+      <mat-divider></mat-divider>
+      <button (click)="delete(node.id)" mat-menu-item>
+        <mat-icon color="warn">delete</mat-icon>
+        Delete
+      </button>
+    </mat-menu>
+  </mat-tree-node>
 
-    // Nodes with no children are forced to work normal hours during quarantine
-    <mat-tree-node (click)="selectProject(node.id)" *matTreeNodeDef="let node" matTreeNodePadding matTreeNodeToggle>
-        <span><button disabled mat-icon-button></button></span>
-        <span *ngIf="node.id === activeProject?.id"><b>{{node.name}}</b></span>
-        <span *ngIf="node.id !== activeProject?.id">{{node.name}}</span>
-        <span class="fill-space"></span>
-        <button [matMenuTriggerFor]="menu" class="project-tree-context-menu" mat-icon-button>
-            <mat-icon style="opacity: 0.4">more_vert</mat-icon>
-        </button>
 
-        <mat-menu #menu="matMenu">
-            <button (click)="newProject(node.id)" mat-menu-item>
-                <mat-icon>create_new_folder</mat-icon>
-                New Subproject
-            </button>
-            <mat-divider></mat-divider>
-            <button (click)="delete(node.id)" mat-menu-item>
-                <mat-icon color="warn">delete</mat-icon>
-                Delete
-            </button>
-        </mat-menu>
-    </mat-tree-node>
+  <mat-tree-node (click)="selectProject(node.id)" *matTreeNodeDef="let node" matTreeNodePadding matTreeNodeToggle
+                 [ngClass]="{ 'background-highlight': activeId === node.id }">
+    <span><button disabled mat-icon-button></button></span>
+    <!--    <span *ngIf="node.id === activeId"><b>Selected</b></span>-->
+    <!--    <span *ngIf="node.id !== activeId">{{node.name}}</span>-->
+    <span>{{node.name}}</span>
+    <span class="fill-space"></span>
+    <button [matMenuTriggerFor]="menu" class="project-tree-context-menu" mat-icon-button>
+      <mat-icon style="opacity: 0.4">more_vert</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu">
+      <button (click)="newProject(node.id)" mat-menu-item>
+        <mat-icon>create_new_folder</mat-icon>
+        New Subproject
+      </button>
+      <mat-divider></mat-divider>
+      <button (click)="delete(node.id)" mat-menu-item>
+        <mat-icon color="warn">delete</mat-icon>
+        Delete
+      </button>
+    </mat-menu>
+  </mat-tree-node>
 </mat-tree>

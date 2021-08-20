@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ProjectTopicListComponent } from './project-topic-list.component';
+import {HttpClient} from "@angular/common/http";
 
 describe('ProjectTopicListComponent', () => {
   let component: ProjectTopicListComponent;
@@ -8,7 +9,13 @@ describe('ProjectTopicListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ProjectTopicListComponent ]
+      declarations: [ ProjectTopicListComponent ],
+      providers: [
+        {
+          provide: HttpClient,
+          useValue: {}
+        }
+      ]
     })
     .compileComponents();
   });

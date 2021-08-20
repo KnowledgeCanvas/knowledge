@@ -1,6 +1,8 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { SearchResultsDialogComponent } from './search-results-dialog.component';
+import {SearchResultsDialogComponent} from './search-results-dialog.component';
+import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from "@angular/material/dialog";
+import {HttpClient} from "@angular/common/http";
 
 describe('SearchResultsDialogComponent', () => {
   let component: SearchResultsDialogComponent;
@@ -8,9 +10,26 @@ describe('SearchResultsDialogComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SearchResultsDialogComponent ]
+      declarations: [SearchResultsDialogComponent],
+      imports: [
+        MatDialogModule
+      ],
+      providers: [
+        {
+          provide: MatDialogRef,
+          useValue: {}
+        },
+        {
+          provide: MAT_DIALOG_DATA,
+          useValue: {}
+        },
+        {
+          provide: HttpClient,
+          useValue: {}
+        }
+      ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

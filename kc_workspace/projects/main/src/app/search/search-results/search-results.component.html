@@ -1,40 +1,33 @@
-<div class="row search-results-header" *ngIf="googleSearchResults.length > 0">
+<div class="row search-results-header" *ngIf="searchResults.length > 0">
   <div class="col s4 left">
-    Displaying <b>{{googleSearchResults?.length}}</b> results:
+    Displaying <b>{{searchResults?.length}}</b> results:
   </div>
   <div class="col s2 right">
-    <button mat-button (click)="clearResults()" color="warn">
-      Clear Results
-    </button>
+    <button mat-button (click)="clearResults()" color="warn">Clear Results</button>
   </div>
 </div>
-<div *ngIf="googleSearchResults.length > 0">
+
+<div *ngIf="searchResults.length > 0">
   <div>
     <div class="cdk-virtual-scroll-data-source">
       <div cdk-scrollable class="search-result-viewport">
         <div cdkDropList
              cdkDropListOrientation="horizontal"
-             [cdkDropListData]="googleSearchResults"
+             [cdkDropListData]="searchResults"
              (cdkDropListDropped)="drop($event)"
              cdkDropListSortingDisabled
              id="search-results-list"
              class="search-result-list">
           <div cdkDrag
-               *ngFor="let item of googleSearchResults"
+               *ngFor="let item of searchResults"
                [cdkDragData]="item"
                class="search-result-container truncated search-result-container"
                (click)="displayContextPopup(item)"
                [matTooltipClass]="{'tool-tip':true}"
-               matTooltip="{{item.title}}
-
-{{item.snippet}}
-
-Click for details, or drag into canvas to save
-              " matTooltipPosition="below">
-            <img *ngIf="item.icon" class="search-result-icon" [src]="item.icon" alt="">
-            <img *ngIf="!item.icon" class="search-result-icon" src="{{item.iconUrl}}" alt="">
+               matTooltip="{{item.title}}" matTooltipPosition="below">
+            <img *ngIf="item.icon" class="knowledge-source-icon" [src]="item.icon" alt="">
+            <img *ngIf="!item.icon" class="knowledge-source-icon" src="{{item.iconUrl}}" alt="">
           </div>
-
         </div>
       </div>
     </div>

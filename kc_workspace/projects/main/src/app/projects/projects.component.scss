@@ -29,6 +29,7 @@
 }
 
 .projects-container-sidebar {
+  max-width: 20%;
   border-right-color: darkgrey;
   border-right-width: 1px;
   border-bottom-color: darkgrey;
@@ -51,4 +52,13 @@ app-project-detail {
   flex-direction: column;
   align-content: stretch;
   position: unset;
+}
+
+.projects-container-overflow {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-content: stretch;
+  justify-content: flex-start;
+  align-items: stretch;
 }

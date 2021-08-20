@@ -14,7 +14,7 @@ import {ProjectCreationDialogComponent} from "../project-creation-dialog/project
   styleUrls: ['./projects-tree.component.scss']
 })
 export class ProjectsTreeComponent implements OnInit {
-  newProjectName = '';
+  activeId: string = '';
   activeProject: ProjectModel | null = null;
   flatToNestedMap = new Map<ProjectTreeFlatNode, ProjectTreeNode>();
   nestedToFlatMap = new Map<ProjectTreeNode, ProjectTreeFlatNode>();
@@ -46,6 +46,7 @@ export class ProjectsTreeComponent implements OnInit {
 
     this.projectService.currentProject.subscribe(current => {
       this.activeProject = current;
+      this.activeId = current.id.value;
     });
   }
 
@@ -80,6 +81,7 @@ export class ProjectsTreeComponent implements OnInit {
         width: '65%'
       });
       dialogRef.afterClosed().subscribe(result => {
+        console.log('Project creation dialog closed with: ', result);
         if (result && result.id) {
           this.projectService.setCurrentProject(result.id);
         }
@@ -93,6 +95,7 @@ export class ProjectsTreeComponent implements OnInit {
         width: '65%'
       });
       dialogRef.afterClosed().subscribe(result => {
+        console.log('Project creation dialog closed with: ', result);
         if (result && result.id) {
           this.projectService.setCurrentProject(result.id);
         }
@@ -109,7 +112,7 @@ export class ProjectsTreeComponent implements OnInit {
     this.projectService.setCurrentProject(id);
   }
 
-  delete(id: any): void {
+  delete(id: string): void {
     if (!id) {
       return;
     }

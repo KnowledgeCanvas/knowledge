@@ -1,11 +1,11 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewEncapsulation} from '@angular/core';
 import {CdkDragDrop} from "@angular/cdk/drag-drop";
-import {GoogleSearchItemModel} from "../../../../../shared/src/models/google.search.results.model";
 import {CanvasDropService} from "../../../../../shared/src/services/canvas-drop/canvas-drop.service";
 import {Subscription} from "rxjs";
 import {MatDialog} from "@angular/material/dialog";
-import {SearchResultsDialogComponent} from "./search-results-dialog/search-results-dialog.component";
 import {SearchService} from "../../../../../shared/src/services/search/search.service";
+import {KnowledgeSourceModel} from "../../../../../shared/src/models/knowledge.source.model";
+import {KsInfoDialogComponent} from "../../knowledge-source/ks-info-dialog/ks-info-dialog.component";
 
 @Component({
   selector: 'app-search-results',
@@ -15,7 +15,7 @@ import {SearchService} from "../../../../../shared/src/services/search/search.se
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SearchResultsComponent implements OnInit {
-  googleSearchResults: GoogleSearchItemModel[] = [];
+  searchResults: KnowledgeSourceModel[] = [];
   subscription: Subscription | undefined;
 
   constructor(private canvasDropService: CanvasDropService,
@@ -25,12 +25,8 @@ export class SearchResultsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.subscription = this.searchService.currentMessage.subscribe((results) => {
-      for (let res of results) {
-        res.ingestType = 'google';
-        res.googleItem = res;
-      }
-      this.googleSearchResults = results
+    this.subscription = this.searchService.searchList.subscribe((results: KnowledgeSourceModel[]) => {
+      this.searchResults = results;
       this.ref.markForCheck();
     });
   }
@@ -41,17 +37,18 @@ export class SearchResultsComponent implements OnInit {
   }
 
   drop(event: CdkDragDrop<any>) {
-    console.log('Previous results: ', this.googleSearchResults);
-    let newResults: GoogleSearchItemModel = this.canvasDropService.drop(event);
+    console.log('Previous results: ', this.searchResults);
+    let newResults: KnowledgeSourceModel = this.canvasDropService.drop(event);
     console.log('New results: ', newResults);
-    this.googleSearchResults = [...this.googleSearchResults];
-    console.log('Updated results: ', this.googleSearchResults);
+    this.searchResults = [...this.searchResults];
+    console.log('Updated results: ', this.searchResults);
   }
 
-  displayContextPopup(item: GoogleSearchItemModel): void {
-    const dialogRef = this.dialog.open(SearchResultsDialogComponent, {
+  displayContextPopup(ks: KnowledgeSourceModel): void {
+    const dialogRef = this.dialog.open(KsInfoDialogComponent, {
       width: '70%',
-      data: item
+      data: ks,
+      autoFocus: false
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -60,6 +57,6 @@ export class SearchResultsComponent implements OnInit {
   }
 
   clearResults() {
-    this.googleSearchResults = [];
+    this.searchResults = [];
   }
 }

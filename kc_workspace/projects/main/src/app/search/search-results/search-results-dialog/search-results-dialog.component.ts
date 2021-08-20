@@ -4,7 +4,7 @@ import {DomSanitizer} from '@angular/platform-browser';
 import {ExtractionService} from "../../../extraction/extraction.service";
 import {KnowledgeSourceModel} from "../../../../../../shared/src/models/knowledge.source.model";
 import {ProjectService} from "../../../../../../shared/src/services/projects/project.service";
-import {ProjectModel} from "../../../../../../shared/src/models/project.model";
+import {ProjectModel, ProjectUpdateRequest} from "../../../../../../shared/src/models/project.model";
 import {SearchService} from "../../../../../../shared/src/services/search/search.service";
 
 @Component({
@@ -19,7 +19,7 @@ export class SearchResultsDialogComponent implements OnInit {
   sourceRef: string = '';
 
   constructor(public dialogRef: MatDialogRef<SearchResultsDialogComponent>,
-              @Inject(MAT_DIALOG_DATA) public data: KnowledgeSourceModel,
+              @Inject(MAT_DIALOG_DATA) public knowledgeSource: KnowledgeSourceModel,
               private _sanitizer: DomSanitizer,
               private extractionService: ExtractionService,
               private projectService: ProjectService,
@@ -29,19 +29,19 @@ export class SearchResultsDialogComponent implements OnInit {
     });
     this.qAndA = [];
 
-    this.sourceRef = data.sourceRef ? data.sourceRef : '';
+    this.sourceRef = knowledgeSource.sourceRef ? knowledgeSource.sourceRef : '';
 
-    if (data.ingestType == 'google' && data.googleItem) {
-      if (data.googleItem.pagemap?.question && data.googleItem.pagemap?.answer)
-        for (let i = 0; i < data.googleItem.pagemap?.question?.length; i++) {
+    if (knowledgeSource.ingestType == 'google' && knowledgeSource.googleItem) {
+      if (knowledgeSource.googleItem.pagemap?.question && knowledgeSource.googleItem.pagemap?.answer)
+        for (let i = 0; i < knowledgeSource.googleItem.pagemap?.question?.length; i++) {
           this.qAndA.push({
-            name: data.googleItem.pagemap.question[i].name,
-            text: data.googleItem.pagemap.answer[i].text
+            name: knowledgeSource.googleItem.pagemap.question[i].name,
+            text: knowledgeSource.googleItem.pagemap.answer[i].text
           });
         }
 
-      if (data.googleItem.pagemap?.videoobject) {
-        let url = data.googleItem.pagemap.videoobject[0].embedurl ? data.googleItem.pagemap.videoobject[0].embedurl : '';
+      if (knowledgeSource.googleItem.pagemap?.videoobject) {
+        let url = knowledgeSource.googleItem.pagemap.videoobject[0].embedurl ? knowledgeSource.googleItem.pagemap.videoobject[0].embedurl : '';
         this.safeURL = this._sanitizer.bypassSecurityTrustResourceUrl(url);
       }
     }
@@ -51,48 +51,55 @@ export class SearchResultsDialogComponent implements OnInit {
   }
 
   onNoClick() {
-    this.dialogRef.close(this.data);
+    this.dialogRef.close(this.knowledgeSource);
   }
 
   openInBrowser() {
-    console.log('Open in browser with data: ', this.data);
-    if (this.data.url) {
-      window.open(this.data.url);
-    } else if (this.data.googleItem?.link) {
-      window.open(this.data.googleItem.link);
+    console.log('Open in browser with data: ', this.knowledgeSource);
+    if (this.knowledgeSource.googleItem?.link) {
+      window.open(this.knowledgeSource.googleItem.link);
+    } else if (this.knowledgeSource.websiteItem?.url) {
+      window.open(this.knowledgeSource.websiteItem.url);
+    } else {
+      console.error('Unable to open link for knowledge source: ', this.knowledgeSource);
     }
   }
 
   saveToPdf() {
-    if (this.data.url) {
-      this.extractionService.extractWebpage(this.data.url, this.data.title);
-    } else if (this.data.googleItem?.link) {
-      this.extractionService.extractWebpage(this.data.googleItem.link, this.data.title);
+    let link: string;
+
+    if (this.knowledgeSource.googleItem?.link)
+      link = this.knowledgeSource.googleItem.link;
+    else if (this.knowledgeSource.websiteItem?.url)
+      link = this.knowledgeSource.websiteItem.url;
+    else {
+      console.error('Unable to save to PDF because no valid links exist in knowledge source: ', this.knowledgeSource);
+      return;
     }
 
+    this.extractionService.extractWebsite(link, this.knowledgeSource.id.value);
+
+    // TODO: make the above function return a promise, notify the user about progress
+
+    this.dialogRef.close();
   }
 
   showCitation() {
-    console.log('Data to be cited: ', this.data);
+    console.log('Data to be cited: ', this.knowledgeSource);
   }
 
 
   importSource() {
-    console.log('Importing result to project', this.currentProject?.name, this.data);
     if (this.currentProject?.id) {
-      this.projectService.addKnowledgeSource(this.currentProject.id, this.data);
-      this.searchService.remove(this.data);
-      this.dialogRef.close(this.data);
+      let update: ProjectUpdateRequest = {
+        id: this.currentProject.id,
+        addKnowledgeSource: [this.knowledgeSource]
+      }
+      this.projectService.updateProject(update);
+      this.searchService.remove(this.knowledgeSource);
+      this.dialogRef.close(this.knowledgeSource);
     } else {
-
+      console.error('Attempting to import knowledge source to a project with no id...');
     }
-  }
-
-  removeSource() {
-    if (this.currentProject?.id) {
-      this.projectService.removeKnowledgeSource(this.currentProject.id, this.data);
-      this.dialogRef.close();
-    }
-
   }
 }

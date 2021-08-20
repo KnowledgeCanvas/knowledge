@@ -5,11 +5,14 @@ contextBridge.exposeInMainWorld(
         send: (channel, data) => {
             // whitelist channels
             let validChannels = [
-                "app-search-python", 
-                "app-extract-webpage", 
+                "app-search-python",
+                "app-extract-website",
                 "app-generate-uuid",
                 "app-get-settings",
-                "app-save-settings"
+                "app-save-settings",
+                "electron-browser-view",
+                "electron-browser-view-file",
+                "electron-close-browser-view"
             ];
             if (validChannels.includes(channel)) {
                 ipcRenderer.send(channel, data);
@@ -17,11 +20,13 @@ contextBridge.exposeInMainWorld(
         },
         receive: (channel, func) => {
             let validChannels = [
-                "app-search-python-results", 
-                "app-extract-webpage-results",
+                "app-search-python-results",
+                "app-extract-website-results",
                 "app-generate-uuid-results",
                 "app-get-settings-results",
-                "app-save-settings-results"
+                "app-save-settings-results",
+                "electron-browser-view-results",
+                "electron-browser-view-file-results"
             ];
             if (validChannels.includes(channel)) {
                 ipcRenderer.once(channel, (event, ...args) => func(...args));

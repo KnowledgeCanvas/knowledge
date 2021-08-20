@@ -1,6 +1,8 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { CanvasSourceListComponent } from './canvas-source-list.component';
+import {CanvasSourceListComponent} from './canvas-source-list.component';
+import {MatDialogModule, MatDialogRef} from "@angular/material/dialog";
+import {HttpClient} from "@angular/common/http";
 
 describe('CanvasSourceListComponent', () => {
   let component: CanvasSourceListComponent;
@@ -8,9 +10,22 @@ describe('CanvasSourceListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CanvasSourceListComponent ]
+      declarations: [CanvasSourceListComponent],
+      imports: [
+        MatDialogModule
+      ],
+      providers: [
+        {
+          provide: MatDialogRef,
+          useValue: {}
+        },
+        {
+          provide: HttpClient,
+          useValue: {}
+        }
+      ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

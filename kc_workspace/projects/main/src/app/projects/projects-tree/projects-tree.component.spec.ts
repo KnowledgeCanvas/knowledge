@@ -1,5 +1,7 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { ProjectsTreeComponent } from './projects-tree.component';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {ProjectsTreeComponent} from './projects-tree.component';
+import {HttpClient} from "@angular/common/http";
+import {MatDialog} from "@angular/material/dialog";
 
 describe('ProjectsTreeComponent', () => {
   let component: ProjectsTreeComponent;
@@ -7,9 +9,19 @@ describe('ProjectsTreeComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ProjectsTreeComponent ]
+      declarations: [ProjectsTreeComponent],
+      providers: [
+        {
+          provide: HttpClient,
+          useValue: {}
+        },
+        {
+          provide: MatDialog,
+          useValue: {}
+        }
+      ]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

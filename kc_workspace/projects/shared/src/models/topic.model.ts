@@ -1,15 +1,16 @@
-export class TopicModel {
-    public id: string;
-    public name: string;
-    public description: string;
-    public created_at: Date;
-    public updated_at: Date;
+import {UuidModel} from "./uuid.model";
 
-    constructor(id: string, name: string, description: string, created_at: Date, updated_at: Date) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.created_at = created_at;
-        this.updated_at = updated_at;
-    }
+export class TopicModel {
+  public id: UuidModel;
+  public name: string;
+  public description?: string;
+  public dateCreated: string;
+  public dateUpdated: string;
+
+  constructor(id: UuidModel, name: string) {
+    this.id = id;
+    this.name = name;
+    this.dateCreated = Date();
+    this.dateUpdated = Date();
+  }
 }

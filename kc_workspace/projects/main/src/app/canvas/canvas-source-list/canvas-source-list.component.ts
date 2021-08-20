@@ -1,5 +1,4 @@
 import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
-import {SearchResultsDialogComponent} from "../../search/search-results/search-results-dialog/search-results-dialog.component";
 import {CdkDragDrop} from "@angular/cdk/drag-drop";
 import {CanvasDropService} from "../../../../../shared/src/services/canvas-drop/canvas-drop.service";
 import {MatDialog} from "@angular/material/dialog";
@@ -7,6 +6,8 @@ import {ProjectModel, ProjectUpdateRequest} from "../../../../../shared/src/mode
 import {ProjectService} from "../../../../../shared/src/services/projects/project.service";
 import {KnowledgeSourceModel} from "../../../../../shared/src/models/knowledge.source.model";
 import {CanvasImportComponent} from "../canvas-import/canvas-import.component";
+import {KsInfoDialogComponent} from "../../knowledge-source/ks-info-dialog/ks-info-dialog.component";
+import {FaviconExtractorService} from "../../../../../shared/src/services/favicon/favicon-extractor.service";
 
 @Component({
   selector: 'app-canvas-source-list',
@@ -16,20 +17,25 @@ import {CanvasImportComponent} from "../canvas-import/canvas-import.component";
 export class CanvasSourceListComponent implements OnInit {
   project: ProjectModel | null = null;
   canvasNodes: KnowledgeSourceModel[] = [];
+  private CONTAINER_ID = 'knowledge-canvas-sidebar';
 
   constructor(private canvasDropService: CanvasDropService,
               public dialog: MatDialog,
               private projectService: ProjectService,
-              private ref: ChangeDetectorRef) {
+              private ref: ChangeDetectorRef,
+              private faviconService: FaviconExtractorService) {
     this.projectService.currentProject.subscribe(project => {
-      if (project?.name && project?.id !== '') {
+      if (project?.name && project?.id.value !== '') {
         this.project = project;
         this.canvasNodes = [];
 
         if (project.knowledgeSource)
           for (let source of project.knowledgeSource) {
-            if (!source.iconUrl) {
-              source.iconUrl = `https://${source.googleItem?.displayLink}/favicon.ico`;
+            if (source.ingestType === 'file') {
+              source.icon = faviconService.file();
+            } else {
+              source.icon = faviconService.loading();
+              faviconService.extract(source.iconUrl).then(icon => source.icon = icon);
             }
             this.canvasNodes.push(source);
           }
@@ -45,11 +51,12 @@ export class CanvasSourceListComponent implements OnInit {
   drop($event: CdkDragDrop<any>) {
     this.canvasNodes = this.canvasDropService.drop($event);
 
-    if (this.project && this.project.id && this.canvasNodes) {
-      this.project.knowledgeSource = this.canvasNodes;
+    console.log('Drop event: ', $event);
+
+    if (this.project && this.project.id && $event.previousContainer !== $event.container) {
       let projectUpdate: ProjectUpdateRequest = {
         id: this.project.id,
-        knowledgeSource: this.canvasNodes
+        addKnowledgeSource: [$event.item.data]
       }
       this.projectService.updateProject(projectUpdate);
     }
@@ -58,9 +65,10 @@ export class CanvasSourceListComponent implements OnInit {
   displayContextPopup(node: KnowledgeSourceModel) {
     console.log(`Item selected: `, node);
     node.sourceRef = 'list';
-    const dialogRef = this.dialog.open(SearchResultsDialogComponent, {
+    const dialogRef = this.dialog.open(KsInfoDialogComponent, {
       width: '70%',
-      data: node
+      data: node,
+      autoFocus: false
     });
     dialogRef.afterClosed().subscribe(result => {
       this.ref.markForCheck();

@@ -1,6 +1,6 @@
 {
   "name": "kc_workspace",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "scripts": {
     "ng": "ng",
     "build": "ng build main --configuration production --base-href ./ && ng build setup --configuration production --base-href ./",

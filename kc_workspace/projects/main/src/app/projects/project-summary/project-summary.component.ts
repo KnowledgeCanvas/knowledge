@@ -1,8 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ProjectService} from "../../../../../shared/src/services/projects/project.service";
 import {ProjectModel} from "../../../../../shared/src/models/project.model";
-import {MatChipInputEvent} from "@angular/material/chips";
-import {COMMA, ENTER} from "@angular/cdk/keycodes";
 
 @Component({
   selector: 'app-project-summary',
@@ -10,7 +8,7 @@ import {COMMA, ENTER} from "@angular/cdk/keycodes";
   styleUrls: ['./project-summary.component.scss']
 })
 export class ProjectSummaryComponent implements OnInit {
-  currentProject: ProjectModel = {};
+  currentProject: ProjectModel = new ProjectModel('', {value: ''});
 
   constructor(private projectService: ProjectService) {
     projectService.currentProject.subscribe((project) => {

@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import {EnvironmentModel} from "../model/environment.model";
+
 let os = require('os');
 let path = require('path');
 let dotenv = require('dotenv');
@@ -9,7 +10,9 @@ const RET_OK = 0;
 const RET_ERR = -1;
 const appTitle = 'KnowledgeCanvas';
 const homeDir = os.homedir();
-const appPath = path.join(homeDir, appTitle);
+const appPath = path.join(homeDir, '.' + appTitle);
+const filesPath = path.join(appPath, 'files');
+const pdfPath = path.join(filesPath, 'pdfs');
 const resources = path.join(process.cwd(), 'resources');
 const envPath = path.resolve(resources, 'app.env');
 const projectsPath = path.join(appPath, 'Projects');
@@ -25,10 +28,13 @@ export class ApplicationEnvironment {
 
 
     constructor() {
+        console.log('Setting up Application Environment...');
         ApplicationEnvironment.setDefaults();
         ApplicationEnvironment.loadEnvironment();
         ApplicationEnvironment.loadHostOs();
         ApplicationEnvironment.loadFile();
+        ApplicationEnvironment.checkPaths();
+        console.log('Application Environment Good...');
     }
 
     public static getInstance(): ApplicationEnvironment {
@@ -39,18 +45,14 @@ export class ApplicationEnvironment {
         return ApplicationEnvironment.instance;
     }
 
-    public getEnvironment(): EnvironmentModel {
-        return ApplicationEnvironment.appEnv;
-    }
-
     private static setDefaults() {
         this.appEnv = {
-            AWS_ACCESS_KEY_ID: '',
-            AWS_SECRET_ACCESS_KEY: '',
             appPath: appPath,
             appTitle: appTitle,
             cwd: process.cwd(),
             envPath: envPath,
+            filesPath: filesPath,
+            pdfPath: pdfPath,
             error: '',
             firstRun: true,
             homeDir: homeDir,
@@ -62,7 +64,6 @@ export class ApplicationEnvironment {
             settingsPath: ''
         };
     }
-
 
     private static loadEnvironment(filePath?: string) {
         filePath = filePath ? filePath : this.appEnv.envPath
@@ -76,7 +77,6 @@ export class ApplicationEnvironment {
             }
         }
     }
-
 
     private static loadHostOs() {
         this.appEnv.settingsPath = '';
@@ -99,7 +99,7 @@ export class ApplicationEnvironment {
     }
 
     private static loadFile() {
-        let filePath =  this.appEnv.settingsFilePath;
+        let filePath = this.appEnv.settingsFilePath;
         let settings = null;
 
         try {
@@ -121,6 +121,23 @@ export class ApplicationEnvironment {
                 process.exit(-1);
             }
         }
+    }
+
+    private static checkPaths() {
+        for (let pathToCheck of [
+            appPath,
+            filesPath,
+            pdfPath,
+            projectsPath
+        ]) {
+            console.log('Checking: ', pathToCheck);
+            if (makeDirectory(pathToCheck) !== RET_OK)
+                console.error('Unexpected error while attempting to create directory: ', pathToCheck);
+        }
+    }
+
+    public getEnvironment(): EnvironmentModel {
+        return ApplicationEnvironment.appEnv;
     }
 }
 

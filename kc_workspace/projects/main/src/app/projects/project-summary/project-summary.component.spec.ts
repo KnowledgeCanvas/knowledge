@@ -1,6 +1,7 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { ProjectSummaryComponent } from './project-summary.component';
+import {ProjectSummaryComponent} from './project-summary.component';
+import {HttpClient} from "@angular/common/http";
 
 describe('ProjectSummaryComponent', () => {
   let component: ProjectSummaryComponent;
@@ -8,9 +9,13 @@ describe('ProjectSummaryComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ProjectSummaryComponent ]
+      declarations: [ProjectSummaryComponent],
+      providers: [{
+        provide: HttpClient,
+        useValue: {}
+      }]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

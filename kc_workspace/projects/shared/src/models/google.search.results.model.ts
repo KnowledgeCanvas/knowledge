@@ -1,10 +1,8 @@
-import {KnowledgeSourceModel} from "./knowledge.source.model";
-
 export interface GoogleSearchResultsModel {
-  context: {title: string}
+  context: { title: string }
   items: GoogleSearchItemModel[]
   kind: string
-  queries: {request: [], nextpage: []}
+  queries: { request: [], nextpage: [] }
   searchInformation: GoogleSearchInformation
   url: {
     template: string
@@ -19,11 +17,12 @@ export interface GoogleSearchInformation {
   totalResults: string
 }
 
-export interface GoogleSearchItemModel extends KnowledgeSourceModel{
+export interface GoogleSearchItemModel {
   pagemap?: GoogleSearchResultsPagemapModel;
   kind?: string,
   title: string,
   htmlTitle: string,
+  description?: string,
   link: string,
   displayLink: string,
   snippet: string,
@@ -38,8 +37,9 @@ export interface GoogleSearchResultsPagemapModel {
   blogposting?: any[],
   cse_image?: any[],
   cse_thumbnail?: any[],
+  hcard?: any[],
   imageobject?: any[],
-  metatags?: GoogleSearchResultsMetatagsModel[],
+  metatags?: MetatagsModel[],
   organization?: any[],
   person?: any[],
   question?: GoogleSearchResultsQuestionModel[],
@@ -47,7 +47,7 @@ export interface GoogleSearchResultsPagemapModel {
   videoobject?: GoogleSearchResultsVideoObjectModel[]
 }
 
-export interface GoogleSearchResultsMetatagsModel {
+export interface MetatagsModel {
   "article:tag"?: string,
   author?: string,
   "og:description"?: string,

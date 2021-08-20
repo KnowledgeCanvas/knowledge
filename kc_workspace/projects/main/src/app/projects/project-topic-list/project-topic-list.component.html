@@ -5,24 +5,26 @@
       <mat-chip-list #chipList aria-label="Project Tags">
         <mat-chip *ngFor="let topic of project.topics" [selectable]="selectable"
                   [removable]="removable" (removed)="remove(topic)">
-          {{topic}}
+          {{topic.name}}
           <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
         </mat-chip>
         <input placeholder="Add a Topic..."
                #topicInput
                [formControl]="topicCtrl"
+               [matAutocomplete]="auto"
                [matChipInputFor]="chipList"
                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
                [matChipInputAddOnBlur]="addOnBlur"
                (matChipInputTokenEnd)="add($event)">
       </mat-chip-list>
       <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
-        <mat-option *ngFor="let topic of topics | async" [value]="topic">
+        <mat-option *ngFor="let topic of filteredTopics | async" [value]="topic">
           {{topic}}
         </mat-option>
       </mat-autocomplete>
       <mat-hint>Enter topics separated by a comma. Topics will help the Knowledge Canvas improve search
-        results, present relevant findings, and help build insight.</mat-hint>
+        results, present relevant findings, and help build insight.
+      </mat-hint>
     </mat-form-field>
   </div>
 </div>

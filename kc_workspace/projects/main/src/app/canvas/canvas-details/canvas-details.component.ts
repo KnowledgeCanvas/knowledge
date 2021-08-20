@@ -14,7 +14,6 @@ export class CanvasDetailsComponent implements OnInit {
   links: string[] = [
     ''
   ];
-  activeLink: string = '';
   project: ProjectModel | null = null;
   activeLinkIndex = 0;
   navLinks: any[];
@@ -33,7 +32,7 @@ export class CanvasDetailsComponent implements OnInit {
       }
     ];
     this.projectService.currentProject.subscribe(project => {
-      if (project?.name && project?.id !== '') {
+      if (project?.name && project?.id.value !== '') {
         this.project = project;
       } else {
         this.project = null;

@@ -1,30 +1,30 @@
-<h1 mat-dialog-title>{{data.title}}</h1>
-<a href="{{data.googleItem?.link}}" target="_blank">{{data.googleItem?.formattedUrl}}</a>
+<h1 mat-dialog-title>{{knowledgeSource.title}}</h1>
+<a href="{{knowledgeSource.googleItem?.link}}" target="_blank">{{knowledgeSource.googleItem?.formattedUrl}}</a>
 
 <div mat-dialog-content class="search-result-dialog-content">
-  <div class="search-result-images" *ngIf="data?.googleItem?.pagemap?.cse_thumbnail">
-    <div *ngFor="let image of data?.googleItem?.pagemap?.cse_thumbnail">
+  <div class="search-result-images" *ngIf="knowledgeSource?.googleItem?.pagemap?.cse_thumbnail">
+    <div *ngFor="let image of knowledgeSource?.googleItem?.pagemap?.cse_thumbnail">
       <img src="{{image.src}}" alt="" class="search-result-image-thumbnail">
     </div>
   </div>
 
-  <div class="search-result-author" *ngIf="data?.googleItem?.pagemap?.person">
+  <div class="search-result-author" *ngIf="knowledgeSource?.googleItem?.pagemap?.person">
     <b>Author(s):</b>
-    <div *ngFor="let people of data?.googleItem?.pagemap?.person">
+    <div *ngFor="let people of knowledgeSource?.googleItem?.pagemap?.person">
       {{people.name}}
     </div>
   </div>
 
-  <div class="search-result-metatags" *ngFor="let meta of data?.googleItem?.pagemap?.metatags">
+  <div class="search-result-metatags" *ngFor="let meta of knowledgeSource?.googleItem?.pagemap?.metatags">
     <div class="search-result-description" *ngIf="meta['og:description']">
       <b>Description:</b>
       {{meta["og:description"]}}
     </div>
   </div>
   <br>
-  <div class="search-result-snippet" *ngIf="data.googleItem?.snippet">
+  <div class="search-result-snippet" *ngIf="knowledgeSource.googleItem?.snippet">
     <b>Snippet:</b>
-    {{data.googleItem?.snippet}}
+    {{knowledgeSource.googleItem?.snippet}}
   </div>
 
   <div class="search-result-question-answer" *ngIf="qAndA.length > 0">
@@ -40,12 +40,11 @@
 </div>
 
 <div mat-dialog-actions>
-  <button *ngIf="sourceRef !== 'list'" mat-button (click)="importSource()">Add to Project</button>
-  <button *ngIf="sourceRef === 'list'" mat-button color="warn" (click)="removeSource()">Remove from Project</button>
   <button mat-button (click)="openInBrowser()">
     <mat-icon>open_in_new</mat-icon>
     Open
   </button>
-  <button mat-button (click)="saveToPdf()">Save as PDF</button>
+  <button mat-button (click)="saveToPdf()" *ngIf="knowledgeSource.ingestType !== 'file'">Save as PDF</button>
   <button mat-button (click)="showCitation()">Citation</button>
+  <button *ngIf="sourceRef !== 'list'" mat-button color="primary" (click)="importSource()">Add to Project</button>
 </div>

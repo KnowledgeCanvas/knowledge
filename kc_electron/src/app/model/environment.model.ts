@@ -1,19 +1,14 @@
 export interface EnvironmentModel {
-    AWS_ACCESS_KEY_ID?: string;
-    AWS_SECRET_ACCESS_KEY?: string;
     appPath: string;
     appTitle: string;
     cwd: string;
     envPath?: string;
     error?: string;
+    filesPath?: string;
     firstRun: boolean;
     homeDir?: string;
-    jdkBinaryPath?: string
-    jdkLin?: string;
-    jdkMac?: string;
-    jdkPath?: string;
-    jdkWin?: string;
     pathSep: string;
+    pdfPath: string;
     projectsPath: string;
     serverPath: string;
     settingsFilePath: string;

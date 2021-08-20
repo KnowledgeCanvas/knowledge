@@ -1,4 +1,4 @@
-const {app, BrowserWindow, ipcMain, dialog, webContents, shell} = require('electron');
+const {app, BrowserWindow, BrowserView, ipcMain, dialog, webContents, shell} = require('electron');
 import {SettingsModel} from "./app/model/settings.model";
 
 const fs = require('fs');
@@ -28,8 +28,6 @@ function createMainWindow() {
         width: WIDTH ? WIDTH : 1280,
         height: HEIGHT ? HEIGHT : 1000,
         title: 'Knowledge Canvas',
-        minHeight: 1000,
-        minWidth: 1280,
         webPreferences: {
             nodeIntegration: false, // is default value after Electron v5
             contextIsolation: true, // protect against prototype pollution
@@ -51,17 +49,16 @@ function createMainWindow() {
         win = null;
     });
 
-    // win.webContents.on('new-window', (event: any, url: string) => {
-    //     event.preventDefault();
-    //     shell.openExternal(url);
-    // });
+    win.webContents.on('new-window', (event: any, url: string) => {
+        // event.preventDefault();
+        // shell.openPath(url);
+    });
 
     win.loadFile(MAIN_ENTRY);
     win.show();
 
     return win;
 }
-
 
 const createStartupWindow = exports.createStartupWindow = () => {
     console.log('Startup URL is: ', SETUP_ENTRY);
@@ -128,6 +125,43 @@ app.whenReady().then(() => {
     })
 })
 
+ipcMain.on('electron-browser-view', (event: any, args: any) => {
+    console.log('Electron Browser View generated from args: ', args);
+
+    if (args.url && args.x && args.y && args.width && args.height) {
+        const view = new BrowserView();
+        win.setBrowserView(view);
+
+        let x = args.x, y = args.y, width = args.width, height = args.height;
+        view.setBounds({x: x, y: y, width: width, height: height});
+        view.webContents.loadURL(args.url);
+        win.webContents.send('electron-browser-view-results', args);
+    } else {
+        win.webContents.send('electron-browser-view-results', {error: 'Expected URL, x, y, width, and height...'});
+    }
+});
+
+ipcMain.on("electron-close-browser-view", () => {
+    win.setBrowserView(null);
+});
+
+ipcMain.on('electron-browser-view-file', (event: any, args: object) => {
+    console.log('Electron Browser View from file generated from args: ', args);
+    win.webContents.send('electron-browser-view-file-results', args);
+
+    // const contentBounds = win.getContentBounds();
+    // console.log('Content Bounds: ', win.getContentBounds());
+    // let x = contentBounds.width * 0.12;
+    // let y = contentBounds.height * 0.12;
+    // let width = contentBounds.width * 0.70;
+    // let height = contentBounds.height * 0.70;
+    //
+    // const view = new BrowserView();
+    // win.setBrowserView(view);
+    // view.setBounds({x: x, y: y, width: width, height: height});
+    // view.webContents.loadURL(url);
+});
+
 ipcMain.on("app-search-python", (event: any, args: object) => {
     console.log('Search invoked on search term: ', args);
     scriptService.runPythonScript('search', args).then((value: string) => {
@@ -172,10 +206,10 @@ ipcMain.on("app-save-settings", (event: any, args: any) => {
     win.webContents.send("app-save-settings-results", appEnv);
 });
 
-ipcMain.on("app-extract-webpage", (event: any, args: any) => {
+ipcMain.on("app-extract-website", (event: any, args: any) => {
     if (args.url && args.filename) {
         console.log('Attempting to extract from webpage: ', args?.url);
-        const pdfPath = path.join(os.homedir(), 'Desktop', args.filename + '.pdf');
+        const pdfPath = path.join(appEnv.pdfPath, args.filename + '.pdf');
 
         const options = {
             width: 1280,
@@ -213,17 +247,17 @@ ipcMain.on("app-extract-webpage", (event: any, args: any) => {
                         console.log(`Wrote PDF successfully to ${pdfPath}`);
                     });
 
-                    win.webContents.send("app-extract-webpage-results", pdfPath);
+                    win.webContents.send("app-extract-website-results", pdfPath);
                     window.close();
                 }).catch((error: any) => {
                     console.log(`Failed to write PDF to ${pdfPath}: `, error);
-                    win.webContents.send("app-extract-webpage-results", error);
+                    win.webContents.send("app-extract-website-results", error);
                     window.close();
                 });
             }, 2000);
         });
 
     } else {
-        win.webContents.send("app-extract-webpage-results", false);
+        win.webContents.send("app-extract-website-results", false);
     }
 });

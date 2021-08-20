@@ -12,6 +12,7 @@ import {DragDropModule} from "@angular/cdk/drag-drop";
 import {FileUploadAdvancedComponent} from './ingest/file-upload/file-upload-advanced/file-upload-advanced.component';
 import {FileUploadComponent} from './ingest/file-upload/file-upload.component';
 import {FileUploadDragAndDropComponent} from './ingest/file-upload/file-upload-drag-and-drop/file-upload-drag-and-drop.component';
+import {MatAccordion, MatExpansionModule} from "@angular/material/expansion";
 import {MatButtonModule} from "@angular/material/button";
 import {MatCheckboxModule} from "@angular/material/checkbox";
 import {MatDividerModule} from "@angular/material/divider";
@@ -43,105 +44,112 @@ import {WebsiteExtractionComponent} from './ingest/website-extraction/website-ex
 import {WebsiteExtractionFormComponent} from './ingest/website-extraction/website-extraction-form/website-extraction-form.component';
 import {ClipboardModule} from "@angular/cdk/clipboard";
 import {MatChipsModule} from "@angular/material/chips";
-import {MatExpansionModule} from "@angular/material/expansion";
 import {MatTabsModule} from "@angular/material/tabs";
 import {ProjectsTabsComponent} from "./projects/projects-tabs/projects-tabs.component";
 import {ProjectsTreeViewComponent} from "./projects/projects-tree-view/projects-tree-view.component";
 import {ProjectsTreeComponent} from "./projects/projects-tree/projects-tree.component";
-import { SearchResultsDialogComponent } from './search/search-results/search-results-dialog/search-results-dialog.component';
+import {SearchResultsDialogComponent} from './search/search-results/search-results-dialog/search-results-dialog.component';
 import {MatDialogModule} from "@angular/material/dialog";
 import {SearchService} from "../../../shared/src/services/search/search.service";
 import {HttpClientModule} from "@angular/common/http";
 import {MatTreeModule} from "@angular/material/tree";
 import {MatMenuModule} from "@angular/material/menu";
 import {MatSnackBar} from "@angular/material/snack-bar";
-import { FloatingActionButtonComponent } from './floating-action-button/floating-action-button.component';
+import {FloatingActionButtonComponent} from './floating-action-button/floating-action-button.component';
 import {MatTooltipModule} from "@angular/material/tooltip";
-import { CanvasDetailsComponent } from './canvas/canvas-details/canvas-details.component';
-import { CanvasSourceListComponent } from './canvas/canvas-source-list/canvas-source-list.component';
-import { CanvasDetailsOverviewComponent } from './canvas/canvas-details/canvas-details-overview/canvas-details-overview.component';
-import { KnowledgeSourceViewComponent } from './canvas/canvas-details/knowledge-source-view/knowledge-source-view.component';
-import { ProjectSummaryComponent } from './projects/project-summary/project-summary.component';
-import { CanvasImportComponent } from './canvas/canvas-import/canvas-import.component';
-import { FilesComponent } from './files/files.component';
-import { FileListComponent } from './files/file-list/file-list.component';
+import {CanvasDetailsComponent} from './canvas/canvas-details/canvas-details.component';
+import {CanvasSourceListComponent} from './canvas/canvas-source-list/canvas-source-list.component';
+import {CanvasDetailsOverviewComponent} from './canvas/canvas-details/canvas-details-overview/canvas-details-overview.component';
+import {KnowledgeSourceViewComponent} from './canvas/canvas-details/knowledge-source-view/knowledge-source-view.component';
+import {ProjectSummaryComponent} from './projects/project-summary/project-summary.component';
+import {CanvasImportComponent} from './canvas/canvas-import/canvas-import.component';
+import {FilesComponent} from './files/files.component';
+import {FileListComponent} from './files/file-list/file-list.component';
 import {ProjectTopicListComponent} from "./projects/project-topic-list/project-topic-list.component";
 import {MatAutocompleteModule} from "@angular/material/autocomplete";
-import { SearchApiComponent } from './search/search-api/search-api.component';
+import {SearchApiComponent} from './search/search-api/search-api.component';
 import {MatSlideToggleModule} from "@angular/material/slide-toggle";
+import {WebsiteExtractionAdvancedComponent} from './ingest/website-extraction/website-extraction-advanced/website-extraction-advanced.component';
+import {KsInfoDialogComponent} from './knowledge-source/ks-info-dialog/ks-info-dialog.component';
+import {MatProgressBarModule} from "@angular/material/progress-bar";
+import {KsInfoComponent} from './knowledge-source/ks-info/ks-info.component';
 
 @NgModule({
-    declarations: [
-        AppComponent,
-        FileUploadComponent,
-        WebsiteExtractionComponent,
-        FileUploadDragAndDropComponent,
-        FileUploadAdvancedComponent,
-        WebsiteExtractionFormComponent,
-        SearchComponent,
-        DragAndDropDirective,
-        SettingsComponent,
-        DashboardComponent,
-        SearchBarComponent,
-        SearchResultsComponent,
-        CanvasComponent,
-        ProjectsComponent,
-        ProjectsSidebarComponent,
-        ProjectContextComponent,
-        ProjectCreationDialogComponent,
-        ProjectDetailComponent,
-        ProjectsNavigationComponent,
-        ConfirmDialogComponent,
-        ProjectsTabsComponent,
-        ProjectsTreeViewComponent,
-        ProjectsTreeComponent,
-        SearchResultsDialogComponent,
-        FloatingActionButtonComponent,
-        CanvasDetailsComponent,
-        CanvasSourceListComponent,
-        CanvasDetailsOverviewComponent,
-        KnowledgeSourceViewComponent,
-        ProjectSummaryComponent,
-        CanvasImportComponent,
-        FilesComponent,
-        FileListComponent,
-        ProjectTopicListComponent,
-        SearchApiComponent
-    ],
-    imports: [
-        BrowserModule,
-        AppRoutingModule,
-        BrowserAnimationsModule,
-        MatSidenavModule,
-        MatToolbarModule,
-        MatDividerModule,
-        MatListModule,
-        MatIconModule,
-        MatButtonModule,
-        MatCheckboxModule,
-        MatRadioModule,
-        ReactiveFormsModule,
-        MatFormFieldModule,
-        MatSelectModule,
-        MatOptionModule,
-        MatInputModule,
-        ScrollingModule,
-        DragDropModule,
-        OverlayModule,
-        ClipboardModule,
-        MatChipsModule,
-        MatExpansionModule,
-        MatTabsModule,
-        MatDialogModule,
-        FormsModule,
-        HttpClientModule,
-        MatTreeModule,
-        MatMenuModule,
-        MatTooltipModule,
-        MatAutocompleteModule,
-        MatSlideToggleModule
-    ],
-  providers: [SettingsService, ProjectService, ConfirmDialogService, SearchService, MatSnackBar],
+  declarations: [
+    AppComponent,
+    FileUploadComponent,
+    WebsiteExtractionComponent,
+    FileUploadDragAndDropComponent,
+    FileUploadAdvancedComponent,
+    WebsiteExtractionFormComponent,
+    SearchComponent,
+    DragAndDropDirective,
+    SettingsComponent,
+    DashboardComponent,
+    SearchBarComponent,
+    SearchResultsComponent,
+    CanvasComponent,
+    ProjectsComponent,
+    ProjectsSidebarComponent,
+    ProjectContextComponent,
+    ProjectCreationDialogComponent,
+    ProjectDetailComponent,
+    ProjectsNavigationComponent,
+    ConfirmDialogComponent,
+    ProjectsTabsComponent,
+    ProjectsTreeViewComponent,
+    ProjectsTreeComponent,
+    SearchResultsDialogComponent,
+    FloatingActionButtonComponent,
+    CanvasDetailsComponent,
+    CanvasSourceListComponent,
+    CanvasDetailsOverviewComponent,
+    KnowledgeSourceViewComponent,
+    ProjectSummaryComponent,
+    CanvasImportComponent,
+    FilesComponent,
+    FileListComponent,
+    ProjectTopicListComponent,
+    SearchApiComponent,
+    WebsiteExtractionAdvancedComponent,
+    KsInfoDialogComponent,
+    KsInfoComponent
+  ],
+  imports: [
+    AppRoutingModule,
+    BrowserAnimationsModule,
+    BrowserModule,
+    ClipboardModule,
+    DragDropModule,
+    FormsModule,
+    HttpClientModule,
+    MatAutocompleteModule,
+    MatButtonModule,
+    MatCheckboxModule,
+    MatChipsModule,
+    MatDialogModule,
+    MatDividerModule,
+    MatExpansionModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    MatListModule,
+    MatMenuModule,
+    MatOptionModule,
+    MatProgressBarModule,
+    MatRadioModule,
+    MatSelectModule,
+    MatSidenavModule,
+    MatSlideToggleModule,
+    MatTabsModule,
+    MatToolbarModule,
+    MatTooltipModule,
+    MatTreeModule,
+    OverlayModule,
+    ReactiveFormsModule,
+    ScrollingModule
+  ],
+  providers: [SettingsService, ProjectService, ConfirmDialogService, SearchService, MatSnackBar, MatAccordion],
   bootstrap: [AppComponent]
 })
 export class AppModule {

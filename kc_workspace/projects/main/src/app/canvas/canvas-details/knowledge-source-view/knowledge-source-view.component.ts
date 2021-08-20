@@ -9,12 +9,12 @@ import {KnowledgeSourceModel} from "../../../../../../shared/src/models/knowledg
   styleUrls: ['./knowledge-source-view.component.scss']
 })
 export class KnowledgeSourceViewComponent implements OnInit {
-  project: ProjectModel | null = {};
+  project: ProjectModel | null = new ProjectModel('', {value: ''});
   knowledgeSource: KnowledgeSourceModel[] = [];
 
   constructor(private projectService: ProjectService) {
     this.projectService.currentProject.subscribe(project => {
-      if (project?.name && project?.id !== '') {
+      if (project?.name && project?.id.value !== '') {
         this.project = project;
         if (project.knowledgeSource && project.knowledgeSource.length > 0)
           this.knowledgeSource = project.knowledgeSource;
@@ -27,6 +27,7 @@ export class KnowledgeSourceViewComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+  }
 
 }

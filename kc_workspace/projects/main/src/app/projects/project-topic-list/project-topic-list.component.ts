@@ -13,12 +13,12 @@ import {COMMA, ENTER} from "@angular/cdk/keycodes";
 import {TopicService} from "../../../../../shared/src/services/topics/topic.service";
 import {MatChipInputEvent} from "@angular/material/chips";
 import {TopicModel} from "../../../../../shared/src/models/topic.model";
-import {ProjectModel} from "../../../../../shared/src/models/project.model";
+import {ProjectModel, ProjectUpdateRequest} from "../../../../../shared/src/models/project.model";
 import {ProjectService} from "../../../../../shared/src/services/projects/project.service";
 import {MatAutocompleteSelectedEvent} from "@angular/material/autocomplete";
 import {FormControl} from "@angular/forms";
 import {Observable} from "rxjs";
-import {map, startWith} from "rxjs/operators";
+import {map} from "rxjs/operators";
 
 @Component({
   selector: 'app-project-topic-list',
@@ -27,26 +27,30 @@ import {map, startWith} from "rxjs/operators";
 })
 export class ProjectTopicListComponent implements OnInit, OnChanges {
   @Input() parentId: string | undefined;
-  @Output() topicEvent = new EventEmitter<string[]>();
-  @ViewChild('topicInput') topicInput: ElementRef<HTMLInputElement> | undefined;
-  project: ProjectModel = {topics: []};
+  @Output() topicEvent = new EventEmitter<TopicModel[]>();
+  @ViewChild('topicInput', {static: false}) topicInput: ElementRef<HTMLInputElement> = {} as ElementRef;
+
+  project: ProjectModel = new ProjectModel('', {value: ''}, 'default');
   selectable: boolean = false;
   removable: boolean = true;
-  addOnBlur = true;
   readonly separatorKeysCodes = [ENTER, COMMA] as const;
-  topics: Observable<string[]>;
+  addOnBlur = true;
+
   topicCtrl = new FormControl();
+  filteredTopics: Observable<string[]>;
   allTopics: string[] = [];
 
   constructor(private topicService: TopicService, private projectService: ProjectService) {
+
     this.topicService.topics.subscribe((topics: TopicModel[]) => {
+      console.log('Received new topic list: ', topics);
       for (let i = 0; i < topics.length; i++) {
         this.allTopics.push(topics[i].name);
       }
     });
 
-    this.topics = this.topicCtrl.valueChanges.pipe(
-      startWith(null), map((topic: string | null) => topic ? this._filter(topic) : this.allTopics.slice())
+    this.filteredTopics = this.topicCtrl.valueChanges.pipe(
+      map((topic: string) => topic ? this._filter(topic) : this.allTopics.slice())
     );
   }
 
@@ -55,27 +59,34 @@ export class ProjectTopicListComponent implements OnInit, OnChanges {
 
     if (id) {
       let project = this.projectService.getProject(id);
-      this.project = project ? project : {};
+      this.project = project ? project : new ProjectModel('', {value: ''}, 'default');
+      console.log('Project in topics list: ', project);
     }
   }
 
   ngOnInit(): void {
-
   }
 
   add($event: MatChipInputEvent): void {
-    if ($event.value === '' || $event.value === ' ')
+    console.log('Add event kicked off...', $event);
+
+    const topicStr = ($event.value).trim();
+    if (topicStr === '' || topicStr === ' ')
       return;
 
-    const value = ($event.value).trim();
+    console.log(`Adding chip: ${topicStr}`);
 
-    console.log(`Adding chip: ${value}`);
+    let topic = this.topicService.find(topicStr);
 
-    if (this.project.topics) {
-      this.project.topics.push(value);
-    } else {
-      this.project.topics = [value];
+    if (!topic)
+      topic = this.topicService.create(topicStr)
+
+    let update: ProjectUpdateRequest = {
+      id: this.project.id,
+      addTopic: [topic]
     }
+
+    this.projectService.updateProject(update);
 
     this.topicEvent.emit(this.project.topics);
 
@@ -83,22 +94,40 @@ export class ProjectTopicListComponent implements OnInit, OnChanges {
     $event.chipInput!.clear();
   }
 
-  remove(tag: string): void {
-    if (this.project?.topics)
-      this.project.topics = this.project.topics.filter(e => e !== tag);
+  remove(topic: TopicModel): void {
+    console.log('Removing topic: ', topic.name);
+    let update: ProjectUpdateRequest = {
+      id: this.project.id,
+      removeTopic: [topic]
+    }
+    this.projectService.updateProject(update);
+    // if (this.project?.topics)
+    //   this.project.topics = this.project.topics.filter(e => e.id !== topic.id);
   }
 
   selected(event: MatAutocompleteSelectedEvent): void {
-    if (this.project.topics)
-      this.project.topics.push(event.option.viewValue);
-    if (this.topicInput)
-      this.topicInput.nativeElement.value = '';
+    console.log('Selected event kicked off... ', event);
+    let topicStr = event.option.viewValue;
+    let topic = this.topicService.find(topicStr);
+    if (!topic)
+      topic = this.topicService.create(topicStr)
+
+    let update: ProjectUpdateRequest = {
+      id: this.project.id,
+      addTopic: [topic]
+    }
+
+    this.projectService.updateProject(update);
+    this.topicInput.nativeElement.value = '';
     this.topicCtrl.setValue(null);
   }
 
-  private _filter(value: string): string[] {
-    const filterValue = value.toLowerCase();
-    return this.allTopics.filter(topic => topic.toLowerCase().includes(filterValue));
+  private _filter(topic: string): string[] {
+    console.log('topic received: ', topic);
+    const filtertopic = topic.toLowerCase();
+    console.log('filtertopic: ', filtertopic);
+    console.log('Returning allTpics: ', this.allTopics);
+    return this.allTopics.filter(topic => topic.toLowerCase().includes(filtertopic));
   }
 
 }

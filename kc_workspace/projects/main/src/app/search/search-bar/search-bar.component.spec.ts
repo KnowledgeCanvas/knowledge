@@ -1,6 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { SearchBarComponent } from './search-bar.component';
+import {SearchBarComponent} from './search-bar.component';
+import {FormBuilder} from "@angular/forms";
+import {HttpClient} from "@angular/common/http";
+import {MatDialog} from "@angular/material/dialog";
 
 describe('SearchBarComponent', () => {
   let component: SearchBarComponent;
@@ -8,9 +11,23 @@ describe('SearchBarComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SearchBarComponent ]
+      declarations: [SearchBarComponent],
+      providers: [
+        {
+          provide: FormBuilder,
+          useValue: {}
+        },
+        {
+          provide: HttpClient,
+          useValue: {}
+        },
+        {
+          provide: MatDialog,
+          useValue: {}
+        }
+      ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

@@ -1,6 +1,7 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { KnowledgeSourceViewComponent } from './knowledge-source-view.component';
+import {KnowledgeSourceViewComponent} from './knowledge-source-view.component';
+import {HttpClient} from "@angular/common/http";
 
 describe('KnowledgeSourceViewComponent', () => {
   let component: KnowledgeSourceViewComponent;
@@ -8,7 +9,14 @@ describe('KnowledgeSourceViewComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ KnowledgeSourceViewComponent ]
+      declarations: [ KnowledgeSourceViewComponent ],
+      providers: [
+        {
+          provide: HttpClient,
+          useValue: {}
+        }
+      ]
+
     })
     .compileComponents();
   });

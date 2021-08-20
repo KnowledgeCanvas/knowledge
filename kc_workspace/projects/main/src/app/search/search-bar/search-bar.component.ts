@@ -1,7 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {SearchService} from "../../../../../shared/src/services/search/search.service";
-import {MatDialogRef} from "@angular/material/dialog";
 
 @Component({
   selector: 'app-search-bar',
@@ -22,9 +21,9 @@ export class SearchBarComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  EnterSubmit($event: any) {
+  async EnterSubmit($event: any) {
     console.log('Searching for search term: ', this.searchTerm.value);
-    this.searchService.search(this.searchTerm.value);
+    await this.searchService.search(this.searchTerm.value);
   }
 
 }

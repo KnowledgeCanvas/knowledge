@@ -8,11 +8,10 @@
         <mat-icon>add</mat-icon>
       </div>
       <div *ngFor="let node of canvasNodes" class="canvas-node-container" (click)="displayContextPopup(node)" cdkDrag
-           [cdkDragData]="node" [matTooltipClass]="{'tool-tip':true}" matTooltip="{{node.title}}
-
-{{node.googleItem?.snippet}}" matTooltipPosition="after">
-        <img *ngIf="node.icon" class="search-result-icon" [src]="node.icon" alt="">
-        <img *ngIf="!node.icon" class="search-result-icon" src="{{node.iconUrl}}" alt="">
+           [cdkDragData]="node" [matTooltipClass]="{'tool-tip':true}" matTooltip="{{node.title}}"
+           matTooltipPosition="after">
+        <img *ngIf="node.icon" class="knowledge-source-icon" [src]="node.icon" alt="">
+        <img *ngIf="!node.icon" class="knowledge-source-icon" src="{{node.iconUrl}}" alt="">
       </div>
     </div>
   </div>

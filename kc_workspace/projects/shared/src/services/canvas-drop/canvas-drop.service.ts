@@ -1,8 +1,5 @@
 import {Injectable} from '@angular/core';
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from "@angular/cdk/drag-drop";
-import {BehaviorSubject} from "rxjs";
-import {CanvasNodeModel} from "../../models/canvas.model";
-import {GoogleSearchResultsModel} from "../../models/google.search.results.model";
 import {KnowledgeSourceModel} from "../../models/knowledge.source.model";
 
 @Injectable({

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ProjectService} from "../../../../../../shared/src/services/projects/project.service";
 import {ProjectModel} from "../../../../../../shared/src/models/project.model";
 
@@ -8,7 +8,7 @@ import {ProjectModel} from "../../../../../../shared/src/models/project.model";
   styleUrls: ['./canvas-details-overview.component.scss']
 })
 export class CanvasDetailsOverviewComponent implements OnInit {
-  currentProject: ProjectModel = {};
+  currentProject: ProjectModel = new ProjectModel('', {value: ''});
 
   constructor(private projectService: ProjectService) {
     projectService.currentProject.subscribe((data) => {
@@ -17,7 +17,6 @@ export class CanvasDetailsOverviewComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
   }
 
 }

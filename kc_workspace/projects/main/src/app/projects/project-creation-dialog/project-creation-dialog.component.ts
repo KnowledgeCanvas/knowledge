@@ -1,8 +1,11 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {ProjectCreationRequest} from "../../../../../shared/src/models/project.model";
+import {ProjectCreationRequest, ProjectModel} from "../../../../../shared/src/models/project.model";
 import {ProjectService} from "../../../../../shared/src/services/projects/project.service";
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {FormBuilder, FormGroup} from "@angular/forms";
+import {UuidService} from "../../../../../shared/src/services/uuid/uuid.service";
+import {TopicService} from "../../../../../shared/src/services/topics/topic.service";
+import {TopicModel} from "../../../../../shared/src/models/topic.model";
 
 @Component({
   selector: 'app-project-creation-dialog',
@@ -19,13 +22,16 @@ export class ProjectCreationDialogComponent implements OnInit {
     {value: 'hobby', displayValue: 'Hobby'}
   ]
   selectedType: 'school' | 'work' | 'hobby' | 'default' = 'default';
-  uploadToggle: boolean = false;
+  panelOpenState: boolean;
   private formGroup: FormGroup;
 
   constructor(private projectService: ProjectService,
               public dialogRef: MatDialogRef<ProjectCreationDialogComponent>,
               @Inject(MAT_DIALOG_DATA) public data: string,
-              formBuilder: FormBuilder) {
+              formBuilder: FormBuilder,
+              private uuidService: UuidService,
+              private topicService: TopicService) {
+    this.panelOpenState = false;
     this.project = {
       name: '',
       topics: [],
@@ -45,7 +51,21 @@ export class ProjectCreationDialogComponent implements OnInit {
   create(): void {
     if (this.project?.name) {
       this.project.type = this.selectedType;
+      if (this.project.type === 'school') {
+        let homeworkTopic = this.topicService.find('Homework');
+        let homework: ProjectCreationRequest = {
+          authors: [],
+          description: "The Knowledge Canvas automatically generated this folder based on the project type you chose!",
+          knowledgeSource: [],
+          name: "Homework",
+          topics: homeworkTopic ? [homeworkTopic] : [],
+          type: 'school'
+        };
+        this.project.subProjects = [homework];
+      }
+
       this.projectService.newProject(this.project);
+
       this.dialogRef.close();
     }
   }
@@ -55,19 +75,18 @@ export class ProjectCreationDialogComponent implements OnInit {
   }
 
   init(): void {
-    this.project = {name: ''};
+    this.project = new ProjectModel('', {value: ''}, 'default');
 
     if (this.data) {
-      this.project.parentId = this.data;
+      this.project.parentId = {value: this.data};
     }
   }
 
 
-  addTopic($event: string[]) {
+  addTopic($event: TopicModel[]) {
     this.project.topics = [...$event];
   }
 
   onFileSelected() {
-
   }
 }

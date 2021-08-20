@@ -1,14 +1,27 @@
+@import "projects/main/src/theme";
+
+.projects-tree-controls-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  flex-wrap: nowrap;
+  align-content: center;
+}
+
 .mat-tree-node:nth-child(even) {
   background-color: #F0F0F0;
 }
+
 .mat-tree-node:nth-child(odd) {
   background-color: #FBFCFD;
 }
 
 .mat-tree-node {
+  white-space: nowrap;
   cursor: pointer;
 }
 
-.mat-tree {
-  background-color: #E3E6F5;
+.background-highlight {
+  background-color: $kc-secondary-color-med !important;
 }

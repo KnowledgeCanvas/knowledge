@@ -1,21 +1,21 @@
-import {KnowledgeSourceModel} from "./knowledge.source.model";
+import {UuidModel} from "./uuid.model";
 
-export interface FileModel extends KnowledgeSourceModel {
-  filename?: string,
-  size?: number,
-  path?: string,
-  accessTime?: string,
-  modificationTime?: string,
-  creationTime?: string
-}
+export class FileModel {
+  filename: string;
+  size: number;
+  path: string;
+  id: UuidModel;
+  private accessTime: string;
+  private modificationTime: string;
+  private creationTime: string;
 
-export interface LocalFileModel extends FileModel {
-  mode: string,
-  path: string,
-  user?: string,
-  group?: string,
-}
-
-export interface RemoteFileModel extends FileModel {
-
+  constructor(filename: string, size: number, path: string, id: UuidModel) {
+    this.filename = filename;
+    this.id = id;
+    this.size = size;
+    this.path = path;
+    this.accessTime = Date();
+    this.modificationTime = Date();
+    this.creationTime = Date();
+  }
 }

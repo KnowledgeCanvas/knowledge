@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CanvasImportComponent } from './canvas-import.component';
+import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
+import {HttpClient} from "@angular/common/http";
 
 describe('CanvasImportComponent', () => {
   let component: CanvasImportComponent;
@@ -8,7 +10,14 @@ describe('CanvasImportComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CanvasImportComponent ]
+      declarations: [ CanvasImportComponent ],
+      providers: [
+        HttpClient,
+        {
+          provide: MAT_DIALOG_DATA,
+          useValue: {}
+        }
+      ]
     })
     .compileComponents();
   });

@@ -1,9 +1,7 @@
-<div>
+<div style="height: 100%">
   <mat-sidenav-container class="sidenav-container">
-    <mat-sidenav #drawer [attr.role]="'navigation'" [mode]="'side'"
-                 [opened]="false"
-                 class="sidenav"
-                 fixedInViewport>
+    <mat-sidenav #drawer [attr.role]="'dialog'" [mode]="'over'"
+                 [opened]="false">
 
       <mat-toolbar>
         <!--        <img alt="Company Logo" src="assets/app.png" style="max-height: 40px"/>-->
@@ -12,7 +10,7 @@
       <mat-divider></mat-divider>
 
       <div>
-        <mat-nav-list>
+        <mat-nav-list (click)="drawer.close()">
           <a mat-list-item routerLink="/" routerLinkActive="active">Dashboard</a>
           <mat-divider></mat-divider>
           <a mat-list-item routerLink="/app-files" routerLinkActive="active">Files</a>

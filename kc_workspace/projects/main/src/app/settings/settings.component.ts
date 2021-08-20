@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { Location } from '@angular/common'
+import {Component, OnInit} from '@angular/core';
+import {Location} from '@angular/common'
 
 @Component({
   selector: 'app-settings',
@@ -9,7 +9,8 @@ import { Location } from '@angular/common'
 export class SettingsComponent implements OnInit {
   localStorage: boolean = window.localStorage.length > 0;
 
-  constructor(private location: Location) { }
+  constructor(private location: Location) {
+  }
 
   ngOnInit(): void {
   }
@@ -21,8 +22,17 @@ export class SettingsComponent implements OnInit {
   }
 
   printLocalStorage() {
-    for (let i = 0; i < window.localStorage.length; i++) {
-      console.log(`localStorage entry ${i+1}: `, window.localStorage.getItem(`${i}`));
+    let ksList = window.localStorage.getItem('kc-knowledge-sources');
+    if (ksList) {
+      let ksParsed = JSON.parse(ksList);
+      console.log('Knowledge sources: ');
+      console.log(ksParsed);
+    }
+
+    let projects = window.localStorage.getItem('kc-projects');
+    if (projects) {
+      let projectsParsed = JSON.parse(projects);
+      console.log('Projects: ', projectsParsed);
     }
   }
 
