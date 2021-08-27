@@ -28,8 +28,14 @@ contextBridge.exposeInMainWorld(
                 "electron-browser-view-results",
                 "electron-browser-view-file-results"
             ];
+            let validAlwaysChannels = [
+                "app-chrome-extension-results"
+            ]
             if (validChannels.includes(channel)) {
                 ipcRenderer.once(channel, (event, ...args) => func(...args));
+            }
+            if (validAlwaysChannels.includes(channel)) {
+                ipcRenderer.on(channel, (event, ...args) => func(...args));
             }
         }
     }

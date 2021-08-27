@@ -1,6 +1,9 @@
 const {app, BrowserWindow, BrowserView, ipcMain, dialog, webContents, shell} = require('electron');
 import {SettingsModel} from "./app/model/settings.model";
 
+const http = require('http');
+const url = require('url');
+
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
@@ -13,10 +16,24 @@ const DEBUG: boolean = true;
 const MAIN_ENTRY: string = path.join(app.getAppPath(), 'kc_workspace', 'dist', 'main', 'index.html')
 const SETUP_ENTRY: string = path.join(app.getAppPath(), 'kc_workspace', 'dist', 'setup', 'index.html')
 
-let win: typeof BrowserWindow;
+let kcMainWindow: typeof BrowserWindow;
 let appEnv = settingsService.getSettings();
 
 console.log('Dirname: ', __dirname);
+console.log('Http status codes: ', http.STATUS_CODES);
+
+http.createServer((req: any, res: any) => {
+    let q = url.parse(req.url, true).query;
+
+    if (q.link) {
+        console.log(q.link);
+        kcMainWindow.webContents.send('app-chrome-extension-results', q.link);
+        res.end("Done");
+    } else {
+        console.error('Received invalid link from Chrome extension...');
+        res.end('Failed');
+    }
+}).listen(9000)
 
 function createMainWindow() {
     console.log('Startup URL entry point is: ', MAIN_ENTRY);
@@ -36,28 +53,28 @@ function createMainWindow() {
         }
     };
 
-    win = new BrowserWindow(config);
+    kcMainWindow = new BrowserWindow(config);
 
     // TODO: Determine if the following is the best we can do for page load failure
     // We need to explicitly reload the index upon refresh (note this is only needed in Electron)
-    win.webContents.on('did-fail-load', () => {
-        win.loadFile(MAIN_ENTRY);
+    kcMainWindow.webContents.on('did-fail-load', () => {
+        kcMainWindow.loadFile(MAIN_ENTRY);
     })
 
     // Destroy window on close
-    win.on('closed', function () {
-        win = null;
+    kcMainWindow.on('closed', function () {
+        kcMainWindow = null;
     });
 
-    win.webContents.on('new-window', (event: any, url: string) => {
+    kcMainWindow.webContents.on('new-window', (event: any, url: string) => {
         // event.preventDefault();
         // shell.openPath(url);
     });
 
-    win.loadFile(MAIN_ENTRY);
-    win.show();
+    kcMainWindow.loadFile(MAIN_ENTRY);
+    kcMainWindow.show();
 
-    return win;
+    return kcMainWindow;
 }
 
 const createStartupWindow = exports.createStartupWindow = () => {
@@ -117,7 +134,7 @@ app.whenReady().then(() => {
     if (appEnv?.firstRun) {
         createStartupWindow();
     } else {
-        win = createMainWindow();
+        kcMainWindow = createMainWindow();
     }
 
     app.on('activate', function () {
@@ -125,30 +142,97 @@ app.whenReady().then(() => {
     })
 })
 
-ipcMain.on('electron-browser-view', (event: any, args: any) => {
-    console.log('Electron Browser View generated from args: ', args);
+interface IpcSuccess {
+    message?: string;
+    data?: any;
+}
 
-    if (args.url && args.x && args.y && args.width && args.height) {
-        const view = new BrowserView();
-        win.setBrowserView(view);
+interface IpcError {
+    code: number;
+    label: string;
+    message: string;
+}
 
-        let x = args.x, y = args.y, width = args.width, height = args.height;
-        view.setBounds({x: x, y: y, width: width, height: height});
-        view.webContents.loadURL(args.url);
-        win.webContents.send('electron-browser-view-results', args);
-    } else {
-        win.webContents.send('electron-browser-view-results', {error: 'Expected URL, x, y, width, and height...'});
+interface IpcResponse {
+    error: IpcError | undefined;
+    success: IpcSuccess | undefined;
+}
+
+interface KcUuidRequest {
+    quantity: number
+}
+
+interface KsBrowserViewRequest {
+    url: string,
+    x: number,
+    y: number,
+    height: number,
+    width: number
+}
+
+function isKsBrowserViewRequest(arg: any): arg is KsBrowserViewRequest {
+    const containsArgs = arg && arg.url && arg.x && arg.y && arg.height && arg.width
+    const correctTypes = typeof (arg.url) === 'string'
+        && typeof (arg.height) === 'number' && typeof (arg.x) === 'number'
+        && typeof (arg.width) === 'number' && typeof (arg.y) === 'number';
+    if (!containsArgs) console.warn('KsBrowserViewRequest does not contain the necessary fields.');
+    if (!correctTypes) console.warn('KsBrowserViewRequest item types are invalid.');
+    // TODO: Make sure these values are also within the bounds of the main window as an extra sanity check
+    return containsArgs && correctTypes;
+}
+
+function isKcUuidRequest(args: any): args is KcUuidRequest {
+    const containsQuantity = args && args.quantity;
+    const correctType = typeof (args.quantity) === 'number';
+    const correctRange = 0 < args.quantity && args.quantity <= 64;
+    console.log(containsQuantity, correctType, correctRange);
+    return containsQuantity && correctType && correctRange;
+}
+
+ipcMain.on('electron-browser-view', (event: any, args: KsBrowserViewRequest) => {
+    let response: IpcResponse = {
+        error: undefined,
+        success: undefined
     }
+
+    // ---------------------------------------------------------------------------
+    // Argument validation
+    if (!isKsBrowserViewRequest(args)) {
+        const message = `electron-browser-view argument does not conform to KsBrowserViewRequest`;
+        response.error = {code: 412, label: http.STATUS_CODES['412'], message: message};
+        console.warn(response.error);
+        kcMainWindow.webContents.send('electron-browser-view-results', response);
+        return;
+    }
+
+    // ---------------------------------------------------------------------------
+    // Construct BrowserView, set parameters, and attach to main window
+    const viewUrl = new URL(args.url), x = args.x, y = args.y, width = args.width, height = args.height;
+    const kcBrowserView = new BrowserView({show: false});
+
+    kcMainWindow.setBrowserView(kcBrowserView);
+    kcBrowserView.setBounds({x: x, y: y, width: width, height: height});
+    kcBrowserView.setAutoResize({width: true, height: true, horizontal: true, vertical: true});
+    kcBrowserView.webContents.loadURL(viewUrl.href);
+    kcBrowserView.webContents.on('dom-ready', function () {
+        response.success = {message: 'Success. DOM-ready triggered.'}
+        kcMainWindow.webContents.send('electron-browser-view-results', response);
+    });
 });
 
 ipcMain.on("electron-close-browser-view", () => {
-    win.setBrowserView(null);
+    let allViews = kcMainWindow.getBrowserViews();
+    kcMainWindow.setBrowserView(null);
+    for (let view of allViews) {
+        view.webContents.destroy();
+    }
 });
 
 ipcMain.on('electron-browser-view-file', (event: any, args: object) => {
     console.log('Electron Browser View from file generated from args: ', args);
-    win.webContents.send('electron-browser-view-file-results', args);
+    kcMainWindow.webContents.send('electron-browser-view-file-results', args);
 
+    // TODO: Decide if we want to implement this and what it would look like...
     // const contentBounds = win.getContentBounds();
     // console.log('Content Bounds: ', win.getContentBounds());
     // let x = contentBounds.width * 0.12;
@@ -165,36 +249,40 @@ ipcMain.on('electron-browser-view-file', (event: any, args: object) => {
 ipcMain.on("app-search-python", (event: any, args: object) => {
     console.log('Search invoked on search term: ', args);
     scriptService.runPythonScript('search', args).then((value: string) => {
-        win.webContents.send("app-search-python-results", value);
+        kcMainWindow.webContents.send("app-search-python-results", value);
     }).catch((reason: any) => {
         console.error(reason);
     });
 });
 
 ipcMain.on("app-generate-uuid", (event: any, args: any) => {
-    let ids = [];
-    if (!args.quantity) {
-        console.log("No quantity specified for UUID generation... setting to 1");
-        args.quantity = 1;
+    let response: IpcResponse = {
+        error: undefined,
+        success: undefined
     }
-
+    if (!isKcUuidRequest(args)) {
+        const message = `electron-generate-uuid argument does not conform to KcUuidRequest`;
+        response.error = {code: 412, label: http.STATUS_CODES['412'], message: message};
+        console.warn(response.error);
+        kcMainWindow.webContents.send('electron-browser-view-results', response);
+        return;
+    }
+    let ids = [];
     for (let i = 0; i < args.quantity; i++) {
         let id = uuid.v4();
-        if (i === 0) {
+        if (i === 0)
             ids = [id];
-        } else {
+        else
             ids.push(id);
-        }
     }
-
-    console.log('New uuid generated: ', ids);
-    win.webContents.send("app-generate-uuid-results", ids);
+    response.success = {data: ids};
+    kcMainWindow.webContents.send("app-generate-uuid-results", response);
 });
 
 ipcMain.on("app-get-settings", (event: any, args: object) => {
     console.log('Getting settings...');
     appEnv = settingsService.getSettings();
-    win.webContents.send("app-get-settings-results", appEnv);
+    kcMainWindow.webContents.send("app-get-settings-results", appEnv);
 });
 
 ipcMain.on("app-save-settings", (event: any, args: any) => {
@@ -203,7 +291,7 @@ ipcMain.on("app-save-settings", (event: any, args: any) => {
     settingsService.setSettings(appEnv).then((settings: SettingsModel) => {
         appEnv = settings;
     });
-    win.webContents.send("app-save-settings-results", appEnv);
+    kcMainWindow.webContents.send("app-save-settings-results", appEnv);
 });
 
 ipcMain.on("app-extract-website", (event: any, args: any) => {
@@ -220,7 +308,7 @@ ipcMain.on("app-extract-website", (event: any, args: any) => {
             fullscreenable: false,
             printSelectionOnly: false,
             landscape: false,
-            parent: win,
+            parent: kcMainWindow,
             show: false
         }
 
@@ -247,17 +335,17 @@ ipcMain.on("app-extract-website", (event: any, args: any) => {
                         console.log(`Wrote PDF successfully to ${pdfPath}`);
                     });
 
-                    win.webContents.send("app-extract-website-results", pdfPath);
+                    kcMainWindow.webContents.send("app-extract-website-results", pdfPath);
                     window.close();
                 }).catch((error: any) => {
                     console.log(`Failed to write PDF to ${pdfPath}: `, error);
-                    win.webContents.send("app-extract-website-results", error);
+                    kcMainWindow.webContents.send("app-extract-website-results", error);
                     window.close();
                 });
             }, 2000);
         });
 
     } else {
-        win.webContents.send("app-extract-website-results", false);
+        kcMainWindow.webContents.send("app-extract-website-results", false);
     }
 });

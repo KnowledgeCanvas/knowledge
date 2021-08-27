@@ -19,7 +19,7 @@ class ScriptService {
                     args: scriptArgs
                 }
 
-                console.log('Running script with name: ', name, ' and args: ', args);
+                console.warn('Running script with name: ', name, ' and args: ', args);
                 PythonShell.run('search.py', options, (err, results) => {
                     if (err) {
                         console.error('PythonShell [run] returned an error: ', err);

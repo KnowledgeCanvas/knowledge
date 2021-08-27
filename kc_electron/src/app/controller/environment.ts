@@ -17,10 +17,6 @@ const resources = path.join(process.cwd(), 'resources');
 const envPath = path.resolve(resources, 'app.env');
 const projectsPath = path.join(appPath, 'Projects');
 
-
-console.log('Knowledge Canvas env file: ', envPath);
-
-
 // ApplicationEnvironment is a singleton class that serves as the ground-truth environment settings
 export class ApplicationEnvironment {
     private static appEnv: EnvironmentModel;
@@ -110,7 +106,7 @@ export class ApplicationEnvironment {
                 ...settings
             };
         } catch (e) {
-            console.log('Read from settings file unsuccessful. Creating new settings file.');
+            console.warn('Read from settings file unsuccessful. Creating new settings file.');
             if (makeDirectory(this.appEnv.settingsPath) !== RET_OK) {
                 console.error('Exiting with code ', -1);
                 process.exit(-1);
@@ -130,7 +126,6 @@ export class ApplicationEnvironment {
             pdfPath,
             projectsPath
         ]) {
-            console.log('Checking: ', pathToCheck);
             if (makeDirectory(pathToCheck) !== RET_OK)
                 console.error('Unexpected error while attempting to create directory: ', pathToCheck);
         }
