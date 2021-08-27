@@ -1,36 +1,42 @@
-<div class="row search-results-header" *ngIf="searchResults.length > 0">
-  <div class="col s4 left">
-    Displaying <b>{{searchResults?.length}}</b> results:
+<div class="search-results-header">
+  <div class="">
+    <b>Knowledge Queue</b>
   </div>
-  <div class="col s2 right">
-    <button mat-button (click)="clearResults()" color="warn">Clear Results</button>
+
+  <div class="" id="click-ref" *ngIf="searchResults.length > 0">
+    Displaying<b>{{searchResults?.length}}</b> result(s)
+  </div>
+
+  <div class="" *ngIf="searchResults.length > 0">
+    <button (click)="clearResults()" color="warn" mat-button>Clear Results</button>
   </div>
 </div>
 
-<div *ngIf="searchResults.length > 0">
-  <div>
-    <div class="cdk-virtual-scroll-data-source">
-      <div cdk-scrollable class="search-result-viewport">
-        <div cdkDropList
-             cdkDropListOrientation="horizontal"
-             [cdkDropListData]="searchResults"
-             (cdkDropListDropped)="drop($event)"
-             cdkDropListSortingDisabled
-             id="search-results-list"
-             class="search-result-list">
-          <div cdkDrag
-               *ngFor="let item of searchResults"
-               [cdkDragData]="item"
-               class="search-result-container truncated search-result-container"
-               (click)="displayContextPopup(item)"
-               [matTooltipClass]="{'tool-tip':true}"
-               matTooltip="{{item.title}}" matTooltipPosition="below">
-            <img *ngIf="item.icon" class="knowledge-source-icon" [src]="item.icon" alt="">
-            <img *ngIf="!item.icon" class="knowledge-source-icon" src="{{item.iconUrl}}" alt="">
-          </div>
-        </div>
+
+<div class="cdk-virtual-scroll-data-source">
+  <div cdkScrollable class="search-result-viewport">
+    <div cdkDropListOrientation="horizontal"
+         (cdkDropListDropped)="drop($event)"
+         [cdkDropListData]="searchResults"
+         class="search-result-list"
+         id="search-results-list"
+         cdkDropList>
+
+      <div class="kc-queue-empty-message" *ngIf="searchResults.length === 0">
+        Your queue is empty, check back later!
+      </div>
+
+      <div class="search-result-container truncated"
+           [matTooltipClass]="{'tool-tip':true}"
+           (click)="displayContextPopup(item)"
+           *ngFor="let item of searchResults"
+           matTooltip="{{item.title}}"
+           matTooltipShowDelay="200"
+           [cdkDragData]="item"
+           cdkDrag>
+        <img *ngIf="!item.icon" class="knowledge-source-icon" src="{{item.iconUrl}}" alt="">
+        <img *ngIf="item.icon" class="knowledge-source-icon" [src]="item.icon" alt="">
       </div>
     </div>
   </div>
 </div>
-

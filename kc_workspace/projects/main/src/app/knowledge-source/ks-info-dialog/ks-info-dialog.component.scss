@@ -1,3 +1,10 @@
+.knowledge-source-icon-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin-top: 10px;
+}
+
 .ks-thumbnail-container {
   display: flex;
   flex-direction: column;
@@ -12,15 +19,36 @@
 }
 
 .electron-browser-view {
-  width: 99%;
+  width: 100%;
   min-height: 50vh;
-  border-width: 2px;
-  border-color: black;
-  border-style: dotted;
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
   align-content: center;
   justify-content: center;
   align-items: center;
+}
+
+.browser-viewport {
+  width: 67vw;
+  min-height: 50vh;
+}
+
+.ks-notes-viewport {
+  justify-content: flex-start;
+  flex-direction: column;
+  align-items: center;
+  flex-wrap: nowrap;
+  padding-top: 8px;
+  min-height: 50vh;
+  max-height: 50vh;
+  display: flex;
+  width: 100%;
+}
+
+.ks-notes-textarea {
+  max-width: 100%;
+  max-height: 100%;
+  min-width: 100%;
+  min-height: 100%;
 }

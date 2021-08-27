@@ -1,8 +1,6 @@
-<br>
-<br>
-<mat-form-field class="website-extraction-url" appearance="standard" (keyup.enter)="checkUrl()">
+<mat-form-field class="website-extraction-url scale-up-center" appearance="standard" (keyup.enter)="checkUrl()">
   <mat-label>URL</mat-label>
-  <input matInput placeholder="Enter a URL" [(ngModel)]="url" required>
+  <input matInput placeholder="Enter a URL" #extractor [(ngModel)]="url" required autofocus>
   <mat-hint>Enter the complete URL for the page you want to extract, then press Enter.</mat-hint>
 </mat-form-field>
 <br>
@@ -29,7 +27,7 @@
 
   <div class="row">
     <div class="col s12">
-      <app-project-topic-list (topicEvent)="topicEvent($event)"></app-project-topic-list>
+      <app-project-topic-list [sourceRef]="undefined" (topicEvent)="topicEvent($event)"></app-project-topic-list>
     </div>
   </div>
 
@@ -52,8 +50,8 @@
 
   <div class="row right">
     <div class="col s12">
+      <button mat-button color="primary" (click)="extract()">Extract</button>
       <button mat-button color="warn" (click)="cancel()">Cancel</button>
-      <button mat-button (click)="extract()">Extract</button>
     </div>
   </div>
 </div>

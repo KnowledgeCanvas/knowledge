@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {KnowledgeSourceModel} from "../../../../../shared/src/models/knowledge.source.model";
+import {KnowledgeSource} from "../../../../../shared/src/models/knowledge.source.model";
 import {UuidModel} from "../../../../../shared/src/models/uuid.model";
 import {ProjectService} from "../../../../../shared/src/services/projects/project.service";
 import {MatDialogRef} from "@angular/material/dialog";
@@ -21,7 +21,7 @@ export class WebsiteExtractionComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  ksChange(ks: KnowledgeSourceModel) {
+  ksChange(ks: KnowledgeSource) {
     let update: ProjectUpdateRequest = {
       id: this.parentId,
       addKnowledgeSource: [ks]

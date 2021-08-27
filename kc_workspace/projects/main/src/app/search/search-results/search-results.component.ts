@@ -4,7 +4,7 @@ import {CanvasDropService} from "../../../../../shared/src/services/canvas-drop/
 import {Subscription} from "rxjs";
 import {MatDialog} from "@angular/material/dialog";
 import {SearchService} from "../../../../../shared/src/services/search/search.service";
-import {KnowledgeSourceModel} from "../../../../../shared/src/models/knowledge.source.model";
+import {KnowledgeSource} from "../../../../../shared/src/models/knowledge.source.model";
 import {KsInfoDialogComponent} from "../../knowledge-source/ks-info-dialog/ks-info-dialog.component";
 
 @Component({
@@ -15,8 +15,7 @@ import {KsInfoDialogComponent} from "../../knowledge-source/ks-info-dialog/ks-in
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SearchResultsComponent implements OnInit {
-  searchResults: KnowledgeSourceModel[] = [];
-  subscription: Subscription | undefined;
+  searchResults: KnowledgeSource[] = [];
 
   constructor(private canvasDropService: CanvasDropService,
               public dialog: MatDialog,
@@ -25,26 +24,25 @@ export class SearchResultsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.subscription = this.searchService.searchList.subscribe((results: KnowledgeSourceModel[]) => {
+    this.searchService.searchList.subscribe((results: KnowledgeSource[]) => {
       this.searchResults = results;
       this.ref.markForCheck();
+      // this.ref.detectChanges();
     });
   }
 
   ngOnDestroy() {
-    if (this.subscription)
-      this.subscription.unsubscribe();
   }
 
   drop(event: CdkDragDrop<any>) {
     console.log('Previous results: ', this.searchResults);
-    let newResults: KnowledgeSourceModel = this.canvasDropService.drop(event);
+    let newResults: KnowledgeSource = this.canvasDropService.drop(event);
     console.log('New results: ', newResults);
     this.searchResults = [...this.searchResults];
     console.log('Updated results: ', this.searchResults);
   }
 
-  displayContextPopup(ks: KnowledgeSourceModel): void {
+  displayContextPopup(ks: KnowledgeSource): void {
     const dialogRef = this.dialog.open(KsInfoDialogComponent, {
       width: '70%',
       data: ks,
@@ -52,11 +50,18 @@ export class SearchResultsComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      this.ref.markForCheck();
+      this.ref.detectChanges();
     })
   }
 
   clearResults() {
     this.searchResults = [];
+    this.searchService.clearResults();
+  }
+
+  swipeUp(event: any, when: string, item: KnowledgeSource) {
+    console.log('event: ', event);
+    console.log('when: ', when);
+    console.log('Swipe up on KS model: ', item);
   }
 }

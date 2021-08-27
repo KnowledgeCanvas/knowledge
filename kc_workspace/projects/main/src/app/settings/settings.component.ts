@@ -16,7 +16,6 @@ export class SettingsComponent implements OnInit {
   }
 
   clearLocalStorage() {
-    console.log('Clearing localStorage...');
     window.localStorage.clear();
     this.localStorage = false;
   }
@@ -25,14 +24,11 @@ export class SettingsComponent implements OnInit {
     let ksList = window.localStorage.getItem('kc-knowledge-sources');
     if (ksList) {
       let ksParsed = JSON.parse(ksList);
-      console.log('Knowledge sources: ');
-      console.log(ksParsed);
     }
 
     let projects = window.localStorage.getItem('kc-projects');
     if (projects) {
       let projectsParsed = JSON.parse(projects);
-      console.log('Projects: ', projectsParsed);
     }
   }
 

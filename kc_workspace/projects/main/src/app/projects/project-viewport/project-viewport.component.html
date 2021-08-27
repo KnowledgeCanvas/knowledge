@@ -1,0 +1,13 @@
+<nav mat-tab-nav-bar class="knowledge-canvas-details-tabs">
+  <a [routerLink]="[{ outlets: { 'project-detail-router': [link.link] } }]"
+     [active]="activeLink == link.index"
+     (click)="activeLink = link.index"
+     *ngFor="let link of navLinks"
+     [disabled]="link.disabled"
+     routerLinkActive
+     mat-tab-link
+  >
+    {{link.label}}
+  </a>
+</nav>
+<router-outlet name="project-detail-router"></router-outlet>

@@ -1,11 +1,10 @@
 import {UuidModel} from "./uuid.model";
-import {GoogleSearchItemModel} from "./google.search.results.model";
+import {SearchModel} from "./google.search.results.model";
 import {FileModel} from "./file.model";
 import {WebsiteModel} from "./website.model";
-import {TopicModel} from "./topic.model";
 import {AuthorModel} from "./author.model";
 
-export type IngestType = 'google' | 'file' | 'website' | 'generic';
+export type IngestType = 'google' | 'file' | 'website' | 'generic' | 'topic' | 'search';
 
 // TODO: track down all of these and replace them with something more appropriate
 // TODO: they originally started as a way to switch the "add to project" and "remove from project" buttons on KS
@@ -14,15 +13,42 @@ export type SourceReference = 'search' | 'list' | 'extract';
 // TODO: turn this into RDF type (Open graph)
 export type SourceType = 'article'
 
-export class KnowledgeSourceModel {
+export class SourceModel {
+  search: SearchModel | undefined;
+  file: FileModel | undefined;
+  website: WebsiteModel | undefined;
+
+  constructor(file?: FileModel, search?: SearchModel, website?: WebsiteModel) {
+    if (!file && !search && !website) {
+      throw new Error('SourceModel must contain at lesat one valid source.');
+    }
+    this.file = file;
+    this.search = search;
+    this.website = website;
+  }
+}
+
+export class KnowledgeSourceReference {
+  ingestType: IngestType;
+  source: SourceModel;
+  link: URL | string;
+
+  constructor(ingestType: IngestType, source: SourceModel, link: URL | string) {
+    this.ingestType = ingestType;
+    this.source = source;
+    this.link = link;
+  }
+}
+
+export class KnowledgeSource {
   associatedProjects?: UuidModel[];
   authors?: AuthorModel[];
-  readonly dateAccessed: string;
-  readonly dateCreated: string;
-  readonly dateModified: string;
+  dateCreated: Date;
+  dateAccessed: Date;
+  dateModified: Date;
   description?: string;
   fileItem?: FileModel;
-  googleItem?: GoogleSearchItemModel;
+  googleItem?: SearchModel;
   icon?: any;
   iconUrl?: string;
   id: UuidModel;
@@ -31,14 +57,38 @@ export class KnowledgeSourceModel {
   sourceRef?: SourceReference;
   title: string;
   topics?: string[];
-  websiteItem?: WebsiteModel;
+  notes: KnowledgeSourceNotes;
+  readonly accessLink: URL | string;
+  readonly reference: KnowledgeSourceReference;
 
-  constructor(title: string, id: UuidModel, ingestType: IngestType) {
+  constructor(title: string, id: UuidModel, ingestType: IngestType, reference: KnowledgeSourceReference) {
     this.title = title;
     this.id = id;
+    this.reference = reference;
     this.ingestType = ingestType;
-    this.dateCreated = this.dateModified = this.dateAccessed = Date();
+    this.dateCreated = this.dateModified = this.dateAccessed = new Date();
+    this.accessLink = reference.link;
+    this.notes = new KnowledgeSourceNotes();
   }
 }
 
+export class KnowledgeSourceNotes {
+  private content: string = '';
+  dateCreated: Date;
+  dateModified: Date;
+  dateAccessed: Date;
+  constructor() {
+    this.dateCreated = new Date();
+    this.dateAccessed = new Date();
+    this.dateModified = new Date();
+  }
 
+  get text() {
+    return this.content;
+  }
+
+  set text(content: string) {
+    this.content = content;
+  }
+
+}

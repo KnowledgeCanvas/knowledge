@@ -14,25 +14,21 @@ export class DragAndDropDirective {
     evt.preventDefault();
     evt.stopPropagation();
     this.fileOver = true;
-    console.log('Drag Over');
   }
 
   @HostListener('dragleave', ['$event']) public onDragLeave(evt: any) {
     evt.preventDefault();
     evt.stopPropagation();
     this.fileOver = false;
-    console.log('Drag Leave');
   }
 
   @HostListener('drop', ['$event']) public onDrop(evt: any) {
     evt.preventDefault();
     evt.stopPropagation();
-    console.log('Drag Leave');
     this.fileOver = false;
     const files = evt.dataTransfer.files;
     if (files.length > 0) {
       this.fileDropped.emit(files);
-      console.log(`Dropped ${files.length} files.`);
     }
   }
 

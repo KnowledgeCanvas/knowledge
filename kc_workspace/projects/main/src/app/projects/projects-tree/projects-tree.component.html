@@ -2,68 +2,109 @@
   <button (click)="newProject()" mat-icon-button>
     <mat-icon>add</mat-icon>
   </button>
-  <button (click)="treeControl.expandAll()" mat-icon-button>
+  <button (click)="expandTree()" mat-icon-button>
     <mat-icon>unfold_more</mat-icon>
   </button>
-  <button (click)="treeControl.collapseAll()" mat-icon-button>
+  <button (click)="collapseTree()" mat-icon-button>
     <mat-icon>unfold_less</mat-icon>
   </button>
-  <button (click)="refreshTree()" mat-icon-button>
-    <mat-icon>refresh</mat-icon>
+  <button (click)="focus()" mat-icon-button>
+    <mat-icon>filter_center_focus</mat-icon>
   </button>
 </div>
 
 <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
-  <mat-tree-node (click)="selectProject(node.id)" *matTreeNodeDef="let node; when: hasChild" matTreeNodePadding
-                 [ngClass]="{ 'background-highlight': activeId === node.id }">
-    <button [attr.aria-label]="'Toggle ' + node.item" mat-icon-button matTreeNodeToggle>
-      <mat-icon
-        class="mat-icon-rtl-mirror">{{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}</mat-icon>
-    </button>
-    <!--    <span *ngIf="node.id === activeId"><b>{{node.name}}</b></span>-->
-    <!--    <span *ngIf="node.id !== activeId">{{node.name}}</span>-->
-    <span>{{node.name}}</span>
-    <span class="fill-space"> </span>
-    <button [matMenuTriggerFor]="menu" mat-icon-button>
-      <mat-icon style="opacity: 0.4">more_vert</mat-icon>
+  <mat-tree-node [ngClass]="{ 'background-highlight': activeId === node.id }"
+                 (contextmenu)="onContextMenu($event, node.id)"
+                 *matTreeNodeDef="let node; when: hasChild"
+                 [matTreeNodePaddingIndent]="treePadding"
+                 (click)="selectProject(node.id)"
+                 matTreeNodePadding>
+
+    <button [attr.aria-label]="'Toggle ' + node.name"
+            (click)="toggleNode(node)"
+            matTreeNodeToggle
+            mat-icon-button
+            disableRipple>
+
+      <mat-icon class="mat-icon-rtl-mirror">
+        {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+      </mat-icon>
     </button>
 
-    <mat-menu #menu="matMenu">
-      <button (click)="newProject(node.id)" mat-menu-item>
-        <mat-icon>create_new_folder</mat-icon>
-        New Subproject
+    <span>{{node.name}}</span>
+
+    <span class="fill-space"></span>
+
+    <div style="visibility: hidden; position: fixed"
+         [style.left]="contextMenuPosition.x"
+         [style.top]="contextMenuPosition.y"
+         [matMenuTriggerFor]="contextMenu1">
+    </div>
+
+    <mat-menu #contextMenu1>
+      <button (click)="newProject()" mat-menu-item>
+        <mat-icon>playlist_add</mat-icon>
+        Add Subproject
       </button>
       <mat-divider></mat-divider>
-
+      <button (click)="addKs()" mat-menu-item>
+        <mat-icon>add_circle_outline</mat-icon>
+        Add Knowledge Source
+      </button>
       <mat-divider></mat-divider>
-      <button (click)="delete(node.id)" mat-menu-item>
+      <button (click)="delete()" mat-menu-item>
         <mat-icon color="warn">delete</mat-icon>
         Delete
       </button>
     </mat-menu>
+
   </mat-tree-node>
 
 
-  <mat-tree-node (click)="selectProject(node.id)" *matTreeNodeDef="let node" matTreeNodePadding matTreeNodeToggle
-                 [ngClass]="{ 'background-highlight': activeId === node.id }">
-    <span><button disabled mat-icon-button></button></span>
-    <!--    <span *ngIf="node.id === activeId"><b>Selected</b></span>-->
-    <!--    <span *ngIf="node.id !== activeId">{{node.name}}</span>-->
+  <mat-tree-node [ngClass]="{ 'background-highlight': activeId === node.id }"
+                 (contextmenu)="onContextMenu($event, node.id)"
+                 [matTreeNodePaddingIndent]="treePadding"
+                 (click)="selectProject(node.id)"
+                 *matTreeNodeDef="let node"
+                 matTreeNodePadding
+                 matTreeNodeToggle>
+
+    <div style="visibility: hidden; position: fixed"
+         [style.left]="contextMenuPosition.x"
+         [style.top]="contextMenuPosition.y"
+         [matMenuTriggerFor]="contextMenu2">
+    </div>
+
+    <span>
+      <button (contextmenu)="onContextMenu($event, node.id)"
+              (click)="selectProject(node.id)"
+              class="kc-context-menu-trigger"
+              mat-icon-button
+              disableRipple>
+      </button>
+    </span>
+
     <span>{{node.name}}</span>
-    <span class="fill-space"></span>
-    <button [matMenuTriggerFor]="menu" class="project-tree-context-menu" mat-icon-button>
-      <mat-icon style="opacity: 0.4">more_vert</mat-icon>
-    </button>
-    <mat-menu #menu="matMenu">
-      <button (click)="newProject(node.id)" mat-menu-item>
-        <mat-icon>create_new_folder</mat-icon>
-        New Subproject
+
+    <mat-menu #contextMenu2>
+      <button (click)="newProject()" mat-menu-item>
+        <mat-icon>playlist_add</mat-icon>
+        Add Subproject
       </button>
       <mat-divider></mat-divider>
-      <button (click)="delete(node.id)" mat-menu-item>
+      <button (click)="addKs()" mat-menu-item>
+        <mat-icon>add_circle_outline</mat-icon>
+        Add Knowledge Source
+      </button>
+      <mat-divider></mat-divider>
+      <button (click)="delete()" mat-menu-item>
         <mat-icon color="warn">delete</mat-icon>
         Delete
       </button>
     </mat-menu>
+
   </mat-tree-node>
 </mat-tree>
+
+

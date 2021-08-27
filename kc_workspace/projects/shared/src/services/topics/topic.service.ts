@@ -35,13 +35,28 @@ export class TopicService {
   public topics = this.topicSource.asObservable();
 
   constructor(private uuidService: UuidService) {
-    this.topicSource.next(tempTopicSource);
+    let topicSource, topicSourceStr = window.localStorage.getItem('kc-topic-list');
+    if (topicSourceStr) {
+      topicSource = JSON.parse(topicSourceStr);
+      if (topicSource)
+        this.topicSource.next(topicSource);
+    }
   }
 
   create(topicStr: string): TopicModel {
+    let found = this.topicSource.value.find(t => t.name === topicStr);
+    if (found)
+      return found;
     let uuid = this.uuidService.generate(1)[0];
     let topic = new TopicModel(uuid, topicStr);
     let topicSource = [...this.topicSource.value, topic];
+    topicSource = this.sort(topicSource);
+
+    // Persist to localStorage
+    let topicSourceStr = JSON.stringify(topicSource);
+    window.localStorage.setItem('kc-topic-list', topicSourceStr);
+
+    // Update observable
     this.topicSource.next(topicSource);
     return topic;
   }
@@ -52,5 +67,16 @@ export class TopicService {
 
   find(topicStr: string): TopicModel | undefined {
     return this.topicSource.value.find(topic => topic.name === topicStr);
+  }
+
+  private sort(topicList: TopicModel[]): TopicModel[] {
+    topicList.sort((a, b) => {
+      let x = a.name.toLowerCase();
+      let y = b.name.toLowerCase();
+      if (x < y) return -1;
+      if (x > y) return 1;
+      return 0;
+    });
+    return topicList;
   }
 }

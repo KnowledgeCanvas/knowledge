@@ -10,7 +10,6 @@ export class AuthorModel {
     window.api.receive("app-generate-uuid-results", (data: string[]) => {
       if (data && data[0])
         this.id = new UuidModel(data[0]);
-      console.log('Setting Author ID to ', data[0]);
     });
     window.api.send("app-generate-uuid", {quantity: 1});
 

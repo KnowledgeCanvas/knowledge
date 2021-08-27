@@ -1,8 +1,8 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {DomSanitizer} from '@angular/platform-browser';
-import {ExtractionService} from "../../../extraction/extraction.service";
-import {KnowledgeSourceModel} from "../../../../../../shared/src/models/knowledge.source.model";
+import {ExtractionService} from "../../../../../../shared/src/services/extraction/extraction.service";
+import {KnowledgeSource} from "../../../../../../shared/src/models/knowledge.source.model";
 import {ProjectService} from "../../../../../../shared/src/services/projects/project.service";
 import {ProjectModel, ProjectUpdateRequest} from "../../../../../../shared/src/models/project.model";
 import {SearchService} from "../../../../../../shared/src/services/search/search.service";
@@ -19,7 +19,7 @@ export class SearchResultsDialogComponent implements OnInit {
   sourceRef: string = '';
 
   constructor(public dialogRef: MatDialogRef<SearchResultsDialogComponent>,
-              @Inject(MAT_DIALOG_DATA) public knowledgeSource: KnowledgeSourceModel,
+              @Inject(MAT_DIALOG_DATA) public ks: KnowledgeSource,
               private _sanitizer: DomSanitizer,
               private extractionService: ExtractionService,
               private projectService: ProjectService,
@@ -29,19 +29,19 @@ export class SearchResultsDialogComponent implements OnInit {
     });
     this.qAndA = [];
 
-    this.sourceRef = knowledgeSource.sourceRef ? knowledgeSource.sourceRef : '';
+    this.sourceRef = ks.sourceRef ? ks.sourceRef : '';
 
-    if (knowledgeSource.ingestType == 'google' && knowledgeSource.googleItem) {
-      if (knowledgeSource.googleItem.pagemap?.question && knowledgeSource.googleItem.pagemap?.answer)
-        for (let i = 0; i < knowledgeSource.googleItem.pagemap?.question?.length; i++) {
+    if (ks.ingestType == 'google' && ks.googleItem) {
+      if (ks.googleItem.pagemap?.question && ks.googleItem.pagemap?.answer)
+        for (let i = 0; i < ks.googleItem.pagemap?.question?.length; i++) {
           this.qAndA.push({
-            name: knowledgeSource.googleItem.pagemap.question[i].name,
-            text: knowledgeSource.googleItem.pagemap.answer[i].text
+            name: ks.googleItem.pagemap.question[i].name,
+            text: ks.googleItem.pagemap.answer[i].text
           });
         }
 
-      if (knowledgeSource.googleItem.pagemap?.videoobject) {
-        let url = knowledgeSource.googleItem.pagemap.videoobject[0].embedurl ? knowledgeSource.googleItem.pagemap.videoobject[0].embedurl : '';
+      if (ks.googleItem.pagemap?.videoobject) {
+        let url = ks.googleItem.pagemap.videoobject[0].embedurl ? ks.googleItem.pagemap.videoobject[0].embedurl : '';
         this.safeURL = this._sanitizer.bypassSecurityTrustResourceUrl(url);
       }
     }
@@ -51,53 +51,46 @@ export class SearchResultsDialogComponent implements OnInit {
   }
 
   onNoClick() {
-    this.dialogRef.close(this.knowledgeSource);
+    this.dialogRef.close(this.ks);
   }
 
   openInBrowser() {
-    console.log('Open in browser with data: ', this.knowledgeSource);
-    if (this.knowledgeSource.googleItem?.link) {
-      window.open(this.knowledgeSource.googleItem.link);
-    } else if (this.knowledgeSource.websiteItem?.url) {
-      window.open(this.knowledgeSource.websiteItem.url);
-    } else {
-      console.error('Unable to open link for knowledge source: ', this.knowledgeSource);
-    }
+    console.log('Open in browser with data: ', this.ks);
+    let url;
+
+    if (typeof this.ks.accessLink === 'string')
+      url = this.ks.accessLink;
+    else
+      url = this.ks.accessLink.href;
+
+    window.open(url);
   }
 
   saveToPdf() {
     let link: string;
-
-    if (this.knowledgeSource.googleItem?.link)
-      link = this.knowledgeSource.googleItem.link;
-    else if (this.knowledgeSource.websiteItem?.url)
-      link = this.knowledgeSource.websiteItem.url;
-    else {
-      console.error('Unable to save to PDF because no valid links exist in knowledge source: ', this.knowledgeSource);
-      return;
-    }
-
-    this.extractionService.extractWebsite(link, this.knowledgeSource.id.value);
-
-    // TODO: make the above function return a promise, notify the user about progress
-
+    if (typeof this.ks.accessLink === 'string')
+      link = this.ks.accessLink;
+    else
+      link = this.ks.accessLink.href;
+    this.extractionService.extractWebsite(link, this.ks.id.value);
     this.dialogRef.close();
   }
 
   showCitation() {
-    console.log('Data to be cited: ', this.knowledgeSource);
+    console.log('Data to be cited: ', this.ks);
   }
 
 
   importSource() {
+    console.log('Removing knowledge source: ', this.ks, ' from project ', this.currentProject);
     if (this.currentProject?.id) {
       let update: ProjectUpdateRequest = {
         id: this.currentProject.id,
-        addKnowledgeSource: [this.knowledgeSource]
+        addKnowledgeSource: [this.ks]
       }
       this.projectService.updateProject(update);
-      this.searchService.remove(this.knowledgeSource);
-      this.dialogRef.close(this.knowledgeSource);
+      this.searchService.remove(this.ks);
+      this.dialogRef.close(this.ks);
     } else {
       console.error('Attempting to import knowledge source to a project with no id...');
     }

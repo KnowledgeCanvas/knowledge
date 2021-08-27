@@ -13,7 +13,6 @@ export class SettingsService {
   constructor(private http: HttpClient, private ipcService: IpcService) {
     this.ipcService.getSettingsFile().subscribe((settings) => {
       this.settings = settings;
-      console.log('Retrieved settings: ', this.settings);
     })
   }
 
@@ -22,7 +21,6 @@ export class SettingsService {
   }
 
   saveSettings(data: SettingsModel): Observable<SettingsModel> {
-    console.log('Saving settings: ', data);
     this.settings = {...this.settings, ...data};
     return this.ipcService.saveSettingsFile(this.settings);
   }

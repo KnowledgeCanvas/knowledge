@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {UuidService} from "../uuid/uuid.service";
 import {BehaviorSubject} from "rxjs";
 import {FileModel} from "../../models/file.model";
-import {KnowledgeSourceModel} from "../../models/knowledge.source.model";
+import {KnowledgeSource} from "../../models/knowledge.source.model";
 
 @Injectable({
   providedIn: 'root'
@@ -63,7 +63,7 @@ export class FileService {
     return this.files.value;
   }
 
-  list(): Promise<KnowledgeSourceModel[]> {
+  list(): Promise<KnowledgeSource[]> {
     return new Promise<any>((resolve) => {
       let list = window.localStorage.getItem('kc-knowledge-sources')
       if (list) {

@@ -3,38 +3,40 @@ import {Component, HostListener, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 
 @Component({
-    selector: 'app-confirm-dialog',
-    templateUrl: './confirm-dialog.component.html',
-    styleUrls: ['./confirm-dialog.component.scss']
+  selector: 'app-confirm-dialog',
+  templateUrl: './confirm-dialog.component.html',
+  styleUrls: ['./confirm-dialog.component.scss']
 })
 export class ConfirmDialogComponent implements OnInit {
 
-    constructor(@Inject(MAT_DIALOG_DATA) public data: {
-                    cancelText: string,
-                    confirmText: string,
-                    message: string,
-                    title: string
-                },
-                private mdDialogRef: MatDialogRef<ConfirmDialogComponent>) {
-    }
+  constructor(@Inject(MAT_DIALOG_DATA) public data: {
+                cancelText: string,
+                confirmText: string,
+                message: string,
+                title: string,
+                list: any[],
+                action: 'delete' | 'confirm'
+              },
+              private mdDialogRef: MatDialogRef<ConfirmDialogComponent>) {
+  }
 
-    ngOnInit(): void {
-    }
+  ngOnInit(): void {
+  }
 
-    public cancel(): void {
-        this.close(false);
-    }
+  public cancel(): void {
+    this.close(false);
+  }
 
-    public close(value: any): void {
-        this.mdDialogRef.close(value);
-    }
+  public close(value: any): void {
+    this.mdDialogRef.close(value);
+  }
 
-    public confirm(): void {
-        this.close(true);
-    }
+  public confirm(): void {
+    this.close(true);
+  }
 
-    @HostListener('keydown.esc')
-    public onEsc(): void {
-        this.close(false);
-    }
+  @HostListener('keydown.esc')
+  public onEsc(): void {
+    this.close(false);
+  }
 }

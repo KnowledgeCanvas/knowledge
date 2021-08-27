@@ -1,27 +1,29 @@
-@import "projects/main/src/theme";
+@import "../../../styles/theme";
 
 .projects-tree-controls-container {
   display: flex;
   flex-direction: row;
-  justify-content: flex-start;
+  justify-content: space-between;
   align-items: center;
   flex-wrap: nowrap;
-  align-content: center;
 }
 
-.mat-tree-node:nth-child(even) {
-  background-color: #F0F0F0;
-}
-
-.mat-tree-node:nth-child(odd) {
-  background-color: #FBFCFD;
-}
+//.mat-tree-node:nth-child(even) {
+//  background-color: #F0F0F0;
+//}
+//
+//.mat-tree-node:nth-child(odd) {
+//  background-color: #FBFCFD;
+//}
 
 .mat-tree-node {
+  max-height: 32px !important;
+  min-height: 32px !important;
   white-space: nowrap;
-  cursor: pointer;
+  padding-right: 8px;
+  cursor: context-menu;
 }
 
 .background-highlight {
-  background-color: $kc-secondary-color-med !important;
+  background-color: rgba($kc-secondary-color-med, 0.75) !important;
 }

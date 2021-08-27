@@ -1,11 +1,11 @@
-import {Component, Inject, OnInit} from '@angular/core';
-import {ProjectCreationRequest, ProjectModel} from "../../../../../shared/src/models/project.model";
-import {ProjectService} from "../../../../../shared/src/services/projects/project.service";
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {FormBuilder, FormGroup} from "@angular/forms";
-import {UuidService} from "../../../../../shared/src/services/uuid/uuid.service";
-import {TopicService} from "../../../../../shared/src/services/topics/topic.service";
-import {TopicModel} from "../../../../../shared/src/models/topic.model";
+import { Component, Inject, OnInit } from '@angular/core';
+import { ProjectCreationRequest, ProjectModel } from "../../../../../shared/src/models/project.model";
+import { ProjectService } from "../../../../../shared/src/services/projects/project.service";
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { FormBuilder, FormGroup } from "@angular/forms";
+import { UuidService } from "../../../../../shared/src/services/uuid/uuid.service";
+import { TopicService } from "../../../../../shared/src/services/topics/topic.service";
+import { BrowserExtensionService } from 'projects/ks-libs/src/lib/services/browser-extension/browser-extension.service';
 
 @Component({
   selector: 'app-project-creation-dialog',
@@ -16,21 +16,22 @@ import {TopicModel} from "../../../../../shared/src/models/topic.model";
 export class ProjectCreationDialogComponent implements OnInit {
   project: ProjectCreationRequest;
   types = [
-    {value: 'default', displayValue: 'Default'},
-    {value: 'school', displayValue: 'School'},
-    {value: 'work', displayValue: 'Work'},
-    {value: 'hobby', displayValue: 'Hobby'}
+    { value: 'default', displayValue: 'Default' },
+    { value: 'school', displayValue: 'School' },
+    { value: 'work', displayValue: 'Work' },
+    { value: 'hobby', displayValue: 'Hobby' }
   ]
   selectedType: 'school' | 'work' | 'hobby' | 'default' = 'default';
   panelOpenState: boolean;
   private formGroup: FormGroup;
 
   constructor(private projectService: ProjectService,
-              public dialogRef: MatDialogRef<ProjectCreationDialogComponent>,
-              @Inject(MAT_DIALOG_DATA) public data: string,
-              formBuilder: FormBuilder,
-              private uuidService: UuidService,
-              private topicService: TopicService) {
+    public dialogRef: MatDialogRef<ProjectCreationDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: string | undefined,
+    formBuilder: FormBuilder,
+    private uuidService: UuidService,
+    private topicService: TopicService,
+    private browserExtensionService: BrowserExtensionService) {
     this.panelOpenState = false;
     this.project = {
       name: '',
@@ -44,22 +45,24 @@ export class ProjectCreationDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.init();
+    this.project = new ProjectModel('', { value: '' }, 'default');
+
+    if (this.data) {
+      this.project.parentId = { value: this.data };
+    }
   }
 
 
   create(): void {
     if (this.project?.name) {
       this.project.type = this.selectedType;
+
       if (this.project.type === 'school') {
         let homeworkTopic = this.topicService.find('Homework');
         let homework: ProjectCreationRequest = {
-          authors: [],
+          authors: [], type: 'school',
           description: "The Knowledge Canvas automatically generated this folder based on the project type you chose!",
-          knowledgeSource: [],
-          name: "Homework",
-          topics: homeworkTopic ? [homeworkTopic.name] : [],
-          type: 'school'
+          knowledgeSource: [], name: "Homework", topics: homeworkTopic ? [homeworkTopic.name] : [],
         };
         this.project.subProjects = [homework];
       }
@@ -74,16 +77,8 @@ export class ProjectCreationDialogComponent implements OnInit {
     this.dialogRef.close();
   }
 
-  init(): void {
-    this.project = new ProjectModel('', {value: ''}, 'default');
-
-    if (this.data) {
-      this.project.parentId = {value: this.data};
-    }
-  }
-
-
   addTopic($event: string[]) {
+    console.log('Got a list of topics for new project...', $event);
     this.project.topics = [...$event];
   }
 

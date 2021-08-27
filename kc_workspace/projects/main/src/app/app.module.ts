@@ -3,10 +3,9 @@ import {AppComponent} from './app.component';
 import {AppRoutingModule} from './app-routing.module';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {BrowserModule} from '@angular/platform-browser';
-import {CanvasComponent} from './canvas/canvas.component';
+import {KnowledgeCanvasComponent} from './knowledge-source/ks-canvas/knowledge-canvas.component';
 import {ConfirmDialogComponent} from "../../../shared/src/components/confirm-dialog/confirm-dialog.component";
 import {ConfirmDialogService} from "../../../shared/src/services/confirm-dialog/confirm-dialog.service";
-import {DashboardComponent} from './dashboard/dashboard.component';
 import {DragAndDropDirective} from './ingest/file-upload/directives/drag-and-drop.directive';
 import {DragDropModule} from "@angular/cdk/drag-drop";
 import {FileUploadAdvancedComponent} from './ingest/file-upload/file-upload-advanced/file-upload-advanced.component';
@@ -55,14 +54,13 @@ import {HttpClientModule} from "@angular/common/http";
 import {MatTreeModule} from "@angular/material/tree";
 import {MatMenuModule} from "@angular/material/menu";
 import {MatSnackBar} from "@angular/material/snack-bar";
-import {FloatingActionButtonComponent} from './floating-action-button/floating-action-button.component';
 import {MatTooltipModule} from "@angular/material/tooltip";
-import {CanvasDetailsComponent} from './canvas/canvas-details/canvas-details.component';
-import {CanvasSourceListComponent} from './canvas/canvas-source-list/canvas-source-list.component';
-import {CanvasDetailsOverviewComponent} from './canvas/canvas-details/canvas-details-overview/canvas-details-overview.component';
-import {KnowledgeSourceViewComponent} from './canvas/canvas-details/knowledge-source-view/knowledge-source-view.component';
+import {ProjectViewportComponent} from './projects/project-viewport/project-viewport.component';
+import {KnowledgeSourceDropListComponent} from './knowledge-source/ks-drop-list/knowledge-source-drop-list.component';
+import {ProjectDetailsOverviewComponent} from './projects/projects-details-overview/project-details-overview.component';
+import {KnowledgeSourceEditListComponent} from './knowledge-source/ks-edit-list/knowledge-source-edit-list.component';
 import {ProjectSummaryComponent} from './projects/project-summary/project-summary.component';
-import {CanvasImportComponent} from './canvas/canvas-import/canvas-import.component';
+import {KnowledgeSourceImportDialogComponent} from './knowledge-source/ks-import-dialog/knowledge-source-import-dialog.component';
 import {FilesComponent} from './files/files.component';
 import {FileListComponent} from './files/file-list/file-list.component';
 import {ProjectTopicListComponent} from "./projects/project-topic-list/project-topic-list.component";
@@ -73,6 +71,8 @@ import {WebsiteExtractionAdvancedComponent} from './ingest/website-extraction/we
 import {KsInfoDialogComponent} from './knowledge-source/ks-info-dialog/ks-info-dialog.component';
 import {MatProgressBarModule} from "@angular/material/progress-bar";
 import {KsInfoComponent} from './knowledge-source/ks-info/ks-info.component';
+import {MatGridListModule} from "@angular/material/grid-list";
+import {MatCardModule} from "@angular/material/card";
 
 @NgModule({
   declarations: [
@@ -85,10 +85,9 @@ import {KsInfoComponent} from './knowledge-source/ks-info/ks-info.component';
     SearchComponent,
     DragAndDropDirective,
     SettingsComponent,
-    DashboardComponent,
     SearchBarComponent,
     SearchResultsComponent,
-    CanvasComponent,
+    KnowledgeCanvasComponent,
     ProjectsComponent,
     ProjectsSidebarComponent,
     ProjectContextComponent,
@@ -100,13 +99,12 @@ import {KsInfoComponent} from './knowledge-source/ks-info/ks-info.component';
     ProjectsTreeViewComponent,
     ProjectsTreeComponent,
     SearchResultsDialogComponent,
-    FloatingActionButtonComponent,
-    CanvasDetailsComponent,
-    CanvasSourceListComponent,
-    CanvasDetailsOverviewComponent,
-    KnowledgeSourceViewComponent,
+    ProjectViewportComponent,
+    KnowledgeSourceDropListComponent,
+    ProjectDetailsOverviewComponent,
+    KnowledgeSourceEditListComponent,
     ProjectSummaryComponent,
-    CanvasImportComponent,
+    KnowledgeSourceImportDialogComponent,
     FilesComponent,
     FileListComponent,
     ProjectTopicListComponent,
@@ -147,7 +145,9 @@ import {KsInfoComponent} from './knowledge-source/ks-info/ks-info.component';
     MatTreeModule,
     OverlayModule,
     ReactiveFormsModule,
-    ScrollingModule
+    ScrollingModule,
+    MatGridListModule,
+    MatCardModule
   ],
   providers: [SettingsService, ProjectService, ConfirmDialogService, SearchService, MatSnackBar, MatAccordion],
   bootstrap: [AppComponent]

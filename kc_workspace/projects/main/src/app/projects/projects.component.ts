@@ -10,8 +10,4 @@ export class ProjectsComponent implements OnInit {
     }
 
     ngOnInit(): void {}
-
-    // loadDetails(project: any): void {
-    //     console.log('Load details: ', project);
-    // }
 }

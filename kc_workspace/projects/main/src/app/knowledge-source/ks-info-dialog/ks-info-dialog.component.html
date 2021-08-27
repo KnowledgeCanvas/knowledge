@@ -1,21 +1,49 @@
 <div mat-dialog-title>
+  <div class="knowledge-source-icon-container">
+    <img [src]="ks.icon" class="knowledge-source-icon-large" alt="Knowledge Source icon">
+  </div>
+  <br>
   <mat-form-field (focusout)="updateKS()" style="width: 100%">
-    <input matInput [(ngModel)]="knowledgeSource.title">
+    <input matInput [(ngModel)]="ks.title" placeholder="Title" required>
   </mat-form-field>
 </div>
 
-<div mat-dialog-content class="search-result-dialog-content" id="search-result-dialog-content">
+<div class="search-result-dialog-content"
+     id="search-result-dialog-content"
+     mat-dialog-content>
 
-  <mat-tab-group (selectedTabChange)="tabClick($event)" animationDuration="0ms" style="width: 99%">
+  <mat-tab-group (selectedTabChange)="tabClick($event)"
+                 animationDuration="0ms"
+                 style="width: 100%">
+
     <mat-tab label="Details">
-      <app-ks-info [knowledgeSource]="knowledgeSource"></app-ks-info>
+      <app-ks-info [ks]="ks" (ksModified)="ksModified($event)"></app-ks-info>
     </mat-tab>
 
     <mat-tab label="Preview">
       <div class="electron-browser-view" id="electron-browser-view">
-        <mat-progress-bar mode="indeterminate" style="width: 90%" *ngIf="!viewReady"></mat-progress-bar>
+        <mat-progress-bar mode="indeterminate"
+                          style="width: 90%"
+                          *ngIf="!viewReady"
+                          id="progress-bar">
+        </mat-progress-bar>
         <div *ngIf="viewReady && safeUrl">
-          <iframe [src]="safeUrl" style="width: 67vw; min-height: 50vh"></iframe>
+          <iframe [src]="safeUrl" class="browser-viewport"></iframe>
+        </div>
+      </div>
+    </mat-tab>
+
+    <mat-tab label="Notes">
+      <div class="ks-notes-viewport">
+        <mat-form-field class="ks-notes-textarea" (focusout)="notesModified()">
+          <textarea placeholder="Enter notes here..."
+                    cdkAutosizeMinRows="20"
+                    [(ngModel)]="notes"
+                    cdkTextareaAutosize
+                    matInput></textarea>
+          <mat-hint>Notes are automatically saved when changes are made.</mat-hint>
+        </mat-form-field>
+        <div>
         </div>
       </div>
     </mat-tab>
@@ -25,9 +53,8 @@
 
 <div mat-dialog-actions>
   <button mat-button (click)="openInBrowser()">Open in New Window</button>
-  <button mat-button (click)="saveToPdf()" *ngIf="knowledgeSource.ingestType !== 'file'">Save as PDF</button>
-  <button mat-button (click)="copyLink()" *ngIf="this.knowledgeSource.ingestType === 'file'">Copy Path</button>
-  <button mat-button (click)="copyLink()" *ngIf="this.knowledgeSource.ingestType !== 'file'">Copy Link</button>
+  <button mat-button (click)="copyLink()" *ngIf="this.ks.ingestType === 'file'">Copy Path</button>
+  <button mat-button (click)="copyLink()" *ngIf="this.ks.ingestType !== 'file'">Copy Link</button>
   <button *ngIf="sourceRef !== 'list'" mat-button color="primary" (click)="importSource()">Add to Project</button>
   <button *ngIf="sourceRef === 'list'" mat-button color="warn" (click)="removeSource()">Remove from Project</button>
 </div>

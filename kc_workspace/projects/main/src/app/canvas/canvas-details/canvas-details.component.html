@@ -1,9 +1,0 @@
-<nav mat-tab-nav-bar class="knowledge-canvas-details-tabs">
-  <a mat-tab-link *ngFor="let link of navLinks" [routerLink]="[{ outlets: { 'project-detail-router': [link.link] } }]"
-     routerLinkActive #rla='routerLinkActive'
-     [active]="rla.isActive">
-{{link.label}}
-  </a>
-  <app-search-bar></app-search-bar>
-</nav>
-<router-outlet name="project-detail-router"></router-outlet>

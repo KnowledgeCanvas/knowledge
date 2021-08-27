@@ -10,12 +10,6 @@ import {ProjectService} from "../../../../../shared/src/services/projects/projec
   styleUrls: ['./file-upload.component.scss']
 })
 export class FileUploadComponent implements OnInit {
-  options: FormGroup;
-  rename = new FormControl(false);
-  summarize = new FormControl(true);
-  visualizations = new FormControl(true);
-  extractMetadata = new FormControl(true);
-  rename_to = new FormControl();
   projectId = '';
 
 
@@ -23,13 +17,6 @@ export class FileUploadComponent implements OnInit {
     this.projectService.currentProject.subscribe((project) => {
       this.projectId = project.id.value ? project.id.value : '';
     })
-    this.options = fb.group({
-      rename: this.rename,
-      rename_to: this.rename_to,
-      summarize: this.summarize,
-      visualizations: this.visualizations,
-      extractMetadata: this.extractMetadata
-    });
   }
 
   ngOnInit(): void {

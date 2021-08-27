@@ -15,7 +15,6 @@ export class SearchApiComponent implements OnInit {
   }
 
   submit() {
-    console.log('Got API Key: ', this.key.value);
     this.dialogRef.close(this.key.value);
   }
 }

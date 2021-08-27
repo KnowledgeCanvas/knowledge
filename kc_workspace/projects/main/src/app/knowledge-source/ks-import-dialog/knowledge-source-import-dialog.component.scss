@@ -1,0 +1,50 @@
+@import "../../../styles/theme";
+
+.search-bar-form {
+  width: 100%;
+}
+
+mat-grid-tile {
+  border: 1px solid lightgrey;
+  cursor: pointer !important;
+}
+
+.ingest-panel-card {
+  width: 75%;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-content: center;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  visibility: visible;
+  opacity: 1;
+  transition: opacity 2s linear;
+}
+
+.ingest-panel-card:hover {
+  box-shadow: #555555;
+}
+
+.ingest-search-dialog {
+  max-width: 80vw !important;
+  min-width: 80vw !important;
+  height: auto;
+}
+
+.ingest-file-dialog {
+  width: 80vw;
+  height: auto;
+}
+
+.ingest-website-dialog {
+  width: 80vw;
+  height: auto;
+}
+
+.ingest-topic-dialog {
+  width: 80vw;
+  height: auto;
+}

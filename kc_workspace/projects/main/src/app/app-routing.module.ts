@@ -3,23 +3,25 @@ import {RouterModule, Routes} from '@angular/router';
 import {WebsiteExtractionComponent} from "./ingest/website-extraction/website-extraction.component";
 import {SearchComponent} from "./search/search.component";
 import {SettingsComponent} from "./settings/settings.component";
-import {DashboardComponent} from "./dashboard/dashboard.component";
-import {CanvasDetailsOverviewComponent} from "./canvas/canvas-details/canvas-details-overview/canvas-details-overview.component";
-import {KnowledgeSourceViewComponent} from "./canvas/canvas-details/knowledge-source-view/knowledge-source-view.component";
+import {ProjectDetailsOverviewComponent} from "./projects/projects-details-overview/project-details-overview.component";
+import {KnowledgeSourceEditListComponent} from "./knowledge-source/ks-edit-list/knowledge-source-edit-list.component";
 import {FilesComponent} from "./files/files.component";
+import {ProjectsComponent} from "./projects/projects.component";
 
 const routes: Routes = [
   // Lazy loading should occur here
-  {path: '', redirectTo: '/app-dashboard', pathMatch: 'full'},
-  {path: 'app-dashboard', component: DashboardComponent, children: [
-      {path: '', component: CanvasDetailsOverviewComponent, outlet: 'project-detail-router'},
-      {path: 'app-canvas-details-overview', component: CanvasDetailsOverviewComponent, outlet: 'project-detail-router'},
-      {path: 'app-knowledge-source-view', component: KnowledgeSourceViewComponent, outlet: 'project-detail-router'}]},
+  {path: '', redirectTo: '/app-projects', pathMatch: 'full'},
+  {
+    path: 'app-projects', component: ProjectsComponent, children: [
+      {path: '', component: ProjectDetailsOverviewComponent, outlet: 'project-detail-router'},
+      {path: 'app-projects-details-overview', component: ProjectDetailsOverviewComponent, outlet: 'project-detail-router'},
+      {path: 'app-ks-edit-list', component: KnowledgeSourceEditListComponent, outlet: 'project-detail-router'}]
+  },
   {path: 'app-files', component: FilesComponent},
   {path: 'app-search', component: SearchComponent},
   {path: 'app-website-extraction', component: WebsiteExtractionComponent},
   {path: 'app-settings', component: SettingsComponent},
-  {path: '**', redirectTo: '/app-dashboard'}
+  {path: '**', redirectTo: '/app-projects'}
 ];
 
 @NgModule({

@@ -6,3 +6,18 @@
   margin: 3px;
   padding: 2px;
 }
+
+.ks-info-container {
+  height: 50vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+}
+
+.ks-info-controls {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+}

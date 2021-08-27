@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ProjectService} from "../../../../../shared/src/services/projects/project.service";
-import {ProjectModel} from "../../../../../shared/src/models/project.model";
+import {ProjectModel, ProjectUpdateRequest} from "../../../../../shared/src/models/project.model";
 
 @Component({
   selector: 'app-project-summary',
@@ -23,4 +23,11 @@ export class ProjectSummaryComponent implements OnInit {
     console.log('Project info: ', this.currentProject);
   }
 
+  updateName() {
+    let update: ProjectUpdateRequest = {
+      id: this.currentProject.id,
+      name: this.currentProject.name
+    }
+    this.projectService.updateProject(update);
+  }
 }

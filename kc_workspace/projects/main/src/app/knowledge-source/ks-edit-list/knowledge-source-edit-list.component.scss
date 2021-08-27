@@ -1,0 +1,39 @@
+.canvas-details-knowledge-source-view {
+  margin: 5px;
+  padding: 5px;
+  height: calc(100% - 64px);
+}
+
+.ks-checklist-header {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+}
+
+.ks-checklist-item {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.ks-checklist-type {
+  margin-right: 10px;
+}
+
+.ks-edit-list-header {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: space-between;
+  margin: 10px;
+}
+
+.ks-edit-list {
+  overflow: scroll;
+  height: calc(100% - 60px);
+}

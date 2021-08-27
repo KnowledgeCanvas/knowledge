@@ -1,14 +1,15 @@
-import {AfterViewInit, Component, Inject, OnInit} from '@angular/core';
+import {AfterViewInit, ChangeDetectorRef, Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
-import {KnowledgeSourceModel} from "../../../../../shared/src/models/knowledge.source.model";
+import {KnowledgeSource} from "../../../../../shared/src/models/knowledge.source.model";
 import {DomSanitizer, SafeUrl} from "@angular/platform-browser";
-import {ExtractionService} from "../../extraction/extraction.service";
+import {ExtractionService} from "../../../../../shared/src/services/extraction/extraction.service";
 import {ProjectService} from "../../../../../shared/src/services/projects/project.service";
 import {SearchService} from "../../../../../shared/src/services/search/search.service";
 import {ProjectModel, ProjectUpdateRequest} from "../../../../../shared/src/models/project.model";
 import {MatTabChangeEvent} from "@angular/material/tabs";
 import {Clipboard} from "@angular/cdk/clipboard";
 import {MatSnackBar} from "@angular/material/snack-bar";
+
 
 @Component({
   selector: 'app-ks-info-dialog',
@@ -21,15 +22,19 @@ export class KsInfoDialogComponent implements OnInit, AfterViewInit {
   safeUrl: SafeUrl | undefined;
   sourceRef: string = '';
   viewReady: boolean = false;
+  ksChanged: boolean = false;
+  title: string = '';
+  notes: string = '';
 
   constructor(public dialogRef: MatDialogRef<KsInfoDialogComponent>,
-              @Inject(MAT_DIALOG_DATA) public knowledgeSource: KnowledgeSourceModel,
+              @Inject(MAT_DIALOG_DATA) public ks: KnowledgeSource,
               private _sanitizer: DomSanitizer,
               private extractionService: ExtractionService,
               private projectService: ProjectService,
               private searchService: SearchService,
               private clipboard: Clipboard,
-              private snackBar: MatSnackBar) {
+              private snackBar: MatSnackBar,
+              private changeRef: ChangeDetectorRef) {
 
     this.projectService.currentProject.subscribe((project) => {
       this.currentProject = project;
@@ -37,9 +42,12 @@ export class KsInfoDialogComponent implements OnInit, AfterViewInit {
 
     this.dialogRef.beforeClosed().subscribe(() => {
       window.api.send("electron-close-browser-view");
+      this.dialogRef.close({ksChanged: this.ksChanged, ks: this.ks});
     });
 
-    this.sourceRef = knowledgeSource.sourceRef ? knowledgeSource.sourceRef : '';
+    this.title = ks.title;
+    this.notes = ks.notes.text;
+    this.sourceRef = ks.sourceRef ? ks.sourceRef : '';
   }
 
   ngAfterViewInit() {
@@ -49,101 +57,100 @@ export class KsInfoDialogComponent implements OnInit, AfterViewInit {
   }
 
   emplaceKnowledgeSourceView() {
-    // Depending on the knowledge source, prepare a safe URL to load into an iframe. Currently only PDF's and
-    // Wikipedia is supported.
-    if (this.knowledgeSource && this.knowledgeSource.fileItem && this.knowledgeSource.fileItem.path) {
-      this.safeUrl = this._sanitizer.bypassSecurityTrustResourceUrl('file://' + this.knowledgeSource.fileItem.path);
+    if (this.ks && this.ks.fileItem && this.ks.fileItem.path) {
+      this.safeUrl = this._sanitizer.bypassSecurityTrustResourceUrl('file://' + this.ks.fileItem.path);
+      this.ks.dateAccessed = new Date();
       this.viewReady = true;
+      this.ksChanged = true;
     } else {
       let url, sanitizedUrl;
+      if (typeof this.ks.accessLink === "string")
+        url = new URL(this.ks.accessLink);
+      else
+        url = this.ks.accessLink
 
-      if (this.knowledgeSource.googleItem?.link) {
-        url = new URL(this.knowledgeSource.googleItem.link);
-      } else if (this.knowledgeSource.websiteItem?.url) {
-        url = new URL(this.knowledgeSource.websiteItem.url);
+      sanitizedUrl = this._sanitizer.sanitize(4, url.href);
+
+      if (!sanitizedUrl) {
+        console.error('Unable to sanitize url...');
+        return;
       }
 
-      if (url) {
-        sanitizedUrl = this._sanitizer.sanitize(4, url.href);
-      }
-
-      if (sanitizedUrl) {
-        window.api.receive("electron-browser-view-results", (data: any) => {
-          console.log('electron-browser-view-results: ', data);
+      // --------------------------------------------------------------------------------
+      // Set Callback
+      window.api.receive("electron-browser-view-results", (response: any) => {
+        if (response.success) {
+          this.ks.dateAccessed = new Date();
           this.viewReady = true;
-        });
-
-        // Get bounding box info for display element
-        let position = this.getBrowserViewDimensions('electron-browser-view');
-
-        let args = {
-          url: sanitizedUrl,
-          x: Math.floor(position.x + 2),
-          y: Math.floor(position.y + 2),
-          width: Math.floor(position.width - 4),
-          height: Math.floor(position.height - 4)
+          this.ksChanged = true;
+          this.changeRef.detectChanges();
+        } else {
+          // TODO: let the user know that an error has occurred (this should hopefully never happen)
+          console.error('Error attempting to open Electron BrowserView');
+          console.error(response.error ? response.error : response);
+          return;
         }
+      });
 
-        window.api.send("electron-browser-view", args);
+      // --------------------------------------------------------------------------------
+      // Send KsBrowserViewRequest
+      let position = this.getBrowserViewDimensions('electron-browser-view');
+      let args = {
+        url: sanitizedUrl,
+        x: Math.floor(position.x),
+        y: Math.floor(position.y),
+        width: Math.floor(position.width),
+        height: Math.floor(position.height)
       }
+      window.api.send("electron-browser-view", args);
     }
   }
 
   openInBrowser() {
-    if (this.knowledgeSource.websiteItem?.url) {
-      window.open(this.knowledgeSource.websiteItem.url);
-    } else if (this.knowledgeSource.googleItem?.link) {
-      window.open(this.knowledgeSource.googleItem.link)
-    } else {
-      window.open(this.knowledgeSource.fileItem?.path);
-    }
+    let url;
+    if (typeof this.ks.accessLink === 'string')
+      url = this.ks.accessLink
+    else
+      url = this.ks.accessLink.href;
+    window.open(url);
+    this.ks.dateAccessed = new Date();
+    this.ksChanged = true;
+    this.dialogRef.close();
   }
 
   getBrowserViewDimensions(elementName: string): any {
     let element = document.getElementById(elementName);
     if (element) {
       return element.getBoundingClientRect();
-
     }
-  }
-
-  getOffset(el: any) {
-    const rect = el.getBoundingClientRect();
-    return {
-      left: rect.left + window.scrollX,
-      top: rect.top + window.scrollY
-    };
   }
 
   saveToPdf() {
     let link: string;
-    if (this.knowledgeSource.googleItem?.link)
-      link = this.knowledgeSource.googleItem.link;
-    else if (this.knowledgeSource.websiteItem?.url)
-      link = this.knowledgeSource.websiteItem.url;
-    else {
-      console.error('Unable to save to PDF because no valid links exist in knowledge source: ', this.knowledgeSource);
-      return;
-    }
-    this.extractionService.extractWebsite(link, this.knowledgeSource.id.value);
-    // TODO: make the above function return a promise, notify the user about progress
+    if (typeof this.ks.accessLink === 'string')
+      link = this.ks.accessLink
+    else
+      link = this.ks.accessLink.href;
+    this.extractionService.extractWebsite(link, this.ks.id.value);
     this.dialogRef.close();
   }
 
-  showCitation() {
-    console.log('Data to be cited: ', this.knowledgeSource);
-  }
-
   importSource() {
-    console.log('Importing result to project', this.currentProject?.name, this.knowledgeSource);
+    console.log('Importing result to project', this.currentProject?.name, this.ks);
     if (this.currentProject?.id) {
+      // Set timestamp based on when the source was actually improted into the system
+      this.ks.dateCreated = new Date();
+      this.ks.dateAccessed = new Date();
+      this.ks.dateModified = new Date();
+
+      // Update the project to persist the new source
       let projectUpdate: ProjectUpdateRequest = {
         id: this.currentProject.id,
-        addKnowledgeSource: [this.knowledgeSource]
+        addKnowledgeSource: [this.ks]
       }
       this.projectService.updateProject(projectUpdate);
-      this.searchService.remove(this.knowledgeSource);
-      this.dialogRef.close(this.knowledgeSource);
+      this.searchService.remove(this.ks);
+      this.dialogRef.close();
     } else {
       console.error('IMPORT SOURCE WITH NO PROJECT ID Not implemented');
     }
@@ -153,12 +160,12 @@ export class KsInfoDialogComponent implements OnInit, AfterViewInit {
     if (this.currentProject?.id) {
       let update: ProjectUpdateRequest = {
         id: this.currentProject.id,
-        removeKnowledgeSource: [this.knowledgeSource]
+        removeKnowledgeSource: [this.ks]
       }
       this.projectService.updateProject(update);
       this.dialogRef.close();
     } else {
-      console.error(`Attempting to remove ${this.knowledgeSource.id.value} with invalid project id...`);
+      console.error(`Attempting to remove ${this.ks.id.value} with invalid project id...`);
     }
   }
 
@@ -167,43 +174,58 @@ export class KsInfoDialogComponent implements OnInit, AfterViewInit {
     switch ($event.index) {
       case 0:
         window.api.send("electron-close-browser-view");
+        this.changeRef.markForCheck();
         break;
       case 1:
         this.emplaceKnowledgeSourceView();
+        break;
+      case 2:
+        window.api.send("electron-close-browser-view");
+        this.ks.notes.dateAccessed = new Date();
+        this.changeRef.markForCheck();
         break;
     }
   }
 
   copyLink() {
-    let message: string | undefined = undefined;
-
-    switch (this.knowledgeSource.ingestType) {
-      case "file":
-        message = this.knowledgeSource.fileItem?.path;
-        break;
-      case "google":
-        message = this.knowledgeSource.googleItem?.link;
-        break;
-      case "website":
-        message = this.knowledgeSource.websiteItem?.url;
+    let link: string | URL = this.ks.accessLink;
+    if (typeof link === 'string') {
+      this.clipboard.copy(link);
+    } else {
+      this.clipboard.copy(link.href);
     }
-    if (message) {
-      this.clipboard.copy(message);
-      this.snackBar.open('Copied to clipboard!', 'Dismiss', {
-        duration: 3000
-      });
-    }
-
+    this.snackBar.open('Copied to clipboard!', 'Dismiss', {
+      duration: 3000
+    });
   }
 
   updateKS() {
-    console.log('Updating KS...');
+    if (this.ks.title.length === 0) {
+      return;
+    }
+
+    console.log('Updating KS...', this.ks);
     if (this.currentProject?.id) {
+      this.ks.dateModified = new Date();
       let update: ProjectUpdateRequest = {
         id: this.currentProject?.id,
-        updateKnowledgeSource: [this.knowledgeSource]
+        updateKnowledgeSource: [this.ks]
       }
       this.projectService.updateProject(update);
     }
+  }
+
+  ksModified(modified: boolean) {
+    this.ksChanged = modified;
+  }
+
+  notesModified() {
+    if (this.ks.notes.text === this.notes)
+      return;
+
+    this.ks.notes.text = this.notes;
+    this.ks.notes.dateModified = new Date();
+    this.ks.dateModified = new Date();
+    this.ksChanged = true;
   }
 }

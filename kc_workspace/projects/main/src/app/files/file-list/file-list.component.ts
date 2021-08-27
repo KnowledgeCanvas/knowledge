@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {FileService} from "../../../../../shared/src/services/file/file.service";
 import {FileModel} from "../../../../../shared/src/models/file.model";
 import {StorageService} from "../../../../../shared/src/services/storage/storage.service";
-import {KnowledgeSourceModel} from "../../../../../shared/src/models/knowledge.source.model";
+import {KnowledgeSource} from "../../../../../shared/src/models/knowledge.source.model";
 import {UuidModel} from "../../../../../shared/src/models/uuid.model";
 
 @Component({
@@ -11,7 +11,7 @@ import {UuidModel} from "../../../../../shared/src/models/uuid.model";
   styleUrls: ['./file-list.component.scss']
 })
 export class FileListComponent implements OnInit {
-  ksList: KnowledgeSourceModel[] = [];
+  ksList: KnowledgeSource[] = [];
   files: FileModel[] = [];
 
   constructor(private fileService: FileService, private storageService: StorageService) {

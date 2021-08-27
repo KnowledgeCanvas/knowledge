@@ -6,8 +6,9 @@ import {DomSanitizer} from "@angular/platform-browser";
   providedIn: 'root'
 })
 export class FaviconExtractorService {
+  private googleFaviconSize = '64'
   private googleFaviconServicePrefix = `https://s2.googleusercontent.com/s2/favicons?domain_url=`;
-  private googleFaviconServiceSuffix = `&sz=32`;
+  private googleFaviconServiceSuffix = `&sz=${this.googleFaviconSize}`;
   private defaultIcon = 'assets/img/default.png';
   private loadingGif = 'assets/img/loading.gif';
   private fileIcon = 'assets/img/pdf.png';

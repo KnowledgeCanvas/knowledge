@@ -1,6 +1,6 @@
 export interface GoogleSearchResultsModel {
   context: { title: string }
-  items: GoogleSearchItemModel[]
+  items: SearchModel[]
   kind: string
   queries: { request: [], nextpage: [] }
   searchInformation: GoogleSearchInformation
@@ -17,7 +17,7 @@ export interface GoogleSearchInformation {
   totalResults: string
 }
 
-export interface GoogleSearchItemModel {
+export interface SearchModel {
   pagemap?: GoogleSearchResultsPagemapModel;
   kind?: string,
   title: string,

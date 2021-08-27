@@ -1,10 +1,26 @@
 <div class="header">
-    <h1 mat-dialog-title>{{ data.title }}</h1>
+  <h1 mat-dialog-title>{{ data.title }}</h1>
 </div>
 <div mat-dialog-content>
-    <p class="dialog-message">{{ data.message }}</p>
+  <div class="row dialog-message">
+    <div class="col s12">
+      {{ data.message }}
+    </div>
+  </div>
+  <div *ngIf="data.action === 'delete'">
+    <div class="row">
+      <div class="col s12">
+        <b>To be deleted:</b>
+      </div>
+    </div>
+    <div class="row" *ngFor="let item of data.list">
+      <div class="col s11 offset-s1">
+        {{item.title}}
+      </div>
+    </div>
+  </div>
 </div>
 <div mat-dialog-actions>
-    <button (click)="cancel()" mat-button style="margin-right:10px;">{{ data.cancelText }}</button>
-    <button (click)="confirm()" mat-button color="warn">{{ data.confirmText }}</button>
+  <button (click)="cancel()" mat-button style="margin-right:10px;">{{ data.cancelText }}</button>
+  <button (click)="confirm()" mat-button color="warn">{{ data.confirmText }}</button>
 </div>

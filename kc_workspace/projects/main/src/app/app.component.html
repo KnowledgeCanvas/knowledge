@@ -1,17 +1,15 @@
 <div style="height: 100%">
   <mat-sidenav-container class="sidenav-container">
-    <mat-sidenav #drawer [attr.role]="'dialog'" [mode]="'over'"
-                 [opened]="false">
-
-      <mat-toolbar>
-        <!--        <img alt="Company Logo" src="assets/app.png" style="max-height: 40px"/>-->
-      </mat-toolbar>
+    <mat-sidenav #drawer [attr.role]="'dialog'" [mode]="'over'" [opened]="false">
+      <!--      <mat-toolbar class="app-sidenav-toolbar">-->
+      <!--        &lt;!&ndash;                      <img alt="Company Logo" src="assets/app.png" style="max-height: 40px"/>&ndash;&gt;-->
+      <!--      </mat-toolbar>-->
 
       <mat-divider></mat-divider>
 
       <div>
         <mat-nav-list (click)="drawer.close()">
-          <a mat-list-item routerLink="/" routerLinkActive="active">Dashboard</a>
+          <a mat-list-item routerLink="/" routerLinkActive="active">Projects</a>
           <mat-divider></mat-divider>
           <a mat-list-item routerLink="/app-files" routerLinkActive="active">Files</a>
         </mat-nav-list>
@@ -20,23 +18,21 @@
 
 
     <mat-sidenav-content class="app-sidenav-content">
-      <mat-toolbar color="accent" class="app-top-toolbar">
-        <div class="app-toolbar-container">
-          <span class="left">
-            <button (click)="drawer.toggle()" mat-icon-button>
+      <mat-toolbar class="app-top-toolbar">
+                  <span class="left">
+            <button mat-icon-button class="app-top-toolbar-icon" (click)="drawer.toggle()">
                 <mat-icon>menu</mat-icon>
             </button>
           </span>
-          <span>
-          <img src="assets/img/img.png"
-               alt="" style="max-height: 48px"/>
+        <span>
+          <img class="app-top-toolbar-logo" src="assets/img/app-top-toolbar-logo.png"
+               alt=""/>
           </span>
-          <span class="right">
-            <button mat-icon-button routerLink="/app-settings" routerLinkActive="active">
+        <span class="right">
+            <button mat-icon-button class="app-top-toolbar-icon" routerLink="/app-settings" routerLinkActive="active">
                 <mat-icon>settings</mat-icon>
             </button>
           </span>
-        </div>
       </mat-toolbar>
 
       <div class="wrapper">
@@ -44,7 +40,7 @@
       </div>
 
       <footer class="footer center">
-        © 2021 All Rights Reserved
+        © 2021 Rob Royce - All Rights Reserved
       </footer>
     </mat-sidenav-content>
   </mat-sidenav-container>

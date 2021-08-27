@@ -1,0 +1,15 @@
+.project-overview-container {
+}
+
+.project-summary-container {
+  margin: 10px;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-content: center;
+  align-items: flex-start;
+}
+
+app-project-summary {
+  width: 100%;
+}

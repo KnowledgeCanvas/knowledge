@@ -1,4 +1,4 @@
-import {KnowledgeSourceModel} from "./knowledge.source.model";
+import {KnowledgeSource} from "./knowledge.source.model";
 import {UuidModel} from "./uuid.model";
 import {TopicModel} from "./topic.model";
 
@@ -15,7 +15,8 @@ export class ProjectModel {
   subprojects?: string[] = [];
   topics?: string[] = [];
   type: ProjectType;
-  knowledgeSource?: KnowledgeSourceModel[] = [];
+  expanded?: boolean;
+  knowledgeSource?: KnowledgeSource[] = [];
 
   constructor(name: string, id: UuidModel, type?: ProjectType, parentId?: UuidModel) {
     this.name = name;
@@ -32,7 +33,7 @@ export interface ProjectCreationRequest {
   name: string;
   parentId?: UuidModel;
   description?: string;
-  knowledgeSource?: KnowledgeSourceModel[];
+  knowledgeSource?: KnowledgeSource[];
   authors?: string[];
   topics?: string[];
   type: ProjectType;
@@ -47,9 +48,10 @@ export interface ProjectUpdateRequest {
   addTopic?: string[];
   removeTopic?: string[];
   updateTopic?: string[];
-  addKnowledgeSource?: KnowledgeSourceModel[];
-  removeKnowledgeSource?: KnowledgeSourceModel[];
-  updateKnowledgeSource?: KnowledgeSourceModel[];
+  overWriteTopics?: string[];
+  addKnowledgeSource?: KnowledgeSource[];
+  removeKnowledgeSource?: KnowledgeSource[];
+  updateKnowledgeSource?: KnowledgeSource[];
 }
 
 export interface ProjectEntity {

@@ -16,7 +16,8 @@
     "watch-main": "ng build main --configuration production --base-href ./ --watch",
     "watch-main-dev": "ng build main --configuration development --base-href ./ --watch",
     "watch-setup": "ng build setup --configuration production --base-href ./ --watch",
-    "watch-setup-dev": "ng build setup --configuration development --base-href ./ --watch"
+    "watch-setup-dev": "ng build setup --configuration development --base-href ./ --watch",
+    "lint": "ng lint"
   },
   "private": true,
   "dependencies": {
@@ -36,16 +37,25 @@
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~12.1.2",
+    "@angular-eslint/builder": "12.3.1",
+    "@angular-eslint/eslint-plugin": "12.3.1",
+    "@angular-eslint/eslint-plugin-template": "12.3.1",
+    "@angular-eslint/schematics": "12.3.1",
+    "@angular-eslint/template-parser": "12.3.1",
     "@angular/cli": "~12.1.2",
     "@angular/compiler-cli": "~12.1.2",
     "@types/jasmine": "~3.8.0",
     "@types/node": "^16.4.10",
+    "@typescript-eslint/eslint-plugin": "4.28.2",
+    "@typescript-eslint/parser": "4.28.2",
+    "eslint": "^7.32.0",
     "jasmine-core": "~3.8.0",
     "karma": "~6.3.0",
     "karma-chrome-launcher": "~3.1.0",
     "karma-coverage": "~2.0.3",
     "karma-jasmine": "~4.0.0",
     "karma-jasmine-html-reporter": "~1.7.0",
+    "ng-packagr": "^12.1.0",
     "typescript": "~4.3.2"
   }
 }

@@ -3,7 +3,11 @@ import {Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChil
 import {FileService} from "../../../../../../shared/src/services/file/file.service";
 import {MatDialogRef} from "@angular/material/dialog";
 import {ProjectService} from "../../../../../../shared/src/services/projects/project.service";
-import {KnowledgeSourceModel} from "../../../../../../shared/src/models/knowledge.source.model";
+import {
+  KnowledgeSourceReference,
+  KnowledgeSource,
+  SourceModel
+} from "../../../../../../shared/src/models/knowledge.source.model";
 import {FileModel} from "../../../../../../shared/src/models/file.model";
 import {ProjectUpdateRequest} from "../../../../../../shared/src/models/project.model";
 import {UuidModel} from "../../../../../../shared/src/models/uuid.model";
@@ -19,6 +23,7 @@ export class FileUploadDragAndDropComponent implements OnInit, OnChanges {
   @ViewChild("fileDropRef", {static: false}) fileDropEl: ElementRef;
   @Input() parentId: string = '';
   files: File[] = [];
+  fileNames: string[] = [];
 
   constructor(private fileService: FileService,
               private dialogRef: MatDialogRef<any>,
@@ -37,9 +42,6 @@ export class FileUploadDragAndDropComponent implements OnInit, OnChanges {
     }
   }
 
-  /**
-   * handle file from browsing
-   */
   fileBrowseHandler(event: any) {
     for (const item of event.target.files) {
       this.files.push(item);
@@ -53,10 +55,6 @@ export class FileUploadDragAndDropComponent implements OnInit, OnChanges {
     }
   }
 
-  /**
-   * Delete file from files list
-   * @param index (File index)
-   */
   deleteFile(index: number) {
     this.files.splice(index, 1);
   }
@@ -80,24 +78,28 @@ export class FileUploadDragAndDropComponent implements OnInit, OnChanges {
   submit() {
     console.log('Submitting with files: ', this.files);
     let uuids: UuidModel[] = this.uuidService.generate(this.files.length);
-    let ksList: KnowledgeSourceModel[] = [];
+    let ksList: KnowledgeSource[] = [];
 
     for (let i = 0; i < this.files.length; i++) {
-      let file = new FileModel(this.files[i].name, this.files[i].size, (this.files[i] as any).path, uuids[i]);
-      let ks = new KnowledgeSourceModel(file.filename, uuids[i], 'file');
+      const file = new FileModel(this.files[i].name, this.files[i].size, (this.files[i] as any).path, uuids[i]);
+      const source = new SourceModel(file, undefined, undefined);
+      const link = file.path;
+      const ref = new KnowledgeSourceReference('file', source, link);
+      let ks = new KnowledgeSource(file.filename, uuids[i], 'file', ref);
       ks.fileItem = file;
       ks.iconUrl = this.faviconService.file();
       ks.icon = this.faviconService.file();
       ksList.push(ks);
     }
-
     let projectUpdate: ProjectUpdateRequest = {
       id: new UuidModel(this.parentId),
       addKnowledgeSource: ksList
     }
-
     this.projectService.updateProject(projectUpdate);
+    this.dialogRef.close();
+  }
 
+  cancel() {
     this.dialogRef.close();
   }
 }
