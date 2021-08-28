@@ -5,7 +5,10 @@ import {ProjectTreeFlatNode, ProjectTreeNode} from "../../../../../shared/src/mo
 import {ProjectIdentifiers, ProjectService} from "../../../../../shared/src/services/projects/project.service";
 import {ProjectModel} from "../../../../../shared/src/models/project.model";
 import {MatDialog} from '@angular/material/dialog';
-import {ConfirmDialogService} from "../../../../../shared/src/services/confirm-dialog/confirm-dialog.service";
+import {
+  KcDialogRequest,
+  KcDialogService
+} from "../../../../../shared/src/services/confirm-dialog/kc-dialog.service";
 import {ProjectCreationDialogComponent} from "../project-creation-dialog/project-creation-dialog.component";
 import {MatMenuTrigger} from "@angular/material/menu";
 
@@ -28,15 +31,13 @@ export class ProjectsTreeComponent implements OnInit {
   treeFlattener: MatTreeFlattener<ProjectTreeNode, ProjectTreeFlatNode>;
   dataSource: MatTreeFlatDataSource<ProjectTreeNode, ProjectTreeFlatNode>;
 
-  constructor(private projectService: ProjectService,
-              public matDialog: MatDialog,
-              private dialogService: ConfirmDialogService) {
+  constructor(private dialogService: KcDialogService,
+              private projectService: ProjectService,
+              public matDialog: MatDialog) {
     this.treeFlattener = new MatTreeFlattener<ProjectTreeNode, ProjectTreeFlatNode>(this.transformer, this.getLevel, this.isExpandable, this.getChildren);
     this.treeControl = new FlatTreeControl<ProjectTreeFlatNode>(this.getLevel, this.isExpandable);
     this.dataSource = new MatTreeFlatDataSource<ProjectTreeNode, ProjectTreeFlatNode>(this.treeControl, this.treeFlattener);
-  }
 
-  subscribeToProjects(): void {
     this.projectService.allProjects.subscribe((projectNodes: ProjectTreeNode[]) => {
       this.dataSource.data = projectNodes;
       let flattenedNodes = this.treeFlattener.flattenNodes(projectNodes);
@@ -54,15 +55,22 @@ export class ProjectsTreeComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
-    this.subscribeToProjects();
+  getLevel = (node: ProjectTreeFlatNode) => node.level;
+
+  isExpandable = (node: ProjectTreeFlatNode) => node.expandable;
+
+  getChildren = (node: ProjectTreeNode): ProjectTreeNode[] => node.subprojects;
+
+  hasChild = (_: number, nodeData: ProjectTreeFlatNode) => nodeData.expandable;
+
+  hasNoName = (_: number, nodeData: ProjectTreeFlatNode) => nodeData.name === '';
+
+  subscribeToProjects(): void {
   }
 
-  getLevel = (node: ProjectTreeFlatNode) => node.level;
-  isExpandable = (node: ProjectTreeFlatNode) => node.expandable;
-  getChildren = (node: ProjectTreeNode): ProjectTreeNode[] => node.subprojects;
-  hasChild = (_: number, nodeData: ProjectTreeFlatNode) => nodeData.expandable;
-  hasNoName = (_: number, nodeData: ProjectTreeFlatNode) => nodeData.name === '';
+  ngOnInit(): void {
+    // this.subscribeToProjects();
+  }
 
   transformer = (node: ProjectTreeNode, level: number) => {
     const existingNode = this.nestedToFlatMap.get(node);
@@ -113,18 +121,17 @@ export class ProjectsTreeComponent implements OnInit {
     else
       list = [{id: project.id.value, title: project.name}];
 
-    console.log('To-be deleted: ', list);
-
     let message = 'Deleting a project will also delete all of its sub-projects.\
     Once you delete a project, you will not be able to recover it or any of its\
     associated data. Would you like to continue?'
-    const options = {
+
+    const options: KcDialogRequest = {
       title: 'Delete Project?',
       message: message,
-      cancelText: 'Cancel',
-      confirmText: 'Delete Permanently',
-      list: list,
-      action: 'delete'
+      cancelButtonText: 'Cancel',
+      actionButtonText: 'Delete Permanently',
+      listToDisplay: list,
+      actionToTake: 'delete'
     };
 
     this.dialogService.open(options);
@@ -192,5 +199,9 @@ export class ProjectsTreeComponent implements OnInit {
 
   addKs() {
     console.error('Add KS to project not implemented!');
+  }
+
+  moveProject() {
+
   }
 }

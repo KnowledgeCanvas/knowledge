@@ -5,12 +5,10 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {BrowserModule} from '@angular/platform-browser';
 import {KnowledgeCanvasComponent} from './knowledge-source/ks-canvas/knowledge-canvas.component';
 import {ConfirmDialogComponent} from "../../../shared/src/components/confirm-dialog/confirm-dialog.component";
-import {ConfirmDialogService} from "../../../shared/src/services/confirm-dialog/confirm-dialog.service";
-import {DragAndDropDirective} from './ingest/file-upload/directives/drag-and-drop.directive';
+import {KcDialogService} from "../../../shared/src/services/confirm-dialog/kc-dialog.service";
 import {DragDropModule} from "@angular/cdk/drag-drop";
 import {FileUploadAdvancedComponent} from './ingest/file-upload/file-upload-advanced/file-upload-advanced.component';
 import {FileUploadComponent} from './ingest/file-upload/file-upload.component';
-import {FileUploadDragAndDropComponent} from './ingest/file-upload/file-upload-drag-and-drop/file-upload-drag-and-drop.component';
 import {MatAccordion, MatExpansionModule} from "@angular/material/expansion";
 import {MatButtonModule} from "@angular/material/button";
 import {MatCheckboxModule} from "@angular/material/checkbox";
@@ -19,7 +17,7 @@ import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatIconModule} from "@angular/material/icon";
 import {MatInputModule} from "@angular/material/input";
 import {MatListModule} from "@angular/material/list";
-import {MatOptionModule} from "@angular/material/core";
+import {MatNativeDateModule, MatOptionModule} from "@angular/material/core";
 import {MatRadioModule} from "@angular/material/radio";
 import {MatSelectModule} from "@angular/material/select";
 import {MatSidenavModule} from "@angular/material/sidenav";
@@ -40,7 +38,6 @@ import {SearchResultsComponent} from './search/search-results/search-results.com
 import {SettingsComponent} from './settings/settings.component';
 import {SettingsService} from "../../../shared/src/services/settings/settings.service";
 import {WebsiteExtractionComponent} from './ingest/website-extraction/website-extraction.component';
-import {WebsiteExtractionFormComponent} from './ingest/website-extraction/website-extraction-form/website-extraction-form.component';
 import {ClipboardModule} from "@angular/cdk/clipboard";
 import {MatChipsModule} from "@angular/material/chips";
 import {MatTabsModule} from "@angular/material/tabs";
@@ -49,7 +46,7 @@ import {ProjectsTreeViewComponent} from "./projects/projects-tree-view/projects-
 import {ProjectsTreeComponent} from "./projects/projects-tree/projects-tree.component";
 import {SearchResultsDialogComponent} from './search/search-results/search-results-dialog/search-results-dialog.component';
 import {MatDialogModule} from "@angular/material/dialog";
-import {SearchService} from "../../../shared/src/services/search/search.service";
+import {KsQueueService} from "./knowledge-source/ks-queue-service/ks-queue.service";
 import {HttpClientModule} from "@angular/common/http";
 import {MatTreeModule} from "@angular/material/tree";
 import {MatMenuModule} from "@angular/material/menu";
@@ -62,7 +59,6 @@ import {KnowledgeSourceEditListComponent} from './knowledge-source/ks-edit-list/
 import {ProjectSummaryComponent} from './projects/project-summary/project-summary.component';
 import {KnowledgeSourceImportDialogComponent} from './knowledge-source/ks-import-dialog/knowledge-source-import-dialog.component';
 import {FilesComponent} from './files/files.component';
-import {FileListComponent} from './files/file-list/file-list.component';
 import {ProjectTopicListComponent} from "./projects/project-topic-list/project-topic-list.component";
 import {MatAutocompleteModule} from "@angular/material/autocomplete";
 import {SearchApiComponent} from './search/search-api/search-api.component';
@@ -73,17 +69,22 @@ import {MatProgressBarModule} from "@angular/material/progress-bar";
 import {KsInfoComponent} from './knowledge-source/ks-info/ks-info.component';
 import {MatGridListModule} from "@angular/material/grid-list";
 import {MatCardModule} from "@angular/material/card";
+import {StorageSettingsComponent} from './settings/storage-settings/storage-settings.component';
+import {DisplaySettingsComponent} from './settings/display-settings/display-settings.component';
+import {SettingsCommonHeaderComponent} from './settings/settings-common-header/settings-common-header.component';
+import {KsLibModule} from "../../../ks-lib/src/lib/ks-lib.module";
+import {KsQueueComponent} from './knowledge-source/ks-queue/ks-queue.component';
+import {SearchSettingsComponent} from './settings/search-settings/search-settings.component';
+import {ProjectCalendarComponent} from './projects/project-calendar/project-calendar.component';
+import {MatDatepickerModule} from "@angular/material/datepicker";
 
 @NgModule({
   declarations: [
     AppComponent,
     FileUploadComponent,
     WebsiteExtractionComponent,
-    FileUploadDragAndDropComponent,
     FileUploadAdvancedComponent,
-    WebsiteExtractionFormComponent,
     SearchComponent,
-    DragAndDropDirective,
     SettingsComponent,
     SearchBarComponent,
     SearchResultsComponent,
@@ -106,12 +107,17 @@ import {MatCardModule} from "@angular/material/card";
     ProjectSummaryComponent,
     KnowledgeSourceImportDialogComponent,
     FilesComponent,
-    FileListComponent,
     ProjectTopicListComponent,
     SearchApiComponent,
     WebsiteExtractionAdvancedComponent,
     KsInfoDialogComponent,
-    KsInfoComponent
+    KsInfoComponent,
+    StorageSettingsComponent,
+    DisplaySettingsComponent,
+    SettingsCommonHeaderComponent,
+    KsQueueComponent,
+    SearchSettingsComponent,
+    ProjectCalendarComponent,
   ],
   imports: [
     AppRoutingModule,
@@ -147,9 +153,12 @@ import {MatCardModule} from "@angular/material/card";
     ReactiveFormsModule,
     ScrollingModule,
     MatGridListModule,
-    MatCardModule
+    MatCardModule,
+    KsLibModule,
+    MatDatepickerModule,
+    MatNativeDateModule
   ],
-  providers: [SettingsService, ProjectService, ConfirmDialogService, SearchService, MatSnackBar, MatAccordion],
+  providers: [SettingsService, ProjectService, KcDialogService, KsQueueService, MatSnackBar, MatAccordion, MatDatepickerModule],
   bootstrap: [AppComponent]
 })
 export class AppModule {

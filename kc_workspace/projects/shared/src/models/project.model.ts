@@ -1,6 +1,6 @@
 import {KnowledgeSource} from "./knowledge.source.model";
 import {UuidModel} from "./uuid.model";
-import {TopicModel} from "./topic.model";
+import {KcCalendar} from "./calendar.model";
 
 export type ProjectType = 'school' | 'work' | 'hobby' | 'default';
 
@@ -17,6 +17,7 @@ export class ProjectModel {
   type: ProjectType;
   expanded?: boolean;
   knowledgeSource?: KnowledgeSource[] = [];
+  calendar?: KcCalendar;
 
   constructor(name: string, id: UuidModel, type?: ProjectType, parentId?: UuidModel) {
     this.name = name;

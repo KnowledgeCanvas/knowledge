@@ -1,0 +1,26 @@
+<app-settings-common-header header="Storage Settings"></app-settings-common-header>
+
+<div class="kc-danger-zone">
+  <h2>Danger Zone</h2>
+  <div class="flex-row-center-between">
+    <div>
+      Delete all files.
+    </div>
+    <div>
+      <button mat-button color="warn" (click)="deleteFiles()">
+        Delete Files
+      </button>
+    </div>
+  </div>
+
+  <div class="flex-row-center-between">
+    <div>
+      Delete all knowledge sources, files, projects, etc.
+    </div>
+    <div>
+      <button mat-button color="warn" (click)="deleteEverything()">
+        Delete Everything
+      </button>
+    </div>
+  </div>
+</div>

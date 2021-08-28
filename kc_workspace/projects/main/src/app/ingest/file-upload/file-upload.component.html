@@ -1,1 +1,50 @@
-<app-file-upload-drag-and-drop [parentId]="projectId"></app-file-upload-drag-and-drop>
+<!--Adapted from: https://medium.com/@tarekabdelkhalek/how-to-create-a-drag-and-drop-file-uploading-in-angular-78d9eba0b854-->
+<div class="dropzone-container">
+  <div class="dropzone" ksLibDragAndDrop (fileDropped)="onFileDropped($event)">
+    <input type="file" class="dropzone-input" #fileDropRef id="fileDropRef" multiple
+           (change)="fileBrowseHandler($event)"/>
+    <mat-icon id="fileUploadIcon">file_upload</mat-icon>
+    <h3>Drag and drop file(s) here</h3>
+    <h3>or</h3>
+    <button mat-button mat-raised-button class="dropzone-input-button">Browse for file(s)</button>
+  </div>
+
+  <br>
+
+  <div class="row">
+    <label style="margin-right: 10px">Import to:</label>
+    <mat-radio-group [ngModelOptions]="{standalone: true}" [(ngModel)]="destination">
+      <mat-radio-button style="margin: 5px" value="project">
+        Project
+      </mat-radio-button>
+      <mat-radio-button style="margin: 5px" value="queue">
+        Up Next
+      </mat-radio-button>
+    </mat-radio-group>
+  </div>
+
+  <div class="files-list" *ngIf="files.length > 0">
+    <div class="single-file" *ngFor="let file of files; let i = index">
+      <mat-icon>file_present</mat-icon>
+      <div class="info">
+        {{file.name}}
+      </div>
+      <button mat-icon-button>
+        <mat-icon (click)="deleteFile(i)">delete</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <div class="uploadButton">
+    <button
+      [class.jello-vertical]="files.length > 0"
+      [disabled]="files.length === 0"
+      mat-button color="primary"
+      (click)="submit()">
+      Submit
+    </button>
+    <button mat-button color="warn" (click)="cancel()" [class.jello-vertical]="files.length > 0">
+      Cancel
+    </button>
+  </div>
+</div>

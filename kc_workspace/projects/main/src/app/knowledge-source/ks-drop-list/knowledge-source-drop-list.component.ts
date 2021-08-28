@@ -103,7 +103,8 @@ export class KnowledgeSourceDropListComponent implements OnInit {
       for (let source of project.knowledgeSource) {
         if (source.ingestType !== 'file') {
           source.icon = this.faviconService.loading();
-          this.faviconService.extract(source.iconUrl).then(icon => source.icon = icon);
+          if (source.iconUrl)
+            this.faviconService.extract(source.iconUrl).then(icon => source.icon = icon);
         } else {
           source.icon = this.faviconService.file();
         }
@@ -192,6 +193,19 @@ export class KnowledgeSourceDropListComponent implements OnInit {
     this.sortKsListByIndex();
   }
 
+  getKsTooltip(node: KnowledgeSource) {
+    switch (this.sortByIndex) {
+      case 2: // Modified
+        return `${node.title} - Changed ${new Date(node.dateModified).toDateString()}`;
+      case 3: // Accessed
+        return `${node.title} - Reviewed ${new Date(node.dateAccessed).toDateString()}`;
+      case 4: // Created
+        return `${node.title} - Created ${new Date(node.dateCreated).toDateString()}`;
+      default: // A-Z, Z-A, and Custom don't need anything special appended
+        return node.title;
+    }
+  }
+
   private sortKsListByIndex() {
     let key = this.sortByList[this.sortByIndex];
     switch (key.key) {
@@ -220,7 +234,6 @@ export class KnowledgeSourceDropListComponent implements OnInit {
     this.sortByIndex = key.index;
     this.storageService.sortByIndex = key.index;
   }
-
 
   private sortByTitle(order: 'ascending' | 'descending') {
     if (order === 'ascending')
@@ -271,18 +284,5 @@ export class KnowledgeSourceDropListComponent implements OnInit {
         newNodes.push(c);
     }
     this.canvasNodes = newNodes;
-  }
-
-  getKsTooltip(node: KnowledgeSource) {
-    switch(this.sortByIndex) {
-      case 2: // Modified
-        return `${node.title} - Changed ${new Date(node.dateModified).toDateString()}`;
-      case 3: // Accessed
-        return `${node.title} - Reviewed ${new Date(node.dateAccessed).toDateString()}`;
-      case 4: // Created
-        return `${node.title} - Created ${new Date(node.dateCreated).toDateString()}`;
-      default: // A-Z, Z-A, and Custom don't need anything special appended
-        return node.title;
-    }
   }
 }

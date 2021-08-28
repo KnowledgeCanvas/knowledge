@@ -5,4 +5,7 @@ export interface SettingsModel {
     projectsPath?: string;
     googleApiKey?: string;
     userName?: string;
+    search?: {
+      numResults: number
+    }
 }

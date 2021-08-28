@@ -5,7 +5,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FormBuilder, FormGroup } from "@angular/forms";
 import { UuidService } from "../../../../../shared/src/services/uuid/uuid.service";
 import { TopicService } from "../../../../../shared/src/services/topics/topic.service";
-import { BrowserExtensionService } from 'projects/ks-libs/src/lib/services/browser-extension/browser-extension.service';
+import { BrowserExtensionService } from 'projects/ks-lib/src/lib/services/browser-extension/browser-extension.service';
 
 @Component({
   selector: 'app-project-creation-dialog',

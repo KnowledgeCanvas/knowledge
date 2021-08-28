@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
-import {SearchService} from "../../../../../shared/src/services/search/search.service";
+import {KsQueueService} from "../../knowledge-source/ks-queue-service/ks-queue.service";
 
 @Component({
   selector: 'app-search-bar',
@@ -12,7 +12,7 @@ export class SearchBarComponent implements OnInit {
   searchTerm = new FormControl();
   searchResults: string = '';
 
-  constructor(fb: FormBuilder, private searchService: SearchService) {
+  constructor(fb: FormBuilder, private searchService: KsQueueService) {
     this.searchForm = fb.group({
       searchTerm: this.searchTerm
     })

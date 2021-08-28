@@ -7,20 +7,31 @@ import {ProjectDetailsOverviewComponent} from "./projects/projects-details-overv
 import {KnowledgeSourceEditListComponent} from "./knowledge-source/ks-edit-list/knowledge-source-edit-list.component";
 import {FilesComponent} from "./files/files.component";
 import {ProjectsComponent} from "./projects/projects.component";
+import {StorageSettingsComponent} from "./settings/storage-settings/storage-settings.component";
+import {DisplaySettingsComponent} from "./settings/display-settings/display-settings.component";
+import {SearchSettingsComponent} from "./settings/search-settings/search-settings.component";
+
+export const OUTLET_PROJECT_DETAILS = 'project-detail-router';
+export const OUTLET_SETTINGS = 'settings-router';
 
 const routes: Routes = [
   // Lazy loading should occur here
   {path: '', redirectTo: '/app-projects', pathMatch: 'full'},
   {
     path: 'app-projects', component: ProjectsComponent, children: [
-      {path: '', component: ProjectDetailsOverviewComponent, outlet: 'project-detail-router'},
-      {path: 'app-projects-details-overview', component: ProjectDetailsOverviewComponent, outlet: 'project-detail-router'},
-      {path: 'app-ks-edit-list', component: KnowledgeSourceEditListComponent, outlet: 'project-detail-router'}]
+      {path: '', component: ProjectDetailsOverviewComponent, outlet: OUTLET_PROJECT_DETAILS},
+      {path: 'app-projects-details-overview', component: ProjectDetailsOverviewComponent, outlet: OUTLET_PROJECT_DETAILS},
+      {path: 'app-ks-edit-list', component: KnowledgeSourceEditListComponent, outlet: OUTLET_PROJECT_DETAILS}]
   },
   {path: 'app-files', component: FilesComponent},
   {path: 'app-search', component: SearchComponent},
   {path: 'app-website-extraction', component: WebsiteExtractionComponent},
-  {path: 'app-settings', component: SettingsComponent},
+  {path: 'app-settings', component: SettingsComponent, children: [
+      {path: '', component: StorageSettingsComponent, outlet: OUTLET_SETTINGS},
+      {path: 'app-display-settings', component: DisplaySettingsComponent, outlet: OUTLET_SETTINGS},
+      {path: 'app-storage-settings', component: StorageSettingsComponent, outlet: OUTLET_SETTINGS},
+      {path: 'app-search-settings', component: SearchSettingsComponent, outlet: OUTLET_SETTINGS},
+    ]},
   {path: '**', redirectTo: '/app-projects'}
 ];
 

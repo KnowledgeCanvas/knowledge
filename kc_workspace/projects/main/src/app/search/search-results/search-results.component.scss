@@ -29,11 +29,6 @@
   display: block;
 }
 
-.delete {
-  color: red;
-  display: none;
-}
-
 .search-results-header {
   margin-bottom: 5px;
   margin-top: 5px;
@@ -47,7 +42,7 @@
   justify-content: space-between;
 }
 
-.search-result-list.cdk-drop-list-dragging .search-result-container:not(.cdk-drag-placeholder) {
+.ks-queue-container.cdk-drop-list-dragging .search-result-container:not(.cdk-drag-placeholder) {
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
 
@@ -123,13 +118,13 @@
 }
 
 
-.search-result-list {
+.ks-queue-container {
+  overflow: auto;
   width: 100%;
   max-width: 100%;
   min-height: 44px;
   border: 1px solid #ccc;
   background: #fff;
-  overflow: hidden;
   align-content: center;
   justify-content: flex-start;
   align-items: center;

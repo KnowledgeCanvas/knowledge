@@ -93,7 +93,7 @@ export class ProjectService {
       if (projectListString) {
         projectIdList = JSON.parse(projectListString);
       } else {
-        console.error('Could not get project list from kc-projects');
+        console.warn('Could not get project list from kc-projects');
         resolve([]);
       }
       for (let id of projectIdList) {
@@ -125,8 +125,6 @@ export class ProjectService {
   }
 
   newProject(project: ProjectCreationRequest): any {
-    console.log('Creating new project from request: ', project);
-
     let uuid: UuidModel[] = this.uuidService.generate(1);
 
     let projectId: UuidModel = uuid[0];
@@ -194,7 +192,6 @@ export class ProjectService {
   updateProject(projectUpdate: ProjectUpdateRequest) {
     // Make sure the target project exists
     let projectToUpdate = this.projectSource.find(p => p.id.value === projectUpdate.id.value);
-    console.log('Updating project with projectUpdate: ', projectUpdate);
     if (!projectToUpdate) {
       console.error(`Project not found: ${projectUpdate.id.value}`);
       return;
@@ -322,17 +319,23 @@ export class ProjectService {
 
   private initialize(): void {
     const data = this.buildFileTree(this.tree.asArray(), 0);
+    if (!data)
+      return;
+
     this.allProjects.next(data);
     let currentProject = this.storageService.kcCurrentProject;
+
     if (currentProject) {
       this.setCurrentProject(currentProject);
     } else {
-      this.setCurrentProject(data[0].id);
+      if (data && data[0] && data[0].id && data[0].id)
+        this.setCurrentProject(data[0].id);
     }
   }
 
   private buildFileTree(source: ProjectTreeNode[], level: number): ProjectTreeNode[] {
     const tree: ProjectTreeNode[] = [];
+
     for (const node of source) {
       if (node.subprojects.length > 0) {
         this.buildFileTree(node.subprojects, level + 1);
@@ -391,7 +394,6 @@ export class ProjectService {
   }
 
   private updateKnowledgeSource(project: ProjectModel, update: KnowledgeSource[]): ProjectModel {
-    console.log('Update: ', update);
     if (project.knowledgeSource && project.knowledgeSource.length > 0) {
       for (let toUpdate of update) {
         let idx = project.knowledgeSource.findIndex(p => p.id.value === toUpdate.id.value);
@@ -402,7 +404,6 @@ export class ProjectService {
         }
       }
     }
-    console.log('Project KS[] after update: ', project.knowledgeSource);
     return project;
   }
 

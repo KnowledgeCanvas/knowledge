@@ -1,22 +1,36 @@
-<div class="row">
-  <div class="col s1">
-    <button mat-icon-button (click)="back()">
-      <mat-icon>
-        arrow_back
-      </mat-icon>
-    </button>
-  </div>
-  <div class="col s11">
-    <h1>Knowledge Canvas Settings</h1>
-  </div>
-</div>
+<mat-drawer-container class="kc-settings-container">
+  <mat-drawer mode="side" opened class="kc-settings-drawer">
+    <div class="flex-row-center-start">
+      <button mat-icon-button (click)="back()" hidden>
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <div class="kc-h1">
+        Settings
+      </div>
+      <mat-divider></mat-divider>
+    </div>
+    <div>
+      <mat-nav-list>
+        <a [routerLink]="[{ outlets: { 'settings-router' : ['app-display-settings']}}] "
+           mat-list-item
+           routerLinkActive>Display</a>
+        <mat-divider></mat-divider>
+        <a [routerLink]="[{ outlets: { 'settings-router' : ['app-search-settings']}}] "
+           mat-list-item
+           routerLinkActive>Search</a>
+        <mat-divider></mat-divider>
+        <a [routerLink]="[{ outlets: { 'settings-router' : ['app-storage-settings']}}] "
+           mat-list-item
+           routerLinkActive>Storage</a>
+      </mat-nav-list>
+    </div>
+  </mat-drawer>
+  <mat-drawer-content class="kc-settings-content">
+    <router-outlet name="settings-router"></router-outlet>
+  </mat-drawer-content>
+</mat-drawer-container>
 
 
-<div class="row">
-  <div class="col s3">
-    <button mat-button (click)="clearLocalStorage()">Clear Local Storage</button>
-  </div>
-  <div class="col s3" *ngIf="localStorage">
-    <button mat-button (click)="printLocalStorage()">Print Local Storage</button>
-  </div>
-</div>
+
+
+

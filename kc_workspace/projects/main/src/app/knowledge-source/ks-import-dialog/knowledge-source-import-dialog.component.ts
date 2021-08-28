@@ -1,7 +1,7 @@
 import {Component, ElementRef, Inject, OnInit, ViewChild} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {ProjectModel} from "../../../../../shared/src/models/project.model";
-import {SearchService} from "../../../../../shared/src/services/search/search.service";
+import {KsQueueService} from "../ks-queue-service/ks-queue.service";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {ProjectService} from "../../../../../shared/src/services/projects/project.service";
 import {IngestType} from "../../../../../shared/src/models/knowledge.source.model";
@@ -25,7 +25,7 @@ export class KnowledgeSourceImportDialogComponent implements OnInit {
 
   constructor(private dialogRef: MatDialogRef<any>,
               @Inject(MAT_DIALOG_DATA) public data: ProjectModel,
-              private searchService: SearchService,
+              private ksQueueService: KsQueueService,
               private snackBar: MatSnackBar,
               private projectService: ProjectService) {
   }
@@ -54,7 +54,7 @@ export class KnowledgeSourceImportDialogComponent implements OnInit {
   }
 
   submitSearch() {
-    this.searchService.search(this.searchTerm).then(() => {
+    this.ksQueueService.search(this.searchTerm).then(() => {
       this.dialogRef.close();
     });
   }
@@ -132,7 +132,7 @@ export class KnowledgeSourceImportDialogComponent implements OnInit {
       duration: 3000
     });
 
-    this.searchService.topicSearch(project.topics).then((result) => {
+    this.ksQueueService.topicSearch(project.topics).then((result) => {
       this.dialogRef.close();
     });
   }

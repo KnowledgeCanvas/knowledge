@@ -20,18 +20,6 @@ export class SettingsComponent implements OnInit {
     this.localStorage = false;
   }
 
-  printLocalStorage() {
-    let ksList = window.localStorage.getItem('kc-knowledge-sources');
-    if (ksList) {
-      let ksParsed = JSON.parse(ksList);
-    }
-
-    let projects = window.localStorage.getItem('kc-projects');
-    if (projects) {
-      let projectsParsed = JSON.parse(projects);
-    }
-  }
-
   back() {
     this.location.back();
   }

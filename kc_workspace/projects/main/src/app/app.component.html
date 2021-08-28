@@ -1,19 +1,44 @@
 <div style="height: 100%">
   <mat-sidenav-container class="sidenav-container">
     <mat-sidenav #drawer [attr.role]="'dialog'" [mode]="'over'" [opened]="false">
-      <!--      <mat-toolbar class="app-sidenav-toolbar">-->
-      <!--        &lt;!&ndash;                      <img alt="Company Logo" src="assets/app.png" style="max-height: 40px"/>&ndash;&gt;-->
-      <!--      </mat-toolbar>-->
+      <div class="app-sidenav">
+        <div class="app-sidenav-top-content">
+          <mat-toolbar class="app-sidenav-toolbar center">
+            <img alt="Company Logo" src="assets/img/app-top-toolbar-logo.png" style="max-height: 40px"/>
+            <button class="app-top-toolbar-icon"
+                    routerLink="/app-settings"
+                    routerLinkActive="active"
+                    (click)="drawer.close()"
+                    mat-icon-button>
+              <mat-icon>settings</mat-icon>
+            </button>
+          </mat-toolbar>
 
-      <mat-divider></mat-divider>
-
-      <div>
-        <mat-nav-list (click)="drawer.close()">
-          <a mat-list-item routerLink="/" routerLinkActive="active">Projects</a>
           <mat-divider></mat-divider>
-          <a mat-list-item routerLink="/app-files" routerLinkActive="active">Files</a>
-        </mat-nav-list>
+
+          <div>
+            <mat-nav-list (click)="drawer.close()">
+              <a mat-list-item routerLink="/" routerLinkActive="active">Knowledge Canvas</a>
+              <mat-divider></mat-divider>
+              <a mat-list-item routerLink="/app-files" routerLinkActive="active">Files</a>
+            </mat-nav-list>
+          </div>
+        </div>
+
+        <div class="app-sidenav-bottom-content">
+          <mat-divider></mat-divider>
+          <div class="app-sidenav-footer">
+            <!--            <button routerLink="/app-settings"-->
+            <!--                    routerLinkActive="active"-->
+            <!--                    (click)="drawer.close()"-->
+            <!--                    mat-icon-button>-->
+            <!--              <mat-icon>settings</mat-icon>-->
+            <!--            </button>-->
+          </div>
+        </div>
       </div>
+
+
     </mat-sidenav>
 
 
@@ -29,9 +54,9 @@
                alt=""/>
           </span>
         <span class="right">
-            <button mat-icon-button class="app-top-toolbar-icon" routerLink="/app-settings" routerLinkActive="active">
-                <mat-icon>settings</mat-icon>
-            </button>
+<!--            <button mat-icon-button class="app-top-toolbar-icon" routerLink="/app-settings" routerLinkActive="active">-->
+          <!--                <mat-icon>account_circle</mat-icon>-->
+          <!--            </button>-->
           </span>
       </mat-toolbar>
 

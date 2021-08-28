@@ -1,0 +1,19 @@
+<div class="project-timeline-container">
+  <div class="project-start-date">
+    <mat-form-field appearance="fill">
+      <mat-label>Start Date:</mat-label>
+      <input matInput [matDatepicker]="startDatePicker">
+      <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
+      <mat-datepicker #startDatePicker></mat-datepicker>
+    </mat-form-field>
+  </div>
+  <div class="project-end-date">
+    <mat-form-field appearance="fill">
+      <mat-label>End Date:</mat-label>
+      <input matInput [matDatepicker]="endDatePicker">
+      <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
+      <mat-datepicker #endDatePicker></mat-datepicker>
+    </mat-form-field>
+
+  </div>
+</div>

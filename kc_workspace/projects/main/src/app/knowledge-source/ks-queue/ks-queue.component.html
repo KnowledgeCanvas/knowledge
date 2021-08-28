@@ -1,0 +1,13 @@
+<div class="search-results-header">
+  <div class="">
+    <b>Up Next</b>
+  </div>
+
+  <div class="" id="click-ref" *ngIf="ksQueue.length > 0">
+    Displaying<b>{{ksQueue?.length}}</b> result(s)
+  </div>
+
+  <div class="" *ngIf="ksQueue.length > 0">
+    <button (click)="clearResults()" color="warn" mat-button>Clear Results</button>
+  </div>
+</div>

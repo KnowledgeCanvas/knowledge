@@ -9,6 +9,10 @@
   text-align: center;
   background: $kc-primary-color-med;
   z-index: 100;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  align-items: center;
 }
 
 .app-top-toolbar {
@@ -24,6 +28,8 @@
 }
 
 .app-top-toolbar-icon {
+  height: 40px;
+  width: 40px;
   color: white;
 }
 
@@ -38,4 +44,28 @@
 
 .sidenav-container {
   height: 100%;
+}
+
+.app-sidenav {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: stretch;
+  height: 100%;
+}
+
+.app-sidenav-footer {
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-evenly;
+}
+
+.mat-drawer-inner-container {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: space-between;
 }

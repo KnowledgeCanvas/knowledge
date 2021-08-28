@@ -1,5 +1,9 @@
 <div class="project-overview-container">
   <div class="project-summary-container">
     <app-project-summary></app-project-summary>
+    <br>
+    <app-project-calendar></app-project-calendar>
+    <br>
+    <app-project-topic-list [sourceRef]="'app-project-summary'"></app-project-topic-list>
   </div>
 </div>

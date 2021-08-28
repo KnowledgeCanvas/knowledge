@@ -32,6 +32,7 @@ export class IpcService {
   getSettingsFile(): Observable<SettingsModel> {
     return new Observable<SettingsModel>(subscriber => {
       window.api.receive("app-get-settings-results", (data: any) => {
+        console.log('Received settings from electron: ', data);
         subscriber.next(data);
       });
       window.api.send("app-get-settings", {});
@@ -41,6 +42,7 @@ export class IpcService {
   saveSettingsFile(settings: SettingsModel): Observable<SettingsModel> {
       return new Observable<SettingsModel>(subscriber => {
         window.api.receive("app-save-settings-results", (data: any) => {
+          console.log('Received settings from electron: ', data);
           subscriber.next(data);
         });
         window.api.send("app-save-settings", settings);

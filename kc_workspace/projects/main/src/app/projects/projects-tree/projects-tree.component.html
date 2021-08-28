@@ -32,7 +32,7 @@
       </mat-icon>
     </button>
 
-    <span>{{node.name}}</span>
+    <span class="kc-font-changeable">{{node.name}}</span>
 
     <span class="fill-space"></span>
 
@@ -42,10 +42,15 @@
          [matMenuTriggerFor]="contextMenu1">
     </div>
 
-    <mat-menu #contextMenu1>
+    <mat-menu #contextMenu1 class="kc-font-changeable">
       <button (click)="newProject()" mat-menu-item>
         <mat-icon>playlist_add</mat-icon>
         Add Subproject
+      </button>
+      <mat-divider></mat-divider>
+      <button (click)="moveProject()" mat-menu-item>
+        <mat-icon>low_priority</mat-icon>
+        Move
       </button>
       <mat-divider></mat-divider>
       <button (click)="addKs()" mat-menu-item>
@@ -85,7 +90,7 @@
       </button>
     </span>
 
-    <span>{{node.name}}</span>
+    <span class="kc-font-changeable">{{node.name}}</span>
 
     <mat-menu #contextMenu2>
       <button (click)="newProject()" mat-menu-item>

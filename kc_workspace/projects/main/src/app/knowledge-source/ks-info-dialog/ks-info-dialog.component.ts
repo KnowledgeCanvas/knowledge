@@ -4,11 +4,17 @@ import {KnowledgeSource} from "../../../../../shared/src/models/knowledge.source
 import {DomSanitizer, SafeUrl} from "@angular/platform-browser";
 import {ExtractionService} from "../../../../../shared/src/services/extraction/extraction.service";
 import {ProjectService} from "../../../../../shared/src/services/projects/project.service";
-import {SearchService} from "../../../../../shared/src/services/search/search.service";
+import {KsQueueService} from "../ks-queue-service/ks-queue.service";
 import {ProjectModel, ProjectUpdateRequest} from "../../../../../shared/src/models/project.model";
 import {MatTabChangeEvent} from "@angular/material/tabs";
 import {Clipboard} from "@angular/cdk/clipboard";
 import {MatSnackBar} from "@angular/material/snack-bar";
+import {
+  BrowserViewRequest,
+  ElectronIpcService,
+  IpcResponse
+} from "../../../../../ks-lib/src/lib/services/electron-ipc/electron-ipc.service";
+import {UuidService} from "../../../../../shared/src/services/uuid/uuid.service";
 
 
 @Component({
@@ -28,23 +34,25 @@ export class KsInfoDialogComponent implements OnInit, AfterViewInit {
 
   constructor(public dialogRef: MatDialogRef<KsInfoDialogComponent>,
               @Inject(MAT_DIALOG_DATA) public ks: KnowledgeSource,
-              private _sanitizer: DomSanitizer,
               private extractionService: ExtractionService,
               private projectService: ProjectService,
-              private searchService: SearchService,
+              private ipcService: ElectronIpcService,
+              private changeRef: ChangeDetectorRef,
+              private ksQueueService: KsQueueService,
+              private _sanitizer: DomSanitizer,
               private clipboard: Clipboard,
-              private snackBar: MatSnackBar,
-              private changeRef: ChangeDetectorRef) {
+              private snackBar: MatSnackBar) {
 
     this.projectService.currentProject.subscribe((project) => {
       this.currentProject = project;
     });
 
     this.dialogRef.beforeClosed().subscribe(() => {
-      window.api.send("electron-close-browser-view");
+      this.ipcService.closeBrowserView();
       this.dialogRef.close({ksChanged: this.ksChanged, ks: this.ks});
     });
 
+    console.log('Setting notes to ks notes: ', ks.notes.text);
     this.title = ks.title;
     this.notes = ks.notes.text;
     this.sourceRef = ks.sourceRef ? ks.sourceRef : '';
@@ -62,48 +70,44 @@ export class KsInfoDialogComponent implements OnInit, AfterViewInit {
       this.ks.dateAccessed = new Date();
       this.viewReady = true;
       this.ksChanged = true;
-    } else {
-      let url, sanitizedUrl;
-      if (typeof this.ks.accessLink === "string")
-        url = new URL(this.ks.accessLink);
-      else
-        url = this.ks.accessLink
+      return;
+    }
 
-      sanitizedUrl = this._sanitizer.sanitize(4, url.href);
+    let url, sanitizedUrl;
+    if (typeof this.ks.accessLink === "string")
+      url = new URL(this.ks.accessLink);
+    else
+      url = this.ks.accessLink
 
-      if (!sanitizedUrl) {
-        console.error('Unable to sanitize url...');
+    sanitizedUrl = this._sanitizer.sanitize(4, url.href);
+    if (!sanitizedUrl) {
+      console.error('Unable to sanitize url...');
+      return;
+    }
+
+    // --------------------------------------------------------------------------------
+    // Send KsBrowserViewRequest
+    let position = this.getBrowserViewDimensions('electron-browser-view');
+    let request: BrowserViewRequest = {
+      url: sanitizedUrl,
+      x: Math.floor(position.x),
+      y: Math.floor(position.y),
+      width: Math.floor(position.width),
+      height: Math.floor(position.height)
+    }
+    this.ipcService.openBrowserView(request).then((response: IpcResponse) => {
+      if (response.success) {
+        this.ks.dateAccessed = new Date();
+        this.viewReady = true;
+        this.ksChanged = true;
+        this.changeRef.detectChanges();
+      } else {
+        // TODO: let the user know that an error has occurred (this should hopefully never happen)
+        console.error('Error attempting to open Electron BrowserView');
+        console.error(response.error ? response.error : response);
         return;
       }
-
-      // --------------------------------------------------------------------------------
-      // Set Callback
-      window.api.receive("electron-browser-view-results", (response: any) => {
-        if (response.success) {
-          this.ks.dateAccessed = new Date();
-          this.viewReady = true;
-          this.ksChanged = true;
-          this.changeRef.detectChanges();
-        } else {
-          // TODO: let the user know that an error has occurred (this should hopefully never happen)
-          console.error('Error attempting to open Electron BrowserView');
-          console.error(response.error ? response.error : response);
-          return;
-        }
-      });
-
-      // --------------------------------------------------------------------------------
-      // Send KsBrowserViewRequest
-      let position = this.getBrowserViewDimensions('electron-browser-view');
-      let args = {
-        url: sanitizedUrl,
-        x: Math.floor(position.x),
-        y: Math.floor(position.y),
-        width: Math.floor(position.width),
-        height: Math.floor(position.height)
-      }
-      window.api.send("electron-browser-view", args);
-    }
+    });
   }
 
   openInBrowser() {
@@ -112,6 +116,7 @@ export class KsInfoDialogComponent implements OnInit, AfterViewInit {
       url = this.ks.accessLink
     else
       url = this.ks.accessLink.href;
+
     window.open(url);
     this.ks.dateAccessed = new Date();
     this.ksChanged = true;
@@ -143,13 +148,17 @@ export class KsInfoDialogComponent implements OnInit, AfterViewInit {
       this.ks.dateAccessed = new Date();
       this.ks.dateModified = new Date();
 
+      console.log('Setting KS notes to: ', this.notes);
+
+      this.ks.notes.text = this.notes;
+
       // Update the project to persist the new source
       let projectUpdate: ProjectUpdateRequest = {
         id: this.currentProject.id,
         addKnowledgeSource: [this.ks]
       }
       this.projectService.updateProject(projectUpdate);
-      this.searchService.remove(this.ks);
+      this.ksQueueService.remove(this.ks);
       this.dialogRef.close();
     } else {
       console.error('IMPORT SOURCE WITH NO PROJECT ID Not implemented');
@@ -173,14 +182,14 @@ export class KsInfoDialogComponent implements OnInit, AfterViewInit {
     console.log('Tab changed: ', $event);
     switch ($event.index) {
       case 0:
-        window.api.send("electron-close-browser-view");
+        this.ipcService.closeBrowserView();
         this.changeRef.markForCheck();
         break;
       case 1:
         this.emplaceKnowledgeSourceView();
         break;
       case 2:
-        window.api.send("electron-close-browser-view");
+        this.ipcService.closeBrowserView();
         this.ks.notes.dateAccessed = new Date();
         this.changeRef.markForCheck();
         break;
@@ -227,5 +236,10 @@ export class KsInfoDialogComponent implements OnInit, AfterViewInit {
     this.ks.notes.dateModified = new Date();
     this.ks.dateModified = new Date();
     this.ksChanged = true;
+  }
+
+  removeQueueItem() {
+    this.ksQueueService.remove(this.ks);
+    this.dialogRef.close();
   }
 }

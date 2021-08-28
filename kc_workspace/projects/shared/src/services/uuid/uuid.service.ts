@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
 import {UuidModel} from '../../models/uuid.model';
+import {ElectronIpcService} from "../../../../ks-lib/src/lib/services/electron-ipc/electron-ipc.service";
 
 declare global {
   interface Window {
@@ -12,8 +13,10 @@ declare global {
 })
 export class UuidService {
   private uuidBuffer: UuidModel[] = [];
+  private NUM_IDS = 128;
+  private MIN_IDS = 16;
 
-  constructor() {
+  constructor(private ipcService: ElectronIpcService) {
     this.asyncGenerate();
   }
 
@@ -25,26 +28,16 @@ export class UuidService {
 
     let uuids: UuidModel[] = this.uuidBuffer.slice(0, quantity);
     this.uuidBuffer = this.uuidBuffer.slice(quantity);
-
-    if (this.uuidBuffer.length <= 16) {
+    if (this.uuidBuffer.length <= 32) {
       this.asyncGenerate();
     }
-
     return uuids;
   }
 
   private asyncGenerate() {
-    window.api.receive("app-generate-uuid-results", (response: any) => {
-      if (response.error || !response.success.data) {
-        console.error('Unable to get UUIDs from IPC.');
-        console.error(response.error);
-        throw new Error(response.error);
-      }
-      for (let id of response.success.data) {
-        let uuid = new UuidModel(id);
-        this.uuidBuffer.push(uuid);
-      }
+    this.ipcService.generateUuid(128).then((ids: UuidModel[]) => {
+      if (ids)
+        this.uuidBuffer = ids;
     });
-    window.api.send("app-generate-uuid", {quantity: 64});
   }
 }

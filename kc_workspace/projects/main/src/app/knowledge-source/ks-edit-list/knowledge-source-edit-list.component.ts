@@ -2,7 +2,10 @@ import {Component, OnInit} from '@angular/core';
 import {ProjectService} from "../../../../../shared/src/services/projects/project.service";
 import {ProjectModel, ProjectUpdateRequest} from "../../../../../shared/src/models/project.model";
 import {IngestType, KnowledgeSource} from "../../../../../shared/src/models/knowledge.source.model";
-import {ConfirmDialogService} from "../../../../../shared/src/services/confirm-dialog/confirm-dialog.service";
+import {
+  KcDialogRequest,
+  KcDialogService
+} from "../../../../../shared/src/services/confirm-dialog/kc-dialog.service";
 
 interface KsChecklist {
   title: string;
@@ -23,7 +26,7 @@ export class KnowledgeSourceEditListComponent implements OnInit {
   allComplete: boolean = false;
   someSelected: boolean = false;
 
-  constructor(private projectService: ProjectService, private confirmDialogService: ConfirmDialogService) {
+  constructor(private projectService: ProjectService, private dialogService: KcDialogService) {
     this.projectService.currentProject.subscribe(project => {
       if (project?.name && project?.id.value !== '') {
         this.project = project;
@@ -82,19 +85,19 @@ export class KnowledgeSourceEditListComponent implements OnInit {
 
     let title = selected.length > 1 ? `Delete ${selected.length} Knowledge Sources?` : 'Delete 1 Knowledge Source?'
 
-    const options = {
+    const options: KcDialogRequest = {
       title: title,
       message: 'You will not be able to recover knowledge sources once they are deleted. All information and' +
         ' associated data will be unrecoverable. Continue?',
-      cancelText: 'Cancel',
-      confirmText: 'Delete Permanently',
-      list: selected
+      cancelButtonText: 'Cancel',
+      actionButtonText: 'Delete Permanently',
+      actionToTake: 'delete',
+      listToDisplay: selected
     };
 
-    this.confirmDialogService.open(options);
+    this.dialogService.open(options);
 
-    this.confirmDialogService.confirmed().subscribe(confirmed => {
-      console.log('Confirmed: ', confirmed);
+    this.dialogService.confirmed().subscribe(confirmed => {
       if (confirmed) {
         let removeKnowledgeSource: KnowledgeSource[] = [];
         for (let select of selected) {
@@ -110,6 +113,7 @@ export class KnowledgeSourceEditListComponent implements OnInit {
             removeKnowledgeSource: removeKnowledgeSource
           }
           this.projectService.updateProject(update);
+          this.someSelected = false;
         }
       }
     }, error => {

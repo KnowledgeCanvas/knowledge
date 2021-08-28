@@ -1,0 +1,10 @@
+.project-timeline-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+
+.project-start-date,
+.project-end-date {
+  margin: 10px;
+}

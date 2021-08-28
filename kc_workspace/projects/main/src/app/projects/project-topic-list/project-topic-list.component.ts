@@ -19,7 +19,7 @@ import {FormControl} from "@angular/forms";
 import {Observable} from "rxjs";
 import {map, startWith} from "rxjs/operators";
 import {TopicModel} from "../../../../../shared/src/models/topic.model";
-import {SearchService} from "../../../../../shared/src/services/search/search.service";
+import {KsQueueService} from "../../knowledge-source/ks-queue-service/ks-queue.service";
 
 @Component({
   selector: 'app-project-topic-list',
@@ -41,7 +41,7 @@ export class ProjectTopicListComponent implements OnInit, OnChanges {
   topics: string[] = [];
   allTopics: string[] = ['Computer Science', 'AI/ML'];
 
-  constructor(private topicService: TopicService, private projectService: ProjectService, private searchService: SearchService) {
+  constructor(private topicService: TopicService, private projectService: ProjectService, private searchService: KsQueueService) {
     this.projectService.currentProject.subscribe((project) => {
       this.project = project;
       this.topics = project.topics ? project.topics : [];

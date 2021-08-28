@@ -19,7 +19,7 @@ export class FaviconExtractorService {
   // NOTE: https://stackoverflow.com/a/45630579
   // NOTE: https://stackoverflow.com/a/15750809
   // NOTE: https://erikmartinjordan.com/get-favicon-google-api
-  extract(url: string | string[] | undefined): Promise<any> {
+  extract(url: string | string[]): Promise<any> {
     return new Promise((resolve, reject) => {
       if (url === undefined)
         reject(undefined);

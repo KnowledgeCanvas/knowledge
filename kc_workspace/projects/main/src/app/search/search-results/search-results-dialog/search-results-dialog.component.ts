@@ -5,7 +5,7 @@ import {ExtractionService} from "../../../../../../shared/src/services/extractio
 import {KnowledgeSource} from "../../../../../../shared/src/models/knowledge.source.model";
 import {ProjectService} from "../../../../../../shared/src/services/projects/project.service";
 import {ProjectModel, ProjectUpdateRequest} from "../../../../../../shared/src/models/project.model";
-import {SearchService} from "../../../../../../shared/src/services/search/search.service";
+import {KsQueueService} from "../../../knowledge-source/ks-queue-service/ks-queue.service";
 
 @Component({
   selector: 'app-search-results-dialog',
@@ -23,7 +23,7 @@ export class SearchResultsDialogComponent implements OnInit {
               private _sanitizer: DomSanitizer,
               private extractionService: ExtractionService,
               private projectService: ProjectService,
-              private searchService: SearchService) {
+              private searchService: KsQueueService) {
     this.projectService.currentProject.subscribe((project) => {
       this.currentProject = project;
     });

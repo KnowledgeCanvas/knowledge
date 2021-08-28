@@ -52,9 +52,10 @@
 </div>
 
 <div mat-dialog-actions>
-  <button mat-button (click)="openInBrowser()">Open in New Window</button>
+  <button mat-button (click)="openInBrowser()">Open</button>
   <button mat-button (click)="copyLink()" *ngIf="this.ks.ingestType === 'file'">Copy Path</button>
   <button mat-button (click)="copyLink()" *ngIf="this.ks.ingestType !== 'file'">Copy Link</button>
   <button *ngIf="sourceRef !== 'list'" mat-button color="primary" (click)="importSource()">Add to Project</button>
+  <button *ngIf="sourceRef !== 'list'" mat-button color="warn" (click)="removeQueueItem()">Remove from Up Next</button>
   <button *ngIf="sourceRef === 'list'" mat-button color="warn" (click)="removeSource()">Remove from Project</button>
 </div>
