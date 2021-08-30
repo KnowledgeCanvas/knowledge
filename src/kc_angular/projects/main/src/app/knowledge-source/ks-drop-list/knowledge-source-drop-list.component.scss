@@ -1,0 +1,147 @@
+@import "../../../styles/theme";
+
+.cdk-virtual-scroll-data-source .canvas-node-container {
+  box-shadow: inset 0 0 2px 0 rgba(255, 255, 255, .4), inset 0 0 3px 0 rgba(0, 0, 0, .4), inset 0 0 3px 5px rgba(0, 0, 0, .05), 2px 2px 4px 0 rgba(0, 0, 0, .25);
+  writing-mode: horizontal-tb;
+  border: solid 1px #1c1c1c;
+  justify-content: center;
+  box-sizing: border-box;
+  background-color: #fff;
+  align-content: center;
+  flex-direction: column;
+  white-space: pre-wrap;
+  align-items: center;
+  border-radius: 32px;
+  text-overflow: fade;
+  flex-wrap: nowrap;
+  max-height: 32px;
+  min-height: 32px;
+  max-width: 32px;
+  min-width: 32px;
+  font-size: 14px;
+  cursor: pointer;
+  overflow: hidden;
+  display: flex;
+  flex-basis: 0;
+  height: 32px;
+  margin: 8px;
+  padding: 10px;
+  width: 32px;
+  flex-grow: 1;
+}
+
+.ks-info-dialog-backdrop {
+
+}
+
+.ks-sort-label {
+  text-align: center;
+  user-select: none;
+  font-size: 12px;
+
+  .ks-sort-key {
+    color: $kc-primary-color-dark;
+    text-decoration: underline;
+    font-size: 12px;
+    cursor: help;
+  }
+}
+
+.ks-list-sort-buttons {
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
+  user-select: none;
+  flex-wrap: nowrap;
+  display: flex;
+}
+
+.ks-list-sort-button {
+  max-height: 8px !important;
+  max-width: 8px !important;
+  height: 8px !important;
+  width: 8px !important;
+  display: contents;
+  cursor: pointer;
+}
+
+.knowledge-canvas-sidebar {
+  justify-content: flex-start;
+  flex-direction: column;
+  align-content: center;
+  align-items: center;
+  flex-wrap: nowrap;
+  max-width: 48px;
+  min-width: 48px;
+  height: 100%;
+  display: flex;
+  border: 2px;
+}
+
+.knowledge-canvas-sidebar-title {
+  border-bottom: solid 1px lightgrey;
+  justify-content: center;
+  align-content: center;
+  flex-direction: column;
+  align-items: center;
+  min-height: 48px;
+  flex-wrap: nowrap;
+  height: 48px;
+  display: flex;
+}
+
+.canvas-add-node {
+  background-color: $kc-secondary-color-dark !important;
+  cursor: pointer;
+}
+
+.cdk-virtual-scroll-data-source .project-knowledge-source-viewport {
+  justify-content: flex-start;
+  align-content: center;
+  flex-direction: column;
+  align-items: stretch;
+  margin-bottom: 15px;
+  overflow-y: auto;
+  flex-wrap: nowrap;
+  height: inherit;
+  display: flex;
+}
+
+.cdk-virtual-scroll-data-source .project-knowledge-source-viewport .cdk-virtual-scroll-content-wrapper {
+  flex-direction: column;
+  display: flex;
+}
+
+.search-result-dialog-icon {
+  min-height: 32px !important;
+  max-height: 32px !important;
+  min-width: 32px !important;
+  max-width: 32px !important;
+  height: 32px !important;
+  width: 32px !important;
+}
+
+.cdk-virtual-scroll-content-wrapper {
+  height: 100% !important;
+}
+
+.cdk-virtual-scroll-content-wrapper {
+  height: 100% !important;
+}
+
+.cdk-virtual-scroll-data-source {
+  border-right: solid 1px lightgrey;
+  justify-content: flex-start;
+  align-content: center;
+  flex-direction: column;
+  align-items: flex-start;
+  flex-wrap: nowrap;
+  max-width: 64px;
+  display: flex;
+  height: 100%;
+}
+
+.cdk-virtual-scroll-orientation-vertical .cdk-virtual-scroll-content-wrapper {
+  min-width: 100%;
+  height: 100%;
+}

@@ -1,0 +1,101 @@
+<div class="ks-info-container">
+  <div class="ks-info-controls">
+    <button mat-icon-button (click)="openAll()">
+      <mat-icon>
+        unfold_more
+      </mat-icon>
+    </button>
+    <button mat-icon-button (click)="closeAll()">
+      <mat-icon>
+        unfold_less
+      </mat-icon>
+    </button>
+  </div>
+
+  <div class="ks-details-accordion-container">
+    <mat-accordion #accordion="matAccordion" [multi]="true" togglePosition="after" class="ks-details-accordion">
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Description</mat-panel-title>
+          <mat-panel-description></mat-panel-description>
+          <div class="mat-panel-body">
+            <ng-template matExpansionPanelContent>
+              <mat-form-field style="width: 100%" (focusout)="setDescription()">
+              <textarea placeholder="Enter or Edit Description..."
+                        [matTextareaAutosize]="true"
+                        [(ngModel)]="description"
+                        cdkAutosizeMinRows="5"
+                        matInput></textarea>
+              </mat-form-field>
+            </ng-template>
+          </div>
+        </mat-expansion-panel-header>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel *ngIf="snippet && snippet.length > 0">
+        <mat-expansion-panel-header>
+          <mat-panel-title>Snippet</mat-panel-title>
+          <mat-panel-description></mat-panel-description>
+          <div class="mat-panel-body">
+            <ng-template matExpansionPanelContent>
+              {{snippet}}
+            </ng-template>
+          </div>
+        </mat-expansion-panel-header>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel *ngIf="containsImages">
+        <mat-expansion-panel-header>
+          <mat-panel-title>Images</mat-panel-title>
+          <ng-template matExpansionPanelContent>
+            <div class="mat-panel-body">
+        
+            </div>
+          </ng-template>
+        </mat-expansion-panel-header>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>Timeline</mat-panel-title>
+          <mat-panel-description></mat-panel-description>
+          <div class="mat-panel-body">
+            <ng-template matExpansionPanelContent>
+              <div class="row">
+                <div class="col s12">
+                  <b>Reviewed:</b> {{dateAccessed}}
+                </div>
+              </div>
+              <div class="row">
+                <div class="col s12">
+                  <b>Changed:</b>  {{dateModified}}
+                </div>
+              </div>
+              <div class="row">
+                <div class="col s12">
+                  <b>Created:</b>   {{dateCreated}}
+                </div>
+              </div>
+            </ng-template>
+          </div>
+        </mat-expansion-panel-header>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel *ngIf="authors">
+        <mat-expansion-panel-header>
+          <mat-panel-title>Authors</mat-panel-title>
+          <ng-template matExpansionPanelContent>
+            <div class="mat-panel-body">
+              <div class="row">
+                <div class="col s3" *ngFor="let author of authors">
+                  {{author.firstName}} {{author.lastName}}
+                </div>
+              </div>
+            </div>
+          </ng-template>
+        </mat-expansion-panel-header>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </div>
+
+</div>

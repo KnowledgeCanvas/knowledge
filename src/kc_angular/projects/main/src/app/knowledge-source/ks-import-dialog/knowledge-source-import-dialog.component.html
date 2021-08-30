@@ -1,0 +1,60 @@
+<div *ngIf="stage_1 || !stage_2">
+  <h1 class="center">Add a Knowledge Source</h1>
+  <mat-grid-list *ngIf="!stage_3"
+                 rowHeight="2:1"
+                 cols="2">
+
+    <mat-grid-tile (click)="selectNote()"
+                   matTooltip="Create a new Note"
+                   matTooltipShowDelay="1000"
+                   matTooltipClass="tool-tip">
+      <div class="scale-up-center ingest-panel-card">
+        <mat-icon>sticky_note_2</mat-icon>
+        Note
+      </div>
+    </mat-grid-tile>
+
+    <mat-grid-tile (click)="selectExtract()"
+                   matTooltip="Add a website by pasting a link"
+                   matTooltipShowDelay="1000"
+                   matTooltipClass="tool-tip">
+      <div class="scale-up-center ingest-panel-card">
+        <mat-icon>web</mat-icon>
+        Website
+      </div>
+    </mat-grid-tile>
+
+    <mat-grid-tile matTooltip="Add files from your computer"
+                   matTooltipClass="tool-tip"
+                   matTooltipShowDelay="1000"
+                   (click)="selectFiles()">
+      <div class="scale-up-center ingest-panel-card">
+        <mat-icon>description</mat-icon>
+        Files
+      </div>
+    </mat-grid-tile>
+
+    <mat-grid-tile matTooltip="Perform a smart search using project topics"
+                   matTooltipShowDelay="1000"
+                   matTooltipClass="tool-tip"
+                   (click)="selectTopics()">
+      <div class="scale-up-center ingest-panel-card">
+        <mat-icon>topic</mat-icon>
+        Topics
+      </div>
+    </mat-grid-tile>
+
+  </mat-grid-list>
+</div>
+
+<app-note-creation class="scale-up-center" *ngIf="noteEnabled" [currentProject]="currentProject"></app-note-creation>
+
+<app-website-extraction class="scale-up-center" *ngIf="extractionEnabled" [currentProject]="currentProject"></app-website-extraction>
+
+<app-file-upload class="scale-up-center" *ngIf="filesEnabled" [currentProject]="currentProject"></app-file-upload>
+
+<div class="row" *ngIf="topicsEnabled">
+  <div class="col s12">
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  </div>
+</div>

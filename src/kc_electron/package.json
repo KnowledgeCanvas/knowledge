@@ -1,0 +1,32 @@
+{
+  "name": "kc_electron",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "main": "dist/electron.js",
+  "scripts": {
+    "build": "node_modules/.bin/webpack --config webpack.prod.js",
+    "build-dev": "node_modules/.bin/webpack --config webpack.dev.js",
+    "clean": "rm -rf dist",
+    "purge": "rm -rf node_modules",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch-electron": "node_modules/.bin/webpack --config webpack.prod.js --watch",
+    "watch-electron-dev": "node_modules/.bin/webpack --config webpack.dev.js --watch"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "python-shell": "^3.0.0",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "electron": "^13.1.6",
+    "electron-builder": "^22.11.7",
+    "ts-loader": "^9.2.3",
+    "typescript": "^4.3.5",
+    "webpack": "^5.44.0",
+    "webpack-cli": "^4.7.2",
+    "webpack-merge": "^5.8.0"
+  }
+}

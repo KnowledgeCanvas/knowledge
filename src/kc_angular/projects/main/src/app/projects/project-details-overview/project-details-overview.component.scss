@@ -1,0 +1,52 @@
+.project-overview-container {
+  max-height: calc(100% - 60px);
+  overflow: auto;
+}
+
+.project-summary-container {
+  margin: 10px;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-content: center;
+  align-items: flex-start;
+}
+
+app-project-summary {
+  width: 100%;
+  margin: 10px;
+}
+
+.project-topic-list {
+  width: 100%;
+}
+
+app-project-topic-list {
+  width: 100%;
+  margin: 10px;
+}
+
+.project-accordion-container {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: center;
+  overflow-y: auto;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.project-detail-overview-header {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: center;
+  align-content: stretch;
+}
+
+.project-detail-overview-title {
+  margin: 5px;
+}
+
+

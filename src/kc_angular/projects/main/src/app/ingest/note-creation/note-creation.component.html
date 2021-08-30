@@ -1,0 +1,22 @@
+<form>
+  <mat-form-field class="project-notes-container" appearance="standard">
+    <mat-label>Notes</mat-label>
+    <textarea [ngModelOptions]="{standalone: true}"
+              [(ngModel)]="notes"
+              cdkTextareaAutosize
+              cdkAutosizeMinRows="8"
+              matInput
+              required
+              #notesRef></textarea>
+    <mat-hint>Add or edit notes here...</mat-hint>
+  </mat-form-field>
+
+  <ks-lib-ingest-import-selector [currentProject]="currentProject"
+                                 (selection)="setDestination($event)">
+  </ks-lib-ingest-import-selector>
+
+  <div class="right">
+    <button mat-button color="primary" (click)="submit()">Submit</button>
+    <button mat-button color="warn" (click)="cancel()">Cancel</button>
+  </div>
+</form>

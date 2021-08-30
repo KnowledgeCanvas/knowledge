@@ -1,0 +1,14 @@
+<div class="row center">
+  <br>
+  <div class="ingest-import-selection" *ngIf="currentProject">
+    <label style="margin-right: 10px">Import to:</label>
+    <mat-radio-group [ngModelOptions]="{standalone: true}" [(ngModel)]="destination" (change)="setDestination($event)">
+      <mat-radio-button class="ingest-import-selector" value="project">
+        Current Project ({{currentProject.name}})
+      </mat-radio-button>
+      <mat-radio-button class="ingest-import-selector" value="queue">
+        Up Next
+      </mat-radio-button>
+    </mat-radio-group>
+  </div>
+</div>
