@@ -1,42 +1,245 @@
-import {IpcResponse, KcUuidRequest, KsBrowserViewRequest, KsThumbnailRequest} from "./app/model/ipc.model";
-import {SettingsModel} from "./app/model/settings.model";
+import {IpcResponse} from "./app/models/electron.ipc.model";
+import {FileModel} from "./app/models/file.model";
 
-const {app, BrowserWindow, BrowserView, ipcMain, dialog, webContents, shell} = require('electron');
-
+const {app, BrowserWindow, BrowserView, ipcMain, dialog, shell} = require('electron');
 const nativeImage = require('electron').nativeImage
 const http = require('http');
 const url = require('url');
-
+const chokidar = require('chokidar');
 const fs = require('fs');
-const os = require('os');
 const path = require('path');
-
-const scriptService = require('./app/controller/script.service');
+const mime = require('mime-types');
 const settingsService = require('./app/controller/settings.service');
 const uuid = require('uuid');
+const DEBUG: boolean = false;
+const MAIN_ENTRY: string = path.join(app.getAppPath(), 'src', 'kc_angular', 'dist', 'main', 'index.html');
 
-const DEBUG: boolean = true;
-const MAIN_ENTRY: string = path.join(app.getAppPath(), 'src', 'kc_angular', 'dist', 'main', 'index.html')
-const SETUP_ENTRY: string = path.join(app.getAppPath(), 'src', 'kc_angular', 'dist', 'setup', 'index.html')
-
-let kcMainWindow: typeof BrowserWindow;
-let appEnv = settingsService.getSettings();
+(global as any).share = {
+    settingsService,
+    BrowserWindow,
+    BrowserView,
+    nativeImage,
+    ipcMain,
+    dialog,
+    uuid,
+    http,
+    shell,
+    path,
+    url,
+    app,
+    fs
+};
 
 console.log('Dirname: ', __dirname);
 
-http.createServer((req: any, res: any) => {
-    let q = url.parse(req.url, true).query;
+const browserExtensionServer = require('./app/server/server');
+require('./app/ipc/ipc-index');
 
-    if (q.link) {
-        console.log(q.link);
-        kcMainWindow.webContents.send('app-chrome-extension-results', q.link);
-        res.end("Done");
-    } else {
-        console.error('Received invalid link from Chrome extension...');
-        res.end('Failed');
+
+let appEnv = settingsService.getSettings();
+let kcMainWindow: typeof BrowserWindow;
+
+browserExtensionServer.createServer();
+
+/**
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ */
+let ingestWatcher: any;
+let filesToPush: any[] = [];
+let autoScanInterval: any = undefined;
+
+/**
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ */
+// Subscribes to ingest settings in order to enable/disable file watcher...
+// TODO: move this elsewhere.... IPC perhaps?
+settingsService.ingest.subscribe((ingest: any) => {
+    if (!ingest || !ingest.autoscan || !ingest.autoscanLocation) {
+        console.log('Autoscan has been disabled... closing ingestWatcher')
+        if (ingestWatcher)
+            ingestWatcher.close();
+        clearInterval(autoScanInterval);
+        return;
     }
-}).listen(9000)
 
+    // If watcher already exists, close it for now so we can apply new settings
+    if (ingestWatcher) {
+        ingestWatcher.close();
+    }
+    clearInterval(autoScanInterval);
+    ingestWatcher = null;
+
+    let watchPath = path.resolve(ingest.autoscanLocation);
+
+    let fileStat: any;
+    try {
+        fileStat = fs.statSync(watchPath);
+    } catch (e) {
+        console.warn('Could not find directory: ', watchPath, '... creating now...');
+        fs.mkdirSync(watchPath, {recursive: true});
+    }
+
+    ingestWatcher = chokidar.watch(watchPath, {
+        ignored: /(^|[\/\\])\../, // ignore dotfiles
+        persistent: true,
+        ignoreInitial: false
+    });
+
+    ingestWatcher.on('add', (filePath: string) => {
+        fileStat = fs.statSync(filePath);
+
+        if (!fileStat) {
+            console.error('Failed to read file: ', filePath);
+            return;
+        }
+
+        console.log('New file found by watcher: ', filePath);
+
+        // Create new file name based on UUID and file type extension, then copy to assigned directory
+        const contentType = mime.lookup(filePath);
+
+        // TODO: this might be set to "false", so we'll have to manually grab the extension if so...
+        let fileExtension = mime.extension(contentType);
+        if (!fileExtension) {
+            console.warn('Could not find file extension for filePath: ', filePath);
+            fileExtension = path.extname(filePath).split('.')[1];
+            console.warn('Using path extname instead: ', fileExtension);
+        }
+
+
+        let newId = uuid.v4();
+        let newFilePath = path.resolve(appEnv.appPath, 'files', newId) + `.${fileExtension}`;
+        copyFileToFolder(filePath, newFilePath);
+
+        // Prepare file model to be sent to ingest watcher service in Angular
+        console.log('Preserve timestamps: ', ingest.preserveTimestamps);
+        let fileModel: FileModel = {
+            accessTime: ingest.preserveTimestamps ? fileStat.atime : Date(),
+            creationTime: ingest.preserveTimestamps ? fileStat.ctime : Date(),
+            modificationTime: ingest.preserveTimestamps ? fileStat.mtime : Date(),
+            filename: path.basename(filePath),
+            id: {value: newId},
+            path: newFilePath,
+            size: fileStat.size,
+            type: contentType
+        }
+
+        // Add it to the queue
+        filesToPush.push(fileModel);
+
+
+        // Delete file in watched directory (since it has a new home)
+        console.warn('Deleting file: ', filePath);
+        fs.rmSync(filePath);
+    });
+
+    // Create a new period check for files based on user interval
+    console.log('Setting interval to ', ingest.interval / 1000, ' seconds...');
+    autoScanInterval = setInterval(() => {
+        console.log('Checking filesToPush: ', filesToPush);
+        if (filesToPush.length > 0 && ingest.autoscan) {
+            let responses: any[] = [];
+
+            for (let fileToPush of filesToPush) {
+                let response: IpcResponse = {
+                    error: undefined,
+                    success: {
+                        data: fileToPush
+                    }
+                }
+                responses.push(response)
+            }
+            kcMainWindow.webContents.send('app-ingest-watcher-results', responses);
+            filesToPush = [];
+        }
+
+    }, appEnv.ingest.interval);
+});
+
+
+/**
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ */
+function copyFileToFolder(filePath: string, newFilePath: string) {
+    fs.copyFileSync(filePath, newFilePath);
+}
+
+
+/**
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ */
 function createMainWindow() {
     console.log('Startup URL entry point is: ', MAIN_ENTRY);
     let WIDTH: number = parseInt(appEnv.DEFAULT_WINDOW_WIDTH);
@@ -69,280 +272,72 @@ function createMainWindow() {
     });
 
     kcMainWindow.webContents.on('new-window', (event: any, url: string) => {
-        // event.preventDefault();
-        // shell.openPath(url);
+        console.log('New window requested: ', url);
+        event.preventDefault();
+
+        shell.openExternal(url);
     });
 
     kcMainWindow.loadFile(MAIN_ENTRY);
     kcMainWindow.show();
 
+    console.log('Main window has ID: ', kcMainWindow.id);
+
     return kcMainWindow;
 }
 
+
+/**
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ */
 app.on('window-all-closed', function () {
     if (process.platform !== 'darwin') app.quit()
     process.exit(0);
 });
 
+
+/**
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ */
 app.whenReady().then(() => {
     kcMainWindow = createMainWindow();
     app.on('activate', function () {
         if (BrowserWindow.getAllWindows().length === 0) createMainWindow();
     })
 })
-
-
-function isKsBrowserViewRequest(arg: any): arg is KsBrowserViewRequest {
-    const containsArgs = arg && arg.url && arg.x && arg.y && arg.height && arg.width
-    const correctTypes = typeof (arg.url) === 'string'
-        && typeof (arg.height) === 'number' && typeof (arg.x) === 'number'
-        && typeof (arg.width) === 'number' && typeof (arg.y) === 'number';
-    if (!containsArgs) console.warn('KsBrowserViewRequest does not contain the necessary fields.');
-    if (!correctTypes) console.warn('KsBrowserViewRequest item types are invalid.');
-    // TODO: Make sure these values are also within the bounds of the main window as an extra sanity check
-    return containsArgs && correctTypes;
-}
-
-function isKcUuidRequest(args: any): args is KcUuidRequest {
-    const containsQuantity = args && args.quantity;
-    const correctType = typeof (args.quantity) === 'number';
-    const correctRange = 0 < args.quantity && args.quantity <= 128;
-    console.log(containsQuantity, correctType, correctRange);
-    return containsQuantity && correctType && correctRange;
-}
-
-ipcMain.on('electron-open-local-file', (event: any, filePath: string) => {
-    console.log('Received request to open local file: ', filePath);
-    shell.openPath(path.resolve(filePath));
-});
-
-ipcMain.on('electron-get-file-thumbnail', (event: any, requests: KsThumbnailRequest[]) => {
-    let responses: IpcResponse[] = [];
-
-
-    if (requests.length <= 0) {
-        responses = [{
-            error: {
-                code: 412,
-                label: http.STATUS_CODES['412'],
-                message: 'Invalid thumbnail request.'
-            }, success: undefined
-        }]
-        kcMainWindow.webContents.send('electron-get-file-thumbnail-results', responses);
-        return;
-    }
-
-
-    let actions: any[] = [];
-
-    for (let request of requests) {
-        console.log('Processing request: ', request);
-        if (request.height && request.width)
-            actions.push(nativeImage.createThumbnailFromPath(path.resolve(request.path), {width: request.width, height: request.height}));
-        else
-            actions.push(nativeImage.createThumbnailFromPath(path.resolve(request.path), {width: 800, height: 1600}));
-    }
-
-
-    Promise.all(actions).then((thumbnails) => {
-        console.log('Received ', thumbnails.length, ' thumbnails...');
-        for (let thumbnail of thumbnails) {
-            let response: IpcResponse = {
-                error: undefined,
-                success: {data: thumbnail.toDataURL()}
-            }
-            responses.push(response);
-        }
-        kcMainWindow.webContents.send('electron-get-file-thumbnail-results', responses);
-    }).catch((reason) => {
-        console.error('Caught promise exception while getting thumbnail: ', reason);
-    });
-});
-
-ipcMain.on('electron-get-file-icon', (event: any, filePaths: string[]) => {
-    if (filePaths.length <= 0) {
-        return;
-    }
-    let actions: any[] = [];
-
-    let options = {
-        size: 'normal'
-    }
-    for (let filePath of filePaths) {
-        actions.push(app.getFileIcon(path.resolve(filePath), options));
-    }
-
-    let responses: IpcResponse[] = [];
-
-    Promise.all(actions).then((icons) => {
-        for (let icon of icons) {
-            let response: IpcResponse = {
-                error: undefined,
-                success: {data: icon.toDataURL()}
-            }
-            responses.push(response);
-        }
-        kcMainWindow.webContents.send('electron-get-file-icon-results', responses);
-    });
-});
-
-ipcMain.on('electron-browser-view', (event: any, args: KsBrowserViewRequest) => {
-    let response: IpcResponse = {
-        error: undefined,
-        success: undefined
-    }
-
-    // ---------------------------------------------------------------------------
-    // Argument validation
-    if (!isKsBrowserViewRequest(args)) {
-        const message = `electron-browser-view argument does not conform to KsBrowserViewRequest`;
-        response.error = {code: 412, label: http.STATUS_CODES['412'], message: message};
-        console.warn(response.error);
-        kcMainWindow.webContents.send('electron-browser-view-results', response);
-        return;
-    }
-
-    // ---------------------------------------------------------------------------
-    // Construct BrowserView, set parameters, and attach to main window
-    const viewUrl = new URL(args.url), x = args.x, y = args.y, width = args.width, height = args.height;
-    const kcBrowserView = new BrowserView({show: false});
-
-    kcMainWindow.setBrowserView(kcBrowserView);
-    kcBrowserView.setBounds({x: x, y: y, width: width, height: height});
-    kcBrowserView.setAutoResize({width: true, height: true, horizontal: true, vertical: true});
-    kcBrowserView.webContents.loadURL(viewUrl.href);
-    kcBrowserView.webContents.on('dom-ready', function () {
-        response.success = {message: 'Success. DOM-ready triggered.'}
-        kcMainWindow.webContents.send('electron-browser-view-results', response);
-    });
-});
-
-ipcMain.on("electron-close-browser-view", () => {
-    let allViews = kcMainWindow.getBrowserViews();
-    kcMainWindow.setBrowserView(null);
-    for (let view of allViews) {
-        view.webContents.destroy();
-    }
-});
-
-ipcMain.on('electron-browser-view-file', (event: any, args: object) => {
-    console.log('Electron Browser View from file generated from args: ', args);
-    kcMainWindow.webContents.send('electron-browser-view-file-results', args);
-
-    // TODO: Decide if we want to implement this and what it would look like...
-    // const contentBounds = win.getContentBounds();
-    // console.log('Content Bounds: ', win.getContentBounds());
-    // let x = contentBounds.width * 0.12;
-    // let y = contentBounds.height * 0.12;
-    // let width = contentBounds.width * 0.70;
-    // let height = contentBounds.height * 0.70;
-    //
-    // const view = new BrowserView();
-    // win.setBrowserView(view);
-    // view.setBounds({x: x, y: y, width: width, height: height});
-    // view.webContents.loadURL(url);
-});
-
-ipcMain.on("app-search-python", (event: any, args: object) => {
-    console.log('Search invoked on search term: ', args);
-    scriptService.runPythonScript('search', args).then((value: string) => {
-        kcMainWindow.webContents.send("app-search-python-results", value);
-    }).catch((reason: any) => {
-        console.error(reason);
-    });
-});
-
-ipcMain.on("app-generate-uuid", (event: any, args: any) => {
-    let response: IpcResponse = {
-        error: undefined,
-        success: undefined
-    }
-    if (!isKcUuidRequest(args)) {
-        const message = `electron-generate-uuid argument does not conform to KcUuidRequest`;
-        response.error = {code: 412, label: http.STATUS_CODES['412'], message: message};
-        console.warn(response.error);
-        kcMainWindow.webContents.send('electron-browser-view-results', response);
-        return;
-    }
-    let ids = [];
-    for (let i = 0; i < args.quantity; i++) {
-        let id = uuid.v4();
-        if (i === 0)
-            ids = [id];
-        else
-            ids.push(id);
-    }
-    response.success = {data: ids};
-    kcMainWindow.webContents.send("app-generate-uuid-results", response);
-});
-
-ipcMain.on("app-get-settings", (event: any, args: object) => {
-    console.log('Getting settings...');
-    appEnv = settingsService.getSettings();
-    kcMainWindow.webContents.send("app-get-settings-results", appEnv);
-});
-
-ipcMain.on("app-save-settings", (event: any, args: any) => {
-    console.log('Saving settings: ', args);
-    appEnv = {...appEnv, ...args};
-    settingsService.setSettings(appEnv).then((settings: SettingsModel) => {
-        appEnv = settings;
-    });
-    kcMainWindow.webContents.send("app-save-settings-results", appEnv);
-});
-
-ipcMain.on("app-extract-website", (event: any, args: any) => {
-    if (args.url && args.filename) {
-        console.log('Attempting to extract from webpage: ', args?.url);
-        const pdfPath = path.join(appEnv.pdfPath, args.filename + '.pdf');
-
-        const options = {
-            width: 1280,
-            height: 1000,
-            marginsType: 0,
-            pageSize: 'A4',
-            printBackground: true,
-            fullscreenable: false,
-            printSelectionOnly: false,
-            landscape: false,
-            parent: kcMainWindow,
-            show: false
-        }
-
-        const window = new BrowserWindow(options);
-        window.loadURL(args.url);
-
-        window.on('close', () => {
-            console.log('Window was closed...');
-        });
-
-        window.webContents.once('dom-ready', () => {
-            console.log('DOM ready, waiting 3 seconds for renderer to catch up...');
-            setTimeout(() => {
-                console.log('Calling printToPDF with options: ', options);
-                window.webContents.printToPDF(options).then((data: any) => {
-                    console.log('PDF has been retrieved... attempting to write to file...');
-
-                    fs.writeFile(pdfPath, data, (error: any) => {
-                        if (error) {
-                            console.error('Unable to write PDF to ', pdfPath);
-                            console.error(error);
-                            throw error;
-                        }
-                        console.log(`Wrote PDF successfully to ${pdfPath}`);
-                    });
-
-                    kcMainWindow.webContents.send("app-extract-website-results", pdfPath);
-                    window.close();
-                }).catch((error: any) => {
-                    console.log(`Failed to write PDF to ${pdfPath}: `, error);
-                    kcMainWindow.webContents.send("app-extract-website-results", error);
-                    window.close();
-                });
-            }, 2000);
-        });
-
-    } else {
-        kcMainWindow.webContents.send("app-extract-website-results", false);
-    }
-});

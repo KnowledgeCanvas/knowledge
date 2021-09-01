@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import {EnvironmentModel} from "../model/environment.model";
+import {EnvironmentModel} from "../models/environment.model";
 
 let os = require('os');
 let path = require('path');
@@ -10,18 +10,36 @@ const RET_OK = 0;
 const RET_ERR = -1;
 const appTitle = 'KnowledgeCanvas';
 const homeDir = os.homedir();
+const downloadPath = path.join(homeDir, 'Downloads');
 const appPath = path.join(homeDir, '.' + appTitle);
 const filesPath = path.join(appPath, 'files');
 const pdfPath = path.join(filesPath, 'pdfs');
 const resources = path.join(process.cwd(), 'resources');
 const envPath = path.resolve(resources, 'app.env');
 const projectsPath = path.join(appPath, 'Projects');
+const ingestSettings = {
+    autoscan: false,
+    autoscanLocation: path.join(downloadPath, 'KnowledgeCanvasDownloads'),
+    managed: false,
+    preserveTimestamps: false,
+    interval: 15000
+}
+const searchSettings = {
+    numResults: 10
+}
+const wellnessSettings = {
+    timerMinutes: 25,
+    timerSeconds: 0,
+    breakMinutes: 5,
+    breakSeconds: 0,
+    autostartAfterBreak: false,
+    allowOverride: true
+}
 
 // ApplicationEnvironment is a singleton class that serves as the ground-truth environment settings
 export class ApplicationEnvironment {
     private static appEnv: EnvironmentModel;
     private static instance: ApplicationEnvironment;
-
 
     constructor() {
         console.log('Setting up Application Environment...');
@@ -47,17 +65,20 @@ export class ApplicationEnvironment {
             appTitle: appTitle,
             cwd: process.cwd(),
             envPath: envPath,
-            filesPath: filesPath,
-            pdfPath: pdfPath,
             error: '',
+            filesPath: filesPath,
             firstRun: true,
             homeDir: homeDir,
+            ingest: ingestSettings,
             pathSep: path.sep,
+            pdfPath: pdfPath,
             projectsPath: projectsPath,
+            search: searchSettings,
             serverPath: __dirname,
-            settingsFilename: 'knowledge-canvas.settings.json',
             settingsFilePath: '',
-            settingsPath: ''
+            settingsFilename: 'knowledge-canvas.settings.json',
+            settingsPath: '',
+            wellness: wellnessSettings
         };
     }
 

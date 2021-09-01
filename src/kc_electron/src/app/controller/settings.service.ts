@@ -1,7 +1,6 @@
-import {SettingsModel} from "../model/settings.model";
 import * as fs from 'fs';
-import {EnvironmentModel} from "../model/environment.model";
-
+import {EnvironmentModel} from "../models/environment.model";
+import {BehaviorSubject} from 'rxjs';
 
 const RET_OK = 0;
 const RET_FAIL = -1;
@@ -14,6 +13,9 @@ appEnv = new ApplicationEnvironment().getEnvironment();
 
 
 class SettingsService {
+    private ingestSubject = new BehaviorSubject<any>({});
+    ingest = this.ingestSubject.asObservable();
+
     constructor() {
     }
 
@@ -23,7 +25,7 @@ class SettingsService {
         try {
             let raw = fs.readFileSync(appEnv.settingsFilePath, 'utf8');
             settings = JSON.parse(raw.toString());
-            console.log('Settings retrieved from file (', appEnv.settingsPath, '): ', settings);
+            // console.log('Settings retrieved from file (', appEnv.settingsPath, '): ', settings);
         } catch (e) {
             console.error('SettingsService: File IO error occurred on read.');
             console.error(e);
@@ -36,6 +38,11 @@ class SettingsService {
             ...appEnv,
             ...settings
         };
+
+        if (appEnv.ingest) {
+            this.ingestSubject.next(appEnv.ingest);
+        }
+
         return appEnv;
     }
 
@@ -44,15 +51,26 @@ class SettingsService {
      * @param settings : Object
      * @returns {number | error}
      */
-    async setSettings(settings: SettingsModel): Promise<any> {
+    async setSettings(settings: EnvironmentModel): Promise<any> {
         return new Promise((resolve, reject) => {
             if (this.verifySettings(settings) === RET_OK) {
+                let oldIngestSettings = appEnv.ingest;
+                let newIngestSettings = settings.ingest;
+
                 console.log('Settings verified: ', settings);
                 appEnv = {
                     ...appEnv,
                     ...settings
                 };
                 this.writeSettings();
+
+
+                if (settings.ingest && (oldIngestSettings.autoscan !== newIngestSettings.autoscan
+                    || oldIngestSettings.autoscanLocation !== newIngestSettings.autoscanLocation
+                    || oldIngestSettings.interval !== newIngestSettings.interval)) {
+                    this.ingestSubject.next(appEnv.ingest);
+                }
+
                 resolve(appEnv);
             } else {
                 GLOBAL_ERROR = 'Invalid startup settings. Be sure to include the minimum set of settings (see documentation).';
@@ -86,7 +104,7 @@ class SettingsService {
         });
     }
 
-    verifySettings(settings: SettingsModel) {
+    verifySettings(settings: EnvironmentModel) {
         // TODO: figure out a better verification scheme... define what constitutes "required" settings
         return RET_OK;
     }

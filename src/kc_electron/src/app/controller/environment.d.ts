@@ -1,4 +1,4 @@
-import { EnvironmentModel } from "../model/environment.model";
+import { EnvironmentModel } from "../models/environment.model";
 export declare class ApplicationEnvironment {
     private static appEnv;
     private static instance;
