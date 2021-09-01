@@ -1,15 +1,15 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject} from "rxjs";
-import {KnowledgeSourceReference, KnowledgeSource, SourceModel} from "../../../../../shared/src/models/knowledge.source.model";
+import {KnowledgeSourceReference, KnowledgeSource, SourceModel} from "projects/ks-lib/src/lib/models/knowledge.source.model";
 import {ExtractionService} from "../extraction/extraction.service";
 import {UuidService} from "../uuid/uuid.service";
-import {UuidModel} from "../../../../../shared/src/models/uuid.model";
+import {UuidModel} from "projects/ks-lib/src/lib/models/uuid.model";
 import {FaviconExtractorService} from "../favicon/favicon-extractor.service";
 
 @Injectable({
   providedIn: 'root'
 })
-export class BrowserExtensionService {
+export class ExternalIngestService {
   private defaultKS = new KnowledgeSource('', {value: ''}, 'generic', ({} as KnowledgeSourceReference));
   private externalKS = new BehaviorSubject<KnowledgeSource>(this.defaultKS);
   ks = this.externalKS.asObservable();

@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { BrowserExtensionService } from './browser-extension.service';
+import { ExternalIngestService } from './external-ingest.service';
 
 describe('ChromeExtensionService', () => {
-  let service: BrowserExtensionService;
+  let service: ExternalIngestService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(BrowserExtensionService);
+    service = TestBed.inject(ExternalIngestService);
   });
 
   it('should be created', () => {

@@ -26,10 +26,16 @@ export interface KsBrowserViewRequest {
   width: number
 }
 
-export interface BrowserViewRequest {
+export interface KsBrowserViewRequest {
   url: string,
   x: number,
   y: number,
-  width: number,
-  height: number
+  height: number,
+  width: number
+}
+
+export interface KsThumbnailRequest {
+  path: string,
+  width?: number,
+  height?: number
 }
