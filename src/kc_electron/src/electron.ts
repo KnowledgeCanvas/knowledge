@@ -41,6 +41,94 @@ let kcMainWindow: typeof BrowserWindow;
 
 browserExtensionServer.createServer();
 
+
+/**
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ */
+function createMainWindow() {
+    console.log('Startup URL entry point is: ', MAIN_ENTRY);
+    let WIDTH: number = parseInt(appEnv.DEFAULT_WINDOW_WIDTH);
+    let HEIGHT: number = parseInt(appEnv.DEFAULT_WINDOW_HEIGHT);
+    console.log('Starting with window sizes: ', WIDTH, HEIGHT);
+    const config = {
+        show: false,
+        width: WIDTH ? WIDTH : 1280,
+        height: HEIGHT ? HEIGHT : 1000,
+        backgroundColor: '#2e2c29',
+        title: 'Knowledge Canvas',
+        webPreferences: {
+            nodeIntegration: false, // is default value after Electron v5
+            contextIsolation: true, // protect against prototype pollution
+            enableRemoteModule: false, // turn off remote
+            preload: path.join(app.getAppPath(), 'src', 'kc_electron', 'dist', 'preload.js')
+        }
+    };
+
+    kcMainWindow = new BrowserWindow(config);
+
+    // TODO: Determine if the following is the best we can do for page load failure
+    // We need to explicitly reload the index upon refresh (note this is only needed in Electron)
+    kcMainWindow.webContents.on('did-fail-load', () => {
+        kcMainWindow.loadFile(MAIN_ENTRY);
+    })
+
+    // Destroy window on close
+    kcMainWindow.on('closed', function () {
+        kcMainWindow = null;
+    });
+
+    kcMainWindow.webContents.on('new-window', (event: any, url: string) => {
+        console.log('New window requested: ', url);
+        event.preventDefault();
+        shell.openExternal(url);
+    });
+
+    kcMainWindow.loadFile(MAIN_ENTRY);
+
+    kcMainWindow.once('ready-to-show', () => {
+        kcMainWindow.show();
+    });
+
+
+    console.log('Main window has ID: ', kcMainWindow.id);
+
+    return kcMainWindow;
+}
+
+
+app.on('window-all-closed', function () {
+    // MacOS apps typically do not quit all the way when a window is closed...
+    if (process.platform !== 'darwin')
+        app.quit()
+});
+
+
+app.whenReady().then(() => {
+    kcMainWindow = createMainWindow();
+    app.on('activate', function () {
+        if (BrowserWindow.getAllWindows().length === 0) createMainWindow();
+    })
+})
+
+
 /**
  *
  *
@@ -166,7 +254,8 @@ settingsService.ingest.subscribe((ingest: any) => {
 
         // Delete file in watched directory (since it has a new home)
         console.warn('Deleting file: ', filePath);
-        fs.rmSync(filePath);
+        // TODO: file deletion should only occur after we verify that the new KS has been received in the app...
+        // fs.rmSync(filePath);
     });
 
     // Create a new period check for files based on user interval
@@ -185,8 +274,12 @@ settingsService.ingest.subscribe((ingest: any) => {
                 }
                 responses.push(response)
             }
-            kcMainWindow.webContents.send('app-ingest-watcher-results', responses);
-            filesToPush = [];
+            try {
+                kcMainWindow.webContents.send('app-ingest-watcher-results', responses);
+                filesToPush = [];
+            } catch (e) {
+                console.warn('Unable to push files to main window... trying again later...');
+            }
         }
 
     }, appEnv.ingest.interval);
@@ -217,127 +310,3 @@ settingsService.ingest.subscribe((ingest: any) => {
 function copyFileToFolder(filePath: string, newFilePath: string) {
     fs.copyFileSync(filePath, newFilePath);
 }
-
-
-/**
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- */
-function createMainWindow() {
-    console.log('Startup URL entry point is: ', MAIN_ENTRY);
-    let WIDTH: number = parseInt(appEnv.DEFAULT_WINDOW_WIDTH);
-    let HEIGHT: number = parseInt(appEnv.DEFAULT_WINDOW_HEIGHT);
-    console.log('Starting with window sizes: ', WIDTH, HEIGHT);
-    const config = {
-        show: false,
-        width: WIDTH ? WIDTH : 1280,
-        height: HEIGHT ? HEIGHT : 1000,
-        title: 'Knowledge Canvas',
-        webPreferences: {
-            nodeIntegration: false, // is default value after Electron v5
-            contextIsolation: true, // protect against prototype pollution
-            enableRemoteModule: false, // turn off remote
-            preload: path.join(app.getAppPath(), 'src', 'kc_electron', 'dist', 'preload.js')
-        }
-    };
-
-    kcMainWindow = new BrowserWindow(config);
-
-    // TODO: Determine if the following is the best we can do for page load failure
-    // We need to explicitly reload the index upon refresh (note this is only needed in Electron)
-    kcMainWindow.webContents.on('did-fail-load', () => {
-        kcMainWindow.loadFile(MAIN_ENTRY);
-    })
-
-    // Destroy window on close
-    kcMainWindow.on('closed', function () {
-        kcMainWindow = null;
-    });
-
-    kcMainWindow.webContents.on('new-window', (event: any, url: string) => {
-        console.log('New window requested: ', url);
-        event.preventDefault();
-
-        shell.openExternal(url);
-    });
-
-    kcMainWindow.loadFile(MAIN_ENTRY);
-    kcMainWindow.show();
-
-    console.log('Main window has ID: ', kcMainWindow.id);
-
-    return kcMainWindow;
-}
-
-
-/**
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- */
-app.on('window-all-closed', function () {
-    if (process.platform !== 'darwin') app.quit()
-    process.exit(0);
-});
-
-
-/**
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- */
-app.whenReady().then(() => {
-    kcMainWindow = createMainWindow();
-    app.on('activate', function () {
-        if (BrowserWindow.getAllWindows().length === 0) createMainWindow();
-    })
-})
