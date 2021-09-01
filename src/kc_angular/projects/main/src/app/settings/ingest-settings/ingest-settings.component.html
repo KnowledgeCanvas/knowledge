@@ -1,0 +1,63 @@
+<app-settings-common-header header="Ingest"></app-settings-common-header>
+
+<div class="container">
+  <h4 style="color: red">Experimental (may cause data loss, use at your own risk)</h4>
+  <div class="row">
+    <mat-icon [matTooltip]="autoscanHelp"
+              matTooltipClass="tool-tip">info
+    </mat-icon>
+    <div class="col s4">
+      <mat-slide-toggle [(ngModel)]="ingestSettings.autoscan" (change)="autoscanClicked($event)">
+        Autoscan
+      </mat-slide-toggle>
+    </div>
+    <div class="col s4" *ngIf="ingestSettings.autoscan">
+      <mat-slide-toggle [(ngModel)]="ingestSettings.managed"
+                        [disabled]="ingestSettings.autoscan === true"
+                        (change)="managedClicked($event)">
+        Manage files for me
+      </mat-slide-toggle>
+    </div>
+    <div class="col s4" *ngIf="ingestSettings.autoscan">
+      <mat-slide-toggle [(ngModel)]="ingestSettings.preserveTimestamps"
+                        (change)="preserveClicked($event)">Preserve original timestamps
+      </mat-slide-toggle>
+    </div>
+  </div>
+
+  <div class="row" *ngIf="ingestSettings.autoscan">
+    <div class="col s3">
+      <mat-form-field (change)="intervalSet($event)">
+        <mat-label>Scan for changes every:</mat-label>
+        <input matInput type="number" placeholder="Ex. 15" [(ngModel)]="interval" min="10" max="120">
+        <span matSuffix>seconds</span>
+      </mat-form-field>
+    </div>
+    <div class="col s1" *ngIf="intervalChanged">
+      <button mat-button (click)="applyIntervalChange()" color="primary" class="jello-vertical">Apply</button>
+    </div>
+  </div>
+
+  <div class="kc-danger-zone" *ngIf="ingestSettings.autoscan">
+<!--    <h2 style="color:red">Danger Zone</h2>-->
+    <div>
+      <b>Extremely important:</b> all files in the chosen directory will be moved to a new directory and their names
+      will be changed. <b>DO NOT</b> change this to a directory that contains files you care about or if you need direct
+      access to the files in it. We recommend you create a new folder or use the default folder instead. The default
+      folder has already been created for you inside your Downloads folder.
+    </div>
+    <br>
+
+    <div class="row">
+      <div class="col s12">
+        <mat-form-field (change)="autoscanLocationClicked($event)">
+          <mat-label>Autoscan Location</mat-label>
+          <input matInput [(ngModel)]="ingestSettings.autoscanLocation" required>
+          <button matSuffix mat-icon-button (click)="folderSelect()">
+            <mat-icon>folder_open</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+    </div>
+  </div>
+</div>

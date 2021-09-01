@@ -1,15 +1,15 @@
 import {Injectable} from '@angular/core';
-import {ProjectTree, ProjectTreeNode} from "../../../../../shared/src/models/project.tree.model";
+import {ProjectTree, ProjectTreeNode} from "projects/ks-lib/src/lib/models/project.tree.model";
 import {BehaviorSubject} from 'rxjs';
 import {HttpHeaders} from '@angular/common/http';
 import {
   ProjectCreationRequest,
   ProjectModel,
   ProjectUpdateRequest
-} from "../../../../../shared/src/models/project.model";
-import {KnowledgeSource} from "../../../../../shared/src/models/knowledge.source.model";
+} from "projects/ks-lib/src/lib/models/project.model";
+import {KnowledgeSource} from "projects/ks-lib/src/lib/models/knowledge.source.model";
 import {UuidService} from "../uuid/uuid.service";
-import {UuidModel} from "../../../../../shared/src/models/uuid.model";
+import {UuidModel} from "projects/ks-lib/src/lib/models/uuid.model";
 import {StorageService} from "../storage/storage.service";
 
 export const contentHeaders = new HttpHeaders()

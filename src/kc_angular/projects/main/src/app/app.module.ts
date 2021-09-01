@@ -4,7 +4,7 @@ import {AppRoutingModule} from './app-routing.module';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {BrowserModule} from '@angular/platform-browser';
 import {ClipboardModule} from "@angular/cdk/clipboard";
-import {ConfirmDialogComponent} from "../../../shared/src/components/confirm-dialog/confirm-dialog.component";
+import {ConfirmDialogComponent} from "../../../ks-lib/src/lib/components/dialogs/confirm-dialog/confirm-dialog.component";
 import {DisplaySettingsComponent} from './settings/display-settings/display-settings.component';
 import {DragDropModule} from "@angular/cdk/drag-drop";
 import {FileUploadComponent} from './ingest/files/file-upload/file-upload.component';
@@ -72,6 +72,9 @@ import {StorageSettingsComponent} from './settings/storage-settings/storage-sett
 import {WebsiteExtractionAdvancedComponent} from './ingest/website-extraction/website-extraction-advanced/website-extraction-advanced.component';
 import {WebsiteExtractionComponent} from './ingest/website-extraction/website-extraction.component';
 import { NoteCreationComponent } from './ingest/note-creation/note-creation.component';
+import {MatBottomSheetModule, MatBottomSheetRef} from "@angular/material/bottom-sheet";
+import { IngestSettingsComponent } from './settings/ingest-settings/ingest-settings.component';
+import { GeneralSettingsComponent } from './settings/general-settings/general-settings.component';
 
 @NgModule({
   declarations: [
@@ -108,6 +111,8 @@ import { NoteCreationComponent } from './ingest/note-creation/note-creation.comp
     WebsiteExtractionAdvancedComponent,
     WebsiteExtractionComponent,
     NoteCreationComponent,
+    IngestSettingsComponent,
+    GeneralSettingsComponent,
   ],
   imports: [
     AppRoutingModule,
@@ -120,6 +125,7 @@ import { NoteCreationComponent } from './ingest/note-creation/note-creation.comp
     KsLibModule,
     MatAutocompleteModule,
     MatButtonModule,
+    MatBottomSheetModule,
     MatCardModule,
     MatCheckboxModule,
     MatChipsModule,

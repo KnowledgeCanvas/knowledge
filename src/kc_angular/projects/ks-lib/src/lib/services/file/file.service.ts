@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
 import {UuidService} from "../uuid/uuid.service";
 import {BehaviorSubject} from "rxjs";
-import {FileModel} from "../../../../../shared/src/models/file.model";
-import {KnowledgeSource} from "../../../../../shared/src/models/knowledge.source.model";
+import {FileModel} from "projects/ks-lib/src/lib/models/file.model";
+import {KnowledgeSource} from "projects/ks-lib/src/lib/models/knowledge.source.model";
 
 @Injectable({
   providedIn: 'root'

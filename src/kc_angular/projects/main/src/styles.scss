@@ -66,11 +66,14 @@ body {
 
 
 .footer {
+  padding-left: 16px;
+  padding-right: 16px;
   flex-shrink: 0;
-  height: 32px;
+  min-height: 32px;
+  max-height: 32px;
   display: flex;
   flex-direction: row;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   flex-wrap: nowrap;
 }

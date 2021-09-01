@@ -1,5 +1,5 @@
 import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
-import {ProjectModel} from "../../../../../shared/src/models/project.model";
+import {ProjectModel} from "projects/ks-lib/src/lib/models/project.model";
 import {MatDialogRef} from "@angular/material/dialog";
 
 @Component({

@@ -1,7 +1,7 @@
 /// Reference: https://itnext.io/building-a-reusable-dialog-module-with-angular-material-4ce406117918
 import {Component, HostListener, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {KcDialogRequest} from "../../../../ks-lib/src/lib/services/dialog/kc-dialog.service";
+import {KcDialogRequest} from "../../../services/dialog/kc-dialog.service";
 
 @Component({
   selector: 'app-confirm-dialog',

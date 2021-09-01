@@ -2,9 +2,9 @@ import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {DomSanitizer} from '@angular/platform-browser';
 import {ExtractionService} from "../../../../../../ks-lib/src/lib/services/extraction/extraction.service";
-import {KnowledgeSource} from "../../../../../../shared/src/models/knowledge.source.model";
+import {KnowledgeSource} from "projects/ks-lib/src/lib/models/knowledge.source.model";
 import {ProjectService} from "../../../../../../ks-lib/src/lib/services/projects/project.service";
-import {ProjectModel, ProjectUpdateRequest} from "../../../../../../shared/src/models/project.model";
+import {ProjectModel, ProjectUpdateRequest} from "projects/ks-lib/src/lib/models/project.model";
 import {KsQueueService} from "../../../knowledge-source/ks-queue-service/ks-queue.service";
 
 @Component({

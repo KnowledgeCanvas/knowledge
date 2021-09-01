@@ -9,12 +9,12 @@ import {
   SimpleChanges,
   ViewChild
 } from '@angular/core';
-import {KnowledgeSource, KnowledgeSourceReference} from "../../../../../shared/src/models/knowledge.source.model";
-import {SearchModel} from "../../../../../shared/src/models/google.search.results.model";
-import {WebsiteModel} from "../../../../../shared/src/models/website.model";
-import {FileModel} from "../../../../../shared/src/models/file.model";
+import {KnowledgeSource, KnowledgeSourceReference} from "projects/ks-lib/src/lib/models/knowledge.source.model";
+import {SearchModel} from "projects/ks-lib/src/lib/models/google.search.results.model";
+import {WebsiteModel} from "projects/ks-lib/src/lib/models/website.model";
+import {FileModel} from "projects/ks-lib/src/lib/models/file.model";
 import {MatAccordion} from "@angular/material/expansion";
-import {AuthorModel} from "../../../../../shared/src/models/author.model";
+import {AuthorModel} from "projects/ks-lib/src/lib/models/author.model";
 import {ElectronIpcService} from "../../../../../ks-lib/src/lib/services/electron-ipc/electron-ipc.service";
 
 @Component({

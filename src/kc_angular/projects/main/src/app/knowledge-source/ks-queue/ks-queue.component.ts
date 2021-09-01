@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {KnowledgeSource} from "../../../../../shared/src/models/knowledge.source.model";
+import {KnowledgeSource} from "projects/ks-lib/src/lib/models/knowledge.source.model";
 
 @Component({
   selector: 'app-ks-queue',
@@ -15,6 +15,6 @@ export class KsQueueComponent implements OnInit {
   }
 
   clearResults() {
-    
+
   }
 }

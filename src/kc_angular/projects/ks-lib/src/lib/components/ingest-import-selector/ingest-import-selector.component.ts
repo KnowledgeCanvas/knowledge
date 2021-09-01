@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {ProjectModel} from "../../../../../shared/src/models/project.model";
+import {ProjectModel} from "projects/ks-lib/src/lib/models/project.model";
 import {MatRadioChange} from "@angular/material/radio";
 
 @Component({

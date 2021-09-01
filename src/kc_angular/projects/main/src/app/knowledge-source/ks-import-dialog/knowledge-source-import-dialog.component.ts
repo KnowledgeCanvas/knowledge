@@ -1,10 +1,10 @@
 import {Component, ElementRef, Inject, OnInit, ViewChild} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
-import {ProjectModel} from "../../../../../shared/src/models/project.model";
+import {ProjectModel} from "projects/ks-lib/src/lib/models/project.model";
 import {KsQueueService} from "../ks-queue-service/ks-queue.service";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {ProjectService} from "../../../../../ks-lib/src/lib/services/projects/project.service";
-import {IngestType} from "../../../../../shared/src/models/knowledge.source.model";
+import {IngestType} from "projects/ks-lib/src/lib/models/knowledge.source.model";
 
 @Component({
   selector: 'app-canvas-import',
@@ -127,7 +127,7 @@ export class KnowledgeSourceImportDialogComponent implements OnInit {
       message = 'Add some topics first!';
       this.snackBar.open(message, 'Dismiss', {
         duration: 3000,
-        panelClass: ['ingest-snackbar']
+        panelClass: ['ingest-snackbar', 'kc-danger-zone']
       });
       this.dialogRef.close();
       return;
@@ -135,7 +135,8 @@ export class KnowledgeSourceImportDialogComponent implements OnInit {
 
     message = "Searching for topics...";
     this.snackBar.open(message, 'Dismiss', {
-      duration: 3000
+      duration: 3000,
+      panelClass: 'kc-success'
     });
 
     this.ksQueueService.topicSearch(project.topics).then((result) => {

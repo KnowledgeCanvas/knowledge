@@ -6,7 +6,7 @@
     </div>
   </div>
 
-  <div class="" *ngIf="ksQueue.length > 0">
+  <div *ngIf="ksQueue.length > 0" class="ks-queue-import-buttons">
     <button (click)="importAll()" color="primary" mat-button>Import All</button>
     <button (click)="clearResults()" color="warn" mat-button>Clear Results</button>
   </div>

@@ -1,5 +1,5 @@
 import {Component, Input, OnInit, ViewEncapsulation} from '@angular/core';
-import {ProjectModel} from "../../../../../shared/src/models/project.model";
+import {ProjectModel} from "projects/ks-lib/src/lib/models/project.model";
 import {ProjectService} from "../../../../../ks-lib/src/lib/services/projects/project.service";
 import {MatSnackBar} from "@angular/material/snack-bar";
 

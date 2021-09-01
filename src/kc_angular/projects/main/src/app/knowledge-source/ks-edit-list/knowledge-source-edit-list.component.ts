@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ProjectService} from "../../../../../ks-lib/src/lib/services/projects/project.service";
-import {ProjectModel, ProjectUpdateRequest} from "../../../../../shared/src/models/project.model";
-import {IngestType, KnowledgeSource} from "../../../../../shared/src/models/knowledge.source.model";
+import {ProjectModel, ProjectUpdateRequest} from "projects/ks-lib/src/lib/models/project.model";
+import {IngestType, KnowledgeSource} from "projects/ks-lib/src/lib/models/knowledge.source.model";
 import {
   KcDialogRequest,
   KcDialogService

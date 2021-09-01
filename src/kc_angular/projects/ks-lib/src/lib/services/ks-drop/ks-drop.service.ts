@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from "@angular/cdk/drag-drop";
-import {KnowledgeSource} from "../../../../../shared/src/models/knowledge.source.model";
+import {KnowledgeSource} from "projects/ks-lib/src/lib/models/knowledge.source.model";
 
 
 // TODO: rename this to KsDropService

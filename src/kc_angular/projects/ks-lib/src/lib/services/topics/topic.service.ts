@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {TopicModel} from '../../../../../shared/src/models/topic.model';
+import {TopicModel} from 'projects/ks-lib/src/lib/models/topic.model';
 import {UuidService} from '../uuid/uuid.service';
 import {BehaviorSubject} from "rxjs";
 

@@ -1,20 +1,20 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {BehaviorSubject, forkJoin} from "rxjs";
-import {GoogleSearchResultsModel, SearchModel} from "../../../../../shared/src/models/google.search.results.model";
+import {GoogleSearchResultsModel, SearchModel} from "projects/ks-lib/src/lib/models/google.search.results.model";
 import {DomSanitizer} from '@angular/platform-browser';
 import {FaviconExtractorService} from "../../../../../ks-lib/src/lib/services/favicon/favicon-extractor.service";
 import {
   KnowledgeSource,
   KnowledgeSourceReference,
   SourceModel
-} from "../../../../../shared/src/models/knowledge.source.model";
+} from "projects/ks-lib/src/lib/models/knowledge.source.model";
 import {SettingsService} from "../../../../../ks-lib/src/lib/services/settings/settings.service";
-import {SettingsModel} from "../../../../../shared/src/models/settings.model";
+import {SettingsModel} from "projects/ks-lib/src/lib/models/settings.model";
 import {MatDialog} from "@angular/material/dialog";
 import {SearchApiComponent} from "../../search/search-api-input-dialog/search-api.component";
 import {UuidService} from "../../../../../ks-lib/src/lib/services/uuid/uuid.service";
-import {BrowserExtensionService} from "../../../../../ks-lib/src/lib/services/browser-extension/browser-extension.service";
+import {ExternalIngestService} from "../../../../../ks-lib/src/lib/services/external-ingest/external-ingest.service";
 
 
 @Injectable({
@@ -35,7 +35,7 @@ export class KsQueueService {
   constructor(private faviconService: FaviconExtractorService, private settingsService: SettingsService,
               private uuidService: UuidService, private sanitizer: DomSanitizer,
               private httpClient: HttpClient, private dialog: MatDialog,
-              private browserExtensionService: BrowserExtensionService,) {
+              private externalIngestService: ExternalIngestService,) {
 
     // Subscribe to settings
     this.settingsService.settings.subscribe((settings) => {
@@ -43,12 +43,8 @@ export class KsQueueService {
       if (settings.googleApiKey) this.auth.key = settings.googleApiKey;
     });
 
-    this.browserExtensionService.ks.subscribe((ks) => {
-      if (ks && ks.ingestType !== 'generic' && ks.title) {
-        let ksList = this.ksQueueSubject.value;
-        ksList.push(ks);
-        this.ksQueueSubject.next(ksList);
-      }
+    this.externalIngestService.ks.subscribe((ksList) => {
+      this.enqueue(ksList);
     });
   }
 

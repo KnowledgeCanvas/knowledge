@@ -1,21 +1,20 @@
 import {AfterViewInit, ChangeDetectorRef, Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
-import {KnowledgeSource} from "../../../../../shared/src/models/knowledge.source.model";
+import {KnowledgeSource} from "projects/ks-lib/src/lib/models/knowledge.source.model";
 import {DomSanitizer, SafeUrl} from "@angular/platform-browser";
 import {ExtractionService} from "../../../../../ks-lib/src/lib/services/extraction/extraction.service";
 import {ProjectService} from "../../../../../ks-lib/src/lib/services/projects/project.service";
 import {KsQueueService} from "../ks-queue-service/ks-queue.service";
-import {ProjectModel, ProjectUpdateRequest} from "../../../../../shared/src/models/project.model";
+import {ProjectModel, ProjectUpdateRequest} from "projects/ks-lib/src/lib/models/project.model";
 import {MatTabChangeEvent} from "@angular/material/tabs";
 import {Clipboard} from "@angular/cdk/clipboard";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {ElectronIpcService} from "../../../../../ks-lib/src/lib/services/electron-ipc/electron-ipc.service";
 import {
-  BrowserViewRequest,
+  KsBrowserViewRequest,
   IpcResponse
-} from "../../../../../ks-lib/src/lib/interfaces/electron-ipc-models/electron.ipc.model";
-import {KsThumbnailRequest} from "kc_electron/src/app/model/ipc.model";
-
+} from "kc_electron/src/app/models/electron.ipc.model";
+import {KsThumbnailRequest} from "kc_electron/src/app/models/electron.ipc.model";
 
 @Component({
   selector: 'app-ks-info-dialog',
@@ -65,7 +64,8 @@ export class KsInfoDialogComponent implements OnInit, AfterViewInit {
   }
 
   emplaceKnowledgeSourceView() {
-    if (this.ks && this.ks.fileItem && this.ks.fileItem.path) {
+    // Handle files
+    if (this.ks && this.ks.ingestType === 'file') {
       let fileType = this.ks.reference.source.file?.type;
 
       // PDFs can be loaded directly into an iframe...
@@ -79,12 +79,15 @@ export class KsInfoDialogComponent implements OnInit, AfterViewInit {
       return;
     }
 
+    // Handle web content
     this.emplaceBrowserView();
   }
 
   emplacePdf() {
     if (typeof this.ks.accessLink === 'string') {
-      this.safeUrl = this._sanitizer.bypassSecurityTrustResourceUrl('file://' + this.ks.accessLink);
+      console.log('Attempting to emplace PDF: ', this.ks);
+
+      this.safeUrl = this._sanitizer.bypassSecurityTrustResourceUrl('file://' + encodeURI(this.ks.accessLink));
       this.ks.dateAccessed = new Date();
       this.viewReady = true;
       this.ksChanged = true;
@@ -131,7 +134,7 @@ export class KsInfoDialogComponent implements OnInit, AfterViewInit {
     // --------------------------------------------------------------------------------
     // Send KsBrowserViewRequest
     let position = this.getBrowserViewDimensions('electron-browser-view');
-    let request: BrowserViewRequest = {
+    let request: KsBrowserViewRequest = {
       url: sanitizedUrl,
       x: Math.floor(position.x),
       y: Math.floor(position.y),
@@ -187,9 +190,9 @@ export class KsInfoDialogComponent implements OnInit, AfterViewInit {
     console.log('Importing result to project', this.currentProject?.name, this.ks);
     if (this.currentProject?.id) {
       // Set timestamp based on when the source was actually improted into the system
-      this.ks.dateCreated = new Date();
-      this.ks.dateAccessed = new Date();
-      this.ks.dateModified = new Date();
+      // this.ks.dateCreated = new Date();
+      // this.ks.dateAccessed = new Date();
+      // this.ks.dateModified = new Date();
 
       console.log('Setting KS notes to: ', this.notes);
 
@@ -246,7 +249,8 @@ export class KsInfoDialogComponent implements OnInit, AfterViewInit {
       this.clipboard.copy(link.href);
     }
     this.snackBar.open('Copied to clipboard!', 'Dismiss', {
-      duration: 3000
+      duration: 3000,
+      panelClass: 'kc-success'
     });
   }
 
@@ -287,6 +291,21 @@ export class KsInfoDialogComponent implements OnInit, AfterViewInit {
 
   openLocally() {
     if (typeof this.ks.accessLink === 'string')
-      this.ipcService.openLocalFile(this.ks.accessLink);
+      this.ipcService.openLocalFile(this.ks.accessLink).then((value) => {
+        if (value) {
+          this.snackBar.open('Success! Your file will open soon.', 'Dismiss', {
+            duration: 3000,
+            verticalPosition: 'bottom',
+            panelClass: 'kc-success'
+          });
+          this.dialogRef.close();
+        } else {
+          this.snackBar.open('Oops, It appears that file can\'t be opened!', 'Dismiss', {
+            duration: 3000,
+            verticalPosition: 'bottom',
+            panelClass: 'kc-danger-zone'
+          });
+        }
+      });
   }
 }

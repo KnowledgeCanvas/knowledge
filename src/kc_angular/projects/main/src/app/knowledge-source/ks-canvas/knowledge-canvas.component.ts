@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {ProjectModel} from "../../../../../shared/src/models/project.model";
+import {ProjectModel} from "projects/ks-lib/src/lib/models/project.model";
 
 @Component({
   selector: 'app-canvas',

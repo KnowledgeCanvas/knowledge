@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {UuidModel} from '../../../../../shared/src/models/uuid.model';
+import {UuidModel} from 'projects/ks-lib/src/lib/models/uuid.model';
 import {ElectronIpcService} from "../electron-ipc/electron-ipc.service";
 
 declare global {

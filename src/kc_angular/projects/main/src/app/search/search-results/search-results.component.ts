@@ -4,10 +4,10 @@ import {KsDropService} from "../../../../../ks-lib/src/lib/services/ks-drop/ks-d
 import {Subscription} from "rxjs";
 import {MatDialog} from "@angular/material/dialog";
 import {KsQueueService} from "../../knowledge-source/ks-queue-service/ks-queue.service";
-import {KnowledgeSource} from "../../../../../shared/src/models/knowledge.source.model";
+import {KnowledgeSource} from "projects/ks-lib/src/lib/models/knowledge.source.model";
 import {KsInfoDialogComponent} from "../../knowledge-source/ks-info-dialog/ks-info-dialog.component";
 import {ProjectService} from "../../../../../ks-lib/src/lib/services/projects/project.service";
-import {ProjectUpdateRequest} from "../../../../../shared/src/models/project.model";
+import {ProjectUpdateRequest} from "projects/ks-lib/src/lib/models/project.model";
 
 @Component({
   selector: 'app-search-results',

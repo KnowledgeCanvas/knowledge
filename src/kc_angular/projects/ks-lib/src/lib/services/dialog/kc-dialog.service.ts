@@ -2,7 +2,7 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
-import {ConfirmDialogComponent} from '../../../../../shared/src/components/confirm-dialog/confirm-dialog.component';
+import {ConfirmDialogComponent} from '../../components/dialogs/confirm-dialog/confirm-dialog.component';
 import {map, take} from 'rxjs/operators';
 
 export interface KcDialogRequest {

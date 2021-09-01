@@ -40,6 +40,13 @@
   cursor: context-menu !important;
 }
 
+.kc-success {
+  border: 1px solid green;
+  margin: 10px;
+  padding: 10px;
+  border-radius: 10px;
+}
+
 .kc-danger-zone {
   border: 1px solid red;
   margin: 10px;
@@ -83,4 +90,9 @@
 
 .ingest-import-selector {
   margin-left: 24px;
+}
+
+.digital-wellness-backdrop {
+  background-color: rgba(black, 0.80);
+  backdrop-filter: blur(5px);
 }

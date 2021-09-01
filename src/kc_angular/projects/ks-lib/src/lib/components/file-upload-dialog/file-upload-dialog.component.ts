@@ -1,5 +1,5 @@
 import {Component, ElementRef, EventEmitter, OnInit, Output, ViewChild} from '@angular/core';
-import {FileModel} from "../../../../../shared/src/models/file.model";
+import {FileModel} from "projects/ks-lib/src/lib/models/file.model";
 
 @Component({
   selector: 'ks-lib-file-upload-dialog',

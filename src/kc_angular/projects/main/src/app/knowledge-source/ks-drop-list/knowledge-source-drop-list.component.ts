@@ -2,9 +2,9 @@ import {ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild} from '@angu
 import {CdkDragDrop} from "@angular/cdk/drag-drop";
 import {KsDropService} from "../../../../../ks-lib/src/lib/services/ks-drop/ks-drop.service";
 import {MatDialog} from "@angular/material/dialog";
-import {ProjectModel, ProjectUpdateRequest} from "../../../../../shared/src/models/project.model";
+import {ProjectModel, ProjectUpdateRequest} from "projects/ks-lib/src/lib/models/project.model";
 import {ProjectService} from "../../../../../ks-lib/src/lib/services/projects/project.service";
-import {KnowledgeSource} from "../../../../../shared/src/models/knowledge.source.model";
+import {KnowledgeSource} from "projects/ks-lib/src/lib/models/knowledge.source.model";
 import {KnowledgeSourceImportDialogComponent} from "../ks-import-dialog/knowledge-source-import-dialog.component";
 import {KsInfoDialogComponent} from "../ks-info-dialog/ks-info-dialog.component";
 import {FaviconExtractorService} from "../../../../../ks-lib/src/lib/services/favicon/favicon-extractor.service";
@@ -126,7 +126,7 @@ export class KnowledgeSourceDropListComponent implements OnInit {
 
         this.ksList = newList;
         this.sortByIndex = this.storageService.sortByIndex || 0;
-        this.sortKsListByIndex();
+        this.performSort();
         this.hideSortHeader = this.ksList.length <= 1;
       });
     });
@@ -149,9 +149,10 @@ export class KnowledgeSourceDropListComponent implements OnInit {
     }
 
     // Add KS to project - our subscription will automatically pick up the changes, so no need to add it to current list
-    ks.dateCreated = new Date();
-    ks.dateModified = new Date();
-    ks.dateAccessed = new Date();
+    // ks.dateCreated = new Date();
+    // ks.dateModified = new Date();
+    // ks.dateAccessed = new Date();
+
     let update: ProjectUpdateRequest = {
       id: this.project.id,
       addKnowledgeSource: [ks]
@@ -160,15 +161,15 @@ export class KnowledgeSourceDropListComponent implements OnInit {
   }
 
   onKsDropEvent($event: CdkDragDrop<any>) {
-    console.log('KS before drop: ', this.ksList);
     this.ksDropService.drop($event);
     this.ksList = [...this.ksList];
-    console.log('KS after drop: ', this.ksList);
 
     // If the dropped item is coming from a different list, save it to the project immediately
     if ($event.previousContainer !== $event.container) {
       this.addKsToProject($event.item.data);
     }
+
+    this.performSort();
   }
 
   openKsImportDialog() {
@@ -199,12 +200,12 @@ export class KnowledgeSourceDropListComponent implements OnInit {
 
   sortPrevious() {
     this.sortByIndex = this.sortByIndex === 0 ? this.sortByList.length - 1 : this.sortByIndex - 1;
-    this.sortKsListByIndex();
+    this.performSort();
   }
 
   sortNext() {
     this.sortByIndex = this.sortByIndex === this.sortByList.length - 1 ? 0 : this.sortByIndex + 1;
-    this.sortKsListByIndex();
+    this.performSort();
   }
 
   getKsTooltip(node: KnowledgeSource) {
@@ -220,7 +221,7 @@ export class KnowledgeSourceDropListComponent implements OnInit {
     }
   }
 
-  private sortKsListByIndex() {
+  private performSort() {
     let key = this.sortByList[this.sortByIndex];
     switch (key.key) {
       case 'az':

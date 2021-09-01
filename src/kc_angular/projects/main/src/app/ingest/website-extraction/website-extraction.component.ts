@@ -12,17 +12,17 @@ import {
   KnowledgeSource,
   KnowledgeSourceReference,
   SourceModel
-} from "../../../../../shared/src/models/knowledge.source.model";
-import {UuidModel} from "../../../../../shared/src/models/uuid.model";
+} from "projects/ks-lib/src/lib/models/knowledge.source.model";
+import {UuidModel} from "projects/ks-lib/src/lib/models/uuid.model";
 import {ProjectService} from "../../../../../ks-lib/src/lib/services/projects/project.service";
 import {MatDialogRef} from "@angular/material/dialog";
 import {KsQueueService} from "../../knowledge-source/ks-queue-service/ks-queue.service";
-import {WebsiteMetadataModel, WebsiteModel} from "../../../../../shared/src/models/website.model";
+import {WebsiteMetadataModel, WebsiteModel} from "projects/ks-lib/src/lib/models/website.model";
 import {ExtractionService} from "../../../../../ks-lib/src/lib/services/extraction/extraction.service";
 import {UuidService} from "../../../../../ks-lib/src/lib/services/uuid/uuid.service";
 import {FaviconExtractorService} from "../../../../../ks-lib/src/lib/services/favicon/favicon-extractor.service";
 import {DomSanitizer} from "@angular/platform-browser";
-import {ProjectModel, ProjectUpdateRequest} from "../../../../../shared/src/models/project.model";
+import {ProjectModel, ProjectUpdateRequest} from "projects/ks-lib/src/lib/models/project.model";
 
 @Component({
   selector: 'app-website-extraction',

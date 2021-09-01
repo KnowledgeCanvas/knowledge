@@ -2,18 +2,18 @@ import {Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChil
 import {FormBuilder} from "@angular/forms";
 import {FileService} from "../../../../../../ks-lib/src/lib/services/file/file.service";
 import {ProjectIdentifiers, ProjectService} from "../../../../../../ks-lib/src/lib/services/projects/project.service";
-import {FileModel} from "../../../../../../shared/src/models/file.model";
+import {FileModel} from "projects/ks-lib/src/lib/models/file.model";
 import {MatDialogRef} from "@angular/material/dialog";
 import {UuidService} from "../../../../../../ks-lib/src/lib/services/uuid/uuid.service";
 import {FaviconExtractorService} from "../../../../../../ks-lib/src/lib/services/favicon/favicon-extractor.service";
 import {KsQueueService} from "../../../knowledge-source/ks-queue-service/ks-queue.service";
-import {UuidModel} from "../../../../../../shared/src/models/uuid.model";
+import {UuidModel} from "projects/ks-lib/src/lib/models/uuid.model";
 import {
   KnowledgeSource,
   KnowledgeSourceReference,
   SourceModel
-} from "../../../../../../shared/src/models/knowledge.source.model";
-import {ProjectModel, ProjectUpdateRequest} from "../../../../../../shared/src/models/project.model";
+} from "projects/ks-lib/src/lib/models/knowledge.source.model";
+import {ProjectModel, ProjectUpdateRequest} from "projects/ks-lib/src/lib/models/project.model";
 import {ElectronIpcService} from "../../../../../../ks-lib/src/lib/services/electron-ipc/electron-ipc.service";
 
 

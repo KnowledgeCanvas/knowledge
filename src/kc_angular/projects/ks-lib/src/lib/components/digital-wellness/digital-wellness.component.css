@@ -1,0 +1,666 @@
+.digital-wellness-timer {
+
+}
+
+.digital-wellness-timer-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+}
+
+.digital-wellness-timer-label {
+
+}
+
+
+/*z-indices*/
+/*Animation*/
+@keyframes eye-blink {
+  0% {
+    transform: scaleY(1);
+  }
+  10% {
+    transform: scaleY(0.1);
+  }
+  20% {
+    transform: scaleY(1);
+  }
+  100% {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes tail-wag {
+  0% {
+    transform: rotate(-25deg);
+  }
+  10% {
+    transform: rotate(0deg);
+  }
+  20% {
+    transform: rotate(-25deg);
+  }
+  30% {
+    transform: rotate(0deg);
+  }
+  40% {
+    transform: rotate(-25deg);
+  }
+  50% {
+    transform: rotate(0deg);
+  }
+  60% {
+    transform: rotate(-25deg);
+  }
+  70% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(-25deg);
+  }
+}
+
+@keyframes tongue-stick {
+  0% {
+    transform: scaleY(0.1) translateY(-20px);
+  }
+  20% {
+    transform: scaleY(0.1) translateY(-20px);
+  }
+  30% {
+    transform: scaleY(0.5) translateY(0px);
+  }
+  40% {
+    transform: scaleY(1) translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: scaleY(0.8) translateY(0px) rotate(15deg);
+  }
+  60% {
+    transform: scaleY(1) translateY(0px) rotate(0deg);
+  }
+  70% {
+    transform: scaleY(0.8) translateY(0px) rotate(-15deg);
+  }
+  80% {
+    transform: scaleY(1) translateY(0px) rotate(0deg);
+  }
+  90% {
+    transform: scaleY(0.8) translateY(0px) rotate(15deg);
+  }
+  100% {
+    transform: scaleY(0.1) translateY(-20px) rotate(0deg);
+  }
+}
+
+@keyframes ear-shake-right {
+  0% {
+    transform: rotate(70deg);
+  }
+  10% {
+    transform: rotate(80deg);
+  }
+  30% {
+    transform: rotate(70deg);
+  }
+  40% {
+    transform: rotate(80deg);
+  }
+  100% {
+    transform: rotate(70deg);
+  }
+}
+
+@keyframes ear-shake-left {
+  0% {
+    transform: rotate(-70deg);
+  }
+  10% {
+    transform: rotate(-80deg);
+  }
+  30% {
+    transform: rotate(-70deg);
+  }
+  40% {
+    transform: rotate(-80deg);
+  }
+  100% {
+    transform: rotate(-70deg);
+  }
+}
+
+@keyframes body-shake {
+  0% {
+    transform: translateY(0px);
+  }
+  16.6666666667% {
+    transform: translateY(2%);
+  }
+  33.3333333333% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(2%);
+  }
+  66.6666666667% {
+    transform: translateY(0px);
+  }
+  83.3333333333% {
+    transform: translateY(2%);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+@keyframes paw-press {
+  0% {
+    transform: scaleY(1) scaleX(1);
+  }
+  16.6666666667% {
+    transform: scaleY(0.9) scaleX(1.05) translateY(10%);
+  }
+  33.3333333333% {
+    transform: scaleY(1) scaleX(1);
+  }
+  50% {
+    transform: scaleY(0.9) scaleX(1.05) translateY(10%);
+  }
+  66.6666666667% {
+    transform: scaleY(1) scaleX(1);
+  }
+  83.3333333333% {
+    transform: scaleY(0.9) scaleX(1.05) translateY(10%);
+  }
+  100% {
+    transform: scaleY(1) scaleX(1);
+  }
+}
+
+@keyframes neck-shake {
+  0% {
+    top: 9%;
+  }
+  16.6666666667% {
+    top: 11%;
+  }
+  33.3333333333% {
+    top: 9%;
+  }
+  50% {
+    top: 11%;
+  }
+  66.6666666667% {
+    top: 9%;
+  }
+  83.3333333333% {
+    top: 11%;
+  }
+  100% {
+    top: 9%;
+  }
+}
+
+@keyframes head-shake {
+  0% {
+    top: 6%;
+  }
+  16.6666666667% {
+    top: 8%;
+  }
+  33.3333333333% {
+    top: 6%;
+  }
+  50% {
+    top: 8%;
+  }
+  66.6666666667% {
+    top: 6%;
+  }
+  83.3333333333% {
+    top: 8%;
+  }
+  100% {
+    top: 6%;
+  }
+}
+
+@keyframes mouth-shake {
+  0% {
+    bottom: 0%;
+  }
+  16.6666666667% {
+    bottom: 2%;
+  }
+  33.3333333333% {
+    bottom: 0%;
+  }
+  50% {
+    bottom: 2%;
+  }
+  66.6666666667% {
+    bottom: 0%;
+  }
+  83.3333333333% {
+    bottom: 2%;
+  }
+  100% {
+    bottom: 0%;
+  }
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  background-color: #8C5A46;
+}
+
+#rotate {
+  background-color: #f0f0f0;
+  padding: 5px;
+  position: fixed;
+  top: 0px;
+  left: 50px;
+}
+
+.corgi-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #8bb8e8;
+}
+
+.corgi {
+  height: 35vmin;
+  width: 45vmin;
+  position: relative;
+}
+
+.corgi div {
+  position: absolute;
+}
+
+.corgi .ear {
+  background-color: #F09F2E;
+  height: 30%;
+  width: 55%;
+  top: 5%;
+  z-index: 3;
+}
+
+.corgi .ear--r {
+  right: 75%;
+  border-bottom-left-radius: 100% 90%;
+  border-top-left-radius: 10%;
+  transform-origin: 80% center;
+  animation: ear-shake-right 2s none infinite;
+}
+
+.corgi .ear--l {
+  left: 63%;
+  background-color: #D27537;
+  border-bottom-right-radius: 100% 90%;
+  border-top-right-radius: 10%;
+  transform-origin: 20% center;
+  animation: ear-shake-left 2s none infinite;
+}
+
+.corgi .head {
+  top: 6%;
+  right: 10%;
+  height: 40%;
+  width: 30%;
+  z-index: 3;
+  animation: head-shake 2s none infinite;
+}
+
+.corgi .face {
+  background-color: #F09F2E;
+  border-radius: 50%;
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+  z-index: 4;
+}
+
+.corgi .eye {
+  background-color: #3E3954;
+  height: 6%;
+  width: 6%;
+  position: absolute;
+  z-index: 6;
+  border-radius: 50%;
+  animation: eye-blink 2s none infinite;
+}
+
+.corgi .eye--left {
+  left: 40%;
+  top: 43%;
+}
+
+.corgi .eye--right {
+  right: 13%;
+  top: 41%;
+}
+
+.corgi .face__white {
+  background-color: #FFFFFF;
+  width: 45%;
+  height: 77%;
+  top: -15%;
+  left: 29%;
+  transform: rotate(-25deg);
+}
+
+.corgi .face__orange {
+  background-color: #F09F2E;
+  content: " ";
+  position: absolute;
+  width: 110%;
+  height: 110%;
+  display: block;
+  border-radius: 100%;
+}
+
+.corgi .face__orange--l {
+  right: 65%;
+}
+
+.corgi .face__orange--r {
+  left: 65%;
+}
+
+.corgi .face__curve {
+  background-color: #F09F2E;
+  width: 30%;
+  height: 20%;
+  right: -12%;
+  bottom: 42%;
+  overflow: hidden;
+}
+
+.corgi .face__curve:after {
+  content: "";
+  background-color: #8C5A46;
+  position: absolute;
+  width: 69%;
+  height: 82%;
+  border-radius: 0% 100%;
+  top: -32%;
+  right: -13%;
+}
+
+.corgi .mouth {
+  bottom: 0%;
+  width: 100%;
+  height: 50%;
+  left: 28%;
+  z-index: 5;
+  animation: mouth-shake 2s none infinite;
+}
+
+.corgi .nose {
+  height: 36%;
+  width: 27%;
+  top: 0%;
+  background-color: #3E3954;
+  z-index: 1;
+  right: 0%;
+  border-bottom-right-radius: 50% 100%;
+  border-bottom-left-radius: 50% 100%;
+}
+
+.corgi .nose:after {
+  content: "";
+  width: 100%;
+  height: 30%;
+  display: block;
+  border-top-right-radius: 50% 100%;
+  border-top-left-radius: 50% 100%;
+  background-color: #3E3954;
+  position: absolute;
+  top: -25%;
+}
+
+.corgi .mouth__left {
+  background-color: #FFFFFF;
+  width: 50%;
+  height: 55%;
+}
+
+.corgi .mouth__left--round {
+  background-color: #F09F2E;
+  width: 100%;
+  height: 100%;
+  border-radius: 100%;
+  left: -50%;
+  top: -50%;
+}
+
+.corgi .mouth__left--sharp {
+  background-color: #F09F2E;
+  width: 35%;
+  height: 50%;
+  bottom: 0px;
+  left: -20%;
+  transform: skewX(50deg);
+}
+
+.corgi .lowerjaw {
+  background-color: #FFFFFF;
+  width: 100%;
+  height: 80%;
+  border-radius: 50%/100%;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  bottom: -9%;
+}
+
+.corgi .lips {
+  z-index: 2;
+  height: 25%;
+  width: 35%;
+  top: 19%;
+  right: 2%;
+}
+
+.corgi .lips:before, .corgi .lips:after {
+  content: "";
+  display: block;
+  background: #FFFFFF;
+  width: 39%;
+  height: 100%;
+  border-color: #3E3954;
+  border-width: 3px;
+  border-style: solid;
+  border-bottom-right-radius: 50%;
+  border-bottom-left-radius: 50%;
+  border-top-left-radius: 40%;
+  border-top-right-radius: 20%;
+  border-top-color: transparent;
+  position: absolute;
+}
+
+.corgi .lips:before {
+  z-index: 1;
+}
+
+.corgi .lips:after {
+  transform: rotateY(180deg);
+  left: initial;
+  right: 9%;
+}
+
+.corgi .tongue {
+  width: 15%;
+  height: 60%;
+  background-color: #F15F55;
+  right: 14%;
+  top: 35%;
+  border-bottom-right-radius: 50% 50%;
+  border-bottom-left-radius: 50% 50%;
+  transform-origin: 50% 0%;
+  animation: tongue-stick 2s none infinite;
+}
+
+.corgi .snout {
+  background-color: #FFFFFF;
+  right: 0%;
+  top: 0%;
+  width: 50%;
+  height: 36%;
+  border-top-right-radius: 35% 75%;
+}
+
+.corgi .neck__back {
+  height: 50%;
+  width: 20%;
+  transform: skewX(-20deg);
+  background-color: #F09F2E;
+  z-index: 2;
+  right: 24%;
+  top: 9%;
+  animation: neck-shake 2s none infinite;
+}
+
+.corgi .neck__front {
+  height: 50%;
+  width: 20%;
+  right: 11%;
+  top: 20%;
+  background-color: #F09F2E;
+  z-index: 2;
+  transform: skewX(2deg);
+}
+
+.corgi .body {
+  height: 44%;
+  width: 77%;
+  background-color: #F09F2E;
+  right: 10.5%;
+  bottom: 12%;
+  border-top-left-radius: 20% 50%;
+  border-bottom-left-radius: 20% 50%;
+  border-top-right-radius: 20% 60%;
+  border-bottom-right-radius: 20% 40%;
+  z-index: 2;
+  overflow: hidden;
+  animation: body-shake 2s none infinite;
+}
+
+.corgi .body__chest {
+  background-color: #FFFFFF;
+  height: 87%;
+  width: 29%;
+  right: 5%;
+  bottom: -3%;
+  border-top-left-radius: 50% 40%;
+  border-top-right-radius: 50% 40%;
+}
+
+.corgi .foot {
+  height: 35%;
+  width: 9.5%;
+  bottom: 0;
+}
+
+.corgi .foot__left {
+  z-index: 3;
+  background-color: #F09F2E;
+}
+
+.corgi .foot__left:after {
+  background-color: #FFFFFF;
+}
+
+.corgi .foot__left:before {
+  background-color: #F09F2E;
+}
+
+.corgi .foot__right {
+  z-index: 1;
+  background-color: #D27537;
+}
+
+.corgi .foot__right:after {
+  background-color: #B6D8EF;
+}
+
+.corgi .foot__right:before {
+  background-color: #D27537;
+}
+
+.corgi .foot__back:before {
+  transform: skewX(-10deg);
+  right: -25%;
+}
+
+.corgi .foot__front:before {
+  transform: skewX(10deg);
+  right: 25%;
+}
+
+.corgi .foot__1 {
+  right: 37%;
+}
+
+.corgi .foot__2 {
+  right: 15%;
+}
+
+.corgi .foot__2:before {
+  transform: skewX(-10deg);
+  right: -25%;
+}
+
+.corgi .foot__3 {
+  left: 12.65%;
+}
+
+.corgi .foot__4 {
+  left: 31%;
+}
+
+.corgi .foot:before {
+  content: "";
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  display: block;
+}
+
+.corgi .foot:after {
+  /*paws*/
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 125%;
+  height: 18%;
+  border-top-left-radius: 50% 100%;
+  border-top-right-radius: 50% 100%;
+  animation: paw-press 2s none infinite;
+}
+
+.corgi .tail {
+  width: 26%;
+  height: 13%;
+  background-color: #D27537;
+  border-top-left-radius: 50% 100%;
+  border-bottom-left-radius: 50% 100%;
+  border-top-right-radius: 50% 100%;
+  border-bottom-right-radius: 50% 100%;
+  bottom: 40%;
+  left: 1%;
+  transform-origin: 80% center;
+  animation: tail-wag 2s none infinite;
+}
+
+.test, .testrev {
+  transition: all 0.8s ease;
+}

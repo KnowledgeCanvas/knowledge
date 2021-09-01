@@ -12,13 +12,13 @@ import {
 import {COMMA, ENTER} from "@angular/cdk/keycodes";
 import {TopicService} from "../../../../../ks-lib/src/lib/services/topics/topic.service";
 import {MatChipInputEvent} from "@angular/material/chips";
-import {ProjectModel, ProjectUpdateRequest} from "../../../../../shared/src/models/project.model";
+import {ProjectModel, ProjectUpdateRequest} from "projects/ks-lib/src/lib/models/project.model";
 import {ProjectService} from "../../../../../ks-lib/src/lib/services/projects/project.service";
 import {MatAutocompleteSelectedEvent} from "@angular/material/autocomplete";
 import {FormControl} from "@angular/forms";
 import {Observable} from "rxjs";
 import {map, startWith} from "rxjs/operators";
-import {TopicModel} from "../../../../../shared/src/models/topic.model";
+import {TopicModel} from "projects/ks-lib/src/lib/models/topic.model";
 import {KsQueueService} from "../../knowledge-source/ks-queue-service/ks-queue.service";
 
 @Component({

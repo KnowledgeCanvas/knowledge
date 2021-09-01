@@ -155,3 +155,9 @@ app-search-bar {
   height: 100%;
   padding-right: 16px;
 }
+
+.ks-queue-import-buttons {
+  position: absolute;
+  top: 8px;
+  left: calc(50% - 172px);
+}

@@ -1,9 +1,22 @@
 import {Injectable} from '@angular/core';
-import {UuidModel} from "../../../../../shared/src/models/uuid.model";
+import {UuidModel} from "projects/ks-lib/src/lib/models/uuid.model";
 import {Observable} from 'rxjs';
-import {SettingsModel} from "../../../../../shared/src/models/settings.model";
-import {BrowserViewRequest, IpcResponse} from "../../interfaces/electron-ipc-models/electron.ipc.model";
-import {KsThumbnailRequest} from "kc_electron/src/app/model/ipc.model";
+import {SettingsModel} from "projects/ks-lib/src/lib/models/settings.model";
+import {IpcResponse, KsBrowserViewRequest, KsThumbnailRequest} from "kc_electron/src/app/models/electron.ipc.model";
+import {FileModel} from "../../models/file.model";
+
+export interface PromptForDirectoryRequest {
+  title?: string;
+  defaultPath?: string;
+  buttonLabel?: string;
+  filters?: any[];
+  properties?: PromptForDirectoryProperties[];
+  macOsMessage?: string;
+  macOsSecurityScopedBookmarks?: boolean;
+}
+
+export type PromptForDirectoryProperties = 'openFile' | 'openDirectory' | 'multiSelections' | 'showHiddenFiles'
+  | 'createDirectory' | 'promptToCreate' | 'noResolveAliases' | 'treatPackageAsDirectory' | 'dontAddToRecent'
 
 @Injectable({
   providedIn: 'root'
@@ -18,11 +31,15 @@ export class ElectronIpcService {
     closeBrowserView: 'electron-close-browser-view',
     generateUuidResults: 'app-generate-uuid-results',
     generateUuid: 'app-generate-uuid',
-    openLocalFile: 'electron-open-local-file',
     getFileIcon: 'electron-get-file-icon',
     getFileIconResults: 'electron-get-file-icon-results',
     getFileThumbnail: 'electron-get-file-thumbnail',
-    getFileThumbnailResults: 'electron-get-file-thumbnail-results'
+    getFileThumbnailResults: 'electron-get-file-thumbnail-results',
+    ingestWatcherResults: 'app-ingest-watcher-results',
+    openLocalFile: 'electron-open-local-file',
+    openLocalFileResults: 'electron-open-local-file-results',
+    promptForDirectory: 'app-prompt-for-directory',
+    promptForDirectoryResults: 'app-prompt-for-directory-results'
   }
 
   constructor() {
@@ -64,7 +81,27 @@ export class ElectronIpcService {
     });
   }
 
-  openBrowserView(request: BrowserViewRequest): Promise<IpcResponse> {
+
+  promptForDirectory(request: PromptForDirectoryRequest): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+      this.receive(this.channels.promptForDirectoryResults, (response: IpcResponse) => {
+        console.log('Received prompt for directory response: ', response);
+        if (response.error) {
+          console.error(response.error);
+          reject(response.error);
+        }
+
+        if (response.success) {
+          resolve(response.success.data);
+        }
+
+      });
+
+      this.send(this.channels.promptForDirectory, request);
+    });
+  }
+
+  openBrowserView(request: KsBrowserViewRequest): Promise<IpcResponse> {
     return new Promise<IpcResponse>((resolve) => {
       this.receive(this.channels.browserViewResults, (response: IpcResponse) => {
         resolve(response);
@@ -73,9 +110,18 @@ export class ElectronIpcService {
     });
   }
 
-  openLocalFile(path: string) {
-    console.log('Attempting to open file: ', path);
-    this.send(this.channels.openLocalFile, path);
+  openLocalFile(path: string): Promise<boolean> {
+    return new Promise<boolean>((resolve) => {
+      this.receive(this.channels.openLocalFileResults, (response: IpcResponse) => {
+        if (response.success?.data) {
+          resolve(true);
+        } else {
+          resolve(false);
+        }
+      });
+
+      this.send(this.channels.openLocalFile, path);
+    });
   }
 
   getSettingsFile(): Observable<SettingsModel> {
@@ -115,4 +161,25 @@ export class ElectronIpcService {
       this.send(this.channels.generateUuid, {quantity: quantity});
     });
   }
+
+  ingestWatcher(): Observable<FileModel[]> {
+    return new Observable<FileModel[]>((subscriber) => {
+      this.receive(this.channels.ingestWatcherResults, (responses: IpcResponse[]) => {
+        let files: FileModel[] = [];
+
+        for (let response of responses) {
+          if (response.error) {
+            console.error('Ignoring invalid file from ingest-watcher...');
+            console.error(response.error);
+          }
+          if (response.success) {
+            files.push(response.success.data);
+          }
+        }
+        subscriber.next(files);
+
+      });
+    });
+  }
+
 }

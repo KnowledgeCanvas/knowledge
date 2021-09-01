@@ -1,10 +1,10 @@
 import {Component, OnInit} from '@angular/core';
-import {KnowledgeSource} from "../../../../../../shared/src/models/knowledge.source.model";
-import {FileModel} from "../../../../../../shared/src/models/file.model";
+import {KnowledgeSource} from "projects/ks-lib/src/lib/models/knowledge.source.model";
+import {FileModel} from "projects/ks-lib/src/lib/models/file.model";
 import {FileService} from "../../../../../../ks-lib/src/lib/services/file/file.service";
 import {StorageService} from "../../../../../../ks-lib/src/lib/services/storage/storage.service";
 import {ProjectService} from "../../../../../../ks-lib/src/lib/services/projects/project.service";
-import {UuidModel} from "../../../../../../shared/src/models/uuid.model";
+import {UuidModel} from "projects/ks-lib/src/lib/models/uuid.model";
 
 @Component({
   selector: 'app-files',

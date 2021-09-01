@@ -1,11 +1,10 @@
-import { Component, Inject, OnInit } from '@angular/core';
-import { ProjectCreationRequest, ProjectModel } from "../../../../../shared/src/models/project.model";
-import { ProjectService } from "../../../../../ks-lib/src/lib/services/projects/project.service";
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { FormBuilder, FormGroup } from "@angular/forms";
-import { UuidService } from "../../../../../ks-lib/src/lib/services/uuid/uuid.service";
-import { TopicService } from "../../../../../ks-lib/src/lib/services/topics/topic.service";
-import { BrowserExtensionService } from 'projects/ks-lib/src/lib/services/browser-extension/browser-extension.service';
+import {Component, Inject, OnInit} from '@angular/core';
+import {ProjectCreationRequest, ProjectModel} from "projects/ks-lib/src/lib/models/project.model";
+import {ProjectService} from "../../../../../ks-lib/src/lib/services/projects/project.service";
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {FormBuilder, FormGroup} from "@angular/forms";
+import {UuidService} from "../../../../../ks-lib/src/lib/services/uuid/uuid.service";
+import {TopicService} from "../../../../../ks-lib/src/lib/services/topics/topic.service";
 
 @Component({
   selector: 'app-project-creation-dialog',
@@ -16,22 +15,21 @@ import { BrowserExtensionService } from 'projects/ks-lib/src/lib/services/browse
 export class ProjectCreationDialogComponent implements OnInit {
   project: ProjectCreationRequest;
   types = [
-    { value: 'default', displayValue: 'Default' },
-    { value: 'school', displayValue: 'School' },
-    { value: 'work', displayValue: 'Work' },
-    { value: 'hobby', displayValue: 'Hobby' }
+    {value: 'default', displayValue: 'Default'},
+    {value: 'school', displayValue: 'School'},
+    {value: 'work', displayValue: 'Work'},
+    {value: 'hobby', displayValue: 'Hobby'}
   ]
   selectedType: 'school' | 'work' | 'hobby' | 'default' = 'default';
   panelOpenState: boolean;
   private formGroup: FormGroup;
 
   constructor(private projectService: ProjectService,
-    public dialogRef: MatDialogRef<ProjectCreationDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: string | undefined,
-    formBuilder: FormBuilder,
-    private uuidService: UuidService,
-    private topicService: TopicService,
-    private browserExtensionService: BrowserExtensionService) {
+              public dialogRef: MatDialogRef<ProjectCreationDialogComponent>,
+              @Inject(MAT_DIALOG_DATA) public data: string | undefined,
+              formBuilder: FormBuilder,
+              private uuidService: UuidService,
+              private topicService: TopicService) {
     this.panelOpenState = false;
     this.project = {
       name: '',
@@ -45,10 +43,10 @@ export class ProjectCreationDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.project = new ProjectModel('', { value: '' }, 'default');
+    this.project = new ProjectModel('', {value: ''}, 'default');
 
     if (this.data) {
-      this.project.parentId = { value: this.data };
+      this.project.parentId = {value: this.data};
     }
   }
 

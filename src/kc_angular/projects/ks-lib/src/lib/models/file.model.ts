@@ -6,9 +6,9 @@ export class FileModel {
   path: string;
   id: UuidModel;
   type: string;
-  private accessTime: string;
-  private modificationTime: string;
-  private creationTime: string;
+  accessTime: string;
+  modificationTime: string;
+  creationTime: string;
 
   constructor(filename: string, size: number, path: string, id: UuidModel, type: string) {
     this.filename = filename;

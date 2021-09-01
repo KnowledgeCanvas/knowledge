@@ -6,7 +6,8 @@ export interface SettingsModel {
   googleApiKey?: string;
   userName?: string;
   search?: SearchSettingsModel
-  ingest?: IngestSettingsModel
+  ingest?: IngestSettingsModel,
+  wellness?: WellnessSettingsModel
 }
 
 export interface SearchSettingsModel {
@@ -15,6 +16,17 @@ export interface SearchSettingsModel {
 
 export interface IngestSettingsModel {
   autoscan: boolean;
+  interval?: number;
   autoscanLocation?: string;
+  preserveTimestamps?: string;
   managed: boolean;
+}
+
+export interface WellnessSettingsModel {
+  autostartAfterBreak: boolean;
+  allowOverride: boolean;
+  timerMinutes: number;
+  timerSeconds: number;
+  breakMinutes: number;
+  breakSeconds: number;
 }

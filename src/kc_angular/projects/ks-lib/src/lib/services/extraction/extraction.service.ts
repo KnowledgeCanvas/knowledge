@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {WebsiteMetadataModel} from "../../../../../shared/src/models/website.model";
+import {WebsiteMetadataModel} from "projects/ks-lib/src/lib/models/website.model";
 import {FaviconExtractorService} from "../favicon/favicon-extractor.service";
 
 @Injectable({

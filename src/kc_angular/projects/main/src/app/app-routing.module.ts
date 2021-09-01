@@ -9,6 +9,8 @@ import {StorageSettingsComponent} from "./settings/storage-settings/storage-sett
 import {DisplaySettingsComponent} from "./settings/display-settings/display-settings.component";
 import {SearchSettingsComponent} from "./settings/search-settings/search-settings.component";
 import {KnowledgeGraphComponent} from "./knowledge-graph/knowledge-graph.component";
+import {GeneralSettingsComponent} from "./settings/general-settings/general-settings.component";
+import {IngestSettingsComponent} from "./settings/ingest-settings/ingest-settings.component";
 
 export const OUTLET_PROJECT_DETAILS = 'project-detail-router';
 export const OUTLET_SETTINGS = 'settings-router';
@@ -30,7 +32,9 @@ const routes: Routes = [
   {path: 'app-files', component: FilesComponent},
   {
     path: 'app-settings', component: SettingsComponent, children: [
-      {path: '', component: SearchSettingsComponent, outlet: OUTLET_SETTINGS},
+      {path: '', component: GeneralSettingsComponent, outlet: OUTLET_SETTINGS},
+      {path: 'app-general-settings', component: GeneralSettingsComponent, outlet: OUTLET_SETTINGS},
+      {path: 'app-ingest-settings', component: IngestSettingsComponent, outlet: OUTLET_SETTINGS},
       {path: 'app-display-settings', component: DisplaySettingsComponent, outlet: OUTLET_SETTINGS},
       {path: 'app-storage-settings', component: StorageSettingsComponent, outlet: OUTLET_SETTINGS},
       {path: 'app-search-settings', component: SearchSettingsComponent, outlet: OUTLET_SETTINGS},

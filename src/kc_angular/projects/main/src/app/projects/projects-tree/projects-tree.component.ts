@@ -1,9 +1,9 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {MatTreeFlatDataSource, MatTreeFlattener} from '@angular/material/tree';
 import {FlatTreeControl} from '@angular/cdk/tree';
-import {ProjectTreeFlatNode, ProjectTreeNode} from "../../../../../shared/src/models/project.tree.model";
+import {ProjectTreeFlatNode, ProjectTreeNode} from "projects/ks-lib/src/lib/models/project.tree.model";
 import {ProjectIdentifiers, ProjectService} from "../../../../../ks-lib/src/lib/services/projects/project.service";
-import {ProjectModel} from "../../../../../shared/src/models/project.model";
+import {ProjectModel} from "projects/ks-lib/src/lib/models/project.model";
 import {MatDialog} from '@angular/material/dialog';
 import {
   KcDialogRequest,

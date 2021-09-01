@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {ProjectService} from "../../../../ks-lib/src/lib/services/projects/project.service";
-import {ProjectModel} from "../../../../shared/src/models/project.model";
+import {ProjectModel} from "projects/ks-lib/src/lib/models/project.model";
 
 @Component({
   selector: 'app-knowledge-graph',

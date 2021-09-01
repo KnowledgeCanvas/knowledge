@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
-import {ProjectModel} from "../../../../../shared/src/models/project.model";
-import {UuidModel} from "../../../../../shared/src/models/uuid.model";
-import {KnowledgeSource} from "../../../../../shared/src/models/knowledge.source.model";
+import {ProjectModel} from "projects/ks-lib/src/lib/models/project.model";
+import {UuidModel} from "projects/ks-lib/src/lib/models/uuid.model";
+import {KnowledgeSource} from "projects/ks-lib/src/lib/models/knowledge.source.model";
 
 @Injectable({
   providedIn: 'root'
