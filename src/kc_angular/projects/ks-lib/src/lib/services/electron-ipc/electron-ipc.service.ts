@@ -126,19 +126,19 @@ export class ElectronIpcService {
 
   getSettingsFile(): Observable<SettingsModel> {
     return new Observable<SettingsModel>(subscriber => {
-      window.api.receive("app-get-settings-results", (data: any) => {
+      this.receive("app-get-settings-results", (data: any) => {
         subscriber.next(data);
       });
-      window.api.send("app-get-settings", {});
+      this.send("app-get-settings", {});
     });
   }
 
   saveSettingsFile(settings: SettingsModel): Observable<SettingsModel> {
     return new Observable<SettingsModel>(subscriber => {
-      window.api.receive("app-save-settings-results", (data: any) => {
+      this.receive("app-save-settings-results", (data: any) => {
         subscriber.next(data);
       });
-      window.api.send("app-save-settings", settings);
+      this.send("app-save-settings", settings);
     });
   }
 
@@ -177,7 +177,6 @@ export class ElectronIpcService {
           }
         }
         subscriber.next(files);
-
       });
     });
   }

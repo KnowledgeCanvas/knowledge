@@ -110,7 +110,6 @@ getSettings = ipcMain.on("app-get-settings", (event: any, args: object) => {
  */
 setSettings = ipcMain.on("app-save-settings", (event: any, args: any) => {
     let kcMainWindow: any = share.BrowserWindow.getAllWindows()[0];
-    console.log('Saving settings: ', args);
     let appEnv = settingsService.getSettings();
     appEnv = {...appEnv, ...args};
     settingsService.setSettings(appEnv).then((settings: EnvironmentModel) => {

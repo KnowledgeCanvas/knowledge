@@ -26,10 +26,7 @@ export class SettingsService {
 
   saveSettings(data: SettingsModel) {
     let newSettings = {...this.settingsSubject.value, ...data};
-
-    // this.settingsSubject.next(newSettings);
-
-    return this.ipcService.saveSettingsFile(this.settingsSubject.value).subscribe((settings) => {
+    return this.ipcService.saveSettingsFile(newSettings).subscribe((settings) => {
       this.settingsSubject.next(settings);
       if (settings.search)
         this.searchSettingsSubject.next(settings.search);
