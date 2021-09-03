@@ -1,0 +1,34 @@
+.knowledge-canvas-chrome-popup {
+    height: 200px;
+    width: 300px;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-content: center;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.knowledge-canvas-chrome-popup-text {
+
+}
+
+.knowledge-canvas-extract-button {
+    cursor: pointer;
+    height: 50px;
+    width: 80%;
+    background-color: #2774ae;
+    color: white;
+    border-radius: 25px;
+    border: 2px solid #ffb81c;
+    display: inline-block;
+    text-shadow: 0 0 2px rgb(0 0 0 / 30%);
+    font-family: sans-serif;
+    box-shadow: inset 0 0 2px 0 rgb(255 255 255 / 40%), inset 0 0 3px 0 rgb(0 0 0 / 40%), inset 0 0 3px 5px rgb(0 0 0 / 5%), 2px 2px 4px 0 rgb(0 0 0 / 25%);
+    padding: 8px 16px;
+    font-size: 12px;
+    line-height: 14px;
+    position: relative;
+}

@@ -13,7 +13,7 @@ extractPage.addEventListener("click", async () => {
 
     console.log('Tab: ', tab);
 
-    let url = `http://localhost:9000/external?link=${tab.url}`;
+    let url = `http://localhost:9000/external?link=${tab.url}&title=${tab.title}`;
 
     fetch(url).then((result) => {
        console.log('Result: ', result);
