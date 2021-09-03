@@ -127,6 +127,7 @@ export class KnowledgeSourceImportDialogComponent implements OnInit {
       message = 'Add some topics first!';
       this.snackBar.open(message, 'Dismiss', {
         duration: 3000,
+        verticalPosition: 'bottom',
         panelClass: ['ingest-snackbar', 'kc-danger-zone']
       });
       this.dialogRef.close();
@@ -136,6 +137,7 @@ export class KnowledgeSourceImportDialogComponent implements OnInit {
     message = "Searching for topics...";
     this.snackBar.open(message, 'Dismiss', {
       duration: 3000,
+      verticalPosition: 'bottom',
       panelClass: 'kc-success'
     });
 

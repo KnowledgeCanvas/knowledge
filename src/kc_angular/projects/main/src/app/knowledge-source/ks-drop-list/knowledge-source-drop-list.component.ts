@@ -6,7 +6,7 @@ import {ProjectModel, ProjectUpdateRequest} from "projects/ks-lib/src/lib/models
 import {ProjectService} from "../../../../../ks-lib/src/lib/services/projects/project.service";
 import {KnowledgeSource} from "projects/ks-lib/src/lib/models/knowledge.source.model";
 import {KnowledgeSourceImportDialogComponent} from "../ks-import-dialog/knowledge-source-import-dialog.component";
-import {KsInfoDialogComponent} from "../ks-info-dialog/ks-info-dialog.component";
+import {KsInfoDialogComponent, KsInfoDialogInput} from "../ks-info-dialog/ks-info-dialog.component";
 import {FaviconExtractorService} from "../../../../../ks-lib/src/lib/services/favicon/favicon-extractor.service";
 import {StorageService} from "../../../../../ks-lib/src/lib/services/storage/storage.service";
 
@@ -78,6 +78,7 @@ export class KnowledgeSourceDropListComponent implements OnInit {
 
       // Update project when necessary
       this.project = null;
+      this.ksList = [];
       if (!project || !project.name || project.id.value === '') {
         return;
       }
@@ -180,10 +181,14 @@ export class KnowledgeSourceDropListComponent implements OnInit {
   }
 
   openKsInfoDialog(node: KnowledgeSource) {
-    node.sourceRef = 'list';
+    let dialogInput: KsInfoDialogInput = {
+      source: 'ks-drop-list',
+        ks: node
+    }
+
     const dialogRef = this.dialog.open(KsInfoDialogComponent, {
       width: '70%',
-      data: node,
+      data: dialogInput,
       autoFocus: false
     });
     dialogRef.afterClosed().subscribe(result => {
@@ -194,7 +199,6 @@ export class KnowledgeSourceDropListComponent implements OnInit {
         }
         this.projectService.updateProject(update);
       }
-      this.ref.detectChanges();
     })
   }
 

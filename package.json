@@ -1,8 +1,10 @@
 {
   "name": "knowledge-canvas",
   "version": "0.1.0",
+  "author": "Rob Royce <robertris2@gmail.com> (https://robroyce.dev)",
   "description": "",
   "private": true,
+  "postinstall": "electron-builder install-app-deps",
   "workspaces": [
     "src/kc_electron",
     "src/kc_angular"

@@ -81,8 +81,8 @@ generateUuid = ipcMain.on("app-generate-uuid", (event: any, args: any) => {
  */
 getSettings = ipcMain.on("app-get-settings", (event: any, args: object) => {
     let kcMainWindow: any = share.BrowserWindow.getAllWindows()[0];
-    console.log('Getting settings...');
     let appEnv = settingsService.getSettings();
+
     kcMainWindow.webContents.send("app-get-settings-results", appEnv);
 });
 
@@ -144,6 +144,5 @@ function isKcUuidRequest(args: any): args is KcUuidRequest {
     const containsQuantity = args && args.quantity;
     const correctType = typeof (args.quantity) === 'number';
     const correctRange = 0 < args.quantity && args.quantity <= 128;
-    console.log(containsQuantity, correctType, correctRange);
     return containsQuantity && correctType && correctRange;
 }

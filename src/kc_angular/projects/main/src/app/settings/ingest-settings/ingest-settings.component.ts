@@ -5,7 +5,7 @@ import {
   ElectronIpcService,
   PromptForDirectoryRequest
 } from "../../../../../ks-lib/src/lib/services/electron-ipc/electron-ipc.service";
-import {MatSnackBar} from "@angular/material/snack-bar";
+import {MatSnackBar, MatSnackBarConfig} from "@angular/material/snack-bar";
 
 @Component({
   selector: 'app-ingest-settings',
@@ -17,10 +17,9 @@ export class IngestSettingsComponent implements OnInit, OnChanges {
   @Output() settingsModified = new EventEmitter<IngestSettingsModel>();
   interval: string = '';
   intervalChanged: boolean = false;
-  private intervalSetComplete = false;
-  private minInterval = 10;
-  private maxInterval = 120;
   autoscanHelp: string = 'When autoscan is enabled, you can drop files into a pre-selected directory and Knowledge Canvas will automatically import those files for you.';
+  private MIN_INTERVAL = 10;
+  private MAX_INTERVAL = 120;
 
   constructor(private ipcService: ElectronIpcService, private snackbar: MatSnackBar) {
   }
@@ -33,7 +32,6 @@ export class IngestSettingsComponent implements OnInit, OnChanges {
   }
 
   folderSelect() {
-    console.log('Prompt user to select folder...');
     let request: PromptForDirectoryRequest = {
       title: 'Select a new location for Knowledge Canvas Autoscan',
       defaultPath: this.ingestSettings.autoscanLocation,
@@ -43,7 +41,6 @@ export class IngestSettingsComponent implements OnInit, OnChanges {
     }
 
     this.ipcService.promptForDirectory(request).then((directory) => {
-      console.log('Changing directory to: ', directory);
       this.ingestSettings.autoscanLocation = directory;
       this.updateSettings();
     });
@@ -70,27 +67,30 @@ export class IngestSettingsComponent implements OnInit, OnChanges {
     this.updateSettings();
   }
 
-  intervalSet($event: Event) {
+  onIntervalChange($event: Event) {
     let newInterval: number = this.interval as any;
-    if (newInterval > this.maxInterval)
-      this.interval = `${this.maxInterval}`;
-    if (newInterval < this.minInterval)
-      this.interval = `${this.minInterval}`
 
-    if (this.ingestSettings.interval)
+    if (newInterval > this.MAX_INTERVAL || newInterval < this.MIN_INTERVAL) {
+      let config: MatSnackBarConfig = {verticalPosition: 'bottom', duration: 2000};
+      this.snackbar.open(`'Must be a number between ${this.MIN_INTERVAL} - ${this.MAX_INTERVAL}`, 'Dismiss', config);
+      this.interval = (newInterval < this.MIN_INTERVAL) ? `${this.MIN_INTERVAL}` : `${this.MAX_INTERVAL}`;
+    }
+
+    if (this.ingestSettings.interval) {
       this.intervalChanged = newInterval !== (this.ingestSettings.interval / 1000);
-    else
+    } else {
       this.intervalChanged = true;
+    }
   }
 
   applyIntervalChange() {
     let newInterval: number = this.interval as any;
-    if (newInterval >= this.minInterval && newInterval <= this.maxInterval) {
+    if (newInterval >= this.MIN_INTERVAL && newInterval <= this.MAX_INTERVAL) {
       this.ingestSettings.interval = newInterval * 1000;
       this.updateSettings();
       this.intervalChanged = false;
     } else {
-      console.error(`Interval must be a number between ${this.minInterval} and ${this.maxInterval}...`);
+      console.error(`Interval must be a number between ${this.MIN_INTERVAL} and ${this.MAX_INTERVAL}...`);
     }
   }
 
@@ -103,7 +103,7 @@ export class IngestSettingsComponent implements OnInit, OnChanges {
       interval: this.ingestSettings.interval
     });
     this.snackbar.open('Ingest Settings Saved!', 'Dismiss', {
-      verticalPosition: 'top',
+      verticalPosition: 'bottom',
       duration: 3000,
       panelClass: 'kc-success'
     });

@@ -2,12 +2,18 @@
 
 <div class="container">
   <div class="row">
-    <div class="col s12">
-      Only show the top
-      <mat-form-field class="mat-number-input" (focusout)="setNumResults()">
-        <input matInput [(ngModel)]="numResults">
+    <div class="col s3">
+      <mat-form-field (change)="onNumResultsChanged($event)">
+        <mat-label>Show the Top...</mat-label>
+        <input matInput type="number" placeholder="Ex. 10"
+               [formControl]="numResults" min="1" max="10">
       </mat-form-field>
-      search results.
+      <mat-hint>...search results</mat-hint>
+    </div>
+    <div class="col s1" *ngIf="numResultsChanged">
+      <button mat-button (click)="applyNumResultsChange()" color="primary" class="jello-vertical">Apply</button>
     </div>
   </div>
 </div>
+
+

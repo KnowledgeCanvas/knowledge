@@ -57,11 +57,11 @@ class SettingsService {
                 let oldIngestSettings = appEnv.ingest;
                 let newIngestSettings = settings.ingest;
 
-                console.log('Settings verified: ', settings);
                 appEnv = {
                     ...appEnv,
                     ...settings
                 };
+
                 this.writeSettings();
 
 
@@ -93,7 +93,6 @@ class SettingsService {
             }
 
             try {
-                console.log('Writing settings file to: ', appEnv.settingsPath);
                 let settings = JSON.stringify(appEnv);
                 fs.writeFileSync(appEnv.settingsFilePath, settings);
                 return RET_OK;

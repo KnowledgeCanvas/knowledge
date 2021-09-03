@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {SettingsService} from "../../../../../ks-lib/src/lib/services/settings/settings.service";
-import {IngestSettingsModel, SettingsModel} from "projects/ks-lib/src/lib/models/settings.model";
+import {IngestSettingsModel, SearchSettingsModel, SettingsModel} from "projects/ks-lib/src/lib/models/settings.model";
 
 @Component({
   selector: 'app-general-settings',
@@ -8,15 +8,21 @@ import {IngestSettingsModel, SettingsModel} from "projects/ks-lib/src/lib/models
   styleUrls: ['./general-settings.component.scss']
 })
 export class GeneralSettingsComponent implements OnInit {
+  ingest: IngestSettingsModel | undefined = undefined;
+  search: SearchSettingsModel | undefined = undefined;
   private settings: SettingsModel = {};
-  ingest: IngestSettingsModel = {autoscan: false, managed: false};
 
   constructor(private settingsService: SettingsService) {
     settingsService.settings.subscribe(settings => {
       this.settings = settings;
-      if (settings.ingest)
+
+      if (settings.ingest) {
         this.ingest = settings.ingest;
-      console.log('Got settings: ', settings);
+      }
+
+      if (settings.search) {
+        this.search = settings.search;
+      }
     });
   }
 
@@ -24,7 +30,10 @@ export class GeneralSettingsComponent implements OnInit {
   }
 
   ingestSettingsModified(ingestSettings: IngestSettingsModel) {
-    console.log('Settings have been modified: ', ingestSettings);
     this.settingsService.saveSettings({ingest: ingestSettings});
+  }
+
+  searchSettingsModified(searchSettings: SearchSettingsModel) {
+    this.settingsService.saveSettings({search: searchSettings});
   }
 }

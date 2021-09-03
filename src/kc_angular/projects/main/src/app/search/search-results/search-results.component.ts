@@ -5,7 +5,7 @@ import {Subscription} from "rxjs";
 import {MatDialog} from "@angular/material/dialog";
 import {KsQueueService} from "../../knowledge-source/ks-queue-service/ks-queue.service";
 import {KnowledgeSource} from "projects/ks-lib/src/lib/models/knowledge.source.model";
-import {KsInfoDialogComponent} from "../../knowledge-source/ks-info-dialog/ks-info-dialog.component";
+import {KsInfoDialogComponent, KsInfoDialogInput} from "../../knowledge-source/ks-info-dialog/ks-info-dialog.component";
 import {ProjectService} from "../../../../../ks-lib/src/lib/services/projects/project.service";
 import {ProjectUpdateRequest} from "projects/ks-lib/src/lib/models/project.model";
 
@@ -51,9 +51,14 @@ export class SearchResultsComponent implements OnInit {
   }
 
   displayContextPopup(ks: KnowledgeSource): void {
+    let dialogInput: KsInfoDialogInput = {
+      source: 'ks-queue',
+      ks: ks
+    }
+
     const dialogRef = this.dialog.open(KsInfoDialogComponent, {
       width: '70%',
-      data: ks,
+      data: dialogInput,
       autoFocus: false
     });
 

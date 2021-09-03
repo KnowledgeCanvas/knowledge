@@ -70,7 +70,9 @@ function createMainWindow() {
     console.log('Starting with window sizes: ', WIDTH, HEIGHT);
     const config = {
         show: false,
+        minWidth: 800,
         width: WIDTH ? WIDTH : 1280,
+        minHeight: 800,
         height: HEIGHT ? HEIGHT : 1000,
         backgroundColor: '#2e2c29',
         title: 'Knowledge Canvas',
@@ -192,6 +194,7 @@ settingsService.ingest.subscribe((ingest: any) => {
     }
     clearInterval(autoScanInterval);
     ingestWatcher = null;
+    filesToPush = [];
 
     let watchPath = path.resolve(ingest.autoscanLocation);
 
@@ -204,8 +207,13 @@ settingsService.ingest.subscribe((ingest: any) => {
     }
 
     ingestWatcher = chokidar.watch(watchPath, {
-        ignored: /(^|[\/\\])\../, // ignore dotfiles
+        // intended behavior: ignore dotfiles
+        ignored: /(^|[\/\\])\../,
+
+        // intended behavior: keep the file watcher running as long as the user has 'Autoscan' enabled
         persistent: true,
+
+        // intended behavior: if the user doesn't move the files, then we shouldn't touch them and show them next time
         ignoreInitial: false
     });
 

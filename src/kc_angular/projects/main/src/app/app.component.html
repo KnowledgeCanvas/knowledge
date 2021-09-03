@@ -21,12 +21,12 @@
         <div class="app-sidenav-bottom-content">
           <mat-divider></mat-divider>
           <div class="app-sidenav-footer">
-            <!--            <button routerLink="/app-settings"-->
-            <!--                    routerLinkActive="active"-->
-            <!--                    (click)="drawer.close()"-->
-            <!--                    mat-icon-button>-->
-            <!--              <mat-icon>settings</mat-icon>-->
-            <!--            </button>-->
+            <button routerLink="/app-settings"
+                    routerLinkActive="active"
+                    (click)="drawer.close()"
+                    mat-icon-button>
+              <mat-icon>settings</mat-icon>
+            </button>
           </div>
         </div>
       </div>
@@ -52,14 +52,14 @@
                   mat-icon-button>
             <mat-icon>home</mat-icon>
           </button>
-          <button matTooltip="Be mindful of your screen-time. Set a timer to give yourself a break!"
-                  [matTooltipClass]="{'tool-tip':true}"
-                  class="app-top-toolbar-icon"
-                  matTooltipShowDelay="750"
-                  (click)="setTimerClicked()"
-                  mat-icon-button>
-            <mat-icon>timer</mat-icon>
-          </button>
+          <!--          <button matTooltip="Be mindful of your screen-time. Set a timer to give yourself a break!"-->
+          <!--                  [matTooltipClass]="{'tool-tip':true}"-->
+          <!--                  class="app-top-toolbar-icon"-->
+          <!--                  matTooltipShowDelay="750"-->
+          <!--                  (click)="setTimerClicked()"-->
+          <!--                  mat-icon-button>-->
+          <!--            <mat-icon>timer</mat-icon>-->
+          <!--          </button>-->
           <button matTooltip="Knowledge Canvas Settings"
                   [matTooltipClass]="{'tool-tip':true}"
                   class="app-top-toolbar-icon"
@@ -78,14 +78,14 @@
 
       <footer class="footer">
         <div class="left">
-          Network Status: Connected
+          <!--          Network Status: Connected-->
         </div>
         <div class="right app-footer-timer-container" *ngIf="timerReady">
-          <mat-icon class="app-footer-timer-button" (click)="startTimer()" *ngIf="!timerRunning">
-            play_arrow
-          </mat-icon>
-          <mat-icon class="app-footer-timer-button" (click)="pauseTimer()" *ngIf="timerRunning">
-            pause
+          <mat-icon class="app-footer-timer-button"
+                    matTooltip="Be mindful of your screen-time. Set a timer to give yourself a break!"
+                    [matTooltipClass]="{'tool-tip':true}"
+                    matTooltipShowDelay="750"
+                    (click)="setTimerClicked()">timer
           </mat-icon>
           <div [matTooltip]="timerRunning ? runningTooltip : notRunningTooltip"
                class="app-footer-timer-label"
@@ -96,6 +96,12 @@
           <div class="app-footer-timer">
             {{timer}}
           </div>
+          <mat-icon class="app-footer-timer-button" (click)="startTimer()" *ngIf="!timerRunning">
+            play_arrow
+          </mat-icon>
+          <mat-icon class="app-footer-timer-button" (click)="pauseTimer()" *ngIf="timerRunning">
+            pause
+          </mat-icon>
         </div>
         <!--        © 2021 Rob Royce - All Rights Reserved-->
       </footer>

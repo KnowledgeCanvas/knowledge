@@ -1,7 +1,8 @@
 <app-settings-common-header header="Ingest"></app-settings-common-header>
 
 <div class="container">
-  <h4 style="color: red">Experimental (may cause data loss, use at your own risk)</h4>
+  <p style="color: red">Autoscan functionality is considered
+    <b>experimental</b> and may cause data loss, use at your own risk</p>
   <div class="row">
     <mat-icon [matTooltip]="autoscanHelp"
               matTooltipClass="tool-tip">info
@@ -27,7 +28,7 @@
 
   <div class="row" *ngIf="ingestSettings.autoscan">
     <div class="col s3">
-      <mat-form-field (change)="intervalSet($event)">
+      <mat-form-field (change)="onIntervalChange($event)">
         <mat-label>Scan for changes every:</mat-label>
         <input matInput type="number" placeholder="Ex. 15" [(ngModel)]="interval" min="10" max="120">
         <span matSuffix>seconds</span>

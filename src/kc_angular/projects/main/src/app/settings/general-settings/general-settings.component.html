@@ -1,8 +1,9 @@
-<app-ingest-settings (settingsModified)="ingestSettingsModified($event)"
+<app-ingest-settings *ngIf="ingest" (settingsModified)="ingestSettingsModified($event)"
                      [ingestSettings]="ingest"></app-ingest-settings>
 <hr>
-<app-search-settings></app-search-settings>
-<hr>
-<app-display-settings></app-display-settings>
+<app-search-settings *ngIf="search" (settingsModified)="searchSettingsModified($event)"
+                     [searchSettings]="search"></app-search-settings>
+<!--<hr>-->
+<!--<app-display-settings></app-display-settings>-->
 <hr>
 <app-storage-settings></app-storage-settings>

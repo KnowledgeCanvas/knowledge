@@ -16,6 +16,11 @@ import {
 } from "kc_electron/src/app/models/electron.ipc.model";
 import {KsThumbnailRequest} from "kc_electron/src/app/models/electron.ipc.model";
 
+export interface KsInfoDialogInput {
+  source: 'ks-drop-list' | 'ks-queue',
+  ks: KnowledgeSource
+}
+
 @Component({
   selector: 'app-ks-info-dialog',
   templateUrl: './ks-info-dialog.component.html',
@@ -23,9 +28,10 @@ import {KsThumbnailRequest} from "kc_electron/src/app/models/electron.ipc.model"
 })
 export class KsInfoDialogComponent implements OnInit, AfterViewInit {
   currentProject: ProjectModel | null = null;
+  ks: KnowledgeSource;
   url: string | null = null;
   safeUrl: SafeUrl | undefined;
-  sourceRef: string = '';
+  sourceRef: 'ks-drop-list' | 'ks-queue' | 'undefined' = 'undefined';
   viewReady: boolean = false;
   ksChanged: boolean = false;
   title: string = '';
@@ -33,11 +39,10 @@ export class KsInfoDialogComponent implements OnInit, AfterViewInit {
   thumbnail: string | undefined = undefined;
 
   constructor(public dialogRef: MatDialogRef<KsInfoDialogComponent>,
-              @Inject(MAT_DIALOG_DATA) public ks: KnowledgeSource,
+              @Inject(MAT_DIALOG_DATA) public input: KsInfoDialogInput,
               private extractionService: ExtractionService,
               private projectService: ProjectService,
               private ipcService: ElectronIpcService,
-              private changeRef: ChangeDetectorRef,
               private ksQueueService: KsQueueService,
               private _sanitizer: DomSanitizer,
               private clipboard: Clipboard,
@@ -52,9 +57,10 @@ export class KsInfoDialogComponent implements OnInit, AfterViewInit {
       this.dialogRef.close({ksChanged: this.ksChanged, ks: this.ks});
     });
 
-    this.title = ks.title;
-    this.notes = ks.notes.text;
-    this.sourceRef = ks.sourceRef ? ks.sourceRef : '';
+    this.ks = input.ks;
+    this.title = input.ks.title;
+    this.notes = input.ks.notes.text;
+    this.sourceRef = input.source;
   }
 
   ngAfterViewInit() {
@@ -85,8 +91,6 @@ export class KsInfoDialogComponent implements OnInit, AfterViewInit {
 
   emplacePdf() {
     if (typeof this.ks.accessLink === 'string') {
-      console.log('Attempting to emplace PDF: ', this.ks);
-
       this.safeUrl = this._sanitizer.bypassSecurityTrustResourceUrl('file://' + encodeURI(this.ks.accessLink));
       this.ks.dateAccessed = new Date();
       this.viewReady = true;
@@ -146,7 +150,6 @@ export class KsInfoDialogComponent implements OnInit, AfterViewInit {
         this.ks.dateAccessed = new Date();
         this.viewReady = true;
         this.ksChanged = true;
-        this.changeRef.detectChanges();
       } else {
         // TODO: let the user know that an error has occurred (this should hopefully never happen)
         console.error('Error attempting to open Electron BrowserView');
@@ -166,7 +169,6 @@ export class KsInfoDialogComponent implements OnInit, AfterViewInit {
     window.open(url);
     this.ks.dateAccessed = new Date();
     this.ksChanged = true;
-    this.dialogRef.close();
   }
 
   getBrowserViewDimensions(elementName: string): any {
@@ -228,7 +230,6 @@ export class KsInfoDialogComponent implements OnInit, AfterViewInit {
     switch ($event.index) {
       case 0:
         this.ipcService.closeBrowserView();
-        this.changeRef.markForCheck();
         break;
       case 1:
         this.emplaceKnowledgeSourceView();
@@ -236,31 +237,41 @@ export class KsInfoDialogComponent implements OnInit, AfterViewInit {
       case 2:
         this.ipcService.closeBrowserView();
         this.ks.notes.dateAccessed = new Date();
-        this.changeRef.markForCheck();
         break;
     }
   }
 
   copyLink() {
     let link: string | URL = this.ks.accessLink;
+    let message = 'Copied to clipboard:';
+
     if (typeof link === 'string') {
+      message = message + `\
+      \
+      ${link}`
       this.clipboard.copy(link);
     } else {
+      message = message + `\
+      \
+      ${link.href}`
       this.clipboard.copy(link.href);
     }
-    this.snackBar.open('Copied to clipboard!', 'Dismiss', {
+    this.snackBar.open(message, 'Dismiss', {
       duration: 3000,
-      panelClass: 'kc-success'
+      panelClass: 'kc-success',
+      verticalPosition: 'bottom'
     });
   }
 
   updateKS() {
     if (this.ks.title.length === 0) {
+      console.error('Cannot update Knowledge Source with no title...');
       return;
     }
 
     console.log('Updating KS...', this.ks);
-    if (this.currentProject?.id) {
+    // Only update the KS if it's in ks-drop-list... otherwise we're in ks-queue and shouldn't update project
+    if (this.currentProject?.id && this.sourceRef == 'ks-drop-list') {
       this.ks.dateModified = new Date();
       let update: ProjectUpdateRequest = {
         id: this.currentProject?.id,

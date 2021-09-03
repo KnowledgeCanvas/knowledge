@@ -35,8 +35,11 @@ export class AppComponent {
   private breakMinutesLeft: number = this.breakMinutes;
   private breakSecondsLeft: number = this.breakSeconds;
 
-  constructor(private settingsService: SettingsService, private bottomSheet: MatBottomSheet,
-              private dialog: MatDialog, private router: Router) {
+  constructor(
+    private dialog: MatDialog, private router: Router,
+    private settingsService: SettingsService,
+    private bottomSheet: MatBottomSheet,
+  ) {
     this.settingsService.settings.subscribe((settings) => {
       if (settings && settings.wellness) {
         this.timerMinutes = settings.wellness.timerMinutes;

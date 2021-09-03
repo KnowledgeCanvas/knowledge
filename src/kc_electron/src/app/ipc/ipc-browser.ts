@@ -113,13 +113,19 @@ extractWebsite = ipcMain.on("app-extract-website", (event: any, args: any) => {
  *
  *
  */
-closeBroserView = ipcMain.on("electron-close-browser-view", () => {
+closeBroserView = ipcMain.on('electron-close-browser-view', () => {
     let kcMainWindow: any = share.BrowserWindow.getAllWindows()[0];
     let allViews = kcMainWindow.getBrowserViews();
     kcMainWindow.setBrowserView(null);
     for (let view of allViews) {
         view.webContents.destroy();
     }
+
+    let response: IpcResponse = {
+        error: undefined,
+        success: {data: true}
+    }
+    kcMainWindow.webContents.send('electron-close-browser-view', response);
 });
 
 
