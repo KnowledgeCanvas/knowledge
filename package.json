@@ -32,7 +32,7 @@
   "devDependencies": {},
   "build": {
     "appId": "com.knowledgecanvas.app",
-    "productName": "Knowledge Canvas Application",
+    "productName": "Knowledge Canvas",
     "directories": {
       "buildResources": "resources"
     },
