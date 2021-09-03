@@ -3,6 +3,17 @@
   overflow: auto;
 }
 
+.project-overview-header {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-content: center;
+  align-items: center;
+  padding-left: 16px;
+  padding-top: 8px;
+}
+
 .project-summary-container {
   margin: 10px;
   display: flex;

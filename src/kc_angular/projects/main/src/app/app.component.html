@@ -34,15 +34,17 @@
 
     <mat-sidenav-content class="app-sidenav-content">
       <mat-toolbar class="app-top-toolbar">
+
         <span class="left">
           <button mat-icon-button class="app-top-toolbar-icon" (click)="drawer.toggle()">
               <mat-icon>menu</mat-icon>
           </button>
         </span>
-        <span>
-          <img class="app-top-toolbar-logo" src="assets/img/app-top-toolbar-logo.png"
-               alt="Knowledge Canvas Logo" (click)="topLogoClicked()"/>
+
+        <span style="width: 75%">
+          <app-search-bar></app-search-bar>
         </span>
+
         <span class="right" style="color: white">
           <button matTooltip="Navigate back to the home page"
                   [matTooltipClass]="{'tool-tip':true}"
@@ -52,14 +54,6 @@
                   mat-icon-button>
             <mat-icon>home</mat-icon>
           </button>
-          <!--          <button matTooltip="Be mindful of your screen-time. Set a timer to give yourself a break!"-->
-          <!--                  [matTooltipClass]="{'tool-tip':true}"-->
-          <!--                  class="app-top-toolbar-icon"-->
-          <!--                  matTooltipShowDelay="750"-->
-          <!--                  (click)="setTimerClicked()"-->
-          <!--                  mat-icon-button>-->
-          <!--            <mat-icon>timer</mat-icon>-->
-          <!--          </button>-->
           <button matTooltip="Knowledge Canvas Settings"
                   [matTooltipClass]="{'tool-tip':true}"
                   class="app-top-toolbar-icon"
@@ -70,6 +64,7 @@
             <mat-icon>settings</mat-icon>
           </button>
         </span>
+
       </mat-toolbar>
 
       <div class="wrapper">
@@ -77,9 +72,10 @@
       </div>
 
       <footer class="footer">
-        <div class="left">
-          <!--          Network Status: Connected-->
+        <div class="left" style="width: 33%">
+          <!--          TODO: make sure whatever class this is stays at 25% when we figure out what to put here...-->
         </div>
+        <ks-lib-progress-bar class="kc-loading-container"></ks-lib-progress-bar>
         <div class="right app-footer-timer-container" *ngIf="timerReady">
           <mat-icon class="app-footer-timer-button"
                     matTooltip="Be mindful of your screen-time. Set a timer to give yourself a break!"

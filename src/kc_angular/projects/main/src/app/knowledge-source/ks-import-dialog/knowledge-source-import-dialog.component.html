@@ -2,17 +2,17 @@
   <h1 class="center">Add a Knowledge Source</h1>
   <mat-grid-list *ngIf="!stage_3"
                  rowHeight="2:1"
-                 cols="2">
+                 cols="3">
 
-    <mat-grid-tile (click)="selectNote()"
-                   matTooltip="Create a new Note"
-                   matTooltipShowDelay="1000"
-                   matTooltipClass="tool-tip">
-      <div class="scale-up-center ingest-panel-card">
-        <mat-icon>sticky_note_2</mat-icon>
-        Note
-      </div>
-    </mat-grid-tile>
+<!--    <mat-grid-tile (click)="selectNote()"-->
+<!--                   matTooltip="Create a new Note"-->
+<!--                   matTooltipShowDelay="1000"-->
+<!--                   matTooltipClass="tool-tip">-->
+<!--      <div class="scale-up-center ingest-panel-card">-->
+<!--        <mat-icon>sticky_note_2</mat-icon>-->
+<!--        Note-->
+<!--      </div>-->
+<!--    </mat-grid-tile>-->
 
     <mat-grid-tile (click)="selectExtract()"
                    matTooltip="Add a website by pasting a link"
@@ -52,9 +52,3 @@
 <app-website-extraction class="scale-up-center" *ngIf="extractionEnabled" [currentProject]="currentProject"></app-website-extraction>
 
 <app-file-upload class="scale-up-center" *ngIf="filesEnabled" [currentProject]="currentProject"></app-file-upload>
-
-<div class="row" *ngIf="topicsEnabled">
-  <div class="col s12">
-    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-  </div>
-</div>

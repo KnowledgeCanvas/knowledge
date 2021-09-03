@@ -42,7 +42,9 @@ export class ProjectViewportComponent implements OnInit {
       } else {
         this.project = null;
       }
-      this.navLinks[1].disabled = this.navLinks[2].disabled = (!project || !project.knowledgeSource || project.knowledgeSource.length === 0);
+      // TODO: re-enable Knowledge Graph once we get a working implementation
+      // this.navLinks[1].disabled = this.navLinks[2].disabled = (!project || !project.knowledgeSource || project.knowledgeSource.length === 0);
+      this.navLinks[2].disabled = (!project || !project.knowledgeSource || project.knowledgeSource.length === 0);
     });
   }
 

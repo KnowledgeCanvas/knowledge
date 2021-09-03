@@ -1,4 +1,4 @@
-import {Component, ElementRef, Inject, OnInit, ViewChild} from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {ProjectModel} from "projects/ks-lib/src/lib/models/project.model";
 import {KsQueueService} from "../ks-queue-service/ks-queue.service";
@@ -17,7 +17,6 @@ export class KnowledgeSourceImportDialogComponent implements OnInit {
   stage_1: boolean = true;
   stage_2: boolean = false;
   stage_3: boolean = false;
-  searchEnabled: boolean = false;
   extractionEnabled: boolean = false;
   filesEnabled: boolean = false;
   topicsEnabled: boolean = false;
@@ -25,6 +24,7 @@ export class KnowledgeSourceImportDialogComponent implements OnInit {
   notes: string = '';
   currentProject: ProjectModel | undefined;
   destination: 'project' | 'queue' = 'project';
+  color: any;
 
   constructor(private dialogRef: MatDialogRef<any>,
               @Inject(MAT_DIALOG_DATA) public data: ProjectModel,
@@ -68,6 +68,14 @@ export class KnowledgeSourceImportDialogComponent implements OnInit {
     // });
   }
 
+  cancel() {
+    this.dialogRef.close();
+  }
+
+  changeStyle($event: MouseEvent) {
+
+  }
+
   private startTransition() {
     this.stage_1 = false;
     this.resizeDialog();
@@ -107,13 +115,7 @@ export class KnowledgeSourceImportDialogComponent implements OnInit {
         break;
 
       case "topic":
-        setTimeout(() => {
-          this.dialogRef.removePanelClass('scale-out-center');
-          this.dialogRef.updateSize('50vw', 'auto');
-          this.dialogRef.addPanelClass(['scale-up-center']);
-          this.topicsEnabled = true;
-          this.performTopicSearch();
-        }, 400);
+        this.performTopicSearch();
         break;
     }
   }
@@ -134,19 +136,8 @@ export class KnowledgeSourceImportDialogComponent implements OnInit {
       return;
     }
 
-    message = "Searching for topics...";
-    this.snackBar.open(message, 'Dismiss', {
-      duration: 3000,
-      verticalPosition: 'bottom',
-      panelClass: 'kc-success'
-    });
-
     this.ksQueueService.topicSearch(project.topics).then((result) => {
       this.dialogRef.close();
     });
-  }
-
-  cancel() {
-    this.dialogRef.close();
   }
 }

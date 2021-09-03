@@ -15,6 +15,8 @@ import {MAT_BOTTOM_SHEET_DATA, MatBottomSheetModule, MatBottomSheetRef} from "@a
 import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatInputModule} from "@angular/material/input";
 import {MatDividerModule} from "@angular/material/divider";
+import { ProgressBarComponent } from './components/progress-bar/progress-bar.component';
+import {MatProgressBarModule} from "@angular/material/progress-bar";
 
 declare global {
   interface Window {
@@ -30,7 +32,8 @@ declare global {
     DragAndDropDirective,
     IngestImportSelectorComponent,
     DigitalWellnessComponent,
-    DigitalWellnessSettingsComponent
+    DigitalWellnessSettingsComponent,
+    ProgressBarComponent
   ],
     imports: [
         MatIconModule,
@@ -42,7 +45,8 @@ declare global {
         MatFormFieldModule,
         MatInputModule,
         ReactiveFormsModule,
-        MatDividerModule
+        MatDividerModule,
+        MatProgressBarModule
     ],
   exports: [
     PageHeaderLargeComponent,
@@ -50,7 +54,8 @@ declare global {
     DragAndDropDirective,
     IngestImportSelectorComponent,
     DigitalWellnessComponent,
-    DigitalWellnessSettingsComponent
+    DigitalWellnessSettingsComponent,
+    ProgressBarComponent
   ],
   providers: []
 })

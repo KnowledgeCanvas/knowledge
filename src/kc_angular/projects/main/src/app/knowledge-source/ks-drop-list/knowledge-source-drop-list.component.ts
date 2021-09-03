@@ -175,7 +175,7 @@ export class KnowledgeSourceDropListComponent implements OnInit {
 
   openKsImportDialog() {
     this.dialog.open(KnowledgeSourceImportDialogComponent, {
-      width: '376px',
+      width: '60%',
       data: this.project
     });
   }

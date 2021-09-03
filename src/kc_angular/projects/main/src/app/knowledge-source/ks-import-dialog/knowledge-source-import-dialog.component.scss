@@ -5,12 +5,15 @@
 }
 
 mat-grid-tile {
-  border: 1px solid lightgrey;
+  //border: 1px solid lightgrey;
   cursor: pointer !important;
 }
 
+.mat-grid-tile:hover {
+  box-shadow: $kc-primary-color-light 0 0 3px 3px;
+}
+
 .ingest-panel-card {
-  width: 75%;
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
@@ -18,7 +21,6 @@ mat-grid-tile {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-
   visibility: visible;
   opacity: 1;
   transition: opacity 2s linear;

@@ -117,22 +117,6 @@
   flex-direction: row;
 }
 
-
-.ks-queue-container {
-  overflow: auto;
-  width: 100%;
-  max-width: 100%;
-  min-height: 44px;
-  border: 1px solid #ccc;
-  background: #fff;
-  align-content: center;
-  justify-content: flex-start;
-  align-items: center;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-}
-
 .kc-queue-empty-message {
   margin-left: 10px;
 }

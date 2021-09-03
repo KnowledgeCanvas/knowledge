@@ -28,8 +28,8 @@
 }
 
 .app-top-toolbar-icon {
-  height: 40px;
-  width: 40px;
+  //height: 40px;
+  //width: 40px;
   color: white;
 }
 
@@ -74,12 +74,14 @@
 }
 
 .app-footer-timer-container {
+  width: 33%;
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-content: center;
+  -webkit-user-select: none;
   user-select: none;
 }
 
@@ -96,4 +98,18 @@
 
 .app-footer-timer {
  margin-right: 8px;
+}
+
+.kc-loading-container {
+  overflow: auto;
+  width: 34%;
+  max-width: 34%;
+  min-height: 32px;
+  background: #fff;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
 }

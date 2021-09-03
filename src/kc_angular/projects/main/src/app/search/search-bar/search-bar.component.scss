@@ -1,8 +1,10 @@
 .search-bar {
   width: 100%;
-  max-width: 512px;
-  height: 100%;
-  padding-left: 5px;
+  max-width: 75%;
+  height: 32px;
+  padding-left: 16px;
+  border-radius: 16px;
+  outline: none;
 }
 
 .search-bar-icon {
@@ -13,26 +15,26 @@
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
-  justify-content: flex-end;
+  justify-content: center;
   align-items: center;
   height: 100%;
   width: 100%;
 }
 
 .search-bar-container {
-  height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: flex-end;
+  align-items: center;
   width: 100%;
-  max-width: 512px;
+  height: 32px;
+  align-content: center;
+  flex-wrap: nowrap;
 }
 
 .search-bar-form {
-  width: 100%;
-  max-width: 512px;
-  height: 100%;
+  width: 50%;
+  height: 32px;
   margin-top: 5px;
   margin-bottom: 5px;
 }

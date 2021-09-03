@@ -1,9 +1,7 @@
 <div class="search-container">
-  <mat-icon class="search-bar-icon">search</mat-icon>
   <div class="search-bar-container">
     <form [formGroup]="searchForm" (keydown.enter)="EnterSubmit($event)" class="search-bar-form">
-      <input placeholder="Search for anything..." [formControl]="searchTerm" type="search"
-             class="search-bar">
+      <input placeholder="Search the web..." [formControl]="searchTerm" type="search" class="search-bar">
     </form>
   </div>
 </div>

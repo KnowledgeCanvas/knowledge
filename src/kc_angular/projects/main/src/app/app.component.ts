@@ -6,6 +6,7 @@ import {DigitalWellnessSettingsComponent} from "../../../ks-lib/src/lib/componen
 import {Router} from "@angular/router";
 import {SettingsService} from "../../../ks-lib/src/lib/services/settings/settings.service";
 import {WellnessSettingsModel} from "../../../ks-lib/src/lib/models/settings.model";
+import {KsQueueService} from "./knowledge-source/ks-queue-service/ks-queue.service";
 
 @Component({
   selector: 'app-root',
@@ -29,16 +30,15 @@ export class AppComponent {
   private breakSeconds = 0;
   private autostartAfterBreak = false;
   private allowOverride = false;
-
   private timerMinutesLeft: number = this.timerMinutes;
   private timerSecondsLeft: number = this.timerSeconds;
   private breakMinutesLeft: number = this.breakMinutes;
   private breakSecondsLeft: number = this.breakSeconds;
 
-  constructor(
-    private dialog: MatDialog, private router: Router,
-    private settingsService: SettingsService,
-    private bottomSheet: MatBottomSheet,
+  constructor(private dialog: MatDialog, private router: Router,
+              private settingsService: SettingsService,
+              private ksQueueService: KsQueueService,
+              private bottomSheet: MatBottomSheet,
   ) {
     this.settingsService.settings.subscribe((settings) => {
       if (settings && settings.wellness) {

@@ -1,5 +1,9 @@
 @import "theme";
 
+.mat-toolbar-row, .mat-toolbar-single-row {
+  height: unset !important;
+}
+
 .mat-radio-button.mat-accent.mat-radio-checked .mat-radio-outer-circle {
   border-color: $kc-secondary-color-dark !important;
 }
@@ -92,7 +96,7 @@
 }
 
 .mat-progress-bar-fill::after {
-  background-color: $kc-primary-color-light;
+  background-color: $kc-primary-color-dark;
 }
 
 .tool-tip {

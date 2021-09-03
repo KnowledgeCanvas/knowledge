@@ -10,6 +10,7 @@ import {UuidService} from "../uuid/uuid.service";
 import {UuidModel} from "projects/ks-lib/src/lib/models/uuid.model";
 import {FaviconExtractorService} from "../favicon/favicon-extractor.service";
 import {ElectronIpcService} from "../electron-ipc/electron-ipc.service";
+import {DomSanitizer} from "@angular/platform-browser";
 
 @Injectable({
   providedIn: 'root'
@@ -23,9 +24,17 @@ export class ExternalIngestService {
   constructor(private faviconService: FaviconExtractorService,
               private extractionService: ExtractionService,
               private ipcService: ElectronIpcService,
-              private uuidService: UuidService) {
+              private uuidService: UuidService,
+              private sanitizer: DomSanitizer) {
 
     this.ipcService.browserWatcher().subscribe((link) => {
+      let sanitized = this.sanitizer.sanitize(4, link);
+      if (sanitized) {
+        link = sanitized;
+      } else {
+        console.warn('Unable to sanitize URL received from browser... rejecting!');
+      }
+
       this.extractionService.extractWebsiteMetadata(link).then((metadata) => {
         if (metadata.title) {
           const uuid: UuidModel = this.uuidService.generate(1)[0];

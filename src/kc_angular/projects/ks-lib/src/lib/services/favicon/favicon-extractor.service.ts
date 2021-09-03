@@ -37,6 +37,8 @@ export class FaviconExtractorService {
       forkJoin(promises).subscribe((blobs) => {
         for (let blob of blobs) {
           let objectURL = URL.createObjectURL(blob);
+
+          // TODO: figure out how to get past this via some other means
           let icon = this.sanitizer.bypassSecurityTrustUrl(objectURL);
           icons.push(icon);
         }

@@ -2,6 +2,7 @@
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
+  max-height: 64px !important;
 }
 
 .project-start-date,
