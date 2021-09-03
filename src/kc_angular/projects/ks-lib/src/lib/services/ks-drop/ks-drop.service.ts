@@ -14,10 +14,8 @@ export class KsDropService {
 
   drop($event: CdkDragDrop<any>) {
     if ($event.previousContainer === $event.container) {
-      console.log('Moving items within the same container...');
       moveItemInArray($event.container.data, $event.previousIndex, $event.currentIndex);
     } else {
-      console.log('Moving items between different containers...');
       transferArrayItem($event.previousContainer.data, $event.container.data, $event.previousIndex, $event.currentIndex);
     }
 

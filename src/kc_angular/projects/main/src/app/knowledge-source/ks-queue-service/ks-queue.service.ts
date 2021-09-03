@@ -218,7 +218,6 @@ export class KsQueueService {
         return;
       }
 
-      console.log('Setting API key as: ', data);
       this.auth.key = data;
       this.settings.googleApiKey = data;
       this.settingsService.saveSettings(this.settings);

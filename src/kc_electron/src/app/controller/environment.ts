@@ -8,7 +8,7 @@ let dotenv = require('dotenv');
 
 const RET_OK = 0;
 const RET_ERR = -1;
-const appTitle = 'KnowledgeCanvas';
+const appTitle = 'Knowledge-Canvas';
 const homeDir = os.homedir();
 const downloadPath = path.join(homeDir, 'Downloads');
 const appPath = path.join(homeDir, '.' + appTitle);

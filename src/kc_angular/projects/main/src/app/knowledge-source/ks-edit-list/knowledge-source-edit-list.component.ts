@@ -121,7 +121,8 @@ export class KnowledgeSourceEditListComponent implements OnInit {
 
   clickEdit() {
     let selected = this.checklist.filter(ks => ks.checked);
-    console.log('Selected: ', selected);
+    // TODO: implement a way to mass-edit KS
+    console.warn('Not implemented... selected: ', selected);
   }
 
   iconFromIngestType(type: IngestType): string {

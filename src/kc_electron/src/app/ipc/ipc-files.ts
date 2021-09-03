@@ -77,7 +77,7 @@ openLocalFile = ipcMain.on('electron-open-local-file', (event: any, filePath: st
  * @description requests thumbnails for files in each request and returns them in an array
  */
 getFileThumbnail = ipcMain.on('electron-get-file-thumbnail', (event: any, requests: KsThumbnailRequest[]) => {
-
+    let kcMainWindow: any = share.BrowserWindow.getAllWindows()[0];
     let responses: IpcResponse[] = [];
     let actions: any[] = [];
 
@@ -101,6 +101,7 @@ getFileThumbnail = ipcMain.on('electron-get-file-thumbnail', (event: any, reques
             actions.push(nativeImage.createThumbnailFromPath(path.resolve(request.path), {width: 800, height: 1600}));
     }
 
+
     Promise.all(actions).then((thumbnails) => {
         for (let thumbnail of thumbnails) {
             let response: IpcResponse = {
@@ -109,10 +110,20 @@ getFileThumbnail = ipcMain.on('electron-get-file-thumbnail', (event: any, reques
             }
             responses.push(response);
         }
-        let kcMainWindow: any = share.BrowserWindow.getAllWindows()[0];
+
         kcMainWindow.webContents.send('electron-get-file-thumbnail-results', responses);
     }).catch((reason) => {
         console.error('Caught promise exception while getting thumbnail: ', reason);
+        let response: IpcResponse = {
+            error: {
+                code: 501,
+                label: http.STATUS_CODES['501'],
+                message: 'OS failed to generate thumbnails'
+            },
+            success: undefined
+        }
+        // The caller is expecting an array, so even though we're only sending a single response, we wrap it in array
+        kcMainWindow.webContents.send('electron-get-file-thumbnail-results', [response]);
     });
 });
 

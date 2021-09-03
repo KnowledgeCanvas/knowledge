@@ -16,12 +16,10 @@ export class IngestImportSelectorComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log('Ingest-Import-Selector onInit');
     this.selection.emit('project');
   }
 
   setDestination(change: MatRadioChange) {
-    console.log('Mat radio button changed: ', change)
     this.selection.emit(change.value);
   }
 }

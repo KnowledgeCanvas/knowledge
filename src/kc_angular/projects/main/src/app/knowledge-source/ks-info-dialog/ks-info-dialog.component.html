@@ -13,6 +13,8 @@
      mat-dialog-content>
 
   <mat-tab-group (selectedTabChange)="tabClick($event)"
+                 [selectedIndex]="selectedTab.value"
+                 (selectedIndexChange)="selectedTab.setValue($event)"
                  animationDuration="0ms"
                  style="width: 100%">
 

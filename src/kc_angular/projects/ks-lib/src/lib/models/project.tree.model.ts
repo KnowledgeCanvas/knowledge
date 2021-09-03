@@ -55,7 +55,6 @@ export class ProjectTree {
     if (!node) {
       node = this.root;
     }
-    console.log(`Checking ${node.id} for ${id}`);
 
     if (node.id === id) {
       return node;

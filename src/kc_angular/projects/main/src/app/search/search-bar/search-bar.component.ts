@@ -22,7 +22,6 @@ export class SearchBarComponent implements OnInit {
   }
 
   async EnterSubmit($event: any) {
-    console.log('Searching for search term: ', this.searchTerm.value);
     await this.searchService.search(this.searchTerm.value);
   }
 

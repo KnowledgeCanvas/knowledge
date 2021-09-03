@@ -68,7 +68,6 @@ export class ProjectTopicListComponent implements OnInit, OnChanges {
   }
 
   add(event: MatChipInputEvent): void {
-    console.log('Adding new topic with source ref: ', this.sourceRef);
     const value = (event.value || '').trim();
     if (value && !this.topics.includes(value)) {
       this.topics.push(value);
@@ -94,7 +93,6 @@ export class ProjectTopicListComponent implements OnInit, OnChanges {
   }
 
   selected(event: MatAutocompleteSelectedEvent): void {
-    console.log('Adding new topic with source ref: ', this.sourceRef);
     if (!this.topics.includes(event.option.viewValue)) {
       this.topics.push(event.option.viewValue);
       if (!this.sourceRef)

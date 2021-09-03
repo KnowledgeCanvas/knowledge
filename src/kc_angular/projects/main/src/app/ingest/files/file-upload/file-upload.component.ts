@@ -97,8 +97,6 @@ export class FileUploadComponent implements OnInit, OnChanges {
     }
 
     this.ipcService.getFileIcon(paths).then((result) => {
-      console.log('Got file icon from Electron IPC: ', result);
-
       for (let i = 0; i < this.files.length; i++) {
         const file = new FileModel(this.files[i].name, this.files[i].size, (this.files[i] as any).path, uuids[i], this.files[i].type);
         const source = new SourceModel(file, undefined, undefined);
@@ -110,8 +108,6 @@ export class FileUploadComponent implements OnInit, OnChanges {
         ks.icon = result[i];
         ksList.push(ks);
       }
-
-      console.log('KS list to add: ', ksList);
 
       if (this.destination === 'queue')
         this.ksQueueService.enqueue(ksList);
@@ -134,7 +130,6 @@ export class FileUploadComponent implements OnInit, OnChanges {
   }
 
   setDestination(destination: "project" | "queue") {
-    console.log('Received destination for files: ', destination);
     this.destination = destination;
   }
 }

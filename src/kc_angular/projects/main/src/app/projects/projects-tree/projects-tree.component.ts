@@ -156,7 +156,6 @@ export class ProjectsTreeComponent implements OnInit {
       width: '65%'
     });
     dialogRef.afterClosed().subscribe(result => {
-      console.log('Project creation dialog closed with: ', result);
       if (result && result.id) {
         this.projectService.setCurrentProject(result.id);
       }

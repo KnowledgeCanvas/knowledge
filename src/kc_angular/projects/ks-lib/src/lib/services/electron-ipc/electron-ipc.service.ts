@@ -84,12 +84,15 @@ export class ElectronIpcService {
         reject();
 
       this.receive(this.channels.getFileThumbnailResults, (responses: IpcResponse[]) => {
-        let thumbnails: any[] = [];
-        for (let response of responses)
-          if (response.success?.data)
-            thumbnails.push(response.success.data);
-
         this.zone.run(() => {
+          let thumbnails: any[] = [];
+          for (let response of responses) {
+            if (response.success?.data) {
+              thumbnails.push(response.success.data);
+            } else if (response.error) {
+              reject(response.error);
+            }
+          }
           resolve(thumbnails);
         });
       });
@@ -208,7 +211,6 @@ export class ElectronIpcService {
     return new Observable<string>((subscriber) => {
       this.receive(this.channels.browserExtensionResults, (response: IpcResponse) => {
         this.zone.run(() => {
-          console.log('Received link from extension: ', response);
           if (response.success?.data && typeof response.success.data === 'string') {
             subscriber.next(response.success.data);
           } else {

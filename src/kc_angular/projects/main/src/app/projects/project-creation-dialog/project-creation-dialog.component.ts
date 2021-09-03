@@ -76,10 +76,6 @@ export class ProjectCreationDialogComponent implements OnInit {
   }
 
   addTopic($event: string[]) {
-    console.log('Got a list of topics for new project...', $event);
     this.project.topics = [...$event];
-  }
-
-  onFileSelected() {
   }
 }

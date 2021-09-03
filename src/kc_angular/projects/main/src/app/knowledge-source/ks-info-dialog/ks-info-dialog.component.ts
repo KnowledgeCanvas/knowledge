@@ -15,6 +15,7 @@ import {
   IpcResponse
 } from "kc_electron/src/app/models/electron.ipc.model";
 import {KsThumbnailRequest} from "kc_electron/src/app/models/electron.ipc.model";
+import {FormControl} from "@angular/forms";
 
 export interface KsInfoDialogInput {
   source: 'ks-drop-list' | 'ks-queue',
@@ -37,6 +38,7 @@ export class KsInfoDialogComponent implements OnInit, AfterViewInit {
   title: string = '';
   notes: string = '';
   thumbnail: string | undefined = undefined;
+  selectedTab = new FormControl(0);
 
   constructor(public dialogRef: MatDialogRef<KsInfoDialogComponent>,
               @Inject(MAT_DIALOG_DATA) public input: KsInfoDialogInput,
@@ -115,6 +117,14 @@ export class KsInfoDialogComponent implements OnInit, AfterViewInit {
     this.ipcService.getFileThumbnail([thumbnailRequest]).then((thumbnail) => {
       this.thumbnail = thumbnail[0];
       this.viewReady = true;
+    }).catch((error) => {
+      console.error(error);
+      this.snackBar.open(`Error: Preview not available -- ${error.message}`, 'Dismiss', {
+        verticalPosition: 'bottom',
+        panelClass: 'kc-danger-zone',
+        duration: 3000
+      });
+      this.selectedTab.setValue(0);
     });
 
   }
@@ -189,14 +199,11 @@ export class KsInfoDialogComponent implements OnInit, AfterViewInit {
   }
 
   importSource() {
-    console.log('Importing result to project', this.currentProject?.name, this.ks);
     if (this.currentProject?.id) {
       // Set timestamp based on when the source was actually improted into the system
       // this.ks.dateCreated = new Date();
       // this.ks.dateAccessed = new Date();
       // this.ks.dateModified = new Date();
-
-      console.log('Setting KS notes to: ', this.notes);
 
       this.ks.notes.text = this.notes;
 
@@ -269,7 +276,6 @@ export class KsInfoDialogComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    console.log('Updating KS...', this.ks);
     // Only update the KS if it's in ks-drop-list... otherwise we're in ks-queue and shouldn't update project
     if (this.currentProject?.id && this.sourceRef == 'ks-drop-list') {
       this.ks.dateModified = new Date();

@@ -24,8 +24,6 @@ export class DigitalWellnessSettingsComponent implements OnInit {
     this.breakSeconds.setValue(data.breakSeconds);
     this.autostartAfterBreak.setValue(data.autostartAfterBreak);
     this.allowOverride.setValue(data.allowOverride);
-
-    console.log('Wellness settings received data: ', data);
   }
 
   ngOnInit(): void {

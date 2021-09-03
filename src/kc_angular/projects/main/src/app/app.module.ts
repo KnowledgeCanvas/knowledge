@@ -63,7 +63,6 @@ import {ScrollingModule} from "@angular/cdk/scrolling";
 import {SearchApiComponent} from './search/search-api-input-dialog/search-api.component';
 import {SearchBarComponent} from './search/search-bar/search-bar.component';
 import {SearchResultsComponent} from './search/search-results/search-results.component';
-import {SearchResultsDialogComponent} from './search/search-results/search-results-dialog/search-results-dialog.component';
 import {SearchSettingsComponent} from './settings/search-settings/search-settings.component';
 import {SettingsCommonHeaderComponent} from './settings/settings-common-header/settings-common-header.component';
 import {SettingsComponent} from './settings/settings.component';
@@ -71,10 +70,10 @@ import {SettingsService} from "../../../ks-lib/src/lib/services/settings/setting
 import {StorageSettingsComponent} from './settings/storage-settings/storage-settings.component';
 import {WebsiteExtractionAdvancedComponent} from './ingest/website-extraction/website-extraction-advanced/website-extraction-advanced.component';
 import {WebsiteExtractionComponent} from './ingest/website-extraction/website-extraction.component';
-import { NoteCreationComponent } from './ingest/note-creation/note-creation.component';
-import {MatBottomSheetModule, MatBottomSheetRef} from "@angular/material/bottom-sheet";
-import { IngestSettingsComponent } from './settings/ingest-settings/ingest-settings.component';
-import { GeneralSettingsComponent } from './settings/general-settings/general-settings.component';
+import {NoteCreationComponent} from './ingest/note-creation/note-creation.component';
+import {MatBottomSheetModule} from "@angular/material/bottom-sheet";
+import {IngestSettingsComponent} from './settings/ingest-settings/ingest-settings.component';
+import {GeneralSettingsComponent} from './settings/general-settings/general-settings.component';
 
 @NgModule({
   declarations: [
@@ -103,7 +102,6 @@ import { GeneralSettingsComponent } from './settings/general-settings/general-se
     SearchApiComponent,
     SearchBarComponent,
     SearchResultsComponent,
-    SearchResultsDialogComponent,
     SearchSettingsComponent,
     SettingsCommonHeaderComponent,
     SettingsComponent,

@@ -89,7 +89,6 @@ export class AppComponent {
       if (result === undefined) {
         return;
       }
-      console.log('Got result from bottom sheet: ', result);
       let wellnessUpdate: WellnessSettingsModel = {
         timerMinutes: result.timerMinutes as number,
         timerSeconds: result.timerSeconds as number,

@@ -41,6 +41,8 @@ export class ExternalIngestService {
             this.externalKS.next([ks]);
           });
         }
+      }).catch((error) => {
+        console.error('Extraction Service failed: ', error);
       });
     });
 

@@ -13,7 +13,6 @@ export class ExtractionService {
 
   extractWebsite(url: string, filename?: string) {
     window.api.receive("app-extract-website-results", (data: any) => {
-      console.log(`app-extract-website-results: ${data}`);
     });
 
     // Send message to Electron ipcMain

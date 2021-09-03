@@ -43,11 +43,8 @@ export class SearchResultsComponent implements OnInit {
   }
 
   drop(event: CdkDragDrop<any>) {
-    console.log('Previous results: ', this.ksQueue);
-    let newResults: KnowledgeSource = this.canvasDropService.drop(event);
-    console.log('New results: ', newResults);
+    this.canvasDropService.drop(event);
     this.ksQueue = [...this.ksQueue];
-    console.log('Updated results: ', this.ksQueue);
   }
 
   displayContextPopup(ks: KnowledgeSource): void {

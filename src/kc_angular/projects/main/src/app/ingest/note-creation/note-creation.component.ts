@@ -26,17 +26,13 @@ export class NoteCreationComponent implements OnInit {
   }
 
   submit() {
-    console.log('Setting notes to: ', this.notes);
     if (this.notes.trim() === '') {
       console.warn('Can\'t import a note with empty contents!');
       return;
     }
-
-    console.log('Destination: ', this.destination);
   }
 
   setDestination(destination: "project" | "queue") {
-    console.log('Setting destination to: ', destination);
     this.destination = destination;
   }
 }
