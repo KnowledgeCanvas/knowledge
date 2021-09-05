@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Injectable, SecurityContext} from '@angular/core';
 import {BehaviorSubject} from "rxjs";
 import {
   KnowledgeSource,
@@ -28,7 +28,7 @@ export class ExternalIngestService {
               private sanitizer: DomSanitizer) {
 
     this.ipcService.browserWatcher().subscribe((link) => {
-      let sanitized = this.sanitizer.sanitize(4, link);
+      let sanitized = this.sanitizer.sanitize(SecurityContext.URL, link);
       if (sanitized) {
         link = sanitized;
       } else {

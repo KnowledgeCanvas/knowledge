@@ -10,7 +10,7 @@ describe('KsInfoDialogComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [KsInfoDialogComponent],
+      declarations: [KsInfoDialogComponent, window.api],
       providers: [
         {
           provide: MatDialogRef,

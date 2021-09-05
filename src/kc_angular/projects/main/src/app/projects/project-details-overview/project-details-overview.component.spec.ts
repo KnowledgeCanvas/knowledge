@@ -9,7 +9,7 @@ describe('CanvasDetailsOverviewComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ProjectDetailsOverviewComponent ],
+      declarations: [ ProjectDetailsOverviewComponent, window.api ],
       providers: [{
         provide: HttpClient,
         useValue: {}

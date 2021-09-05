@@ -1,20 +1,10 @@
-import {
-  Component,
-  ElementRef,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnInit,
-  Output,
-  SimpleChanges,
-  ViewChild
-} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
 import {COMMA, ENTER} from "@angular/cdk/keycodes";
 import {TopicService} from "../../../../../ks-lib/src/lib/services/topics/topic.service";
 import {MatChipInputEvent} from "@angular/material/chips";
 import {ProjectModel, ProjectUpdateRequest} from "projects/ks-lib/src/lib/models/project.model";
 import {ProjectService} from "../../../../../ks-lib/src/lib/services/projects/project.service";
-import {MatAutocompleteSelectedEvent} from "@angular/material/autocomplete";
+import {MatAutocompleteSelectedEvent, MatAutocompleteTrigger} from "@angular/material/autocomplete";
 import {FormControl} from "@angular/forms";
 import {Observable} from "rxjs";
 import {map, startWith} from "rxjs/operators";
@@ -28,8 +18,13 @@ import {KsQueueService} from "../../knowledge-source/ks-queue-service/ks-queue.s
 })
 export class ProjectTopicListComponent implements OnInit, OnChanges {
   @Input() sourceRef: string | undefined = undefined;
+
   @Output() topicEvent = new EventEmitter<string[]>();
+
   @ViewChild('topicInput') topicInput: ElementRef<HTMLInputElement> = {} as ElementRef;
+
+  @ViewChild(MatAutocompleteTrigger, {static: true}) trigger: MatAutocompleteTrigger | undefined;
+
   project: ProjectModel = new ProjectModel('', {value: ''}, 'default');
 
   selectable: boolean = false;
@@ -69,18 +64,22 @@ export class ProjectTopicListComponent implements OnInit, OnChanges {
 
   add(event: MatChipInputEvent): void {
     const value = (event.value || '').trim();
+
     if (value && !this.topics.includes(value)) {
       this.topics.push(value);
+
       if (!this.sourceRef) {
         this.topicEvent.emit(this.topics);
       } else {
         this.updateProject();
       }
+
       this.createTopic(value);
     }
+
     event.chipInput!.clear();
     this.topicCtrl.setValue(null);
-
+    this.trigger?.openPanel();
   }
 
   remove(topic: string): void {
@@ -95,17 +94,28 @@ export class ProjectTopicListComponent implements OnInit, OnChanges {
   selected(event: MatAutocompleteSelectedEvent): void {
     if (!this.topics.includes(event.option.viewValue)) {
       this.topics.push(event.option.viewValue);
+
       if (!this.sourceRef)
         this.topicEvent.emit(this.topics);
       else
         this.updateProject();
+
     }
+
     this.topicInput.nativeElement.value = '';
+
     this.topicCtrl.setValue(null);
+
+    this.trigger?.openPanel();
   }
 
   topicClicked(topic: string) {
     this.searchService.search(topic);
+  }
+
+  onFocus() {
+    this.trigger?._onChange('');
+    this.trigger?.openPanel();
   }
 
   private _filter(value: string): string[] {

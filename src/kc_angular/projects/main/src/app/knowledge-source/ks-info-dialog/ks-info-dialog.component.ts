@@ -1,4 +1,4 @@
-import {AfterViewInit, ChangeDetectorRef, Component, Inject, OnInit} from '@angular/core';
+import {AfterViewInit, ChangeDetectorRef, Component, Inject, OnInit, SecurityContext} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {KnowledgeSource} from "projects/ks-lib/src/lib/models/knowledge.source.model";
 import {DomSanitizer, SafeUrl} from "@angular/platform-browser";
@@ -139,7 +139,7 @@ export class KsInfoDialogComponent implements OnInit, AfterViewInit {
       url = this.ks.accessLink
     }
 
-    sanitizedUrl = this._sanitizer.sanitize(4, url.href);
+    sanitizedUrl = this._sanitizer.sanitize(SecurityContext.URL, url.href);
     if (!sanitizedUrl) {
       console.error('Unable to sanitize URL for local viewing: ', url.href);
       return;

@@ -8,7 +8,7 @@ describe('IngestSettingsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ IngestSettingsComponent ]
+      declarations: [ IngestSettingsComponent, window.api]
     })
     .compileComponents();
   });

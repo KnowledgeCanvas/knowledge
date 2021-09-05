@@ -65,8 +65,7 @@ export class ProjectService {
     let mostRecentId = this.storageService.kcCurrentProject;
     if (mostRecentId) {
       let mostRecentProject = this.getProject(mostRecentId);
-      if (mostRecentProject) {
-      } else {
+      if (!mostRecentProject) {
         this.storageService.kcCurrentProject = '';
       }
     }
@@ -145,6 +144,7 @@ export class ProjectService {
     newProject.topics = project.topics;
     newProject.knowledgeSource = project.knowledgeSource;
     newProject.authors = project.authors;
+    newProject.description = project.description;
 
     let subProjects: ProjectModel[] = [];
 

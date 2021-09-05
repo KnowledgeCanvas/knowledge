@@ -17,6 +17,10 @@ let createServer = () => {
 
         let kcMainWindow: any = share.BrowserWindow.getAllWindows()[0];
         let q = url.parse(req.url, true).query;
+
+        // console.log('Request: ', req);
+        // console.log('Meta: ', req.body);
+
         if (q.link) {
             let ipcResponse: IpcResponse = {
                 error: undefined,

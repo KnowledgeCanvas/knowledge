@@ -8,14 +8,19 @@ let extractPage = document.getElementById("extractPage");
 // When the button is clicked, inject setPageBackgroundColor into current page
 extractPage.addEventListener("click", async () => {
     let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    let metas = document.getElementsByTagName('meta');
+
+    for (let meta of metas) {
+        console.log('Meta: ', meta);
+    }
 
     console.log('Sending URL to electron...');
 
     console.log('Tab: ', tab);
 
-    let url = `http://localhost:9000/external?link=${tab.url}&title=${tab.title}`;
+    let url = `http://localhost:9000/external?link=${tab.url}&title=${tab.title}&meta=${metas}`;
 
-    fetch(url).then((result) => {
+    await fetch(url, {method: 'POST', body: JSON.stringify(metas)}).then((result) => {
        console.log('Result: ', result);
        window.close();
     });

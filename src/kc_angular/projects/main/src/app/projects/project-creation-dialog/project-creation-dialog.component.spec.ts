@@ -10,7 +10,7 @@ describe('ProjectCreationDialogComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ProjectCreationDialogComponent],
+      declarations: [ProjectCreationDialogComponent, window.api],
       providers: [
         {
           provide: HttpClient,
