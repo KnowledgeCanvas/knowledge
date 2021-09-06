@@ -5,6 +5,10 @@
   margin-top: 10px;
 }
 
+.search-result-dialog-content {
+  height: 100%;
+}
+
 .ks-thumbnail-container {
   display: flex;
   flex-direction: column;
@@ -21,13 +25,14 @@
 
 .electron-browser-view {
   width: 100%;
-  min-height: 50vh;
+  min-height: 65vh;
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
   align-content: center;
   justify-content: center;
   align-items: center;
+  background-color: white;
 }
 
 .browser-viewport {

@@ -4,11 +4,11 @@
       This project contains <b>{{knowledgeSource.length}}</b> knowledge sources
     </div>
     <div class="ks-edit-list-buttons right" *ngIf="checklist.length > 0">
-      <button mat-button mat-flat-button style="margin-right: 8px" (click)="clickEdit()"
-              [disabled]="!someSelected"
-              [class.jello-vertical]="someSelected">
-        Edit
-      </button>
+<!--      <button mat-button mat-flat-button style="margin-right: 8px" (click)="clickEdit()"-->
+<!--              [disabled]="!someSelected"-->
+<!--              [class.jello-vertical]="someSelected">-->
+<!--        Edit-->
+<!--      </button>-->
       <button mat-button mat-flat-button color="warn"
               (click)="clickDelete()"
               [disabled]="!someSelected"
@@ -20,26 +20,32 @@
 
   <hr>
 
-<div class="ks-edit-list">
-  <div class="ks-checklist-header" *ngIf="checklist.length > 0">
-    <mat-checkbox [checked]="allComplete" (change)="setAll($event.checked)" style="width: 100% !important;">
-      <div class="ks-checklist-item">
-        <div class="ks-checklist-select-all">Select All</div>
-        <div class="ks-checklist-type">Type</div>
+  <div class="container">
+    <div class="ks-edit-list">
+      <div class="ks-checklist-header" *ngIf="checklist.length > 0">
+        <mat-checkbox [checked]="allComplete" (change)="setAll($event.checked)" style="width: 100% !important;">
+          <div class="ks-checklist-item">
+            <div class="ks-checklist-select-all">Select All</div>
+            <div class="ks-checklist-type">Type</div>
+          </div>
+        </mat-checkbox>
       </div>
-    </mat-checkbox>
-  </div>
 
-  <div style="margin-top: 15px; margin-left: 10px">
-    <div class="row" *ngFor="let ks of checklist">
-      <mat-checkbox [(ngModel)]="ks.checked"
-                    (ngModelChange)="updateAllComplete()" style="width: 100% !important;">
-        <div class="ks-checklist-item">
-          {{ks.title}}
-          <mat-icon class="ks-checklist-type">{{iconFromIngestType(ks.type)}}</mat-icon>
+      <div style="margin-top: 15px; margin-left: 10px">
+        <div class="row" *ngFor="let ks of checklist">
+          <mat-checkbox [(ngModel)]="ks.checked"
+                        (ngModelChange)="updateAllComplete()" style="width: 100% !important;">
+            <div class="ks-checklist-item">
+              {{ks.title}}
+              <mat-icon class="ks-checklist-type"
+                        (click)="openKs(ks)"
+                        matTooltip="Click to open {{ks.type | titlecase}}"
+                        matTooltipClass="tool-tip"
+              >{{iconFromIngestType(ks.type)}}</mat-icon>
+            </div>
+          </mat-checkbox>
         </div>
-      </mat-checkbox>
+      </div>
     </div>
   </div>
-</div>
 </div>

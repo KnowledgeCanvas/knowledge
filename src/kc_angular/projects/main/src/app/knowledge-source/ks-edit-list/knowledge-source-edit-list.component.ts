@@ -132,7 +132,7 @@ export class KnowledgeSourceEditListComponent implements OnInit {
       case "website":
         return 'web';
       case "search":
-        return 'travel_explore';
+        return 'web';
       case "file":
         return 'description';
       case "google":
@@ -142,4 +142,7 @@ export class KnowledgeSourceEditListComponent implements OnInit {
     }
   }
 
+  openKs(ks: KsChecklist) {
+    console.log('Opening ks: ', ks);
+  }
 }

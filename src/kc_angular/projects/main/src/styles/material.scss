@@ -46,47 +46,47 @@
   }
 }
 
-.mat-slide-toggle.mat-checked .mat-slide-toggle-bar {
-  background-color: rgba($kc-secondary-color-med, 0.4) !important;
-}
-
-.mat-slide-toggle.mat-checked .mat-slide-toggle-thumb {
-  background-color: $kc-secondary-color-med !important;
-}
-
-.mat-focused .mat-form-field-label {
-  color: $kc-primary-color-light !important;
-}
-
-.mat-form-field .mat-focused .mat-form-field-label {
-  color: $kc-primary-color-light !important;
-}
-
-.mat-form-field-ripple {
-  background-color: $kc-primary-color-light !important;
-  color: $kc-primary-color-light !important;
-}
-
-.mat-input-element {
-  caret-color: $kc-primary-color-light !important;
-}
+//.mat-slide-toggle.mat-checked .mat-slide-toggle-bar {
+//  background-color: rgba($kc-secondary-color-med, 0.4) !important;
+//}
+//
+//.mat-slide-toggle.mat-checked .mat-slide-toggle-thumb {
+//  background-color: $kc-secondary-color-med !important;
+//}
+//
+//.mat-focused .mat-form-field-label {
+//  color: $kc-primary-color-light !important;
+//}
+//
+//.mat-form-field .mat-focused .mat-form-field-label {
+//  color: $kc-primary-color-light !important;
+//}
+//
+//.mat-form-field-ripple {
+//  background-color: $kc-primary-color-light !important;
+//  color: $kc-primary-color-light !important;
+//}
+//
+//.mat-input-element {
+//  caret-color: $kc-primary-color-light !important;
+//}
 
 .mat-chip {
   font-size: 12px !important;
   cursor: pointer !important;
 }
 
-.mat-option-text .mat-focused {
-  color: $kc-primary-color-dark;
-}
-
-.mat-primary .mat-option.mat-selected:not(.mat-option-disabled) {
-  color: $kc-primary-color-dark;
-}
-
-.mat-button.mat-primary, .mat-icon-button.mat-primary, .mat-stroked-button.mat-primary {
-  color: $kc-primary-color-dark;
-}
+//.mat-option-text .mat-focused {
+//  color: $kc-primary-color-dark;
+//}
+//
+//.mat-primary .mat-option.mat-selected:not(.mat-option-disabled) {
+//  color: $kc-primary-color-dark;
+//}
+//
+//.mat-button.mat-primary, .mat-icon-button.mat-primary, .mat-stroked-button.mat-primary {
+//  color: $kc-primary-color-dark;
+//}
 
 //.mat-button.mat-warn, .mat-icon-button.mat-warn, .mat-stroked-button.mat-warn {
 //  color: $kc-secondary-color-dark;
@@ -95,9 +95,9 @@
   background-color: $kc-primary-color-light;
 }
 
-.mat-progress-bar-fill::after {
-  background-color: $kc-primary-color-dark;
-}
+//.mat-progress-bar-fill::after {
+//  background-color: $kc-primary-color-dark;
+//}
 
 .tool-tip {
   background-color: white !important;

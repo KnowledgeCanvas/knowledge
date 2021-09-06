@@ -27,6 +27,9 @@ const ingestSettings = {
 const searchSettings = {
     numResults: 10
 }
+const display = {
+    theme: 'app-theme-dark'
+}
 const wellnessSettings = {
     timerMinutes: 25,
     timerSeconds: 0,
@@ -64,6 +67,7 @@ export class ApplicationEnvironment {
             appPath: appPath,
             appTitle: appTitle,
             cwd: process.cwd(),
+            display: display,
             envPath: envPath,
             error: '',
             filesPath: filesPath,

@@ -90,7 +90,6 @@ export class KnowledgeSourceImportDialogComponent implements OnInit {
       case "note":
         setTimeout(() => {
           this.dialogRef.removePanelClass('scale-out-center');
-          this.dialogRef.updateSize('55vw', 'auto');
           this.dialogRef.addPanelClass(['scale-up-center']);
           this.noteEnabled = true;
         }, 400);
@@ -99,7 +98,6 @@ export class KnowledgeSourceImportDialogComponent implements OnInit {
       case "file":
         setTimeout(() => {
           this.dialogRef.removePanelClass('scale-out-center');
-          this.dialogRef.updateSize('70vw', 'auto');
           this.dialogRef.addPanelClass(['scale-up-center']);
           this.filesEnabled = true;
         }, 400);
@@ -108,7 +106,6 @@ export class KnowledgeSourceImportDialogComponent implements OnInit {
       case "website":
         setTimeout(() => {
           this.dialogRef.removePanelClass('scale-out-center');
-          this.dialogRef.updateSize('70vw', 'auto');
           this.dialogRef.addPanelClass(['scale-up-center']);
           this.extractionEnabled = true;
         }, 400);

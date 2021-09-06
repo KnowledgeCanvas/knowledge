@@ -15,24 +15,27 @@
                matInput
                required>
       </mat-form-field>
+      <div *ngIf="f.name.invalid && f.name.touched">
+        <mat-hint style="color: #f44336" *ngIf="f.name.errors">Must be 3 or more characters including: a-z, A-Z, 0-9, - , and/or _</mat-hint>
+      </div>
     </div>
   </div>
 
-  <div class="row">
-    <div class="col s12">
-      <mat-form-field appearance="standard">
-        <mat-label>Type</mat-label>
-        <mat-select formControlName="type"
-                    class="form-control"
-                    id="type"
-                    required>
-          <mat-option *ngFor="let type of types" [value]="type.value">
-            {{type.displayValue}}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
-    </div>
-  </div>
+  <!--  <div class="row">-->
+  <!--    <div class="col s12">-->
+  <!--      <mat-form-field appearance="standard">-->
+  <!--        <mat-label>Type</mat-label>-->
+  <!--        <mat-select formControlName="type"-->
+  <!--                    class="form-control"-->
+  <!--                    id="type"-->
+  <!--                    required>-->
+  <!--          <mat-option *ngFor="let type of types" [value]="type.value">-->
+  <!--            {{type.displayValue}}-->
+  <!--          </mat-option>-->
+  <!--        </mat-select>-->
+  <!--      </mat-form-field>-->
+  <!--    </div>-->
+  <!--  </div>-->
 
   <div class="row">
     <div class="col s12">
@@ -51,6 +54,12 @@
                   id="description"
                   matInput></textarea>
       </mat-form-field>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col s6">
+      <app-project-calendar [calendar]="project.calendar" (start)="onStartChange($event)" (end)="onEndChange($event)"></app-project-calendar>
     </div>
   </div>
 
@@ -118,12 +127,12 @@
               type="submit"
               mat-button>
         Create
-        <button (click)="dialogRef.close()"
-                color="warn"
-                type="reset"
-                mat-button>
-          Cancel
-        </button>
+      </button>
+      <button (click)="dialogRef.close()"
+              color="warn"
+              type="reset"
+              mat-button>
+        Cancel
       </button>
     </div>
   </div>

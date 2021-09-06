@@ -1,4 +1,5 @@
 export interface SettingsModel {
+  display?: DisplaySettingsModel;
   firstRun?: boolean;
   pathSep?: string;
   appPath?: string;
@@ -14,12 +15,20 @@ export interface SearchSettingsModel {
   numResults?: number
 }
 
+export interface DisplaySettingsModel {
+  theme: 'app-theme-dark' | 'app-theme-light';
+}
+
 export interface IngestSettingsModel {
   autoscan: boolean;
   interval?: number;
   autoscanLocation?: string;
   preserveTimestamps?: string;
   managed: boolean;
+}
+
+export interface StorageSettingsModel {
+
 }
 
 export interface WellnessSettingsModel {

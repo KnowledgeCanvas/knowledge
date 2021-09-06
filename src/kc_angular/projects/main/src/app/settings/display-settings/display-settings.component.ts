@@ -1,17 +1,30 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+import {DisplaySettingsModel, IngestSettingsModel} from "../../../../../ks-lib/src/lib/models/settings.model";
+import {MatSlideToggleChange} from "@angular/material/slide-toggle";
 
 @Component({
   selector: 'app-display-settings',
   templateUrl: './display-settings.component.html',
   styleUrls: ['./display-settings.component.scss']
 })
-export class DisplaySettingsComponent implements OnInit {
+export class DisplaySettingsComponent implements OnInit, OnChanges {
   fontSize = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24];
+  @Input() displaySettings: DisplaySettingsModel = {theme: 'app-theme-dark'};
+  @Output() settingsModified = new EventEmitter<DisplaySettingsModel>();
+  darkMode: boolean = true;
 
   constructor() {
   }
 
   ngOnInit(): void {
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    console.log('Changes: ', changes);
+    if (changes.displaySettings.currentValue || changes.displaySettings.firstChange) {
+      console.log('Checking if dark mode..');
+      this.darkMode = changes.displaySettings.currentValue.theme === 'app-theme-dark';
+    }
   }
 
   setFontSize(size: number) {
@@ -21,4 +34,10 @@ export class DisplaySettingsComponent implements OnInit {
     });
   }
 
+  themeChanged($event: MatSlideToggleChange) {
+    console.log('theme slider changed: ', $event);
+    // TODO: actually change the theme...
+    this.displaySettings.theme = $event.checked ? 'app-theme-dark' : 'app-theme-light';
+    this.settingsModified.emit(this.displaySettings);
+  }
 }

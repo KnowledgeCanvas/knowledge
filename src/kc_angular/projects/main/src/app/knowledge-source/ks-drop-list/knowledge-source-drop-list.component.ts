@@ -175,7 +175,8 @@ export class KnowledgeSourceDropListComponent implements OnInit {
 
   openKsImportDialog() {
     this.dialog.open(KnowledgeSourceImportDialogComponent, {
-      width: '60%',
+      width: 'auto',
+      minWidth: '30vw',
       data: this.project
     });
   }
@@ -187,7 +188,10 @@ export class KnowledgeSourceDropListComponent implements OnInit {
     }
 
     const dialogRef = this.dialog.open(KsInfoDialogComponent, {
-      width: '70%',
+      minWidth: '50vw',
+      width: 'auto',
+      height: 'auto',
+      maxHeight: '95vh',
       data: dialogInput,
       autoFocus: false
     });

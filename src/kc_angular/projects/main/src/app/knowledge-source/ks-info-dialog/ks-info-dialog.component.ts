@@ -237,12 +237,15 @@ export class KsInfoDialogComponent implements OnInit, AfterViewInit {
     switch ($event.index) {
       case 0:
         this.ipcService.closeBrowserView();
+        this.dialogRef.updateSize('auto', 'auto');
         break;
       case 1:
+        this.dialogRef.updateSize('80vw', '80vh');
         this.emplaceKnowledgeSourceView();
         break;
       case 2:
         this.ipcService.closeBrowserView();
+        this.dialogRef.updateSize('auto', 'auto');
         this.ks.notes.dateAccessed = new Date();
         break;
     }

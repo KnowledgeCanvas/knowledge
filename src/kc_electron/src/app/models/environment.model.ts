@@ -6,6 +6,7 @@ export interface EnvironmentModel {
     appPath: string;
     appTitle: string;
     cwd: string;
+    display: any;
     dockerDirectoryPath?: string;
     envPath?: string;
     error?: string;

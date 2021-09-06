@@ -55,6 +55,8 @@ export class SearchResultsComponent implements OnInit {
 
     const dialogRef = this.dialog.open(KsInfoDialogComponent, {
       width: '70%',
+      height: 'auto',
+      maxHeight: '95vh',
       data: dialogInput,
       autoFocus: false
     });

@@ -3,10 +3,11 @@
 .cdk-virtual-scroll-data-source .canvas-node-container {
   box-shadow: inset 0 0 2px 0 rgba(255, 255, 255, .4), inset 0 0 3px 0 rgba(0, 0, 0, .4), inset 0 0 3px 5px rgba(0, 0, 0, .05), 2px 2px 4px 0 rgba(0, 0, 0, .25);
   writing-mode: horizontal-tb;
-  border: solid 1px #1c1c1c;
   justify-content: center;
   box-sizing: border-box;
-  background-color: #fff;
+  background-color: #FFF;
+  z-index: auto;
+  border: 2px outset #FFF;
   align-content: center;
   flex-direction: column;
   white-space: pre-wrap;
@@ -40,7 +41,7 @@
   font-size: 12px;
 
   .ks-sort-key {
-    color: $kc-primary-color-dark;
+    color: $kc-primary-color-light;
     text-decoration: underline;
     font-size: 12px;
     cursor: help;

@@ -18,7 +18,7 @@ export class ProjectModel {
   notes?: string[];
   expanded?: boolean;
   knowledgeSource?: KnowledgeSource[] = [];
-  calendar?: KcCalendar;
+  calendar: KcCalendar;
 
   constructor(name: string, id: UuidModel, type?: ProjectType, parentId?: UuidModel) {
     this.name = name;
@@ -27,6 +27,7 @@ export class ProjectModel {
     this.parentId = parentId;
     this.dateCreated = Date();
     this.dateModified = Date();
+    this.calendar = new KcCalendar();
   }
 }
 
@@ -39,7 +40,8 @@ export interface ProjectCreationRequest {
   authors?: string[];
   topics?: string[];
   type: ProjectType;
-  subProjects?: ProjectCreationRequest[]
+  subProjects?: ProjectCreationRequest[];
+  calendar?: KcCalendar;
 }
 
 export interface ProjectUpdateRequest {

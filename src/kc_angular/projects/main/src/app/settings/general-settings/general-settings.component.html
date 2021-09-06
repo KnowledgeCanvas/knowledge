@@ -1,9 +1,21 @@
-<app-ingest-settings *ngIf="ingest" (settingsModified)="ingestSettingsModified($event)"
-                     [ingestSettings]="ingest"></app-ingest-settings>
-<hr>
-<app-search-settings *ngIf="search" (settingsModified)="searchSettingsModified($event)"
-                     [searchSettings]="search"></app-search-settings>
-<!--<hr>-->
-<!--<app-display-settings></app-display-settings>-->
-<hr>
-<app-storage-settings></app-storage-settings>
+<div *ngIf="display">
+  <app-display-settings (settingsModified)="displaySettingsModified($event)"
+                        [displaySettings]="display"></app-display-settings>
+</div>
+
+<div *ngIf="ingest">
+  <hr>
+  <app-ingest-settings *ngIf="ingest" (settingsModified)="ingestSettingsModified($event)"
+                       [ingestSettings]="ingest"></app-ingest-settings>
+</div>
+
+<div *ngIf="search">
+  <hr>
+  <app-search-settings (settingsModified)="searchSettingsModified($event)"
+                       [searchSettings]="search"></app-search-settings>
+</div>
+
+<div *ngIf="storage">
+  <hr>
+  <app-storage-settings></app-storage-settings>
+</div>

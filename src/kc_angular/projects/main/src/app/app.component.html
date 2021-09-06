@@ -1,4 +1,4 @@
-<div style="height: 100%">
+<div style="height: 100%" class="mat-app-background" [class.app-theme-dark]="darkMode">
   <mat-sidenav-container class="sidenav-container">
     <mat-sidenav #drawer [attr.role]="'dialog'" [mode]="'over'" [opened]="false">
       <div class="app-sidenav">
@@ -45,7 +45,7 @@
           <app-search-bar></app-search-bar>
         </span>
 
-        <span class="right" style="color: white">
+        <span class="right">
           <button matTooltip="Navigate back to the home page"
                   [matTooltipClass]="{'tool-tip':true}"
                   class="app-top-toolbar-icon"
@@ -87,7 +87,6 @@
                class="app-footer-timer-label"
                matTooltipClass="tool-tip"
                matTooltipShowDelay="0">
-            Pomodoro Timer:
           </div>
           <div class="app-footer-timer">
             {{timer}}

@@ -21,7 +21,7 @@
            [matAutocomplete]="auto"
            #topicInput>
   </mat-chip-list>
-  <mat-hint *ngIf="sourceRef !== undefined">Hint: You can click on any topic to perform an instant web search!</mat-hint>
+  <mat-hint *ngIf="sourceRef !== undefined && topics.length > 0">Hint: You can click on any topic to perform an instant web search!</mat-hint>
 
   <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
     <mat-option *ngFor="let topic of filteredTopics | async" [value]="topic" (click)="onFocus()">

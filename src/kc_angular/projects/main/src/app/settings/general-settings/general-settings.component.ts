@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {SettingsService} from "../../../../../ks-lib/src/lib/services/settings/settings.service";
-import {IngestSettingsModel, SearchSettingsModel, SettingsModel} from "projects/ks-lib/src/lib/models/settings.model";
+import {DisplaySettingsModel, IngestSettingsModel, SearchSettingsModel, SettingsModel, StorageSettingsModel} from "projects/ks-lib/src/lib/models/settings.model";
 
 @Component({
   selector: 'app-general-settings',
@@ -10,11 +10,14 @@ import {IngestSettingsModel, SearchSettingsModel, SettingsModel} from "projects/
 export class GeneralSettingsComponent implements OnInit {
   ingest: IngestSettingsModel | undefined = undefined;
   search: SearchSettingsModel | undefined = undefined;
+  display: DisplaySettingsModel | undefined = undefined;
+  storage: StorageSettingsModel | undefined = {};
   private settings: SettingsModel = {};
 
   constructor(private settingsService: SettingsService) {
     settingsService.settings.subscribe(settings => {
       this.settings = settings;
+      console.log('Received settings: ', settings);
 
       if (settings.ingest) {
         this.ingest = settings.ingest;
@@ -22,6 +25,10 @@ export class GeneralSettingsComponent implements OnInit {
 
       if (settings.search) {
         this.search = settings.search;
+      }
+
+      if (settings.display) {
+        this.display = settings.display;
       }
     });
   }
@@ -35,5 +42,9 @@ export class GeneralSettingsComponent implements OnInit {
 
   searchSettingsModified(searchSettings: SearchSettingsModel) {
     this.settingsService.saveSettings({search: searchSettings});
+  }
+
+  displaySettingsModified(displaySettings: DisplaySettingsModel) {
+    this.settingsService.saveSettings({display: displaySettings});
   }
 }

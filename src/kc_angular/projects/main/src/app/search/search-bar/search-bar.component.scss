@@ -7,6 +7,18 @@
   outline: none;
 }
 
+.search-bar-dark {
+  width: 100%;
+  max-width: 75%;
+  height: 32px;
+  padding-left: 16px;
+  border-radius: 16px;
+  outline: none;
+  //TODO: make this compliant with material dark-theme...
+  background-color: #424242;
+  color: white;
+}
+
 .search-bar-icon {
   margin-right: 10px;
 }

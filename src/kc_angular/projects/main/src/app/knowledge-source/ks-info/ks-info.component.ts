@@ -26,6 +26,7 @@ export class KsInfoComponent implements OnInit, OnChanges {
   @ViewChild('accordion', {static: true}) Accordion?: MatAccordion
   @Input() ks: KnowledgeSource | undefined;
   @Output() ksModified = new EventEmitter<boolean>();
+  title: string = '';
   reference?: KnowledgeSourceReference;
   authors: AuthorModel[] = [];
   websiteItem?: WebsiteModel;
@@ -51,6 +52,7 @@ export class KsInfoComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     let ks = changes.ks.currentValue;
     if (ks) {
+      this.title = ks.title;
       this.ingestType = ks.ingestType;
       this.googleItem = ks.googleItem;
       this.websiteItem = ks.websiteItem;
@@ -77,6 +79,13 @@ export class KsInfoComponent implements OnInit, OnChanges {
   setDescription() {
     if (this.ks) {
       this.ks.description = this.description;
+      this.ksModified.emit(true);
+    }
+  }
+
+  setTitle() {
+    if (this.ks) {
+      this.ks.title = this.title;
       this.ksModified.emit(true);
     }
   }

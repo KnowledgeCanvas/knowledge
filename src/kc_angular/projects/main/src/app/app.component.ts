@@ -7,6 +7,7 @@ import {Router} from "@angular/router";
 import {SettingsService} from "../../../ks-lib/src/lib/services/settings/settings.service";
 import {WellnessSettingsModel} from "../../../ks-lib/src/lib/models/settings.model";
 import {KsQueueService} from "./knowledge-source/ks-queue-service/ks-queue.service";
+import {OverlayContainer} from "@angular/cdk/overlay";
 
 @Component({
   selector: 'app-root',
@@ -34,12 +35,13 @@ export class AppComponent {
   private timerSecondsLeft: number = this.timerSeconds;
   private breakMinutesLeft: number = this.breakMinutes;
   private breakSecondsLeft: number = this.breakSeconds;
+  darkMode: boolean = true;
 
   constructor(private dialog: MatDialog, private router: Router,
+              private overlayContainer: OverlayContainer,
               private settingsService: SettingsService,
               private ksQueueService: KsQueueService,
-              private bottomSheet: MatBottomSheet,
-  ) {
+              private bottomSheet: MatBottomSheet,) {
     this.settingsService.settings.subscribe((settings) => {
       if (settings && settings.wellness) {
         this.timerMinutes = settings.wellness.timerMinutes;
@@ -51,7 +53,22 @@ export class AppComponent {
         this.resetTimerValues();
         this.setTimer();
       }
+
+      if (settings && settings.display) {
+        this.changeTheme(settings.display.theme);
+        this.darkMode = settings.display.theme === 'app-theme-dark';
+      }
     });
+  }
+
+  changeTheme(theme: 'app-theme-dark' | 'app-theme-light') {
+    const overlayContainerClasses = this.overlayContainer.getContainerElement().classList;
+    const themeClassesToRemove = Array.from(overlayContainerClasses)
+      .filter((item: string) => item.includes('app-theme-'));
+    if (themeClassesToRemove.length) {
+      overlayContainerClasses.remove(...themeClassesToRemove);
+    }
+    overlayContainerClasses.add(theme);
   }
 
   setTimer() {

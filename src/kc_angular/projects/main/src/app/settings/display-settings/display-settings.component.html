@@ -2,15 +2,10 @@
 
 <div class="container">
   <div class="row">
-    <div class="col s12">
-      <h4>Font Size</h4>
-      <mat-form-field>
-        <mat-select>
-          <mat-option *ngFor="let size of fontSize" [value]="size" (click)="setFontSize(size)">
-            {{size}}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
+    <div class="col s4">
+      <mat-slide-toggle [(ngModel)]="darkMode" (change)="themeChanged($event)">
+        Dark Mode
+      </mat-slide-toggle>
     </div>
   </div>
 </div>

@@ -4,6 +4,7 @@ import {ProjectService} from "../../../../../ks-lib/src/lib/services/projects/pr
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {TopicService} from "../../../../../ks-lib/src/lib/services/topics/topic.service";
+import {KcCalendar} from "../../../../../ks-lib/src/lib/models/calendar.model";
 
 export function noWhitespaceValidator(control: FormControl) {
   return ((control.value || '').trim().length === 0) ? {'whitespace': true} : null;
@@ -37,6 +38,7 @@ export class ProjectCreationDialogComponent implements OnInit {
     this.projectCreationForm = new FormGroup({
       name: new FormControl('', [
         Validators.pattern(/^[a-zA-Z0-9 _-]{3,64}$/),
+        Validators.minLength(3),
         Validators.required,
         noWhitespaceValidator
       ]),
@@ -71,6 +73,10 @@ export class ProjectCreationDialogComponent implements OnInit {
     return this.projectCreationForm.get('upload');
   }
 
+  get f() {
+    return this.projectCreationForm.controls;
+  }
+
   ngOnInit(): void {
     this.project.topics = [];
 
@@ -90,10 +96,12 @@ export class ProjectCreationDialogComponent implements OnInit {
       this.project.type = (this.type?.value || 'default');
       this.project.description = (this.description?.value || '');
 
+      console.log('Setting description: ', this.project.description);
+
       if (this.project.type === 'school') {
         let homework: ProjectCreationRequest = {
           authors: [], type: 'school',
-          description: "Knowledge Canvas automatically generates sub-projects for 'school' type projects",
+          description: "Automatically generated for 'School' type project",
           knowledgeSource: [], name: "Homework"
         };
         this.project.subProjects = [homework];
@@ -122,5 +130,19 @@ export class ProjectCreationDialogComponent implements OnInit {
     this.projectCreationForm.patchValue({['name']: name});
 
 
+  }
+
+  onStartChange($event: any) {
+    if (!this.project.calendar) {
+      this.project.calendar = new KcCalendar();
+    }
+    this.project.calendar.start = $event;
+  }
+
+  onEndChange($event: any) {
+    if (!this.project.calendar) {
+      this.project.calendar = new KcCalendar();
+    }
+    this.project.calendar.end = $event;
   }
 }

@@ -11,6 +11,7 @@ import {KnowledgeSource} from "projects/ks-lib/src/lib/models/knowledge.source.m
 import {UuidService} from "../uuid/uuid.service";
 import {UuidModel} from "projects/ks-lib/src/lib/models/uuid.model";
 import {StorageService} from "../storage/storage.service";
+import {KcCalendar} from "../../models/calendar.model";
 
 export const contentHeaders = new HttpHeaders()
   .set('Accept', 'application/json')
@@ -145,6 +146,7 @@ export class ProjectService {
     newProject.knowledgeSource = project.knowledgeSource;
     newProject.authors = project.authors;
     newProject.description = project.description;
+    newProject.calendar = project.calendar ? project.calendar : new KcCalendar();
 
     let subProjects: ProjectModel[] = [];
 
@@ -159,6 +161,7 @@ export class ProjectService {
         newSubProject.topics = subRequest.topics;
         newSubProject.knowledgeSource = subRequest.knowledgeSource;
         newSubProject.authors = subRequest.authors;
+        newSubProject.description = subRequest.description;
 
         subProjects.push(newSubProject);
         newProject.subprojects.push(newSubProject.id.value);

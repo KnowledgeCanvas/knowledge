@@ -17,9 +17,13 @@
   min-height: 48px !important;
   max-width: 48px !important;
   max-height: 48px !important;
-  border: solid 1px #1c1c1c;
   overflow: hidden;
   border-radius: 48px;
+  background-color: #FFF;
+  z-index: auto;
+  //TODO: update this to comply with dark/light mode
+  border: 2px outset #FFF;
+  box-shadow: 0 0 0 2px black, 0 0 0 3px white;
 }
 
 .ks-details-accordion-container {
@@ -46,7 +50,8 @@
   max-width: 100%;
   min-height: 44px;
   border: 1px solid #ccc;
-  background: #fff;
+  // TODO: conform to material dark/light modes
+  //background: #fff;
   align-content: center;
   justify-content: flex-start;
   align-items: center;

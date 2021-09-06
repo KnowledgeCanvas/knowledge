@@ -2,10 +2,6 @@
   <div class="knowledge-source-icon-container">
     <img [src]="ks.icon" class="knowledge-source-icon-large" alt="Knowledge Source icon">
   </div>
-  <br>
-  <mat-form-field (focusout)="updateKS()" style="width: 100%">
-    <input matInput [(ngModel)]="ks.title" placeholder="Title" required>
-  </mat-form-field>
 </div>
 
 <div class="search-result-dialog-content"
@@ -56,7 +52,7 @@
 
 </div>
 
-<div mat-dialog-actions>
+<div mat-dialog-actions *ngIf="selectedTab.value === 0">
   <button *ngIf="this.ks.ingestType !== 'file'" mat-button (click)="openInBrowser()">Open in...</button>
   <button *ngIf="this.ks.ingestType === 'file'" mat-button (click)="openLocally()">Open in...</button>
   <button *ngIf="this.ks.ingestType === 'file'" mat-button (click)="copyLink()" >Copy Path</button>
