@@ -137,6 +137,8 @@ export class ProjectService {
   }
 
   newProject(project: ProjectCreationRequest): any {
+    console.log('Creating new project: ', project);
+
     let uuid: UuidModel[] = this.uuidService.generate(1);
 
     let projectId: UuidModel = uuid[0];
@@ -150,7 +152,7 @@ export class ProjectService {
 
     let subProjects: ProjectModel[] = [];
 
-    if (project.subProjects) {
+    if (project.subProjects && project.subProjects.length > 0) {
       uuid = this.uuidService.generate(project.subProjects.length);
       newProject.subprojects = [];
 
@@ -170,6 +172,7 @@ export class ProjectService {
 
     this.projectSource.push(newProject);
     this.storageService.saveProject(newProject);
+
     for (let subProject of subProjects) {
       this.projectSource.push(subProject);
       this.storageService.saveProject(subProject);
@@ -177,6 +180,7 @@ export class ProjectService {
 
     if (project.parentId?.value) {
       let parent = this.getProject(project.parentId.value);
+
       if (parent && parent.subprojects && parent.subprojects.length > 0) {
         parent.subprojects.push(newProject.id.value);
       } else if (parent) {
@@ -212,7 +216,7 @@ export class ProjectService {
       return;
     }
 
-    if (projectUpdate.name) {
+    if (projectUpdate.name && projectUpdate.name !== projectToUpdate.name) {
       projectToUpdate.name = projectUpdate.name;
     }
 
@@ -387,6 +391,8 @@ export class ProjectService {
 
   private addKnowledgeSource(project: ProjectModel, add: KnowledgeSource[]): ProjectModel {
     // TODO: eventually make sure there are no duplicates...
+    console.log('Adding knowledge source to project: ', add);
+
     if (project.knowledgeSource && project.knowledgeSource.length > 0)
       project.knowledgeSource = [...project.knowledgeSource, ...add];
     else

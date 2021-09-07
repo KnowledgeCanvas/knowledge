@@ -74,6 +74,7 @@ import {NoteCreationComponent} from './ingest/note-creation/note-creation.compon
 import {MatBottomSheetModule} from "@angular/material/bottom-sheet";
 import {IngestSettingsComponent} from './settings/ingest-settings/ingest-settings.component';
 import {GeneralSettingsComponent} from './settings/general-settings/general-settings.component';
+import { KsPreviewComponent } from './knowledge-source/ks-preview/ks-preview.component';
 
 @NgModule({
   declarations: [
@@ -111,6 +112,7 @@ import {GeneralSettingsComponent} from './settings/general-settings/general-sett
     NoteCreationComponent,
     IngestSettingsComponent,
     GeneralSettingsComponent,
+    KsPreviewComponent,
   ],
   imports: [
     AppRoutingModule,

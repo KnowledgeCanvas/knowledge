@@ -5,10 +5,7 @@ import {ProjectTreeFlatNode, ProjectTreeNode} from "projects/ks-lib/src/lib/mode
 import {ProjectIdentifiers, ProjectService} from "../../../../../ks-lib/src/lib/services/projects/project.service";
 import {ProjectModel} from "projects/ks-lib/src/lib/models/project.model";
 import {MatDialog} from '@angular/material/dialog';
-import {
-  KcDialogRequest,
-  KcDialogService
-} from "../../../../../ks-lib/src/lib/services/dialog/kc-dialog.service";
+import {KcDialogRequest, KcDialogService} from "../../../../../ks-lib/src/lib/services/dialog/kc-dialog.service";
 import {ProjectCreationDialogComponent} from "../project-creation-dialog/project-creation-dialog.component";
 import {MatMenuTrigger} from "@angular/material/menu";
 
@@ -166,10 +163,6 @@ export class ProjectsTreeComponent implements OnInit {
     });
   }
 
-  refreshTree(): void {
-    this.projectService.refreshTree();
-  }
-
   expandTree() {
     this.treeControl.expandAll();
     this.projectService.setAllExpanded(true);
@@ -178,6 +171,10 @@ export class ProjectsTreeComponent implements OnInit {
   collapseTree() {
     this.treeControl.collapseAll();
     this.projectService.setAllExpanded(false);
+  }
+
+  filter() {
+    console.error('Filter not implemented yet!');
   }
 
   focus() {
@@ -194,10 +191,6 @@ export class ProjectsTreeComponent implements OnInit {
       this.contextMenu.openMenu();
     }
     this.contextTriggerId = id;
-  }
-
-  addKs() {
-    console.error('Add KS to project not implemented!');
   }
 
   moveProject() {

@@ -1,14 +1,15 @@
 import {ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {CdkDragDrop} from "@angular/cdk/drag-drop";
 import {KsDropService} from "../../../../../ks-lib/src/lib/services/ks-drop/ks-drop.service";
-import {MatDialog} from "@angular/material/dialog";
+import {MatDialog, MatDialogConfig} from "@angular/material/dialog";
 import {ProjectModel, ProjectUpdateRequest} from "projects/ks-lib/src/lib/models/project.model";
 import {ProjectService} from "../../../../../ks-lib/src/lib/services/projects/project.service";
 import {KnowledgeSource} from "projects/ks-lib/src/lib/models/knowledge.source.model";
 import {KnowledgeSourceImportDialogComponent} from "../ks-import-dialog/knowledge-source-import-dialog.component";
-import {KsInfoDialogComponent, KsInfoDialogInput} from "../ks-info-dialog/ks-info-dialog.component";
+import {KsInfoDialogComponent, KsInfoDialogInput, KsInfoDialogOutput} from "../ks-info-dialog/ks-info-dialog.component";
 import {FaviconExtractorService} from "../../../../../ks-lib/src/lib/services/favicon/favicon-extractor.service";
 import {StorageService} from "../../../../../ks-lib/src/lib/services/storage/storage.service";
+import {KsPreviewComponent, KsPreviewInput} from "../ks-preview/ks-preview.component";
 
 export interface KsSortBy {
   index: number;
@@ -75,7 +76,6 @@ export class KnowledgeSourceDropListComponent implements OnInit {
 
   ngOnInit(): void {
     this.projectService.currentProject.subscribe(project => {
-
       // Update project when necessary
       this.project = null;
       this.ksList = [];
@@ -176,7 +176,9 @@ export class KnowledgeSourceDropListComponent implements OnInit {
   openKsImportDialog() {
     this.dialog.open(KnowledgeSourceImportDialogComponent, {
       width: 'auto',
-      minWidth: '30vw',
+      minWidth: '512px',
+      maxWidth: '1024px',
+      maxHeight: '80vh',
       data: this.project
     });
   }
@@ -195,15 +197,42 @@ export class KnowledgeSourceDropListComponent implements OnInit {
       data: dialogInput,
       autoFocus: false
     });
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe((result: KsInfoDialogOutput) => {
       if (result.ksChanged && this.project) {
         let update: ProjectUpdateRequest = {
           id: this.project.id,
           updateKnowledgeSource: [result.ks]
         }
+        console.log('Reulting KS: ', result.ks);
         this.projectService.updateProject(update);
       }
+
+      if (result.preview) {
+        // TODO: open ks-preview dialog here
+        this.preview(result.ks);
+      }
     })
+  }
+
+  preview(ks: KnowledgeSource) {
+    let ksPreviewInput: KsPreviewInput = {
+      ks: ks
+    };
+
+    let config: MatDialogConfig = {
+      autoFocus: false,
+      minWidth: '95vw',
+      width: 'auto',
+      minHeight: '95vh',
+      height: 'auto',
+      data: ksPreviewInput
+    }
+
+
+    const dialogRef = this.dialog.open(KsPreviewComponent, config);
+    dialogRef.afterClosed().subscribe((results) => {
+
+    });
   }
 
   sortPrevious() {

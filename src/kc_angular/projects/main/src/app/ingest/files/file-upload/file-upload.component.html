@@ -10,15 +10,17 @@
   </div>
 
   <div *ngIf="files.length > 0" style="width: 100%">
-    <div class="files-list">
-      <div class="single-file" *ngFor="let file of files; let i = index">
-        <mat-icon>file_present</mat-icon>
-        <div class="info">
-          {{file.name}}
+    <div class="file-list-scroll">
+      <div class="files-list">
+        <div class="single-file" *ngFor="let file of files; let i = index">
+          <mat-icon>file_present</mat-icon>
+          <div class="info">
+            {{file.name}}
+          </div>
+          <button mat-icon-button>
+            <mat-icon (click)="deleteFile(i)">delete</mat-icon>
+          </button>
         </div>
-        <button mat-icon-button>
-          <mat-icon (click)="deleteFile(i)">delete</mat-icon>
-        </button>
       </div>
     </div>
 

@@ -1,4 +1,4 @@
-import {AfterViewInit, ChangeDetectorRef, Component, Inject, OnInit, SecurityContext} from '@angular/core';
+import {Component, Inject, OnInit, SecurityContext} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {KnowledgeSource} from "projects/ks-lib/src/lib/models/knowledge.source.model";
 import {DomSanitizer, SafeUrl} from "@angular/platform-browser";
@@ -10,11 +10,7 @@ import {MatTabChangeEvent} from "@angular/material/tabs";
 import {Clipboard} from "@angular/cdk/clipboard";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {ElectronIpcService} from "../../../../../ks-lib/src/lib/services/electron-ipc/electron-ipc.service";
-import {
-  KsBrowserViewRequest,
-  IpcResponse
-} from "kc_electron/src/app/models/electron.ipc.model";
-import {KsThumbnailRequest} from "kc_electron/src/app/models/electron.ipc.model";
+import {IpcResponse, KsBrowserViewRequest, KsThumbnailRequest} from "kc_electron/src/app/models/electron.ipc.model";
 import {FormControl} from "@angular/forms";
 
 export interface KsInfoDialogInput {
@@ -22,12 +18,18 @@ export interface KsInfoDialogInput {
   ks: KnowledgeSource
 }
 
+export interface KsInfoDialogOutput {
+  ksChanged: boolean,
+  ks: KnowledgeSource,
+  preview: boolean
+}
+
 @Component({
   selector: 'app-ks-info-dialog',
   templateUrl: './ks-info-dialog.component.html',
   styleUrls: ['./ks-info-dialog.component.scss']
 })
-export class KsInfoDialogComponent implements OnInit, AfterViewInit {
+export class KsInfoDialogComponent implements OnInit {
   currentProject: ProjectModel | null = null;
   ks: KnowledgeSource;
   url: string | null = null;
@@ -36,9 +38,9 @@ export class KsInfoDialogComponent implements OnInit, AfterViewInit {
   viewReady: boolean = false;
   ksChanged: boolean = false;
   title: string = '';
-  notes: string = '';
   thumbnail: string | undefined = undefined;
   selectedTab = new FormControl(0);
+  previewSelected: boolean = false;
 
   constructor(public dialogRef: MatDialogRef<KsInfoDialogComponent>,
               @Inject(MAT_DIALOG_DATA) public input: KsInfoDialogInput,
@@ -54,18 +56,21 @@ export class KsInfoDialogComponent implements OnInit, AfterViewInit {
       this.currentProject = project;
     });
 
+
+    /**
+     * This intercepts all calls to close the current dialog. Therefore, methods
+     * that want to do something after the dialog has been closed must do so by
+     * setting class parameters, which will be included in the output
+     */
     this.dialogRef.beforeClosed().subscribe(() => {
       this.ipcService.closeBrowserView();
-      this.dialogRef.close({ksChanged: this.ksChanged, ks: this.ks});
+      let dialogOutput: KsInfoDialogOutput = {ksChanged: this.ksChanged, ks: this.ks, preview: this.previewSelected};
+      this.dialogRef.close(dialogOutput);
     });
 
     this.ks = input.ks;
     this.title = input.ks.title;
-    this.notes = input.ks.notes.text;
     this.sourceRef = input.source;
-  }
-
-  ngAfterViewInit() {
   }
 
   ngOnInit(): void {
@@ -134,8 +139,7 @@ export class KsInfoDialogComponent implements OnInit, AfterViewInit {
 
     if (typeof this.ks.accessLink === "string") {
       url = new URL(this.ks.accessLink);
-    }
-    else {
+    } else {
       url = this.ks.accessLink
     }
 
@@ -205,13 +209,17 @@ export class KsInfoDialogComponent implements OnInit, AfterViewInit {
       // this.ks.dateAccessed = new Date();
       // this.ks.dateModified = new Date();
 
-      this.ks.notes.text = this.notes;
+      // this.ks.notes = new KnowledgeSourceNotes();
+      // this.ks.notes.text = this.notes;
 
       // Update the project to persist the new source
       let projectUpdate: ProjectUpdateRequest = {
         id: this.currentProject.id,
         addKnowledgeSource: [this.ks]
       }
+
+      console.log('Adding knowledge source to project: ', this.ks);
+
       this.projectService.updateProject(projectUpdate);
       this.ksQueueService.remove(this.ks);
       this.dialogRef.close();
@@ -242,12 +250,6 @@ export class KsInfoDialogComponent implements OnInit, AfterViewInit {
       case 1:
         this.dialogRef.updateSize('80vw', '80vh');
         this.emplaceKnowledgeSourceView();
-        break;
-      case 2:
-        this.ipcService.closeBrowserView();
-        this.dialogRef.updateSize('auto', 'auto');
-        this.ks.notes.dateAccessed = new Date();
-        break;
     }
   }
 
@@ -292,16 +294,8 @@ export class KsInfoDialogComponent implements OnInit, AfterViewInit {
 
   ksModified(modified: boolean) {
     this.ksChanged = modified;
-  }
 
-  notesModified() {
-    if (this.ks.notes.text === this.notes)
-      return;
-
-    this.ks.notes.text = this.notes;
-    this.ks.notes.dateModified = new Date();
-    this.ks.dateModified = new Date();
-    this.ksChanged = true;
+    console.log('Ks was modified: ', this.ks);
   }
 
   removeQueueItem() {
@@ -327,5 +321,10 @@ export class KsInfoDialogComponent implements OnInit, AfterViewInit {
           });
         }
       });
+  }
+
+  preview() {
+    this.previewSelected = true;
+    this.dialogRef.close();
   }
 }

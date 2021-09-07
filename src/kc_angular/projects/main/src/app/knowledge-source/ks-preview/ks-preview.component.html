@@ -1,0 +1,52 @@
+<div class="ks-preview-viewport">
+  <!-- PREVIEW HEADER BEGINS -->
+  <div class="ks-preview-header mat-toolbar">
+    <div class="ks-preview-header-left">
+            <button mat-icon-button [disabled]="!canGoBack" (click)="back()">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+            <button mat-icon-button [disabled]="!canGoForward" (click)="forward()">
+              <mat-icon>arrow_forward</mat-icon>
+            </button>
+      <button mat-icon-button (click)="refresh()">
+        <mat-icon>refresh</mat-icon>
+      </button>
+    </div>
+    <div class="ks-preview-header-center">
+      <button mat-icon-button (click)="copy()">
+        <mat-icon>content_copy</mat-icon>
+      </button>
+      <input *ngIf="url" type="text" readonly [(ngModel)]="displayUrl" class="ks-preview-header-url">
+      <input *ngIf="path" type="text" readonly [(ngModel)]="path" class="ks-preview-header-url">
+    </div>
+    <div class="ks-preview-header-right">
+      <button mat-icon-button (click)="save()" [disabled]="saveDisabled">
+        <mat-icon>file_download</mat-icon>
+      </button>
+      <button mat-icon-button (click)="dialogRef.close()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+  <!-- PREVIEW HEADER ENDS -->
+
+  <!-- PREVIEW BODY BEGINS -->
+  <div class="ks-preview-body" [ngStyle]="{'background-color' : backgroundColor}">
+    <ks-lib-browser-view (onIpcResponse)="onIpcResponse($event)"
+                         (viewReady)="setViewReady($event)"
+                         *ngIf="url"
+                         (navEvent)="onBrowserViewNavEvent($event)"
+                         [url]="url"></ks-lib-browser-view>
+    <ks-lib-file-view (viewReady)="setViewReady($event)"
+                      [filepath]="path"
+                      *ngIf="path"></ks-lib-file-view>
+  </div>
+  <!-- PREVIEW BODY ENDS -->
+
+
+  <!-- PREVIEW FOOTER BEGINS -->
+  <div class="ks-preview-footer">
+    <mat-progress-bar *ngIf="!viewReady" mode="indeterminate" style="width: 100%" id="progress-bar"></mat-progress-bar>
+  </div>
+  <!-- PREVIEW FOOTER ENDS -->
+</div>

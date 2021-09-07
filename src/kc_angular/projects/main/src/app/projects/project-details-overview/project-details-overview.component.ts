@@ -9,7 +9,7 @@ import {KcCalendar} from "../../../../../ks-lib/src/lib/models/calendar.model";
   templateUrl: './project-details-overview.component.html',
   styleUrls: ['./project-details-overview.component.scss']
 })
-export class ProjectDetailsOverviewComponent implements OnInit, AfterViewInit {
+export class ProjectDetailsOverviewComponent implements OnInit {
   @ViewChild('accordion', {static: true}) Accordion?: MatAccordion
   currentProject: ProjectModel = new ProjectModel('', {value: ''});
   notes: string[] = [];
@@ -24,9 +24,6 @@ export class ProjectDetailsOverviewComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-  }
-  ngAfterViewInit() {
-    this.openAll();
   }
 
   setDescription() {

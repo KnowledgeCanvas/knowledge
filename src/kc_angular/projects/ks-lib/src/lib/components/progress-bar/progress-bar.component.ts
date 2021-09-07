@@ -11,7 +11,6 @@ export class ProgressBarComponent implements OnInit {
 
   constructor(private ksQueueService: KsQueueService) {
     ksQueueService.loading.subscribe((loading) => {
-      console.log('Received loading: ', loading);
       this.loading = loading;
     })
   }

@@ -73,22 +73,15 @@ export class KnowledgeSource {
 }
 
 export class KnowledgeSourceNotes {
-  private content: string = '';
+  text: string = '';
   dateCreated: Date;
   dateModified: Date;
   dateAccessed: Date;
+
   constructor() {
     this.dateCreated = new Date();
     this.dateAccessed = new Date();
     this.dateModified = new Date();
-  }
-
-  get text() {
-    return this.content;
-  }
-
-  set text(content: string) {
-    this.content = content;
   }
 
 }

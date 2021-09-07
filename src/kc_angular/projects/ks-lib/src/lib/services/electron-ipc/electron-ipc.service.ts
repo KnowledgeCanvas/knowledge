@@ -1,9 +1,13 @@
 import {Injectable, NgZone} from '@angular/core';
 import {UuidModel} from "projects/ks-lib/src/lib/models/uuid.model";
-import {Observable} from 'rxjs';
+import {BehaviorSubject, Observable} from 'rxjs';
 import {SettingsModel} from "projects/ks-lib/src/lib/models/settings.model";
 import {IpcResponse, KsBrowserViewRequest, KsThumbnailRequest} from "kc_electron/src/app/models/electron.ipc.model";
 import {FileModel} from "../../models/file.model";
+
+export interface ElectronNavEvent {
+  stack: string[]
+}
 
 export interface PromptForDirectoryRequest {
   title?: string;
@@ -28,6 +32,16 @@ export class ElectronIpcService {
   private channels = {
     browserView: 'electron-browser-view',
     browserViewResults: 'electron-browser-view-results',
+    browserViewRefresh: 'electron-browser-view-refresh',
+    browserViewNavEvents: 'electron-browser-view-nav-events',
+    browserViewCanGoBack: 'electron-browser-view-can-go-back',
+    browserViewCanGoBackResults: 'electron-browser-view-can-go-back-results',
+    browserViewCanGoForward: 'electron-browser-view-can-go-forward',
+    browserViewCanGoForwardResults: 'electron-browser-view-can-go-forward-results',
+    browserViewCurrentUrl: 'electron-browser-view-current-url',
+    browserViewCurrentUrlResults: 'electron-browser-view-current-url-results',
+    browserViewGoBack: 'electron-browser-view-go-back',
+    browserViewGoForward: 'electron-browser-view-go-forward',
     browserExtensionResults: 'app-chrome-extension-results',
     closeBrowserView: 'electron-close-browser-view',
     closeBrowserViewResults: 'electron-close-browser-view-results',
@@ -44,10 +58,68 @@ export class ElectronIpcService {
     promptForDirectoryResults: 'app-prompt-for-directory-results'
   }
 
+  private electronNavEvent = new BehaviorSubject<string>('');
+  navEvent = this.electronNavEvent.asObservable();
+
+
   constructor(private zone: NgZone) {
+    this.receive(this.channels.browserViewNavEvents, (response: IpcResponse) => {
+      this.zone.run(() => {
+        if (response.error) {
+          console.error(response.error);
+        } else if (response.success?.data) {
+          let url = response.success.data;
+          this.electronNavEvent.next(url);
+        }
+      });
+    });
+  }
+
+  browserViewCanGoBack() {
+    return new Promise<boolean>((resolve) => {
+      this.receive(this.channels.browserViewCanGoBackResults, (response: IpcResponse) => {
+        if (response.success)
+          resolve(response.success.data);
+      });
+      this.send(this.channels.browserViewCanGoBack);
+    })
+  }
+
+  browserViewCanGoForward() {
+    return new Promise<boolean>((resolve) => {
+      this.receive(this.channels.browserViewCanGoForwardResults, (response: IpcResponse) => {
+        if (response.success)
+          resolve(response.success.data);
+      });
+      this.send(this.channels.browserViewCanGoForward);
+    })
+  }
+
+  browserViewCurrentUrl() {
+    return new Promise<string>((resolve) => {
+      this.receive(this.channels.browserViewCurrentUrlResults, (response: IpcResponse) => {
+        if (response.success)
+          resolve(response.success.data);
+      });
+      this.send(this.channels.browserViewCurrentUrl);
+    })
+  }
+
+  browserViewGoBack() {
+    this.send(this.channels.browserViewGoBack);
+  }
+
+  browserViewGoForward() {
+    this.send(this.channels.browserViewGoForward);
+  }
+
+  browserRefresh() {
+    this.send(this.channels.browserViewRefresh);
   }
 
   closeBrowserView() {
+    this.electronNavEvent.next('');
+
     this.receive(this.channels.closeBrowserViewResults, (response: IpcResponse) => {
       this.zone.run(() => {
         if (response.success) {
@@ -58,7 +130,6 @@ export class ElectronIpcService {
       });
     });
     this.send(this.channels.closeBrowserView);
-
   }
 
   getFileIcon(paths: string[]): Promise<any[]> {
@@ -121,6 +192,9 @@ export class ElectronIpcService {
     return new Promise<IpcResponse>((resolve) => {
       this.receive(this.channels.browserViewResults, (response: IpcResponse) => {
         this.zone.run(() => {
+
+          // Create a new stack with the current browser view URL
+          this.electronNavEvent.next(request.url);
           resolve(response);
         });
       });

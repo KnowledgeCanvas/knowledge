@@ -20,13 +20,11 @@ export interface KsBrowserViewRequest {
     y: number;
     height: number;
     width: number;
+    returnHtml?: boolean;
 }
-export interface KsBrowserViewRequest {
-    url: string;
-    x: number;
-    y: number;
-    height: number;
-    width: number;
+export interface KsBrowserViewResponse {
+    html: string;
+    backgroundColor: string;
 }
 export interface KsThumbnailRequest {
     path: string;

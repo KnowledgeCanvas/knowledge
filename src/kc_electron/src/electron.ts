@@ -33,8 +33,7 @@ const MAIN_ENTRY: string = path.join(app.getAppPath(), 'src', 'kc_angular', 'dis
 console.log('Dirname: ', __dirname);
 
 const browserExtensionServer = require('./app/server/server');
-require('./app/ipc/ipc-index');
-
+const browserIpc = require('./app/ipc/ipc-index').browserIpc;
 
 let appEnv = settingsService.getSettings();
 let kcMainWindow: typeof BrowserWindow;
@@ -89,6 +88,7 @@ function createMainWindow() {
     // TODO: Determine if the following is the best we can do for page load failure
     // We need to explicitly reload the index upon refresh (note this is only needed in Electron)
     kcMainWindow.webContents.on('did-fail-load', () => {
+        browserIpc.destroyBrowserViews(kcMainWindow);
         kcMainWindow.loadFile(MAIN_ENTRY);
     })
 

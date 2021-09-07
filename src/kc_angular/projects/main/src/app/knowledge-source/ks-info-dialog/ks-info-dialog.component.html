@@ -14,7 +14,7 @@
                  animationDuration="0ms"
                  style="width: 100%">
 
-    <mat-tab label="Details">
+    <mat-tab label="Overview">
       <app-ks-info [ks]="ks" (ksModified)="ksModified($event)"></app-ks-info>
     </mat-tab>
 
@@ -33,26 +33,12 @@
         </div>
       </div>
     </mat-tab>
-
-    <mat-tab label="Notes">
-      <div class="ks-notes-viewport">
-        <mat-form-field class="ks-notes-textarea" (focusout)="notesModified()">
-          <textarea placeholder="Enter notes here..."
-                    cdkAutosizeMinRows="20"
-                    [(ngModel)]="notes"
-                    cdkTextareaAutosize
-                    matInput></textarea>
-          <mat-hint>Notes are automatically saved when changes are made.</mat-hint>
-        </mat-form-field>
-        <div>
-        </div>
-      </div>
-    </mat-tab>
   </mat-tab-group>
 
 </div>
 
 <div mat-dialog-actions *ngIf="selectedTab.value === 0">
+  <button mat-button (click)="preview()">Preview</button>
   <button *ngIf="this.ks.ingestType !== 'file'" mat-button (click)="openInBrowser()">Open in...</button>
   <button *ngIf="this.ks.ingestType === 'file'" mat-button (click)="openLocally()">Open in...</button>
   <button *ngIf="this.ks.ingestType === 'file'" mat-button (click)="copyLink()" >Copy Path</button>

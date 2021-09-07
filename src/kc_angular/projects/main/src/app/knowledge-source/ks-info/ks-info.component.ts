@@ -1,14 +1,4 @@
-import {
-  ChangeDetectorRef,
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnInit,
-  Output,
-  SimpleChanges,
-  ViewChild
-} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
 import {KnowledgeSource, KnowledgeSourceReference} from "projects/ks-lib/src/lib/models/knowledge.source.model";
 import {SearchModel} from "projects/ks-lib/src/lib/models/google.search.results.model";
 import {WebsiteModel} from "projects/ks-lib/src/lib/models/website.model";
@@ -29,20 +19,16 @@ export class KsInfoComponent implements OnInit, OnChanges {
   title: string = '';
   reference?: KnowledgeSourceReference;
   authors: AuthorModel[] = [];
-  websiteItem?: WebsiteModel;
-  googleItem?: SearchModel;
   description: string = '';
-  snippet: string = '';
+  snippet: string | undefined = undefined;
   ingestType: string = '';
-  fileItem?: FileModel;
   info: any[] = [];
-
-  containsImages?: boolean = false;
+  notes: string = '';
   dateAccessed?: string;
   dateCreated?: string;
   dateModified?: string;
 
-  constructor(private ipcService: ElectronIpcService, private ref: ChangeDetectorRef) {
+  constructor() {
 
   }
 
@@ -50,21 +36,21 @@ export class KsInfoComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    let ks = changes.ks.currentValue;
+    let ks: KnowledgeSource = changes.ks.currentValue;
     if (ks) {
       this.title = ks.title;
       this.ingestType = ks.ingestType;
-      this.googleItem = ks.googleItem;
-      this.websiteItem = ks.websiteItem;
       this.snippet = ks.snippet;
-      this.fileItem = ks.fileItem;
       this.reference = ks.reference;
-      this.description = ks.description;
-      this.authors = ks.authors;
-      this.dateAccessed = ks.dateAccessed;
-      this.dateCreated = ks.dateCreated;
-      this.dateModified = ks.dateModified;
+      this.notes = ks.notes.text;
+      this.description = ks.description ? ks.description : '';
+      this.authors = ks.authors ? ks.authors : [];
+      this.dateAccessed = ks.dateAccessed.toLocaleString();
+      this.dateCreated = ks.dateCreated.toLocaleString();
+      this.dateModified = ks.dateModified.toLocaleString();
       // TODO: set the containsImages bool after looking for photos from each source
+
+      console.log('Displaying ks: ', ks);
     }
   }
 
@@ -88,5 +74,15 @@ export class KsInfoComponent implements OnInit, OnChanges {
       this.ks.title = this.title;
       this.ksModified.emit(true);
     }
+  }
+
+  notesModified() {
+    if (!this.ks || this.ks.notes.text === this.notes)
+      return;
+
+    this.ks.notes.text = this.notes;
+    this.ks.notes.dateModified = new Date();
+    this.ks.dateModified = new Date();
+    this.ksModified.emit(true);
   }
 }

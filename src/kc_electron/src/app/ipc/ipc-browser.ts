@@ -1,4 +1,4 @@
-import {IpcResponse, KsBrowserViewRequest} from "../models/electron.ipc.model";
+import {IpcResponse, KsBrowserViewRequest, KsBrowserViewResponse} from "../models/electron.ipc.model";
 
 const share: any = (global as any).share;
 const BrowserWindow: any = share.BrowserWindow;
@@ -9,8 +9,7 @@ const fs: any = share.fs;
 const settingsService: any = share.settingsService;
 const BrowserView: any = share.BrowserView;
 
-let extractWebsite, closeBroserView, openBrowserView;
-module.exports = {extractWebsite, closeBroserView, openBrowserView}
+let extractWebsite, closeBrowserView, openBrowserView, destroyBrowserViews: (kcMainWindow: any) => void;
 
 /**
  *
@@ -91,7 +90,6 @@ extractWebsite = ipcMain.on("app-extract-website", (event: any, args: any) => {
 });
 
 
-
 /**
  *
  *
@@ -113,13 +111,18 @@ extractWebsite = ipcMain.on("app-extract-website", (event: any, args: any) => {
  *
  *
  */
-closeBroserView = ipcMain.on('electron-close-browser-view', () => {
-    let kcMainWindow: any = share.BrowserWindow.getAllWindows()[0];
+
+destroyBrowserViews = (kcMainWindow: any) => {
     let allViews = kcMainWindow.getBrowserViews();
     kcMainWindow.setBrowserView(null);
     for (let view of allViews) {
         view.webContents.destroy();
     }
+}
+
+closeBrowserView = ipcMain.on('electron-close-browser-view', () => {
+    let kcMainWindow: any = share.BrowserWindow.getAllWindows()[0];
+    destroyBrowserViews(kcMainWindow);
 
     let response: IpcResponse = {
         error: undefined,
@@ -158,6 +161,10 @@ openBrowserView = ipcMain.on('electron-browser-view', (event: any, args: KsBrows
         error: undefined,
         success: undefined
     }
+    let navEventsResponse: IpcResponse = {
+        error: undefined,
+        success: undefined
+    }
 
     // ---------------------------------------------------------------------------
     // Argument validation
@@ -178,9 +185,112 @@ openBrowserView = ipcMain.on('electron-browser-view', (event: any, args: KsBrows
     kcBrowserView.setBounds({x: x, y: y, width: width, height: height});
     kcBrowserView.setAutoResize({width: true, height: true, horizontal: true, vertical: true});
     kcBrowserView.webContents.loadURL(viewUrl.href);
+
     kcBrowserView.webContents.on('dom-ready', function () {
-        response.success = {message: 'Success. DOM-ready triggered.'}
-        kcMainWindow.webContents.send('electron-browser-view-results', response);
+        if (args.returnHtml) {
+            let js = [
+                kcBrowserView.webContents.executeJavaScript('document.getElementsByTagName(\'html\')[0].innerHTML;'),
+                kcBrowserView.webContents.executeJavaScript('window.getComputedStyle(document.body, null).backgroundColor;')
+            ]
+            Promise.all(js).then((values) => {
+                let data: KsBrowserViewResponse = {
+                    html: values[0],
+                    backgroundColor: values[1]
+                };
+                response.success = {
+                    message: 'Success. DOM-ready triggered.',
+                    data: data
+                }
+                kcMainWindow.webContents.send('electron-browser-view-results', response);
+
+            }).catch((error) => {
+                console.error(error);
+            });
+        } else {
+            response.success = {
+                message: 'Success. DOM-ready triggered.'
+            }
+            kcMainWindow.webContents.send('electron-browser-view-results', response);
+        }
+    });
+
+    ipcMain.on('electron-browser-view-can-go-back', (_: any) => {
+        if (!kcBrowserView.webContents)
+            return;
+
+        let response: IpcResponse = {
+            error: undefined,
+            success: {
+                data: kcBrowserView.webContents.canGoBack()
+            }
+        }
+       kcMainWindow.webContents.send('electron-browser-view-can-go-back-results', response);
+    });
+
+    ipcMain.on('electron-browser-view-can-go-forward', (_: any) => {
+        if (!kcBrowserView.webContents)
+            return;
+
+        let response: IpcResponse = {
+            error: undefined,
+            success: {
+                data: kcBrowserView.webContents.canGoForward()
+            }
+        }
+        kcMainWindow.webContents.send('electron-browser-view-can-go-forward-results', response);
+    });
+
+    ipcMain.on('electron-browser-view-current-url', (_: any) => {
+        if (!kcBrowserView.webContents)
+            return;
+
+        let response: IpcResponse = {
+            error: undefined,
+            success: {
+                data: kcBrowserView.webContents.getURL()
+            }
+        }
+        kcMainWindow.webContents.send('electron-browser-view-current-url-results', response);
+    });
+
+    ipcMain.on('electron-browser-view-go-back', (_: any) => {
+        if (!kcBrowserView.webContents)
+            return;
+        if (kcBrowserView.webContents) {
+            kcBrowserView.webContents.goBack();
+        }
+    });
+
+    ipcMain.on('electron-browser-view-go-forward', (_: any) => {
+        if (!kcBrowserView.webContents)
+            return;
+        if (kcBrowserView.webContents) {
+            kcBrowserView.webContents.goForward();
+        }
+    });
+
+    ipcMain.on('electron-browser-view-refresh', (_: any) => {
+        if (!kcBrowserView.webContents)
+            return;
+        if (kcBrowserView.webContents) {
+            kcBrowserView.webContents.reload();
+        }
+    });
+
+    kcBrowserView.webContents.on('did-navigate', (event: any, url: any) => {
+        navEventsResponse = {
+            error: undefined,
+            success: {data: url}
+        }
+        kcMainWindow.webContents.send('electron-browser-view-nav-events', navEventsResponse);
+    });
+
+    kcBrowserView.webContents.on('did-navigate-in-page', (event: any, url: any) => {
+        navEventsResponse = {
+            error: undefined,
+            success: {data: url}
+        }
+        kcMainWindow.webContents.send('electron-browser-view-nav-events', navEventsResponse);
     });
 });
 
@@ -216,3 +326,6 @@ function isKsBrowserViewRequest(arg: any): arg is KsBrowserViewRequest {
     // TODO: Make sure these values are also within the bounds of the main window as an extra sanity check
     return containsArgs && correctTypes;
 }
+
+
+module.exports = {extractWebsite, closeBrowserView, openBrowserView, destroyBrowserViews}

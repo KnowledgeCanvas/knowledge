@@ -1,6 +1,6 @@
 <div class="project-timeline-container">
   <mat-form-field appearance="fill" *ngIf="calendar">
-    <mat-label>Project start/end range</mat-label>
+    <mat-label>Project start/end dates</mat-label>
     <mat-date-range-input [rangePicker]="picker">
       <input matStartDate [(ngModel)]="calendar.start" placeholder="Start date" (dateChange)="startDateChange($event)">
       <input matEndDate [(ngModel)]="calendar.end" placeholder="End date" (dateChange)="endDateChange($event)">

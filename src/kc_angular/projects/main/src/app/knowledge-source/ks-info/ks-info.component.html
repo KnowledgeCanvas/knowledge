@@ -26,7 +26,7 @@
 
   <div class="ks-details-accordion-container">
     <mat-accordion #accordion="matAccordion" [multi]="true" togglePosition="after" class="ks-details-accordion">
-      <mat-expansion-panel>
+      <mat-expansion-panel [expanded]="true">
         <mat-expansion-panel-header>
           <mat-panel-title>Description</mat-panel-title>
           <mat-panel-description></mat-panel-description>
@@ -44,7 +44,7 @@
         </mat-expansion-panel-header>
       </mat-expansion-panel>
 
-      <mat-expansion-panel *ngIf="snippet && snippet.length > 0">
+      <mat-expansion-panel *ngIf="snippet && snippet.length > 0" [expanded]="true">
         <mat-expansion-panel-header>
           <mat-panel-title>Snippet</mat-panel-title>
           <mat-panel-description></mat-panel-description>
@@ -56,18 +56,41 @@
         </mat-expansion-panel-header>
       </mat-expansion-panel>
 
-      <mat-expansion-panel *ngIf="containsImages">
-        <mat-expansion-panel-header>
-          <mat-panel-title>Images</mat-panel-title>
-          <ng-template matExpansionPanelContent>
-            <div class="mat-panel-body">
 
-            </div>
-          </ng-template>
+      <!--      TODO: figure out if we actually want to show images... and then do it properly-->
+      <!--      <mat-expansion-panel *ngIf="containsImages">-->
+      <!--        <mat-expansion-panel-header>-->
+      <!--          <mat-panel-title>Images</mat-panel-title>-->
+      <!--          <ng-template matExpansionPanelContent>-->
+      <!--            <div class="mat-panel-body">-->
+
+      <!--            </div>-->
+      <!--          </ng-template>-->
+      <!--        </mat-expansion-panel-header>-->
+      <!--      </mat-expansion-panel>-->
+
+      <mat-expansion-panel [expanded]="true">
+        <mat-expansion-panel-header>
+          <mat-panel-title>Notes</mat-panel-title>
+          <mat-panel-description></mat-panel-description>
+          <div class="mat-panel-body">
+            <ng-template matExpansionPanelContent>
+              <div class="ks-notes-viewport">
+                <mat-form-field class="ks-notes-textarea" (change)="notesModified()">
+                  <textarea placeholder="Enter or Edit Notes..."
+                            [(ngModel)]="notes"
+                            cdkTextareaAutosize
+                            matInput></textarea>
+                </mat-form-field>
+                <div>
+                </div>
+              </div>
+            </ng-template>
+          </div>
         </mat-expansion-panel-header>
       </mat-expansion-panel>
 
-      <mat-expansion-panel>
+      <mat-expansion-panel [expanded]="true">
         <mat-expansion-panel-header>
           <mat-panel-title>Timeline</mat-panel-title>
           <mat-panel-description></mat-panel-description>
@@ -93,7 +116,7 @@
         </mat-expansion-panel-header>
       </mat-expansion-panel>
 
-      <mat-expansion-panel *ngIf="authors">
+      <mat-expansion-panel *ngIf="authors" [expanded]="true">
         <mat-expansion-panel-header>
           <mat-panel-title>Authors</mat-panel-title>
           <ng-template matExpansionPanelContent>

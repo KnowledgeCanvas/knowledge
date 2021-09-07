@@ -1,4 +1,4 @@
-import {KnowledgeSource} from "./knowledge.source.model";
+import {KnowledgeSource, KnowledgeSourceNotes} from "./knowledge.source.model";
 import {UuidModel} from "./uuid.model";
 import {KcCalendar} from "./calendar.model";
 
@@ -48,6 +48,7 @@ export interface ProjectUpdateRequest {
   id: UuidModel;
   name?: string;
   description?: string;
+  notes?: string;
   authors?: string[];
   addTopic?: string[];
   removeTopic?: string[];

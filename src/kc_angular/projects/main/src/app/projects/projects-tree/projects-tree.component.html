@@ -27,6 +27,13 @@
           mat-icon-button>
     <mat-icon>filter_center_focus</mat-icon>
   </button>
+  <button [matTooltipClass]="{'tool-tip':true}"
+          matTooltip="Filter projects"
+          matTooltipShowDelay="750"
+          (click)="filter()"
+          mat-icon-button>
+    <mat-icon>filter_list</mat-icon>
+  </button>
 </div>
 
 <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
@@ -63,11 +70,11 @@
         <mat-icon>playlist_add</mat-icon>
         Add Subproject
       </button>
-<!--      <mat-divider></mat-divider>-->
-<!--      <button (click)="moveProject()" mat-menu-item>-->
-<!--        <mat-icon>low_priority</mat-icon>-->
-<!--        Move-->
-<!--      </button>-->
+      <mat-divider></mat-divider>
+      <button (click)="moveProject()" mat-menu-item>
+        <mat-icon>low_priority</mat-icon>
+        Move
+      </button>
       <mat-divider></mat-divider>
       <button (click)="delete()" mat-menu-item>
         <mat-icon color="warn">delete</mat-icon>
@@ -107,6 +114,11 @@
       <button (click)="newProject()" mat-menu-item>
         <mat-icon>playlist_add</mat-icon>
         Add Subproject
+      </button>
+      <mat-divider></mat-divider>
+      <button (click)="moveProject()" mat-menu-item>
+        <mat-icon>low_priority</mat-icon>
+        Move
       </button>
       <mat-divider></mat-divider>
       <button (click)="delete()" mat-menu-item>
