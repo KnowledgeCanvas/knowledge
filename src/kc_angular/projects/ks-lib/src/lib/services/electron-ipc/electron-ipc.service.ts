@@ -29,11 +29,11 @@ export class ElectronIpcService {
   private ClassName = 'ElectronIpcService';
   private send = window.api.send;
   private receive = window.api.receive;
+  private receiveOnce = window.api.receiveOnce;
+  private removeAllListeners = window.api.removeAllListeners;
   private channels = {
+    browserExtensionResults: 'app-chrome-extension-results',
     browserView: 'electron-browser-view',
-    browserViewResults: 'electron-browser-view-results',
-    browserViewRefresh: 'electron-browser-view-refresh',
-    browserViewNavEvents: 'electron-browser-view-nav-events',
     browserViewCanGoBack: 'electron-browser-view-can-go-back',
     browserViewCanGoBackResults: 'electron-browser-view-can-go-back-results',
     browserViewCanGoForward: 'electron-browser-view-can-go-forward',
@@ -42,85 +42,116 @@ export class ElectronIpcService {
     browserViewCurrentUrlResults: 'electron-browser-view-current-url-results',
     browserViewGoBack: 'electron-browser-view-go-back',
     browserViewGoForward: 'electron-browser-view-go-forward',
-    browserExtensionResults: 'app-chrome-extension-results',
+    browserViewNavEvents: 'electron-browser-view-nav-events',
+    browserViewRefresh: 'electron-browser-view-refresh',
+    browserViewResults: 'electron-browser-view-results',
     closeBrowserView: 'electron-close-browser-view',
     closeBrowserViewResults: 'electron-close-browser-view-results',
-    generateUuidResults: 'app-generate-uuid-results',
     generateUuid: 'app-generate-uuid',
+    generateUuidResults: 'app-generate-uuid-results',
     getFileIcon: 'electron-get-file-icon',
     getFileIconResults: 'electron-get-file-icon-results',
     getFileThumbnail: 'electron-get-file-thumbnail',
     getFileThumbnailResults: 'electron-get-file-thumbnail-results',
+    getSettings: 'app-get-settings',
+    getSettingsResults: 'app-get-settings-results',
     ingestWatcherResults: 'app-ingest-watcher-results',
     openLocalFile: 'electron-open-local-file',
     openLocalFileResults: 'electron-open-local-file-results',
     promptForDirectory: 'app-prompt-for-directory',
-    promptForDirectoryResults: 'app-prompt-for-directory-results'
+    promptForDirectoryResults: 'app-prompt-for-directory-results',
+    saveSettings: 'app-save-settings',
+    saveSettingsResults: 'app-save-settings-results'
   }
 
-  private electronNavEvent = new BehaviorSubject<string>('');
-  navEvent = this.electronNavEvent.asObservable();
+  // Subscribers will be alerted when the browser view navigates to a new URL
+  private browserViewNavEvent = new BehaviorSubject<string>('');
+  navEvent = this.browserViewNavEvent.asObservable();
 
+  // Subscribers will be alerted when the browser view state is changed
+  private _bvCanGoBack = new BehaviorSubject<boolean>(false);
+  browserViewCanGoBackResult = this._bvCanGoBack.asObservable();
+
+  private _bvCanGoForward = new BehaviorSubject<boolean>(false);
+  browserViewCanGoForwardResult = this._bvCanGoForward.asObservable();
+
+  private _bvUrl = new BehaviorSubject<string>('');
+  browserViewCurrentUrlResult = this._bvUrl.asObservable();
+
+  private _bvStateTimer: any = Date.now()
 
   constructor(private zone: NgZone) {
     this.receive(this.channels.browserViewNavEvents, (response: IpcResponse) => {
       this.zone.run(() => {
         if (response.error) {
           console.error(response.error);
+          return;
         } else if (response.success?.data) {
           let url = response.success.data;
-          this.electronNavEvent.next(url);
+          this.browserViewNavEvent.next(url);
         }
+        this.triggerBrowserViewStateUpdate();
+      });
+    });
+
+    /**
+     * Pre-register call backs which will feed the above observables
+     *
+     */
+    this.receive(this.channels.browserViewCanGoBackResults, (response: IpcResponse) => {
+      this.zone.run(() => {
+        if (response.success)
+          this._bvCanGoBack.next(response.success.data);
+      });
+    });
+
+    this.receive(this.channels.browserViewCanGoForwardResults, (response: IpcResponse) => {
+      this.zone.run(() => {
+        if (response.success)
+          this._bvCanGoForward.next(response.success.data);
+      });
+    });
+
+    this.receive(this.channels.browserViewCurrentUrlResults, (response: IpcResponse) => {
+      this.zone.run(() => {
+        if (response.success)
+          this._bvUrl.next(response.success.data);
       });
     });
   }
 
-  browserViewCanGoBack() {
-    return new Promise<boolean>((resolve) => {
-      this.receive(this.channels.browserViewCanGoBackResults, (response: IpcResponse) => {
-        if (response.success)
-          resolve(response.success.data);
-      });
-      this.send(this.channels.browserViewCanGoBack);
-    })
-  }
-
-  browserViewCanGoForward() {
-    return new Promise<boolean>((resolve) => {
-      this.receive(this.channels.browserViewCanGoForwardResults, (response: IpcResponse) => {
-        if (response.success)
-          resolve(response.success.data);
-      });
-      this.send(this.channels.browserViewCanGoForward);
-    })
-  }
-
-  browserViewCurrentUrl() {
-    return new Promise<string>((resolve) => {
-      this.receive(this.channels.browserViewCurrentUrlResults, (response: IpcResponse) => {
-        if (response.success)
-          resolve(response.success.data);
-      });
-      this.send(this.channels.browserViewCurrentUrl);
-    })
+  triggerBrowserViewStateUpdate() {
+    this.send(this.channels.browserViewCanGoBack);
+    this.send(this.channels.browserViewCanGoForward);
+    this.send(this.channels.browserViewCurrentUrl);
   }
 
   browserViewGoBack() {
-    this.send(this.channels.browserViewGoBack);
+    if (this.canSubmitBrowserViewAction()) {
+      this.send(this.channels.browserViewGoBack);
+    }
   }
 
   browserViewGoForward() {
-    this.send(this.channels.browserViewGoForward);
+    if (this.canSubmitBrowserViewAction()) {
+      this.send(this.channels.browserViewGoForward);
+    }
   }
 
-  browserRefresh() {
-    this.send(this.channels.browserViewRefresh);
+  browserViewRefresh() {
+    if (this.canSubmitBrowserViewAction()) {
+      this.send(this.channels.browserViewRefresh);
+    }
   }
 
   closeBrowserView() {
-    this.electronNavEvent.next('');
+    this.browserViewNavEvent.next('');
+    this._bvCanGoBack.next(false);
+    this._bvCanGoForward.next(false);
+    this._bvUrl.next('');
 
-    this.receive(this.channels.closeBrowserViewResults, (response: IpcResponse) => {
+    this.receiveOnce(this.channels.closeBrowserViewResults, (response: IpcResponse) => {
+      this.removeAllListeners(this.channels.closeBrowserViewResults);
       this.zone.run(() => {
         if (response.success) {
           return response.success.data;
@@ -134,7 +165,8 @@ export class ElectronIpcService {
 
   getFileIcon(paths: string[]): Promise<any[]> {
     return new Promise<any[]>((resolve) => {
-      this.receive(this.channels.getFileIconResults, (responses: IpcResponse[]) => {
+      this.receiveOnce(this.channels.getFileIconResults, (responses: IpcResponse[]) => {
+        this.removeAllListeners(this.channels.getFileIconResults);
         let icons: any[] = [];
         for (let response of responses) {
           if (response.success?.data)
@@ -154,7 +186,8 @@ export class ElectronIpcService {
       if (requests.length < 1)
         reject();
 
-      this.receive(this.channels.getFileThumbnailResults, (responses: IpcResponse[]) => {
+      this.receiveOnce(this.channels.getFileThumbnailResults, (responses: IpcResponse[]) => {
+        this.removeAllListeners(this.channels.getFileThumbnailResults);
         this.zone.run(() => {
           let thumbnails: any[] = [];
           for (let response of responses) {
@@ -173,7 +206,8 @@ export class ElectronIpcService {
 
   promptForDirectory(request: PromptForDirectoryRequest): Promise<string> {
     return new Promise<string>((resolve, reject) => {
-      this.receive(this.channels.promptForDirectoryResults, (response: IpcResponse) => {
+      this.receiveOnce(this.channels.promptForDirectoryResults, (response: IpcResponse) => {
+        this.removeAllListeners(this.channels.promptForDirectoryResults);
         this.zone.run(() => {
           if (response.error) {
             console.error(response.error);
@@ -190,11 +224,12 @@ export class ElectronIpcService {
 
   openBrowserView(request: KsBrowserViewRequest): Promise<IpcResponse> {
     return new Promise<IpcResponse>((resolve) => {
-      this.receive(this.channels.browserViewResults, (response: IpcResponse) => {
+      this.receiveOnce(this.channels.browserViewResults, (response: IpcResponse) => {
+        this.removeAllListeners(this.channels.browserViewResults);
         this.zone.run(() => {
 
           // Create a new stack with the current browser view URL
-          this.electronNavEvent.next(request.url);
+          // this.browserViewNavEvent.next(request.url);
           resolve(response);
         });
       });
@@ -204,7 +239,8 @@ export class ElectronIpcService {
 
   openLocalFile(path: string): Promise<boolean> {
     return new Promise<boolean>((resolve) => {
-      this.receive(this.channels.openLocalFileResults, (response: IpcResponse) => {
+      this.receiveOnce(this.channels.openLocalFileResults, (response: IpcResponse) => {
+        this.removeAllListeners(this.channels.openLocalFileResults);
         this.zone.run(() => {
           if (response.success?.data) {
             resolve(true);
@@ -219,29 +255,32 @@ export class ElectronIpcService {
 
   getSettingsFile(): Observable<SettingsModel> {
     return new Observable<SettingsModel>(subscriber => {
-      this.receive("app-get-settings-results", (data: any) => {
+      this.receiveOnce(this.channels.getSettingsResults, (data: any) => {
+        this.removeAllListeners(this.channels.getSettingsResults);
         this.zone.run(() => {
           subscriber.next(data);
         });
       });
-      this.send("app-get-settings", {});
+      this.send(this.channels.getSettings, {});
     });
   }
 
   saveSettingsFile(settings: SettingsModel): Observable<SettingsModel> {
     return new Observable<SettingsModel>(subscriber => {
-      this.receive("app-save-settings-results", (data: any) => {
+      this.receiveOnce(this.channels.saveSettingsResults, (data: any) => {
+        this.removeAllListeners(this.channels.saveSettingsResults);
         this.zone.run(() => {
           subscriber.next(data);
         });
       });
-      this.send("app-save-settings", settings);
+      this.send(this.channels.saveSettings, settings);
     });
   }
 
   generateUuid(quantity: number): Promise<UuidModel[]> {
     return new Promise<UuidModel[]>((resolve, reject) => {
-      this.receive(this.channels.generateUuidResults, (response: IpcResponse) => {
+      this.receiveOnce(this.channels.generateUuidResults, (response: IpcResponse) => {
+        this.removeAllListeners(this.channels.generateUuidResults);
         this.zone.run(() => {
           if (response.success?.data) {
             let uuids: UuidModel[] = [];
@@ -281,6 +320,9 @@ export class ElectronIpcService {
     });
   }
 
+  /**
+   *
+   */
   browserWatcher(): Observable<string> {
     return new Observable<string>((subscriber) => {
       this.receive(this.channels.browserExtensionResults, (response: IpcResponse) => {
@@ -294,5 +336,19 @@ export class ElectronIpcService {
         });
       });
     });
+  }
+
+  /**
+   * This function acts as a "de-bouncer" on browser view navigation actions
+   * In other words, it prevents users from clicking the button so quick that state cannot be maintained properly
+   * This is necessary because Electron appears to fall out of sync if a user presses "back" or "forward" to quickly
+   */
+  private canSubmitBrowserViewAction(): boolean {
+    if (Date.now() - this._bvStateTimer > 250) {
+      this._bvStateTimer = Date.now();
+      return true;
+    } else {
+      return false;
+    }
   }
 }

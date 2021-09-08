@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {CdkDragDrop} from "@angular/cdk/drag-drop";
 import {KsDropService} from "../../../../../ks-lib/src/lib/services/ks-drop/ks-drop.service";
 import {Subscription} from "rxjs";
@@ -24,12 +24,9 @@ export class SearchResultsComponent implements OnInit {
   constructor(private canvasDropService: KsDropService,
               private ksQueueService: KsQueueService,
               private projectService: ProjectService,
-              private ref: ChangeDetectorRef,
               public dialog: MatDialog) {
     this.ksQueueSubscription = this.ksQueueService.ksQueue.subscribe((results: KnowledgeSource[]) => {
       this.ksQueue = results;
-      if (results.length > 0)
-        this.ref.markForCheck();
     });
     this.ksQueueLoadingSubscription = this.ksQueueService.loading.subscribe((loading) => {
       this.loading = loading;
@@ -93,10 +90,12 @@ export class SearchResultsComponent implements OnInit {
       data: ksPreviewInput
     }
 
-
     const dialogRef = this.dialog.open(KsPreviewComponent, config);
     dialogRef.afterClosed().subscribe((results) => {
-
+      /**
+       * TODO: this currently doesn't do anything because there are no changes in the preview dialog
+       * However, there will eventually be changes such as highlighting a document or text in a web page...
+       */
     });
   }
 

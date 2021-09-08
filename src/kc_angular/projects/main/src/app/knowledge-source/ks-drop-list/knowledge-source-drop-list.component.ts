@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {CdkDragDrop} from "@angular/cdk/drag-drop";
 import {KsDropService} from "../../../../../ks-lib/src/lib/services/ks-drop/ks-drop.service";
 import {MatDialog, MatDialogConfig} from "@angular/material/dialog";
@@ -70,7 +70,6 @@ export class KnowledgeSourceDropListComponent implements OnInit {
               private ksDropService: KsDropService,
               private projectService: ProjectService,
               private storageService: StorageService,
-              private ref: ChangeDetectorRef,
               public dialog: MatDialog) {
   }
 
@@ -186,7 +185,7 @@ export class KnowledgeSourceDropListComponent implements OnInit {
   openKsInfoDialog(node: KnowledgeSource) {
     let dialogInput: KsInfoDialogInput = {
       source: 'ks-drop-list',
-        ks: node
+      ks: node
     }
 
     const dialogRef = this.dialog.open(KsInfoDialogComponent, {
@@ -228,10 +227,12 @@ export class KnowledgeSourceDropListComponent implements OnInit {
       data: ksPreviewInput
     }
 
-
     const dialogRef = this.dialog.open(KsPreviewComponent, config);
     dialogRef.afterClosed().subscribe((results) => {
-
+      /**
+       * TODO: this currently doesn't do anything because there are no changes in the preview dialog
+       * However, there will eventually be changes such as highlighting a document or text in a web page...
+       */
     });
   }
 

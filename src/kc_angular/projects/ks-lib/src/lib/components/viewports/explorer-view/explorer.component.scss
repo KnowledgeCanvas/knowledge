@@ -1,0 +1,66 @@
+.ks-explorer-viewport {
+  //background-color: black;
+  min-height: 90vh;
+  max-height: 90vh;
+  min-width: 100%;
+  max-width: 100%;
+}
+
+.ks-explorer-header {
+  display: flex;
+  flex-direction: row;
+  align-content: center;
+  align-items: center;
+  justify-content: space-between;
+  //background-color: red;
+  height: 32px;
+
+  .ks-explorer-header-left {
+    width: 15%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+  }
+
+  .ks-explorer-header-center {
+    width: 70%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+
+    .ks-explorer-header-url {
+      width: 75%;
+      outline: none;
+    }
+  }
+
+  .ks-explorer-header-right {
+    width: 15%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+  }
+}
+
+.ks-explorer-body {
+  //background-color: red;
+
+  /**
+  * The dialog itself should be opened with a height of 90vh
+  * and the header and footer should add up to 32 + 4 = 36px
+   */
+  height: calc(90vh - 36px);
+}
+
+.ks-explorer-footer {
+  height: 4px;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+}

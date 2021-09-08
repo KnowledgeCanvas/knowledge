@@ -4,37 +4,8 @@
   </div>
 </div>
 
-<div class="search-result-dialog-content"
-     id="search-result-dialog-content"
-     mat-dialog-content>
-
-  <mat-tab-group (selectedTabChange)="tabClick($event)"
-                 [selectedIndex]="selectedTab.value"
-                 (selectedIndexChange)="selectedTab.setValue($event)"
-                 animationDuration="0ms"
-                 style="width: 100%">
-
-    <mat-tab label="Overview">
-      <app-ks-info [ks]="ks" (ksModified)="ksModified($event)"></app-ks-info>
-    </mat-tab>
-
-    <mat-tab label="Preview">
-      <div class="electron-browser-view" id="electron-browser-view">
-        <mat-progress-bar mode="indeterminate"
-                          style="width: 90%"
-                          *ngIf="!viewReady"
-                          id="progress-bar">
-        </mat-progress-bar>
-        <div *ngIf="viewReady && safeUrl">
-          <iframe [src]="safeUrl" class="browser-viewport"></iframe>
-        </div>
-        <div *ngIf="viewReady && thumbnail">
-          <img [src]="thumbnail" alt="A thumbnail view of the selected file">
-        </div>
-      </div>
-    </mat-tab>
-  </mat-tab-group>
-
+<div class="search-result-dialog-content" id="search-result-dialog-content" mat-dialog-content>
+  <app-ks-info [ks]="ks" (ksModified)="ksModified($event)"></app-ks-info>
 </div>
 
 <div mat-dialog-actions *ngIf="selectedTab.value === 0">

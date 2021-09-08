@@ -1,11 +1,12 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import {KnowledgeSource} from "../../../../../ks-lib/src/lib/models/knowledge.source.model";
-import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
-import {ElectronIpcService, ElectronNavEvent} from "../../../../../ks-lib/src/lib/services/electron-ipc/electron-ipc.service";
-import {IpcResponse} from "kc_electron/src/app/models/electron.ipc.model";
+import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from "@angular/material/dialog";
+import {ElectronIpcService} from "../../../../../ks-lib/src/lib/services/electron-ipc/electron-ipc.service";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {Clipboard} from "@angular/cdk/clipboard";
 import {ExtractionService} from "../../../../../ks-lib/src/lib/services/extraction/extraction.service";
+import {KcFileViewClickEvent, KcFileViewConfig} from "../../../../../ks-lib/src/lib/components/viewports/file-view/file-view.component";
+import {KcBrowserViewClickEvent, KcBrowserViewConfig, KcBrowserViewNavEvent} from "../../../../../ks-lib/src/lib/components/viewports/browser-view/browser-view.component";
 
 export interface KsPreviewInput {
   ks: KnowledgeSource
@@ -21,27 +22,36 @@ export interface KsPreviewOutput {
   templateUrl: './ks-preview.component.html',
   styleUrls: ['./ks-preview.component.scss']
 })
-export class KsPreviewComponent implements OnInit {
+export class KsPreviewComponent implements OnInit, OnDestroy {
+  // Must be configured to display file view. Should be undefined when displaying browser view
+  fileViewConfig: KcFileViewConfig | undefined = undefined;
+
+  // Must be configured to display browser view. Should be undefined when displaying file view
+  browserViewConfig: KcBrowserViewConfig | undefined = undefined;
+
+  // Can be set to any color, rgb, rgba, or hex
+  backgroundColor: string = 'white'
+
+  // The KS for which this preview is being opened
   ks: KnowledgeSource;
-  supportedFileTypes: string[] = [
-    'pdf'
-  ]
-  url: URL | undefined;
-  path: string | undefined;
-  forwardDisabled: boolean = true;
-  loading: boolean = true;
+
+  // Set to true if something changes that requires the KS to be updated after dialog close
   ksChanged: boolean = false;
+
+  // An array of file types that have been tested and are to be supported in file viewer
+  supportedFileTypes: string[] = ['pdf']
+
+  // Set to true once file or browser viewers have loaded properly
   viewReady: boolean = false;
-  saveDisabled: boolean = true;
-  backgroundColor: string = 'red'
-  canGoBack: boolean = false;
-  canGoForward: boolean = false;
-  displayUrl: string = '';
+
+  // Should be set to file path (if file) or current browser view URL (if website)
+  private activeBrowserViewUrl: string = '';
 
   constructor(public dialogRef: MatDialogRef<KsPreviewComponent>,
               @Inject(MAT_DIALOG_DATA) public input: KsPreviewInput,
-              private ipcService: ElectronIpcService,
               private extractionService: ExtractionService,
+              private dialog: MatDialog,
+              private ipcService: ElectronIpcService,
               private snackbar: MatSnackBar,
               private clipboard: Clipboard) {
 
@@ -51,15 +61,15 @@ export class KsPreviewComponent implements OnInit {
      * setting class parameters, which will be included in the output
      */
     this.dialogRef.beforeClosed().subscribe(() => {
-      this.ipcService.closeBrowserView();
+      /**
+       * TODO: this currently doesn't do anything because there are no changes in the preview dialog
+       * However, there will eventually be changes such as highlighting a document or text in a web page...
+       */
       let dialogOutput: KsPreviewOutput = {ks: this.ks, ksChanged: this.ksChanged};
       this.dialogRef.close(dialogOutput);
     });
 
     this.ks = input.ks;
-
-    // TODO: REMOVE
-    console.log('Previewing ks: ', this.ks);
   }
 
   ngOnInit(): void {
@@ -72,11 +82,78 @@ export class KsPreviewComponent implements OnInit {
     }
   }
 
+  ngOnDestroy() {
+    this.close();
+  }
+
+  close() {
+    this.ipcService.closeBrowserView();
+    this.dialogRef.close();
+  }
+
+  copy(text: string) {
+    this.snackbar.open('Copied!', 'Dismiss', {
+      duration: 3000
+    });
+
+    this.clipboard.copy(text);
+  }
+
+  onFileViewClickEvent(clickEvent: KcFileViewClickEvent) {
+    if (!this.fileViewConfig) {
+      console.error('Wires are crossed somewhere. Received KcFileViewClickEvent but FileViewConfig not present...');
+      return;
+    }
+
+    if (clickEvent.copyClicked) {
+      this.copy(this.fileViewConfig.filePath);
+    }
+
+    if (clickEvent.closeClicked) {
+      this.close();
+    }
+  }
+
+  onBrowserViewClickEvent(clickEvent: KcBrowserViewClickEvent) {
+    if (!this.browserViewConfig) {
+      console.error('Wires are crossed somewhere. Received KcFileViewClickEvent but FileViewConfig not present...');
+      return;
+    }
+
+    if (clickEvent.copyClicked) {
+      this.copy(this.activeBrowserViewUrl);
+    }
+
+    if (clickEvent.closeClicked) {
+      this.close();
+    }
+
+    if (clickEvent.saveClicked) {
+      this.save();
+    }
+  }
+
+  onBrowserViewNavEvent(navEvent: KcBrowserViewNavEvent) {
+    this.activeBrowserViewUrl = navEvent.url?.href || '';
+
+    if (!this.browserViewConfig)
+      return;
+
+    // TODO: there should be a more robust check to make sure the KS is not already in the system...
+    if (navEvent.url?.href !== this.browserViewConfig.url.href) {
+      this.browserViewConfig = {...this.browserViewConfig, ...{canSave: true}};
+    } else {
+      this.browserViewConfig = {...this.browserViewConfig, ...{canSave: undefined}};
+    }
+  }
+
   previewFile() {
+    // Make sure browserViewConfig is undefined
+    this.browserViewConfig = undefined;
+
     if (!this.ks.reference.source.file || typeof this.ks.accessLink !== 'string')
       return;
 
-    this.url = undefined;
 
     let fileType = this.ks.reference.source.file.type;
 
@@ -94,10 +171,22 @@ export class KsPreviewComponent implements OnInit {
     // console.log('Old Word: ', fileType.indexOf('msword'));
     // console.log('Old ppt: ', fileType.indexOf('powerpoint'));
 
+
+    let supported: boolean = false;
     for (let supportedType of this.supportedFileTypes) {
       if (fileType.indexOf(supportedType) > 0) {
+        supported = true;
         this.previewSupportedType(supportedType);
       }
+    }
+
+    if (!supported) {
+      console.warn('This file type is not supported!');
+
+      // Wait before closing. If not, the error "NG0100: ExpressionChangedAfterItHasBeenCheckedError" appears
+      setTimeout(() => {
+        this.close();
+      });
     }
   }
 
@@ -112,107 +201,84 @@ export class KsPreviewComponent implements OnInit {
   }
 
   previewPdf() {
-    // TODO: REMOVE
-    console.log('Preview PDF called...');
-
     if (typeof this.ks.accessLink !== 'string') {
       console.warn('PDF cannot be opened because invalid access link...');
       return;
     }
 
-    this.path = this.ks.accessLink;
+    this.fileViewConfig = {
+      filePath: this.ks.accessLink,
+      isDialog: true
+    }
+
     this.viewReady = true;
   }
 
-  previewWebsite() {
-    console.log('Previewing website: ', this.ks.accessLink);
-    if (typeof this.ks.accessLink === 'string') {
-      this.url = new URL(this.ks.accessLink);
-    } else {
-      this.url = this.ks.accessLink;
-    }
-  }
-
-  refresh() {
-    console.log('Refresh');
-    this.ipcService.browserRefresh();
-  }
-
-  // forward() {
-  //   console.log('Forward');
-  //   this.navIndex = this.navIndex + 1;
-  //   this.displayUrl = this.navStack[this.navIndex];
-  //   this.ipcService.browserViewGoForward();
+  // TODO: I didn't want to throw this code away, but so far I have not re-implemented thumbnail views for non-PDF... there's also a big issue on Windows (works on Mac though :P )
+  // getBrowserViewDimensions(elementName: string): any {
+  //   let element = document.getElementById(elementName);
+  //   if (element) {
+  //     return element.getBoundingClientRect();
+  //   }
+  // }
+  //
+  // emplaceFileThumbnail() {
+  //   if (typeof this.ks.accessLink !== 'string') {
+  //     console.warn('Could not generate thumbnail due to invalid access link.');
+  //     return;
+  //   }
+  //
+  //   let position = this.getBrowserViewDimensions('electron-browser-view');
+  //
+  //   let thumbnailRequest: KsThumbnailRequest = {
+  //     path: this.ks.accessLink,
+  //     width: Math.floor(position.width),
+  //     height: Math.floor(position.height)
+  //   };
+  //
+  //   this.ipcService.getFileThumbnail([thumbnailRequest]).then((thumbnail) => {
+  //     this.thumbnail = thumbnail[0];
+  //     this.viewReady = true;
+  //   }).catch((error) => {
+  //     console.error(error);
+  //     this.snackBar.open(`Error: Preview not available -- ${error.message}`, 'Dismiss', {
+  //       verticalPosition: 'bottom',
+  //       panelClass: 'kc-danger-zone',
+  //       duration: 3000
+  //     });
+  //     this.selectedTab.setValue(0);
+  //   });
   // }
 
-  back() {
-    if (this.canGoBack) {
-      this.ipcService.browserViewGoBack();
-      this.getBrowserViewState();
+  previewWebsite() {
+    this.fileViewConfig = undefined;
+    let webUrl: URL;
+
+    if (typeof this.ks.accessLink === 'string') {
+      webUrl = new URL(this.ks.accessLink);
+    } else {
+      webUrl = this.ks.accessLink;
+    }
+
+    this.browserViewConfig = {
+      url: webUrl,
+      isDialog: true
     }
   }
 
-  forward() {
-    if (this.canGoForward) {
-      this.ipcService.browserViewGoForward();
-      this.getBrowserViewState();
-    }
-  }
 
   save() {
-    console.log('Saving url: ', this.displayUrl);
     // TODO: there should be a service that creates KS automatically from link...
+
+    console.log('Saving url: ', this.activeBrowserViewUrl);
+
+    this.snackbar.open('Adding to "Up Next"!', 'Dismiss', {
+      duration: 3000,
+      verticalPosition: 'top'
+    });
   }
 
-  setViewReady(viewReady: any) {
-    console.log('View ready: ', viewReady);
+  setViewReady(viewReady: boolean) {
     this.viewReady = viewReady;
-  }
-
-  onIpcResponse(response: IpcResponse) {
-    if (response.error) {
-      // TODO: show a more meaningful error and possibly try to resolve...
-      console.error(response.error);
-      this.dialogRef.close();
-    } else if (response.success) {
-      console.log('IPC Success: ', response.success);
-    }
-  }
-
-  getBrowserViewState() {
-    let p = [this.ipcService.browserViewCanGoBack(), this.ipcService.browserViewCanGoForward(),]
-    Promise.all(p).then((results) => {
-      this.canGoBack = results[0];
-      this.canGoForward = results[1];
-    });
-
-    this.ipcService.browserViewCurrentUrl().then((value) => {
-      console.log('Got current url: ', value);
-      this.displayUrl = value;
-
-      if (typeof this.ks.accessLink === 'string') {
-        this.saveDisabled = this.ks.accessLink === value;
-      } else {
-        this.saveDisabled = this.ks.accessLink.href === value;
-      }
-    });
-  }
-
-  onBrowserViewNavEvent(electronNavEvent: string) {
-    this.getBrowserViewState();
-  }
-
-  copy() {
-    this.snackbar.open('Copied link!', 'Dismiss', {
-      duration: 3000
-    });
-    this.getBrowserViewState();
-    setTimeout(() => {
-      if (this.path) {
-        this.clipboard.copy(this.path);
-      } else {
-        this.clipboard.copy(this.displayUrl);
-      }
-    }, 1000);
   }
 }

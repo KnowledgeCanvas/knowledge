@@ -4,15 +4,15 @@
                  rowHeight="2:1"
                  cols="3">
 
-<!--    <mat-grid-tile (click)="selectNote()"-->
-<!--                   matTooltip="Create a new Note"-->
-<!--                   matTooltipShowDelay="1000"-->
-<!--                   matTooltipClass="tool-tip">-->
-<!--      <div class="scale-up-center ingest-panel-card">-->
-<!--        <mat-icon>sticky_note_2</mat-icon>-->
-<!--        Note-->
-<!--      </div>-->
-<!--    </mat-grid-tile>-->
+    <mat-grid-tile (click)="selectSearch()"
+                   matTooltip="Search the web"
+                   matTooltipShowDelay="1000"
+                   matTooltipClass="tool-tip">
+      <div class="scale-up-center ingest-panel-card">
+        <mat-icon>search</mat-icon>
+        Search the Web
+      </div>
+    </mat-grid-tile>
 
     <mat-grid-tile (click)="selectExtract()"
                    matTooltip="Add a website by pasting a link"
@@ -20,7 +20,7 @@
                    matTooltipClass="tool-tip">
       <div class="scale-up-center ingest-panel-card">
         <mat-icon>web</mat-icon>
-        Website
+        Import Websites
       </div>
     </mat-grid-tile>
 
@@ -30,7 +30,7 @@
                    (click)="selectFiles()">
       <div class="scale-up-center ingest-panel-card">
         <mat-icon>description</mat-icon>
-        Files
+        Import Files
       </div>
     </mat-grid-tile>
 
@@ -40,7 +40,7 @@
                    (click)="selectTopics()">
       <div class="scale-up-center ingest-panel-card">
         <mat-icon>topic</mat-icon>
-        Topics
+        Search Topics
       </div>
     </mat-grid-tile>
 

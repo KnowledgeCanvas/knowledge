@@ -6,40 +6,6 @@
   max-width: 100%;
 }
 
-.ks-preview-header {
-  display: flex;
-  flex-direction: row;
-  align-content: center;
-  align-items: center;
-  justify-content: space-between;
-  //background-color: red;
-  height: 32px;
-
-  .ks-preview-header-left {
-    width: 15%;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    justify-content: flex-start;
-  }
-
-  .ks-preview-header-center {
-    width: 70%;
-
-    .ks-preview-header-url {
-      width: 90%;
-    }
-  }
-
-  .ks-preview-header-right {
-    width: 15%;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    justify-content: flex-end;
-  }
-}
-
 .ks-preview-body {
   //background-color: red;
 
@@ -47,11 +13,11 @@
   * The dialog itself should be opened with a height of 90vh
   * and the header and footer should add up to 32 + 4 = 36px
    */
-  height: calc(90vh - 36px);
+  height: calc(90vh - 8px);
 }
 
 .ks-preview-footer {
-  height: 4px;
+  height: 8px;
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;

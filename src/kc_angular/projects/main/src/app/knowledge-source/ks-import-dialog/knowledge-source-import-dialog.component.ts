@@ -6,6 +6,14 @@ import {MatSnackBar} from "@angular/material/snack-bar";
 import {ProjectService} from "../../../../../ks-lib/src/lib/services/projects/project.service";
 import {IngestType} from "projects/ks-lib/src/lib/models/knowledge.source.model";
 
+export interface KsImportDialogInput {
+
+}
+
+export interface KsImportDialogOutput {
+  ingestType: IngestType
+}
+
 @Component({
   selector: 'app-canvas-import',
   templateUrl: './knowledge-source-import-dialog.component.html',
@@ -93,6 +101,20 @@ export class KnowledgeSourceImportDialogComponent implements OnInit {
           this.dialogRef.addPanelClass(['scale-up-center']);
           this.noteEnabled = true;
         }, 400);
+        break;
+
+      case "search":
+        setTimeout(() => {
+          this.dialogRef.removePanelClass('scale-out-center');
+          this.dialogRef.addPanelClass(['scale-up-center']);
+          this.noteEnabled = true;
+        }, 400);
+
+        let output: KsImportDialogOutput = {
+          ingestType: 'search'
+        }
+        this.dialogRef.close(output);
+
         break;
 
       case "file":

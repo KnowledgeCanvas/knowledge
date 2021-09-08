@@ -60,10 +60,11 @@ export class KsInfoDialogComponent implements OnInit {
     /**
      * This intercepts all calls to close the current dialog. Therefore, methods
      * that want to do something after the dialog has been closed must do so by
-     * setting class parameters, which will be included in the output
+     * setting class parameters, which will be included in the output.
+     * For instance, when "Preview" is clicked, set previewSelected to true.
+     * The call is then responsible for following up
      */
     this.dialogRef.beforeClosed().subscribe(() => {
-      this.ipcService.closeBrowserView();
       let dialogOutput: KsInfoDialogOutput = {ksChanged: this.ksChanged, ks: this.ks, preview: this.previewSelected};
       this.dialogRef.close(dialogOutput);
     });
@@ -74,103 +75,6 @@ export class KsInfoDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
-  }
-
-  emplaceKnowledgeSourceView() {
-    // Handle files
-    if (this.ks && this.ks.ingestType === 'file') {
-      let fileType = this.ks.reference.source.file?.type;
-
-      // PDFs can be loaded directly into an iframe...
-      if (fileType === 'application/pdf') {
-        this.emplacePdf();
-        return;
-      }
-
-      // Non-PDFs can still be displayed, but we need to call ElectronIpc to get a thumbnail from the OS
-      this.emplaceFileThumbnail();
-      return;
-    }
-
-    // Handle web content
-    this.emplaceBrowserView();
-  }
-
-  emplacePdf() {
-    if (typeof this.ks.accessLink === 'string') {
-      this.safeUrl = this._sanitizer.bypassSecurityTrustResourceUrl('file://' + encodeURI(this.ks.accessLink));
-      this.ks.dateAccessed = new Date();
-      this.viewReady = true;
-      this.ksChanged = true;
-    }
-  }
-
-  emplaceFileThumbnail() {
-    if (typeof this.ks.accessLink !== 'string') {
-      console.warn('Could not generate thumbnail due to invalid access link.');
-      return;
-    }
-
-    let position = this.getBrowserViewDimensions('electron-browser-view');
-
-    let thumbnailRequest: KsThumbnailRequest = {
-      path: this.ks.accessLink,
-      width: Math.floor(position.width),
-      height: Math.floor(position.height)
-    };
-
-    this.ipcService.getFileThumbnail([thumbnailRequest]).then((thumbnail) => {
-      this.thumbnail = thumbnail[0];
-      this.viewReady = true;
-    }).catch((error) => {
-      console.error(error);
-      this.snackBar.open(`Error: Preview not available -- ${error.message}`, 'Dismiss', {
-        verticalPosition: 'bottom',
-        panelClass: 'kc-danger-zone',
-        duration: 3000
-      });
-      this.selectedTab.setValue(0);
-    });
-
-  }
-
-  emplaceBrowserView() {
-    let url, sanitizedUrl;
-
-    if (typeof this.ks.accessLink === "string") {
-      url = new URL(this.ks.accessLink);
-    } else {
-      url = this.ks.accessLink
-    }
-
-    sanitizedUrl = this._sanitizer.sanitize(SecurityContext.URL, url.href);
-    if (!sanitizedUrl) {
-      console.error('Unable to sanitize URL for local viewing: ', url.href);
-      return;
-    }
-
-    // --------------------------------------------------------------------------------
-    // Send KsBrowserViewRequest
-    let position = this.getBrowserViewDimensions('electron-browser-view');
-    let request: KsBrowserViewRequest = {
-      url: sanitizedUrl,
-      x: Math.floor(position.x),
-      y: Math.floor(position.y),
-      width: Math.floor(position.width),
-      height: Math.floor(position.height)
-    }
-    this.ipcService.openBrowserView(request).then((response: IpcResponse) => {
-      if (response.success) {
-        this.ks.dateAccessed = new Date();
-        this.viewReady = true;
-        this.ksChanged = true;
-      } else {
-        // TODO: let the user know that an error has occurred (this should hopefully never happen)
-        console.error('Error attempting to open Electron BrowserView');
-        console.error(response.error ? response.error : response);
-        return;
-      }
-    });
   }
 
   openInBrowser() {
@@ -185,12 +89,6 @@ export class KsInfoDialogComponent implements OnInit {
     this.ksChanged = true;
   }
 
-  getBrowserViewDimensions(elementName: string): any {
-    let element = document.getElementById(elementName);
-    if (element) {
-      return element.getBoundingClientRect();
-    }
-  }
 
   saveToPdf() {
     let link: string;
@@ -238,18 +136,6 @@ export class KsInfoDialogComponent implements OnInit {
       this.dialogRef.close();
     } else {
       console.error(`Attempting to remove ${this.ks.id.value} with invalid project id...`);
-    }
-  }
-
-  tabClick($event: MatTabChangeEvent) {
-    switch ($event.index) {
-      case 0:
-        this.ipcService.closeBrowserView();
-        this.dialogRef.updateSize('auto', 'auto');
-        break;
-      case 1:
-        this.dialogRef.updateSize('80vw', '80vh');
-        this.emplaceKnowledgeSourceView();
     }
   }
 

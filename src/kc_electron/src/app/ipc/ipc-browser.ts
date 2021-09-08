@@ -11,6 +11,15 @@ const BrowserView: any = share.BrowserView;
 
 let extractWebsite, closeBrowserView, openBrowserView, destroyBrowserViews: (kcMainWindow: any) => void;
 
+let browserViewEventListeners = [
+    'electron-browser-view-can-go-back',
+    'electron-browser-view-can-go-forward',
+    'electron-browser-view-current-url',
+    'electron-browser-view-go-back',
+    'electron-browser-view-go-forward',
+    'electron-browser-view-refresh'
+];
+
 /**
  *
  *
@@ -124,14 +133,18 @@ closeBrowserView = ipcMain.on('electron-close-browser-view', () => {
     let kcMainWindow: any = share.BrowserWindow.getAllWindows()[0];
     destroyBrowserViews(kcMainWindow);
 
+    // Remove all ipcMain event listeners associated with any existing browser view
+    for (let bvEventListener of browserViewEventListeners) {
+        ipcMain.removeAllListeners(bvEventListener);
+    }
+
     let response: IpcResponse = {
         error: undefined,
         success: {data: true}
     }
-    kcMainWindow.webContents.send('electron-close-browser-view', response);
+
+    kcMainWindow.webContents.send('electron-close-browser-view-results', response);
 });
-
-
 
 
 /**
@@ -186,6 +199,9 @@ openBrowserView = ipcMain.on('electron-browser-view', (event: any, args: KsBrows
     kcBrowserView.setAutoResize({width: true, height: true, horizontal: true, vertical: true});
     kcBrowserView.webContents.loadURL(viewUrl.href);
 
+    /**
+     * BrowserView event listeners
+     */
     kcBrowserView.webContents.on('dom-ready', function () {
         if (args.returnHtml) {
             let js = [
@@ -214,28 +230,43 @@ openBrowserView = ipcMain.on('electron-browser-view', (event: any, args: KsBrows
         }
     });
 
+    kcBrowserView.webContents.on('did-navigate', (event: any, url: any) => {
+        navEventsResponse = {
+            error: undefined,
+            success: {data: url}
+        }
+        kcMainWindow.webContents.send('electron-browser-view-nav-events', navEventsResponse);
+    });
+
+    kcBrowserView.webContents.on('did-navigate-in-page', (event: any, url: any) => {
+        navEventsResponse = {
+            error: undefined,
+            success: {data: url}
+        }
+        kcMainWindow.webContents.send('electron-browser-view-nav-events', navEventsResponse);
+    });
+
+
+    /**
+     * ipcMain event listeners that rely on having a browserview open
+     * These MUST be removed when the browser view is closed (see above function for browser-view-close)
+     */
     ipcMain.on('electron-browser-view-can-go-back', (_: any) => {
         if (!kcBrowserView.webContents)
             return;
-
         let response: IpcResponse = {
             error: undefined,
-            success: {
-                data: kcBrowserView.webContents.canGoBack()
-            }
+            success: {data: kcBrowserView.webContents.canGoBack()}
         }
-       kcMainWindow.webContents.send('electron-browser-view-can-go-back-results', response);
+        kcMainWindow.webContents.send('electron-browser-view-can-go-back-results', response);
     });
 
     ipcMain.on('electron-browser-view-can-go-forward', (_: any) => {
         if (!kcBrowserView.webContents)
             return;
-
         let response: IpcResponse = {
             error: undefined,
-            success: {
-                data: kcBrowserView.webContents.canGoForward()
-            }
+            success: {data: kcBrowserView.webContents.canGoForward()}
         }
         kcMainWindow.webContents.send('electron-browser-view-can-go-forward-results', response);
     });
@@ -243,12 +274,9 @@ openBrowserView = ipcMain.on('electron-browser-view', (event: any, args: KsBrows
     ipcMain.on('electron-browser-view-current-url', (_: any) => {
         if (!kcBrowserView.webContents)
             return;
-
         let response: IpcResponse = {
             error: undefined,
-            success: {
-                data: kcBrowserView.webContents.getURL()
-            }
+            success: {data: kcBrowserView.webContents.getURL()}
         }
         kcMainWindow.webContents.send('electron-browser-view-current-url-results', response);
     });
@@ -275,22 +303,6 @@ openBrowserView = ipcMain.on('electron-browser-view', (event: any, args: KsBrows
         if (kcBrowserView.webContents) {
             kcBrowserView.webContents.reload();
         }
-    });
-
-    kcBrowserView.webContents.on('did-navigate', (event: any, url: any) => {
-        navEventsResponse = {
-            error: undefined,
-            success: {data: url}
-        }
-        kcMainWindow.webContents.send('electron-browser-view-nav-events', navEventsResponse);
-    });
-
-    kcBrowserView.webContents.on('did-navigate-in-page', (event: any, url: any) => {
-        navEventsResponse = {
-            error: undefined,
-            success: {data: url}
-        }
-        kcMainWindow.webContents.send('electron-browser-view-nav-events', navEventsResponse);
     });
 });
 

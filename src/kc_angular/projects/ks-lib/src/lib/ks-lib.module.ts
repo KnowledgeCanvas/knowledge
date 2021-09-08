@@ -17,8 +17,12 @@ import {MatInputModule} from "@angular/material/input";
 import {MatDividerModule} from "@angular/material/divider";
 import {ProgressBarComponent} from './components/progress-bar/progress-bar.component';
 import {MatProgressBarModule} from "@angular/material/progress-bar";
-import {BrowserViewComponent} from './components/browser-view/browser-view.component';
-import { FileViewComponent } from './components/file-view/file-view.component';
+import {BrowserViewComponent} from './components/viewports/browser-view/browser-view.component';
+import { FileViewComponent } from './components/viewports/file-view/file-view.component';
+import { ExplorerComponent } from './components/viewports/explorer-view/explorer.component';
+import { ViewportHeaderComponent } from './components/viewports/shared/viewport-header/viewport-header.component';
+import { ViewportFooterComponent } from './components/viewports/shared/viewport-footer/viewport-footer.component';
+import {MatTooltipModule} from "@angular/material/tooltip";
 
 declare global {
   interface Window {
@@ -37,21 +41,25 @@ declare global {
     DigitalWellnessSettingsComponent,
     ProgressBarComponent,
     BrowserViewComponent,
-    FileViewComponent
+    FileViewComponent,
+    ExplorerComponent,
+    ViewportHeaderComponent,
+    ViewportFooterComponent
   ],
-    imports: [
-        MatIconModule,
-        MatButtonModule,
-        MatBottomSheetModule,
-        CommonModule,
-        MatRadioModule,
-        FormsModule,
-        MatFormFieldModule,
-        MatInputModule,
-        ReactiveFormsModule,
-        MatDividerModule,
-        MatProgressBarModule
-    ],
+  imports: [
+    MatIconModule,
+    MatButtonModule,
+    MatBottomSheetModule,
+    CommonModule,
+    MatRadioModule,
+    FormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    ReactiveFormsModule,
+    MatDividerModule,
+    MatProgressBarModule,
+    MatTooltipModule
+  ],
   exports: [
     PageHeaderLargeComponent,
     FileUploadDialogComponent,
@@ -61,7 +69,10 @@ declare global {
     DigitalWellnessSettingsComponent,
     ProgressBarComponent,
     BrowserViewComponent,
-    FileViewComponent
+    FileViewComponent,
+    ExplorerComponent,
+    ViewportHeaderComponent,
+    ViewportFooterComponent
   ],
   providers: []
 })

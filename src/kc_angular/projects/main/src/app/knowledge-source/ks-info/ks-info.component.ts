@@ -49,8 +49,6 @@ export class KsInfoComponent implements OnInit, OnChanges {
       this.dateCreated = ks.dateCreated.toLocaleString();
       this.dateModified = ks.dateModified.toLocaleString();
       // TODO: set the containsImages bool after looking for photos from each source
-
-      console.log('Displaying ks: ', ks);
     }
   }
 

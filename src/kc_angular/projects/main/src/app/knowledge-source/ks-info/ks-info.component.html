@@ -116,7 +116,7 @@
         </mat-expansion-panel-header>
       </mat-expansion-panel>
 
-      <mat-expansion-panel *ngIf="authors" [expanded]="true">
+      <mat-expansion-panel *ngIf="authors && authors.length > 0" [expanded]="true">
         <mat-expansion-panel-header>
           <mat-panel-title>Authors</mat-panel-title>
           <ng-template matExpansionPanelContent>

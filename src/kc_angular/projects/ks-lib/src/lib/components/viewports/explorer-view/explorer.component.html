@@ -1,0 +1,55 @@
+<!--<div class="ks-explorer-viewport">-->
+<!--  &lt;!&ndash; EXPLORER HEADER BEGINS &ndash;&gt;-->
+<!--  <div class="ks-explorer-header mat-toolbar">-->
+<!--    <div class="ks-explorer-header-left">-->
+<!--      <button mat-icon-button [disabled]="!canGoBack" (click)="back()">-->
+<!--        <mat-icon>arrow_back</mat-icon>-->
+<!--      </button>-->
+<!--      <button mat-icon-button [disabled]="!canGoForward" (click)="forward()">-->
+<!--        <mat-icon>arrow_forward</mat-icon>-->
+<!--      </button>-->
+<!--      <button mat-icon-button (click)="refresh()">-->
+<!--        <mat-icon>refresh</mat-icon>-->
+<!--      </button>-->
+<!--    </div>-->
+<!--    <div class="ks-explorer-header-center">-->
+<!--      <button mat-button (click)="save()" [disabled]="saveDisabled" disableRipple>-->
+<!--        Import-->
+<!--      </button>-->
+<!--      <input *ngIf="url" type="text" readonly [(ngModel)]="displayUrl" class="ks-explorer-header-url">-->
+<!--      <input *ngIf="path" type="text" readonly [(ngModel)]="path" class="ks-explorer-header-url">-->
+<!--      <button mat-icon-button (click)="copy()">-->
+<!--        <mat-icon>content_copy</mat-icon>-->
+<!--      </button>-->
+<!--    </div>-->
+<!--    <div class="ks-explorer-header-right">-->
+<!--      <button mat-icon-button (click)="close()">-->
+<!--        <mat-icon>close</mat-icon>-->
+<!--      </button>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--  <mat-progress-bar *ngIf="!viewReady" mode="indeterminate" style="width: 100%; height: 8px;" id="progress-bar"></mat-progress-bar>-->
+<!--  &lt;!&ndash; EXPLORER HEADER ENDS &ndash;&gt;-->
+
+<!--  &lt;!&ndash; EXPLORER BODY BEGINS &ndash;&gt;-->
+<!--  <div class="ks-explorer-body" [ngStyle]="{'background-color' : backgroundColor}">-->
+<!--    <ks-lib-browser-view (navEvent)="onBrowserViewNavEvent($event)"-->
+<!--                         (onIpcResponse)="onIpcResponse($event)"-->
+<!--                         (viewReady)="setViewReady($event)"-->
+<!--                         *ngIf="url"-->
+<!--                         [url]="url">-->
+<!--    </ks-lib-browser-view>-->
+<!--    <ks-lib-file-view (viewReady)="setViewReady($event)"-->
+<!--                      [filepath]="path"-->
+<!--                      *ngIf="path">-->
+<!--    </ks-lib-file-view>-->
+<!--  </div>-->
+<!--  &lt;!&ndash; EXPLORER BODY ENDS &ndash;&gt;-->
+
+
+<!--  &lt;!&ndash; EXPLORER FOOTER BEGINS &ndash;&gt;-->
+<!--  <div class="ks-explorer-footer">-->
+
+<!--  </div>-->
+<!--  &lt;!&ndash; EXPLORER FOOTER ENDS &ndash;&gt;-->
+<!--</div>-->

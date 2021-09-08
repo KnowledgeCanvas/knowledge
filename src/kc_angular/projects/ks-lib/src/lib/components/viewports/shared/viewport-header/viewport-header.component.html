@@ -1,0 +1,38 @@
+<div class="ks-viewport-header mat-toolbar" [ngClass]="customClass">
+
+  <div class="ks-viewport-header-left">
+    <div *ngIf="config.showNavButtons">
+      <button mat-icon-button disableRipple [disabled]="!config.canGoBack" (click)="back()">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+
+      <button mat-icon-button disableRipple [disabled]="!config.canGoForward" (click)="forward()">
+        <mat-icon>arrow_forward</mat-icon>
+      </button>
+
+      <button mat-icon-button disableRipple [disabled]="!config.canRefresh" (click)="refresh()">
+        <mat-icon>refresh</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <div class="ks-viewport-header-center" *ngIf="config.showDisplayText">
+    <input *ngIf="config.displayText" type="text" [readOnly]="config.displayTextReadOnly" [(ngModel)]="config.displayText" class="ks-viewport-header-url">
+  </div>
+
+  <div class="ks-viewport-header-right">
+    <div *ngIf="config.showActionButtons" class="ks-viewport-header-right-contents">
+      <button mat-icon-button disableRipple [matTooltip]="copyTooltip" [disabled]="!config.canCopy" (click)="copy()">
+        <mat-icon>content_copy</mat-icon>
+      </button>
+
+      <button *ngIf="config.showSaveButton" mat-button (click)="save()" [disabled]="!config.canSave" disableRipple>
+        Save
+      </button>
+
+      <button mat-icon-button disableRipple [matTooltip]="closeTooltip" [disabled]="!config.canClose" (click)="close()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+</div>

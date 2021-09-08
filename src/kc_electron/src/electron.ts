@@ -244,7 +244,6 @@ settingsService.ingest.subscribe((ingest: any) => {
         copyFileToFolder(filePath, newFilePath);
 
         // Prepare file model to be sent to ingest watcher service in Angular
-        console.log('Preserve timestamps: ', ingest.preserveTimestamps);
         let fileModel: FileModel = {
             accessTime: ingest.preserveTimestamps ? fileStat.atime : Date(),
             creationTime: ingest.preserveTimestamps ? fileStat.ctime : Date(),
