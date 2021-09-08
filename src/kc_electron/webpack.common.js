@@ -1,6 +1,6 @@
 const path = require('path');
 
-var webpack_config =
+let webpack_config =
     {
         entry: {
             electron: path.join(__dirname, 'src', 'electron.ts'),
