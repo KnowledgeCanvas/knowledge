@@ -32,12 +32,15 @@ yarn start &
 
 # Create distributable binaries for MacOS and Windows
 
-1. Build the project:
+1. Clean and reinstall dependencies, then build the project:
 ```shell
+yarn clean 
+yarn purge
+yarn install
 yarn build
 ```
 
-2Create the distributables:
+2. Create the distributables:
 ```shell
 yarn dist
 ```
