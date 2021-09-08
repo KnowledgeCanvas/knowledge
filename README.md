@@ -24,8 +24,11 @@ and Angular code (the watchers auto-compile as files are changed/saved).
 1. Follow steps 1-2 above
 2. Build, run, and watch the project:
 ```shell
-yarn run watch-all-dev
+yarn watch-main-dev &
+yarn watch-electron-dev &
+yarn start &
 ```
+3. **Note:** changes made to Electron require you to restart the app 
 
 # Create distributable binaries for MacOS and Windows
 
@@ -34,12 +37,7 @@ yarn run watch-all-dev
 yarn build
 ```
 
-2. Pack the project:
-```shell
-yarn pack
-```
-
-3. Create the distributables:
+2Create the distributables:
 ```shell
 yarn dist
 ```
