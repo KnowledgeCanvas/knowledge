@@ -85,8 +85,9 @@ export class SearchResultsComponent implements OnInit {
       autoFocus: false,
       minWidth: '95vw',
       width: 'auto',
-      minHeight: '95vh',
-      height: 'auto',
+      minHeight: 'auto',
+      height: '90vh',
+      maxHeight: 'calc(100vh - 72px)',
       data: ksPreviewInput
     }
 

@@ -10,10 +10,10 @@
   //background-color: red;
 
   /**
-  * The dialog itself should be opened with a height of 90vh
-  * and the header and footer should add up to 32 + 4 = 36px
+  * The dialog itself should be opened with a height of 90vh, the footer should be 8px, and the header should be 32px
    */
-  height: calc(90vh - 8px);
+  height: calc(90vh - 40px);
+  max-height: calc(100vh - 48px - 40px - 32px - 32px);
 }
 
 .ks-preview-footer {

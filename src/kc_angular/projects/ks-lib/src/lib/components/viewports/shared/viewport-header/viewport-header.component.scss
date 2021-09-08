@@ -7,6 +7,7 @@
   height: 32px;
 
   .ks-viewport-header-left {
+    min-width: 120px;
     width: 15%;
     display: flex;
     flex-direction: row;
@@ -30,6 +31,7 @@
   }
 
   .ks-viewport-header-right {
+    min-width: 136px;
     width: 15%;
 
     .ks-viewport-header-right-contents {

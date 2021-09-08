@@ -222,8 +222,9 @@ export class KnowledgeSourceDropListComponent implements OnInit {
       autoFocus: false,
       minWidth: '95vw',
       width: 'auto',
-      minHeight: '95vh',
+      minHeight: '90vh',
       height: 'auto',
+      maxHeight: 'calc(100vh - 72px)',
       data: ksPreviewInput
     }
 
