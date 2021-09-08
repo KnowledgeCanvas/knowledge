@@ -93,7 +93,8 @@ export class KsPreviewComponent implements OnInit, OnDestroy {
 
   copy(text: string) {
     this.snackbar.open('Copied!', 'Dismiss', {
-      duration: 3000
+      duration: 3000,
+      verticalPosition: 'top'
     });
 
     this.clipboard.copy(text);
