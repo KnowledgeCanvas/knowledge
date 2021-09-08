@@ -55,7 +55,7 @@ export class ExternalIngestService {
       });
     });
 
-    this.ipcService.ingestWatcher().subscribe((fileModels) => {
+    this.ipcService.fileWatcher().subscribe((fileModels) => {
       let iconRequests = [];
       let ksList: KnowledgeSource[] = [];
       for (let fileModel of fileModels) {

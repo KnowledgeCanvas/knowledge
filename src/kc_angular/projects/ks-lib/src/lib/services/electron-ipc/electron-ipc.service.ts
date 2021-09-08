@@ -299,7 +299,7 @@ export class ElectronIpcService {
     });
   }
 
-  ingestWatcher(): Observable<FileModel[]> {
+  fileWatcher(): Observable<FileModel[]> {
     return new Observable<FileModel[]>((subscriber) => {
       this.receive(this.channels.ingestWatcherResults, (responses: IpcResponse[]) => {
         this.zone.run(() => {
