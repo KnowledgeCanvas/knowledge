@@ -1,6 +1,6 @@
 {
   "name": "knowledge-canvas",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": "Rob Royce <robertris2@gmail.com> (https://robroyce.dev)",
   "description": "",
   "private": true,
@@ -20,6 +20,7 @@
     "clean": "rm -rf ./dist && yarn workspaces run clean",
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
+    "dist-all": "electron-builder -mwl",
     "purge": "rm -rf node_modules && yarn workspaces run purge",
     "start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1",

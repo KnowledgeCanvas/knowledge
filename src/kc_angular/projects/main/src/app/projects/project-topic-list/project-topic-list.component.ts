@@ -10,6 +10,11 @@ import {Observable} from "rxjs";
 import {map, startWith} from "rxjs/operators";
 import {TopicModel} from "projects/ks-lib/src/lib/models/topic.model";
 import {KsQueueService} from "../../knowledge-source/ks-queue-service/ks-queue.service";
+import {SearchService} from "../../../../../ks-lib/src/lib/services/search/search.service";
+import {BrowserViewDialogService} from "../../../../../ks-lib/src/lib/services/browser-view-dialog/browser-view-dialog.service";
+import {SettingsService} from "../../../../../ks-lib/src/lib/services/settings/settings.service";
+import {KsFactoryService} from "../../../../../ks-lib/src/lib/services/ks-factory/ks-factory.service";
+import {MatDialog} from "@angular/material/dialog";
 
 @Component({
   selector: 'app-project-topic-list',
@@ -36,7 +41,14 @@ export class ProjectTopicListComponent implements OnInit, OnChanges {
   topics: string[] = [];
   allTopics: string[] = ['Computer Science', 'AI/ML'];
 
-  constructor(private topicService: TopicService, private projectService: ProjectService, private searchService: KsQueueService) {
+  constructor(private topicService: TopicService,
+              private browserViewDialogService: BrowserViewDialogService,
+              private settingsService: SettingsService,
+              private searchService: KsQueueService,
+              private ksFactory: KsFactoryService,
+              private dialog: MatDialog,
+              private projectService: ProjectService,
+              private ksQueueService: KsQueueService) {
     this.projectService.currentProject.subscribe((project) => {
       this.project = project;
       this.topics = project.topics ? project.topics : [];
@@ -110,7 +122,8 @@ export class ProjectTopicListComponent implements OnInit, OnChanges {
   }
 
   topicClicked(topic: string) {
-    this.searchService.search(topic);
+    let ks = this.ksFactory.searchKS(topic);
+    let dialogRef = this.browserViewDialogService.open({ks: ks});
   }
 
   onFocus() {

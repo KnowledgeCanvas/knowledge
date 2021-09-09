@@ -1,6 +1,6 @@
 {
   "name": "kc_electron",
-  "version": "1.0.0",
+  "version": "0.2.0",
   "description": "",
   "private": true,
   "main": "dist/electron.js",
