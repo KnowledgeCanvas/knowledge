@@ -25,7 +25,8 @@ const ingestSettings = {
     interval: 15000
 }
 const searchSettings = {
-    numResults: 10
+    numResults: 10,
+    provider: 'google'
 }
 const display = {
     theme: 'app-theme-dark'

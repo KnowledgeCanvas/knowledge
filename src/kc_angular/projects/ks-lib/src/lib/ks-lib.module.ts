@@ -23,6 +23,7 @@ import { ExplorerComponent } from './components/viewports/explorer-view/explorer
 import { ViewportHeaderComponent } from './components/viewports/shared/viewport-header/viewport-header.component';
 import { ViewportFooterComponent } from './components/viewports/shared/viewport-footer/viewport-footer.component';
 import {MatTooltipModule} from "@angular/material/tooltip";
+import {MatSlideToggleModule} from "@angular/material/slide-toggle";
 
 declare global {
   interface Window {
@@ -58,7 +59,8 @@ declare global {
     ReactiveFormsModule,
     MatDividerModule,
     MatProgressBarModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatSlideToggleModule
   ],
   exports: [
     PageHeaderLargeComponent,

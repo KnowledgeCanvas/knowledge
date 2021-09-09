@@ -5,6 +5,8 @@ import {KsQueueService} from "../ks-queue-service/ks-queue.service";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {ProjectService} from "../../../../../ks-lib/src/lib/services/projects/project.service";
 import {IngestType} from "projects/ks-lib/src/lib/models/knowledge.source.model";
+import {KsFactoryService} from "../../../../../ks-lib/src/lib/services/ks-factory/ks-factory.service";
+import {BrowserViewDialogService} from "../../../../../ks-lib/src/lib/services/browser-view-dialog/browser-view-dialog.service";
 
 export interface KsImportDialogInput {
 
@@ -35,6 +37,8 @@ export class KnowledgeSourceImportDialogComponent implements OnInit {
   color: any;
 
   constructor(private dialogRef: MatDialogRef<any>,
+              private browserViewDialogService: BrowserViewDialogService,
+              private ksFactory: KsFactoryService,
               @Inject(MAT_DIALOG_DATA) public data: ProjectModel,
               private ksQueueService: KsQueueService,
               private snackBar: MatSnackBar,
@@ -149,14 +153,21 @@ export class KnowledgeSourceImportDialogComponent implements OnInit {
       this.snackBar.open(message, 'Dismiss', {
         duration: 3000,
         verticalPosition: 'bottom',
-        panelClass: ['ingest-snackbar', 'kc-danger-zone']
+        panelClass: ['kc-danger-zone-snackbar']
       });
       this.dialogRef.close();
       return;
     }
 
-    this.ksQueueService.topicSearch(project.topics).then((result) => {
-      this.dialogRef.close();
-    });
+    let searchTerm = project.topics.join(' AND ');
+    let ks = this.ksFactory.searchKS(searchTerm);
+    this.browserViewDialogService.open({ks:ks});
+
+    console.log('searching for term: ', searchTerm);
+
+    this.dialogRef.close();
+    // this.ksQueueService.topicSearch(project.topics).then((result) => {
+    //
+    // });
   }
 }

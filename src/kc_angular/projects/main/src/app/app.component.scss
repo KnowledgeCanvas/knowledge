@@ -25,6 +25,13 @@
   align-content: center;
   justify-content: space-between;
   align-items: center;
+
+  .app-top-toolbar-left {
+    width: 80px !important;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+  }
 }
 
 .app-top-toolbar-icon {

@@ -7,6 +7,7 @@ import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core'
 })
 export class DigitalWellnessComponent implements OnInit {
   @Input() timeRemaining = '';
+  @Input() canClose: boolean = true;
   constructor() {}
 
   ngOnInit(): void {

@@ -58,7 +58,7 @@ export class KnowledgeSource {
   title: string;
   topics?: string[];
   notes: KnowledgeSourceNotes;
-  readonly accessLink: URL | string;
+  accessLink: URL | string;
   readonly reference: KnowledgeSourceReference;
 
   constructor(title: string, id: UuidModel, ingestType: IngestType, reference: KnowledgeSourceReference) {

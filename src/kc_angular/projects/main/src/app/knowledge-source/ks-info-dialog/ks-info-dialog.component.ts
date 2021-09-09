@@ -96,7 +96,7 @@ export class KsInfoDialogComponent implements OnInit {
       link = this.ks.accessLink
     else
       link = this.ks.accessLink.href;
-    this.extractionService.extractWebsite(link, this.ks.id.value);
+    this.extractionService.websiteToPdf(link, this.ks.id.value);
     this.dialogRef.close();
   }
 
@@ -203,7 +203,7 @@ export class KsInfoDialogComponent implements OnInit {
           this.snackBar.open('Oops, It appears that file can\'t be opened!', 'Dismiss', {
             duration: 3000,
             verticalPosition: 'bottom',
-            panelClass: 'kc-danger-zone'
+            panelClass: 'kc-danger-zone-snackbar'
           });
         }
       });

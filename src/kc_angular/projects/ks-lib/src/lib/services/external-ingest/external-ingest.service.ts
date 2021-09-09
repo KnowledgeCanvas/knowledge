@@ -1,16 +1,12 @@
 import {Injectable, SecurityContext} from '@angular/core';
 import {BehaviorSubject} from "rxjs";
-import {
-  KnowledgeSource,
-  KnowledgeSourceReference,
-  SourceModel
-} from "projects/ks-lib/src/lib/models/knowledge.source.model";
+import {KnowledgeSource, KnowledgeSourceReference, SourceModel} from "projects/ks-lib/src/lib/models/knowledge.source.model";
 import {ExtractionService} from "../extraction/extraction.service";
 import {UuidService} from "../uuid/uuid.service";
-import {UuidModel} from "projects/ks-lib/src/lib/models/uuid.model";
 import {FaviconExtractorService} from "../favicon/favicon-extractor.service";
 import {ElectronIpcService} from "../electron-ipc/electron-ipc.service";
 import {DomSanitizer} from "@angular/platform-browser";
+import {KsFactoryService} from "../ks-factory/ks-factory.service";
 
 @Injectable({
   providedIn: 'root'
@@ -24,37 +20,35 @@ export class ExternalIngestService {
   constructor(private faviconService: FaviconExtractorService,
               private extractionService: ExtractionService,
               private ipcService: ElectronIpcService,
+              private ksFactory: KsFactoryService,
               private uuidService: UuidService,
               private sanitizer: DomSanitizer) {
 
+    /**
+     * Subscribe to browser watcher, which communicates with Electron IPC, which in turn listens to browser extensions
+     * Once an extension event occurs, create a new Knowledge Source and notify listeners that a new KS is available
+     */
     this.ipcService.browserWatcher().subscribe((link) => {
       let sanitized = this.sanitizer.sanitize(SecurityContext.URL, link);
-      if (sanitized) {
-        link = sanitized;
-      } else {
+      if (!sanitized) {
         console.warn('Unable to sanitize URL received from browser... rejecting!');
+        return;
       }
 
-      this.extractionService.extractWebsiteMetadata(link).then((metadata) => {
-        if (metadata.title) {
-          const uuid: UuidModel = this.uuidService.generate(1)[0];
-          let sourceLink = new URL(link);
-          let source = new SourceModel(undefined, undefined, {url: link, metadata: metadata});
-          let ref = new KnowledgeSourceReference('website', source, sourceLink);
-          let ks = new KnowledgeSource(metadata.title, uuid, 'website', ref);
-          let url = new URL(link);
-          ks.iconUrl = url.hostname;
-          ks.icon = this.faviconService.generic();
-          this.faviconService.extract([url.hostname]).then((icons) => {
-            ks.icon = icons[0];
-            this.externalKS.next([ks]);
-          });
-        }
-      }).catch((error) => {
-        console.error('Extraction Service failed: ', error);
+      this.ksFactory.make('website', sanitized).then((ks) => {
+        if (!ks)
+          return;
+        console.log('Got KS from factory: ', ks);
+        this.externalKS.next([ks]);
+      }).catch((reason) => {
+        console.warn('Unable to create Knowledge Source from extension because: ', reason);
       });
     });
 
+    /**
+     * Subscribe to file watcher, which communicates with Electron IPC, which in turn watches a local directory for files
+     * Once an extension event occurs, create a new Knowledge Source and notify listeners that a new KS is available
+     */
     this.ipcService.fileWatcher().subscribe((fileModels) => {
       let iconRequests = [];
       let ksList: KnowledgeSource[] = [];

@@ -88,6 +88,7 @@ export class ElectronIpcService {
           return;
         } else if (response.success?.data) {
           let url = response.success.data;
+          console.log('Response from nav event: ', url);
           this.browserViewNavEvent.next(url);
         }
         this.triggerBrowserViewStateUpdate();
@@ -320,9 +321,6 @@ export class ElectronIpcService {
     });
   }
 
-  /**
-   *
-   */
   browserWatcher(): Observable<string> {
     return new Observable<string>((subscriber) => {
       this.receive(this.channels.browserExtensionResults, (response: IpcResponse) => {
@@ -339,9 +337,9 @@ export class ElectronIpcService {
   }
 
   /**
-   * This function acts as a "de-bouncer" on browser view navigation actions
-   * In other words, it prevents users from clicking the button so quick that state cannot be maintained properly
-   * This is necessary because Electron appears to fall out of sync if a user presses "back" or "forward" to quickly
+   * This function acts as a "de-bouncer" on browser view navigation actions In other words, it prevents users from
+   * clicking the button so quick that state cannot be maintained properly This is necessary because Electron appears
+   * to fall out of sync if a user presses "back" or "forward" to quickly..
    */
   private canSubmitBrowserViewAction(): boolean {
     if (Date.now() - this._bvStateTimer > 250) {

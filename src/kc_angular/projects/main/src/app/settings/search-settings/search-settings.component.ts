@@ -3,6 +3,7 @@ import {SettingsService} from "../../../../../ks-lib/src/lib/services/settings/s
 import {MatSnackBar, MatSnackBarConfig} from "@angular/material/snack-bar";
 import {SearchSettingsModel} from "../../../../../ks-lib/src/lib/models/settings.model";
 import {FormControl} from "@angular/forms";
+import {MatSelectChange} from "@angular/material/select";
 
 
 @Component({
@@ -24,6 +25,16 @@ export class SearchSettingsComponent implements OnInit, OnChanges {
   numResults = new FormControl(this.MAX_RESULTS);
   numResultsChanged: boolean = false;
 
+  // Search provider (Google by default)
+  provider = {value: 'google', view: 'Google'};
+
+  // Valid search provider selections
+  providers = [
+    {value: 'google', view: 'Google'},
+    {value: 'bing', view: 'Bing'},
+    {value: 'duck', view: 'DuckDuckGo'}
+  ]
+
   constructor(private settingsService: SettingsService,
               private snackbar: MatSnackBar) {
   }
@@ -32,8 +43,18 @@ export class SearchSettingsComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes.searchSettings.currentValue) {
+    let searchSettings = changes.searchSettings.currentValue;
+    if (searchSettings) {
       this.numResults.setValue(`${changes.searchSettings.currentValue.numResults}`);
+      if (searchSettings.provider) {
+        for (let provider of this.providers) {
+          console.log('Checking provider: ', provider, ' against ', searchSettings.provider);
+          if (provider.value === searchSettings.provider) {
+            console.log('Setting provider to: ', provider.value);
+            this.provider = {value: provider.value, view: provider.view};
+          }
+        }
+      }
     }
   }
 
@@ -62,10 +83,17 @@ export class SearchSettingsComponent implements OnInit, OnChanges {
 
   private updateSettings() {
     this.settingsModified.emit({
-      numResults: this.searchSettings.numResults
+      numResults: this.searchSettings.numResults,
+      provider: this.provider.value
     });
     this.snackbar.open('Search Settings Saved!', 'Dismiss', {
       verticalPosition: "bottom", duration: 2000, panelClass: 'kc-success'
     })
+  }
+
+
+  onProviderChange($event: MatSelectChange) {
+    console.log('Setting provider to: ', this.provider.value);
+    this.updateSettings();
   }
 }

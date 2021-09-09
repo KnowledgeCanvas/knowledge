@@ -13,6 +13,7 @@ export class FaviconExtractorService {
   private defaultIcon = 'assets/img/default.png';
   private loadingGif = 'assets/img/loading.gif';
   private fileIcon = 'assets/img/pdf.png';
+  private googleIcon = 'assets/img/icons/google/google.png';
   private savedIcons: any[] = [];
 
   constructor(private httpClient: HttpClient, private sanitizer: DomSanitizer) {
@@ -40,6 +41,7 @@ export class FaviconExtractorService {
 
           // TODO: figure out how to get past this via some other means
           let icon = this.sanitizer.bypassSecurityTrustUrl(objectURL);
+
           icons.push(icon);
         }
         resolve(icons);

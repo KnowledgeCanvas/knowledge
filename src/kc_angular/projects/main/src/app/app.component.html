@@ -35,7 +35,8 @@
     <mat-sidenav-content class="app-sidenav-content">
       <mat-toolbar class="app-top-toolbar">
 
-        <span class="left">
+        <!--        NOTE: in order to get the search bar to show up dead-center, we had to force the left and right side of toolbar to be exactly the same size...-->
+        <span class="left" class="app-top-toolbar-left">
           <button mat-icon-button class="app-top-toolbar-icon" (click)="drawer.toggle()">
               <mat-icon>menu</mat-icon>
           </button>

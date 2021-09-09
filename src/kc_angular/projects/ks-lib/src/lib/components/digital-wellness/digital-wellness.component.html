@@ -1,4 +1,6 @@
-<h1>It's time to take a break!</h1>
+<div class="center">
+  <h1>Break Time!</h1>
+</div>
 <div class="digital-wellness-timer-container">
   <div class="digital-wellness-timer-label">
     Time remaining:
@@ -6,4 +8,8 @@
   <div class="digital-wellness-timer">
     {{timeRemaining}}
   </div>
+</div>
+<div *ngIf="canClose">
+  <br>
+  <mat-hint>Press the 'esc' key or click on the background to close</mat-hint>
 </div>

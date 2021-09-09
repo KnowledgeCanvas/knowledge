@@ -12,7 +12,8 @@ export interface SettingsModel {
 }
 
 export interface SearchSettingsModel {
-  numResults?: number
+  numResults?: number,
+  provider?: string
 }
 
 export interface DisplaySettingsModel {

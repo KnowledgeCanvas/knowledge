@@ -2,6 +2,10 @@ import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {KsQueueService} from "../../knowledge-source/ks-queue-service/ks-queue.service";
 import {SettingsService} from "../../../../../ks-lib/src/lib/services/settings/settings.service";
+import {KsFactoryService} from "../../../../../ks-lib/src/lib/services/ks-factory/ks-factory.service";
+import {KsPreviewComponent, KsPreviewInput} from "../../knowledge-source/ks-preview/ks-preview.component";
+import {MatDialog, MatDialogConfig} from "@angular/material/dialog";
+import {BrowserViewDialogService} from "../../../../../ks-lib/src/lib/services/browser-view-dialog/browser-view-dialog.service";
 
 @Component({
   selector: 'app-search-bar',
@@ -14,8 +18,12 @@ export class SearchBarComponent implements OnInit {
   searchResults: string = '';
   darkMode: boolean = true;
 
-  constructor(fb: FormBuilder, private searchService: KsQueueService,
-              private settingsService: SettingsService) {
+  constructor(private browserViewDialogService: BrowserViewDialogService,
+              private settingsService: SettingsService,
+              private searchService: KsQueueService,
+              private ksFactory: KsFactoryService,
+              private dialog: MatDialog,
+              private fb: FormBuilder,) {
     this.searchForm = fb.group({
       searchTerm: this.searchTerm
     });
@@ -30,8 +38,11 @@ export class SearchBarComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  async EnterSubmit($event: any) {
-    await this.searchService.search(this.searchTerm.value);
+  EnterSubmit($event: any) {
+    let ks = this.ksFactory.searchKS(this.searchTerm.value);
+    let dialogRef = this.browserViewDialogService.open({ks: ks});
+    dialogRef.afterClosed().subscribe((results) => {
+      this.searchTerm.reset();
+    });
   }
-
 }

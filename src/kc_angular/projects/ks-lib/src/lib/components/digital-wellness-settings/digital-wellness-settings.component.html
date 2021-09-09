@@ -46,6 +46,18 @@
 </div>
 
 <div class="row">
+  <div class="col s12">
+    <mat-slide-toggle [(ngModel)]="autostartAfterBreak">Start automatically after break ends</mat-slide-toggle>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col s12">
+    <mat-slide-toggle [(ngModel)]="allowOverride">Allow ending breaks early</mat-slide-toggle>
+  </div>
+</div>
+
+<div class="row">
   <div class="col right">
     <button mat-button color="primary" (click)="submit()">
       Submit

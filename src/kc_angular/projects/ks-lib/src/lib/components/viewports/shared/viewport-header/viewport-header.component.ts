@@ -37,8 +37,15 @@ export class ViewportHeaderComponent implements OnInit, OnChanges {
   customClass: string = '';
 
   // Default tooltip strings
+  backTooltip: string = "Go Back";
   closeTooltip: string = 'Close';
-  copyTooltip: string = 'Copy to clipboard';
+  copyTooltip: string = 'Copy to Clipboard';
+  forwardTooltip: string = 'Go Forward';
+  refreshTooltip: string = 'Reload this page';
+  saveTooltip: string = 'Add to "Up Next"'
+
+  // Putting this here for extensibility, but currently we are not supported letting the user type in a random URL (i.e. this is for display only)
+  displayTextDisabled: boolean = true;
 
   constructor() {
   }

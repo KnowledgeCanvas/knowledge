@@ -11,14 +11,15 @@ export class ExtractionService {
   constructor(private httpClient: HttpClient, private faviconService: FaviconExtractorService) {
   }
 
-  extractWebsite(url: string, filename?: string) {
+  websiteToPdf(url: string, outFileName?: string) {
+    // TODO: move this to ipc service...
     window.api.receive("app-extract-website-results", (data: any) => {
     });
 
     // Send message to Electron ipcMain
     let args: object = {
       url: url,
-      filename: filename,
+      filename: outFileName,
     }
     window.api.send("app-extract-website", args);
   }
@@ -29,7 +30,17 @@ export class ExtractionService {
       this.httpClient.get(url, {responseType: 'text'}).subscribe((htmlString) => {
         let parser = new DOMParser();
         let htmlDoc = parser.parseFromString(htmlString, 'text/html');
-        metadata.title = htmlDoc.getElementsByTagName('title')[0].innerText;
+
+        console.log('Attempting to get innerText from html: ', htmlDoc);
+
+        let title = htmlDoc.getElementsByTagName('title')
+
+        console.log('Title elements: ', title);
+
+        if (title && title.length > 0)
+          metadata.title = title[0].innerText;
+        else
+          metadata.title = '';
 
         this.faviconService.extract([url]).then((icons) => {
           metadata.icon = icons[0];

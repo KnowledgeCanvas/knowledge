@@ -25,6 +25,7 @@ export class AppComponent {
   timerReady = false;
   timer = '15m 00s'
   interval: any;
+  darkMode: boolean = true;
   private timerMinutes = 25;
   private timerSeconds = 0;
   private breakMinutes = 5;
@@ -35,7 +36,6 @@ export class AppComponent {
   private timerSecondsLeft: number = this.timerSeconds;
   private breakMinutesLeft: number = this.breakMinutes;
   private breakSecondsLeft: number = this.breakSeconds;
-  darkMode: boolean = true;
 
   constructor(private dialog: MatDialog, private router: Router,
               private overlayContainer: OverlayContainer,
@@ -93,8 +93,8 @@ export class AppComponent {
 
   setTimerClicked() {
     let data: WellnessSettingsModel = {
-      allowOverride: false,
-      autostartAfterBreak: false,
+      allowOverride: this.allowOverride,
+      autostartAfterBreak: this.autostartAfterBreak,
       timerMinutes: this.timerMinutes,
       timerSeconds: this.timerSeconds,
       breakMinutes: this.breakMinutes,
@@ -106,6 +106,7 @@ export class AppComponent {
       if (result === undefined) {
         return;
       }
+
       let wellnessUpdate: WellnessSettingsModel = {
         timerMinutes: result.timerMinutes as number,
         timerSeconds: result.timerSeconds as number,
@@ -144,7 +145,7 @@ export class AppComponent {
       if (this.timerMinutesLeft == 0 && this.timerSecondsLeft == 0) {
         this.restartTimer();
         clearInterval(this.interval);
-        this.displayDigitalWellness();
+        this.displayBreakTimeDialog();
         return false;
       } else {
         this.timerMinutesLeft = this.timerSecondsLeft == 0 ? this.timerMinutesLeft - 1 : this.timerMinutesLeft;
@@ -183,25 +184,35 @@ export class AppComponent {
     this.breakSecondsLeft = this.breakSeconds;
   }
 
-  private displayDigitalWellness() {
+  private displayBreakTimeDialog() {
     this.resetTimerValues();
     this.setTimer();
     this.setBreakTimer();
 
     let options = {
       backdropClass: 'digital-wellness-backdrop',
-      disableClose: true
+      disableClose: !this.allowOverride
     };
 
     const dialogRef = this.dialog.open(DigitalWellnessComponent, options);
+    dialogRef.afterClosed().subscribe((result) => {
+      clearInterval(this.interval);
+      this.breaking = false;
+      this.timerRunning = false;
+      this.resetTimerValues();
+      this.restartTimer();
 
-    let instance = dialogRef.componentInstance;
-
-    instance.timeRemaining = this.breakTimer;
+      if (this.autostartAfterBreak)
+        this.startTimer();
+    })
 
     this.breaking = true;
     this.timerRunning = true;
 
+    // Get an instance of the dialog and update time left by injecting it
+    let instance = dialogRef.componentInstance;
+    instance.timeRemaining = this.breakTimer;
+    instance.canClose = this.allowOverride;
     this.interval = setInterval(() => {
       if (this.timerRunning && this.countDown()) {
         instance.timeRemaining = this.breakTimer;

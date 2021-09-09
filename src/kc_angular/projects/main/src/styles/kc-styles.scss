@@ -62,10 +62,18 @@
 
 .kc-success {
   border: 1px solid green;
-  margin: 10px !important;
-  padding: 10px !important;
-  border-radius: 10px !important;
   max-width: 100vw !important;
+  .mat-simple-snackbar-action {
+    color: green !important;
+  }
+}
+
+.kc-danger-zone-snackbar {
+  border: 1px solid red !important;
+  max-width: 100vw !important;
+  .mat-simple-snackbar-action {
+    color: red !important;
+  }
 }
 
 .kc-danger-zone {
@@ -73,7 +81,6 @@
   margin: 10px !important;
   padding: 10px !important;
   border-radius: 10px !important;
-  max-width: 100vw !important;
 }
 
 .ks-info-controls {

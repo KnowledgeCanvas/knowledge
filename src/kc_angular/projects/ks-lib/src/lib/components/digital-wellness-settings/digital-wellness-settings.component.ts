@@ -13,31 +13,46 @@ export class DigitalWellnessSettingsComponent implements OnInit {
   seconds = new FormControl();
   breakMinutes = new FormControl();
   breakSeconds = new FormControl();
-  autostartAfterBreak = new FormControl();
-  allowOverride = new FormControl();
+  autostartAfterBreak: boolean = false
+  allowOverride: boolean = true;
 
 
   constructor(private bottomSheetRef: MatBottomSheetRef, @Inject(MAT_BOTTOM_SHEET_DATA) public data: WellnessSettingsModel) {
+    console.log('setting values: ', data);
     this.minutes.setValue(data.timerMinutes);
     this.seconds.setValue(data.timerSeconds);
     this.breakMinutes.setValue(data.breakMinutes);
     this.breakSeconds.setValue(data.breakSeconds);
-    this.autostartAfterBreak.setValue(data.autostartAfterBreak);
-    this.allowOverride.setValue(data.allowOverride);
+    this.autostartAfterBreak = data.autostartAfterBreak;
+    this.allowOverride = data.allowOverride;
   }
 
   ngOnInit(): void {
   }
 
   submit() {
+    let timerSecondsTotal = (this.minutes.value * 60) + this.seconds.value;
+    let breakSecondsTotal = (this.breakMinutes.value * 60) + this.breakSeconds.value;
+
+    if (timerSecondsTotal < 60) {
+      this.minutes.setValue(1);
+      this.seconds.setValue(0);
+    }
+
+    if (breakSecondsTotal < 60) {
+      this.breakMinutes.setValue(1);
+      this.breakSeconds.setValue(0);
+    }
+
     let result = {
       timerMinutes: this.minutes.value,
       timerSeconds: this.seconds.value,
       breakMinutes: this.breakMinutes.value,
       breakSeconds: this.breakSeconds.value,
-      autostartAfterBreak: this.autostartAfterBreak.value,
-      allowOverride: this.allowOverride.value
+      autostartAfterBreak: this.autostartAfterBreak,
+      allowOverride: this.allowOverride
     }
+    console.log('submitting new values: ', result);
     this.bottomSheetRef.dismiss(result)
   }
 

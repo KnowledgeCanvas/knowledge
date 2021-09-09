@@ -7,6 +7,8 @@ import {Clipboard} from "@angular/cdk/clipboard";
 import {ExtractionService} from "../../../../../ks-lib/src/lib/services/extraction/extraction.service";
 import {KcFileViewClickEvent, KcFileViewConfig} from "../../../../../ks-lib/src/lib/components/viewports/file-view/file-view.component";
 import {KcBrowserViewClickEvent, KcBrowserViewConfig, KcBrowserViewNavEvent} from "../../../../../ks-lib/src/lib/components/viewports/browser-view/browser-view.component";
+import {KsFactoryService} from "../../../../../ks-lib/src/lib/services/ks-factory/ks-factory.service";
+import {KsQueueService} from "../ks-queue-service/ks-queue.service";
 
 export interface KsPreviewInput {
   ks: KnowledgeSource
@@ -52,6 +54,8 @@ export class KsPreviewComponent implements OnInit, OnDestroy {
               private extractionService: ExtractionService,
               private dialog: MatDialog,
               private ipcService: ElectronIpcService,
+              private ksFactory: KsFactoryService,
+              private ksQueue: KsQueueService,
               private snackbar: MatSnackBar,
               private clipboard: Clipboard) {
 
@@ -184,6 +188,10 @@ export class KsPreviewComponent implements OnInit, OnDestroy {
     if (!supported) {
       console.warn('This file type is not supported!');
 
+      this.snackbar.open('Sorry, but that file type is not supported yet. Try "Open in..." instead!', 'Dismiss', {
+        panelClass: 'kc-danger-zone-snackbar'
+      });
+
       // Wait before closing. If not, the error "NG0100: ExpressionChangedAfterItHasBeenCheckedError" appears
       setTimeout(() => {
         this.close();
@@ -244,7 +252,7 @@ export class KsPreviewComponent implements OnInit, OnDestroy {
   //     console.error(error);
   //     this.snackBar.open(`Error: Preview not available -- ${error.message}`, 'Dismiss', {
   //       verticalPosition: 'bottom',
-  //       panelClass: 'kc-danger-zone',
+  //       panelClass: 'kc-danger-zone-snackbar',
   //       duration: 3000
   //     });
   //     this.selectedTab.setValue(0);
@@ -269,13 +277,25 @@ export class KsPreviewComponent implements OnInit, OnDestroy {
 
 
   save() {
-    // TODO: there should be a service that creates KS automatically from link...
-
     console.log('Saving url: ', this.activeBrowserViewUrl);
+    this.ksFactory.make('website', this.activeBrowserViewUrl).then((ks) => {
+      if (!ks) {
+        console.warn('Undefined Knowledge Source on apparent success...');
+        return;
+      }
+      console.log('Got ks from factory: ', ks);
 
-    this.snackbar.open('Adding to "Up Next"!', 'Dismiss', {
-      duration: 3000,
-      verticalPosition: 'top'
+      this.snackbar.open('Adding to "Up Next"!', 'Dismiss', {
+        duration: 3000,
+        verticalPosition: 'top'
+      });
+
+      this.ksQueue.enqueue([ks]);
+    }).catch((reason) => {
+      this.snackbar.open(`Unable to save because: ${reason}`, 'Dismiss', {
+        verticalPosition: 'top',
+        panelClass: ['kc-danger-zone-snackbar']
+      });
     });
   }
 

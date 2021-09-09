@@ -9,6 +9,7 @@ import {KsInfoDialogComponent, KsInfoDialogInput, KsInfoDialogOutput} from "../.
 import {ProjectService} from "../../../../../ks-lib/src/lib/services/projects/project.service";
 import {ProjectUpdateRequest} from "projects/ks-lib/src/lib/models/project.model";
 import {KsPreviewComponent, KsPreviewInput} from "../../knowledge-source/ks-preview/ks-preview.component";
+import {BrowserViewDialogService} from "../../../../../ks-lib/src/lib/services/browser-view-dialog/browser-view-dialog.service";
 
 @Component({
   selector: 'app-search-results',
@@ -21,7 +22,8 @@ export class SearchResultsComponent implements OnInit {
   ksQueueSubscription: Subscription;
   ksQueueLoadingSubscription: Subscription;
 
-  constructor(private canvasDropService: KsDropService,
+  constructor(private browserViewDialogService: BrowserViewDialogService,
+              private canvasDropService: KsDropService,
               private ksQueueService: KsQueueService,
               private projectService: ProjectService,
               public dialog: MatDialog) {
@@ -77,27 +79,7 @@ export class SearchResultsComponent implements OnInit {
   }
 
   preview(ks: KnowledgeSource) {
-    let ksPreviewInput: KsPreviewInput = {
-      ks: ks
-    };
-
-    let config: MatDialogConfig = {
-      autoFocus: false,
-      minWidth: '95vw',
-      width: 'auto',
-      minHeight: 'auto',
-      height: '90vh',
-      maxHeight: 'calc(100vh - 72px)',
-      data: ksPreviewInput
-    }
-
-    const dialogRef = this.dialog.open(KsPreviewComponent, config);
-    dialogRef.afterClosed().subscribe((results) => {
-      /**
-       * TODO: this currently doesn't do anything because there are no changes in the preview dialog
-       * However, there will eventually be changes such as highlighting a document or text in a web page...
-       */
-    });
+    this.browserViewDialogService.open({ks:ks});
   }
 
   clearResults() {

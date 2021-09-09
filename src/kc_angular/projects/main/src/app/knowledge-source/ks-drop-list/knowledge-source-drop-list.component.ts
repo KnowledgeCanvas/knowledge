@@ -1,15 +1,16 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {CdkDragDrop} from "@angular/cdk/drag-drop";
 import {KsDropService} from "../../../../../ks-lib/src/lib/services/ks-drop/ks-drop.service";
-import {MatDialog, MatDialogConfig} from "@angular/material/dialog";
+import {MatDialog} from "@angular/material/dialog";
 import {ProjectModel, ProjectUpdateRequest} from "projects/ks-lib/src/lib/models/project.model";
 import {ProjectService} from "../../../../../ks-lib/src/lib/services/projects/project.service";
 import {KnowledgeSource} from "projects/ks-lib/src/lib/models/knowledge.source.model";
-import {KnowledgeSourceImportDialogComponent} from "../ks-import-dialog/knowledge-source-import-dialog.component";
+import {KnowledgeSourceImportDialogComponent, KsImportDialogOutput} from "../ks-import-dialog/knowledge-source-import-dialog.component";
 import {KsInfoDialogComponent, KsInfoDialogInput, KsInfoDialogOutput} from "../ks-info-dialog/ks-info-dialog.component";
 import {FaviconExtractorService} from "../../../../../ks-lib/src/lib/services/favicon/favicon-extractor.service";
 import {StorageService} from "../../../../../ks-lib/src/lib/services/storage/storage.service";
-import {KsPreviewComponent, KsPreviewInput} from "../ks-preview/ks-preview.component";
+import {KsFactoryService} from "../../../../../ks-lib/src/lib/services/ks-factory/ks-factory.service";
+import {BrowserViewDialogService} from "../../../../../ks-lib/src/lib/services/browser-view-dialog/browser-view-dialog.service";
 
 export interface KsSortBy {
   index: number;
@@ -66,11 +67,13 @@ export class KnowledgeSourceDropListComponent implements OnInit {
     }
   ];
 
-  constructor(private faviconService: FaviconExtractorService,
+  constructor(private browserViewDialogService: BrowserViewDialogService,
+              private faviconService: FaviconExtractorService,
               private ksDropService: KsDropService,
               private projectService: ProjectService,
               private storageService: StorageService,
-              public dialog: MatDialog) {
+              private ksFactory: KsFactoryService,
+              private dialog: MatDialog) {
   }
 
   ngOnInit(): void {
@@ -139,7 +142,7 @@ export class KnowledgeSourceDropListComponent implements OnInit {
       return;
     }
 
-    // If the project has a KS list, check if the new KS exists. If it does, ignore...
+    // If the project has a KS list, check if the new KS already exists. If it does, ignore...
     if (this.project.knowledgeSource && this.project.knowledgeSource.length > 0) {
       let found = this.project.knowledgeSource.find(k => k.id.value === ks.id.value);
       if (found) {
@@ -147,12 +150,6 @@ export class KnowledgeSourceDropListComponent implements OnInit {
         return;
       }
     }
-
-    // Add KS to project - our subscription will automatically pick up the changes, so no need to add it to current list
-    // ks.dateCreated = new Date();
-    // ks.dateModified = new Date();
-    // ks.dateAccessed = new Date();
-
     let update: ProjectUpdateRequest = {
       id: this.project.id,
       addKnowledgeSource: [ks]
@@ -173,13 +170,24 @@ export class KnowledgeSourceDropListComponent implements OnInit {
   }
 
   openKsImportDialog() {
-    this.dialog.open(KnowledgeSourceImportDialogComponent, {
+    const dialogRef = this.dialog.open(KnowledgeSourceImportDialogComponent, {
       width: 'auto',
       minWidth: '512px',
       maxWidth: '1024px',
       maxHeight: '80vh',
       data: this.project
     });
+
+    dialogRef.afterClosed().subscribe((output: KsImportDialogOutput) => {
+      if (output && output.ingestType === 'search') {
+        this.openSearchBrowserView();
+      }
+    })
+  }
+
+  openSearchBrowserView() {
+    let searchKS = this.ksFactory.searchKS();
+    const dialogRef = this.browserViewDialogService.open({ks: searchKS});
   }
 
   openKsInfoDialog(node: KnowledgeSource) {
@@ -189,10 +197,10 @@ export class KnowledgeSourceDropListComponent implements OnInit {
     }
 
     const dialogRef = this.dialog.open(KsInfoDialogComponent, {
-      minWidth: '50vw',
+      minWidth: '65vw',
       width: 'auto',
       height: 'auto',
-      maxHeight: '95vh',
+      maxHeight: '90vh',
       data: dialogInput,
       autoFocus: false
     });
@@ -214,26 +222,9 @@ export class KnowledgeSourceDropListComponent implements OnInit {
   }
 
   preview(ks: KnowledgeSource) {
-    let ksPreviewInput: KsPreviewInput = {
-      ks: ks
-    };
-
-    let config: MatDialogConfig = {
-      autoFocus: false,
-      minWidth: '95vw',
-      width: 'auto',
-      minHeight: '90vh',
-      height: 'auto',
-      maxHeight: 'calc(100vh - 72px)',
-      data: ksPreviewInput
-    }
-
-    const dialogRef = this.dialog.open(KsPreviewComponent, config);
+    let dialogRef = this.browserViewDialogService.open({ks: ks});
     dialogRef.afterClosed().subscribe((results) => {
-      /**
-       * TODO: this currently doesn't do anything because there are no changes in the preview dialog
-       * However, there will eventually be changes such as highlighting a document or text in a web page...
-       */
+      // TODO: update KS with new timestamps (accessed, modified if necessary)
     });
   }
 
