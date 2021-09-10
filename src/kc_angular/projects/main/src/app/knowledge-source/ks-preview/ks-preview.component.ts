@@ -188,8 +188,9 @@ export class KsPreviewComponent implements OnInit, OnDestroy {
     if (!supported) {
       console.warn('This file type is not supported!');
 
-      this.snackbar.open('Sorry, but that file type is not supported yet. Try "Open in..." instead!', 'Dismiss', {
-        panelClass: 'kc-danger-zone-snackbar'
+      this.snackbar.open('Sorry, but that file type is not supported yet. Try opening with the default application instead!', 'Dismiss', {
+        panelClass: 'kc-danger-zone-snackbar',
+        duration: 3000
       });
 
       // Wait before closing. If not, the error "NG0100: ExpressionChangedAfterItHasBeenCheckedError" appears

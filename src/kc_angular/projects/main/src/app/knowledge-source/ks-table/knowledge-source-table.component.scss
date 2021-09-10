@@ -10,13 +10,26 @@ tr.ks-table-detail-row {
   height: 0;
 }
 
+
+
 tr.ks-table-element-row:not(.ks-table-expanded-row):hover {
-  background: #efefef;
+  .app-theme-dark {
+    background: #3c3c3c;
+  }
+  .app-theme-light {
+    background: #efefef;
+  }
+
   cursor: pointer;
 }
 
 tr.ks-table-element-row:not(.ks-table-expanded-row):active {
-  background: #efefef;
+  .app-theme-dark {
+    background: #3c3c3c;
+  }
+  .app-theme-light {
+    background: #efefef;
+  }
 }
 
 .ks-table-element-row td {
@@ -49,6 +62,6 @@ tr.ks-table-element-row:not(.ks-table-expanded-row):active {
 }
 
 .mat-column-actions {
-  width: 120px;
+  width: 160px;
   padding-right: 12px !important;
 }

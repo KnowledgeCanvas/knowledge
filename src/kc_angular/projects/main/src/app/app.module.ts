@@ -78,6 +78,7 @@ import {KsPreviewComponent} from './knowledge-source/ks-preview/ks-preview.compo
 import {MatTableModule} from "@angular/material/table";
 import {MatSortModule} from "@angular/material/sort";
 import {MatPaginatorModule} from "@angular/material/paginator";
+import {A11yModule} from "@angular/cdk/a11y";
 
 @NgModule({
   declarations: [
@@ -159,6 +160,7 @@ import {MatPaginatorModule} from "@angular/material/paginator";
     MatTableModule,
     MatSortModule,
     MatPaginatorModule,
+    A11yModule,
   ],
   providers: [SettingsService, ProjectService, KcDialogService, KsQueueService, MatSnackBar, MatAccordion, MatDatepickerModule],
   bootstrap: [AppComponent]

@@ -8,6 +8,9 @@ import {MatSort} from "@angular/material/sort";
 import {MatTableDataSource} from "@angular/material/table";
 import {MatPaginator} from "@angular/material/paginator";
 import {Subscription} from "rxjs";
+import {Clipboard} from "@angular/cdk/clipboard";
+import {MatSnackBar} from "@angular/material/snack-bar";
+import {BrowserViewDialogService} from "../../../../../ks-lib/src/lib/services/browser-view-dialog/browser-view-dialog.service";
 
 interface KsChecklist {
   title: string;
@@ -41,7 +44,11 @@ export class KnowledgeSourceTableComponent implements OnInit, AfterViewInit, OnD
   filter: string = '';
 
 
-  constructor(private projectService: ProjectService, private dialogService: KcDialogService) {
+  constructor(private browserViewDialogService: BrowserViewDialogService,
+              private projectService: ProjectService,
+              private dialogService: KcDialogService,
+              private snackbar: MatSnackBar,
+              private clipboard: Clipboard) {
     this.dataSource = new MatTableDataSource<KnowledgeSource>([])
     this.hideTable = true;
   }
@@ -90,33 +97,40 @@ export class KnowledgeSourceTableComponent implements OnInit, AfterViewInit, OnD
     }
   }
 
-  openKs(ks: KsChecklist) {
-    console.log('Opening ks: ', ks);
-  }
+  applyFilter($event: KeyboardEvent | string) {
+    if (typeof $event === 'string') {
+      this.dataSource.filter = $event.trim().toLowerCase();
+      this.filter = $event;
+    } else {
+      const filterValue = ($event.target as HTMLInputElement).value;
+      this.dataSource.filter = filterValue.trim().toLowerCase();
+    }
 
-  applyFilter($event: KeyboardEvent) {
-    const filterValue = ($event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
 
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
     }
   }
 
-  copy($event: MouseEvent) {
-    $event.preventDefault();
-    console.log('Copy: ', $event);
+  copy(ks: KnowledgeSource) {
+    this.clipboard.copy(typeof ks.accessLink === 'string' ? ks.accessLink : ks.accessLink.href);
+    this.snackbar.open('Copied to clipboard!', 'Dismiss', {duration: 2000, panelClass: 'kc-success'});
   }
 
-  open($event: MouseEvent) {
-
+  open(ks: KnowledgeSource) {
+    window.open(typeof ks.accessLink === 'string' ? ks.accessLink : ks.accessLink.href);
   }
 
-  delete($event: MouseEvent) {
+  openKC(ks: KnowledgeSource) {
+    this.browserViewDialogService.open({ks:ks});
+  }
 
+  delete(ks: KnowledgeSource) {
+    // TODO: implement this........
+    console.error('Delete KS not implemented yet!');
   }
 
   rowClicked(element: any) {
-    console.log('Row clicked: ', element);
+
   }
 }

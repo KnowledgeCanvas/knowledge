@@ -1,7 +1,8 @@
 <div [hidden]="hideTable" class="container">
   <mat-form-field appearance="fill" style="width: 100%">
     <mat-label>Filter</mat-label>
-    <input matInput (keyup)="applyFilter($event)" [(ngModel)]="filter" placeholder="by title, description, type, location, etc.">
+    <input matInput type="text" (keyup)="applyFilter($event)" [(ngModel)]="filter" placeholder="by title, description, type, location, etc.">
+    <button matSuffix mat-icon-button (click)="applyFilter('')" [disabled]="filter.length === 0"><mat-icon>clear</mat-icon></button>
   </mat-form-field>
 
   <table mat-table [dataSource]="dataSource" multiTemplateDataRows class="mat-elevation-z8" matSort>
@@ -22,20 +23,39 @@
     <ng-container matColumnDef="ingestType">
       <th mat-header-cell *matHeaderCellDef mat-sort-header class="ks-table-header">Source</th>
       <td mat-cell *matCellDef="let element">
-<!--        <mat-icon>{{iconFromIngestType(element.ingestType)}}</mat-icon>-->
-      {{element.ingestType | titlecase}}
+        <!--        <mat-icon>{{iconFromIngestType(element.ingestType)}}</mat-icon>-->
+        {{element.ingestType | titlecase}}
     </ng-container>
 
     <ng-container matColumnDef="actions">
       <th mat-header-cell *matHeaderCellDef class="ks-table-header"></th>
       <td mat-cell *matCellDef="let element">
-        <button mat-icon-button (click)="copy($event)">
-          <mat-icon>content_copy</mat-icon>
+        <button matTooltip="Open {{element.title}} in Knowledge Canvas viewer"
+                matTooltipClass="tool-tip"
+                onclick="this.blur()"
+                (click)="openKC(element)"
+                mat-icon-button>
+          <img src="assets/img/kc-icon-transparent.png" class="knowledge-canvas-logo-button-tiny">
         </button>
-        <button mat-icon-button (click)="open($event)">
+        <button matTooltip="Open {{element.title}} in default {{element.ingestType === 'file' ? 'application' : 'browser'}}"
+                matTooltipClass="tool-tip"
+                onclick="this.blur()"
+                (click)="open(element)"
+                mat-icon-button>
           <mat-icon>open_in_browser</mat-icon>
         </button>
-        <button mat-icon-button (click)="delete($event)">
+        <button matTooltip="Copy {{element.ingestType === 'file' ? 'file path' : 'link'}} to clipboard"
+                matTooltipClass="tool-tip"
+                onclick="this.blur()"
+                (click)="copy(element)"
+                mat-icon-button>
+          <mat-icon>content_copy</mat-icon>
+        </button>
+        <button matTooltip="Delete {{element.title}}"
+                matTooltipClass="tool-tip"
+                mat-icon-button color="warn"
+                onclick="this.blur()"
+                (click)="delete(element)">
           <mat-icon>delete</mat-icon>
         </button>
       </td>
