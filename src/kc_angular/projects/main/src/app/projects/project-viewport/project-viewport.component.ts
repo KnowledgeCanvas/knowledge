@@ -28,7 +28,7 @@ export class ProjectViewportComponent implements OnInit {
     },
     {
       label: 'Knowledge Sources',
-      link: 'app-ks-edit-list',
+      link: 'app-ks-table',
       index: 2,
       disabled: true
     }

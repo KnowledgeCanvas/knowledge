@@ -20,20 +20,21 @@
           mat-icon-button>
     <mat-icon>unfold_less</mat-icon>
   </button>
-  <button [matTooltipClass]="{'tool-tip':true}"
-          matTooltip="Focus on current project"
-          matTooltipShowDelay="750"
-          (click)="focus()"
-          mat-icon-button>
-    <mat-icon>filter_center_focus</mat-icon>
-  </button>
-  <button [matTooltipClass]="{'tool-tip':true}"
-          matTooltip="Filter projects"
-          matTooltipShowDelay="750"
-          (click)="filter()"
-          mat-icon-button>
-    <mat-icon>filter_list</mat-icon>
-  </button>
+<!--  TODO: eventually add these back in...-->
+<!--  <button [matTooltipClass]="{'tool-tip':true}"-->
+<!--          matTooltip="Focus on current project"-->
+<!--          matTooltipShowDelay="750"-->
+<!--          (click)="focus()"-->
+<!--          mat-icon-button>-->
+<!--    <mat-icon>filter_center_focus</mat-icon>-->
+<!--  </button>-->
+<!--  <button [matTooltipClass]="{'tool-tip':true}"-->
+<!--          matTooltip="Filter projects"-->
+<!--          matTooltipShowDelay="750"-->
+<!--          (click)="filter()"-->
+<!--          mat-icon-button>-->
+<!--    <mat-icon>filter_list</mat-icon>-->
+<!--  </button>-->
 </div>
 
 <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">

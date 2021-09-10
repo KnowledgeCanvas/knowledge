@@ -15,7 +15,7 @@ import {KcDialogService} from "../../../ks-lib/src/lib/services/dialog/kc-dialog
 import {KnowledgeCanvasComponent} from './knowledge-source/ks-canvas/knowledge-canvas.component';
 import {KnowledgeGraphComponent} from './knowledge-graph/knowledge-graph.component';
 import {KnowledgeSourceDropListComponent} from './knowledge-source/ks-drop-list/knowledge-source-drop-list.component';
-import {KnowledgeSourceEditListComponent} from './knowledge-source/ks-edit-list/knowledge-source-edit-list.component';
+import {KnowledgeSourceTableComponent} from './knowledge-source/ks-table/knowledge-source-table.component';
 import {KnowledgeSourceImportDialogComponent} from './knowledge-source/ks-import-dialog/knowledge-source-import-dialog.component';
 import {KsInfoComponent} from './knowledge-source/ks-info/ks-info.component';
 import {KsInfoDialogComponent} from './knowledge-source/ks-info-dialog/ks-info-dialog.component';
@@ -74,7 +74,10 @@ import {NoteCreationComponent} from './ingest/note-creation/note-creation.compon
 import {MatBottomSheetModule} from "@angular/material/bottom-sheet";
 import {IngestSettingsComponent} from './settings/ingest-settings/ingest-settings.component';
 import {GeneralSettingsComponent} from './settings/general-settings/general-settings.component';
-import { KsPreviewComponent } from './knowledge-source/ks-preview/ks-preview.component';
+import {KsPreviewComponent} from './knowledge-source/ks-preview/ks-preview.component';
+import {MatTableModule} from "@angular/material/table";
+import {MatSortModule} from "@angular/material/sort";
+import {MatPaginatorModule} from "@angular/material/paginator";
 
 @NgModule({
   declarations: [
@@ -86,7 +89,7 @@ import { KsPreviewComponent } from './knowledge-source/ks-preview/ks-preview.com
     KnowledgeCanvasComponent,
     KnowledgeGraphComponent,
     KnowledgeSourceDropListComponent,
-    KnowledgeSourceEditListComponent,
+    KnowledgeSourceTableComponent,
     KnowledgeSourceImportDialogComponent,
     KsInfoComponent,
     KsInfoDialogComponent,
@@ -153,6 +156,9 @@ import { KsPreviewComponent } from './knowledge-source/ks-preview/ks-preview.com
     OverlayModule,
     ReactiveFormsModule,
     ScrollingModule,
+    MatTableModule,
+    MatSortModule,
+    MatPaginatorModule,
   ],
   providers: [SettingsService, ProjectService, KcDialogService, KsQueueService, MatSnackBar, MatAccordion, MatDatepickerModule],
   bootstrap: [AppComponent]

@@ -13,13 +13,13 @@ export class ProjectDetailsOverviewComponent implements OnInit {
   @ViewChild('accordion', {static: true}) Accordion?: MatAccordion
   currentProject: ProjectModel = new ProjectModel('', {value: ''});
   notes: string[] = [];
+  detailsHidden: boolean = false;
 
   constructor(private projectService: ProjectService) {
     projectService.currentProject.subscribe((data) => {
       if (!data.calendar)
         data.calendar = new KcCalendar();
       this.currentProject = data;
-      this.openAll();
     });
   }
 

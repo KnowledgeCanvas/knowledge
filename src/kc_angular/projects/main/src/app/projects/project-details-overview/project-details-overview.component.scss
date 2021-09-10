@@ -1,6 +1,12 @@
 .project-overview-container {
   max-height: calc(100% - 60px);
   overflow: auto;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-content: center;
+  align-items: stretch;
+  justify-content: flex-start;
 }
 
 .project-overview-header {
@@ -20,6 +26,11 @@
   flex-wrap: nowrap;
   align-content: center;
   align-items: flex-start;
+}
+
+.project-ks-list-container {
+  max-height: 50%;
+  margin: 10px;
 }
 
 app-project-summary {

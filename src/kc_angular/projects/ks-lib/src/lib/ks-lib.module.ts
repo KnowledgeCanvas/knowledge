@@ -24,6 +24,7 @@ import { ViewportHeaderComponent } from './components/viewports/shared/viewport-
 import { ViewportFooterComponent } from './components/viewports/shared/viewport-footer/viewport-footer.component';
 import {MatTooltipModule} from "@angular/material/tooltip";
 import {MatSlideToggleModule} from "@angular/material/slide-toggle";
+import { TruncatePipe } from './pipes/truncate.pipe';
 
 declare global {
   interface Window {
@@ -45,7 +46,8 @@ declare global {
     FileViewComponent,
     ExplorerComponent,
     ViewportHeaderComponent,
-    ViewportFooterComponent
+    ViewportFooterComponent,
+    TruncatePipe
   ],
   imports: [
     MatIconModule,
@@ -74,7 +76,8 @@ declare global {
     FileViewComponent,
     ExplorerComponent,
     ViewportHeaderComponent,
-    ViewportFooterComponent
+    ViewportFooterComponent,
+    TruncatePipe
   ],
   providers: []
 })

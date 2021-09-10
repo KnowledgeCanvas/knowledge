@@ -1,15 +1,15 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {KnowledgeSourceEditListComponent} from './knowledge-source-edit-list.component';
+import {KnowledgeSourceTableComponent} from './knowledge-source-table.component';
 import {HttpClient} from "@angular/common/http";
 
 describe('KnowledgeSourceViewComponent', () => {
-  let component: KnowledgeSourceEditListComponent;
-  let fixture: ComponentFixture<KnowledgeSourceEditListComponent>;
+  let component: KnowledgeSourceTableComponent;
+  let fixture: ComponentFixture<KnowledgeSourceTableComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ KnowledgeSourceEditListComponent ],
+      declarations: [ KnowledgeSourceTableComponent ],
       providers: [
         {
           provide: HttpClient,
@@ -22,7 +22,7 @@ describe('KnowledgeSourceViewComponent', () => {
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(KnowledgeSourceEditListComponent);
+    fixture = TestBed.createComponent(KnowledgeSourceTableComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
