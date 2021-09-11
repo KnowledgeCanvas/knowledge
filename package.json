@@ -48,8 +48,17 @@
         "to": "app.env"
       }
     ],
+    "publish": {
+      "provider": "s3",
+      "bucket": "knowledge-canvas"
+    },
     "mac": {
       "category": "knowledge.canvas.app"
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ]
     },
     "win": {
       "target": [
