@@ -55,7 +55,8 @@
     },
     "mac": {
       "category": "public.app-category.education",
-      "target": "dmg"
+      "target": "dmg",
+      "darkModeSupport": true
     },
     "linux": {
       "target": [
