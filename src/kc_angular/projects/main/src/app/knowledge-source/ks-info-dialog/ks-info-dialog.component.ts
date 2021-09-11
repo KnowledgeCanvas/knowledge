@@ -116,6 +116,7 @@ export class KsInfoDialogComponent implements OnInit, OnDestroy {
   }
 
   removeSource() {
+    // TODO: call confirm dialog to make sure the user wants to do this...
     if (this.projectId) {
       console.log('Removing ', this.ks, ' from project ', this.projectId);
 

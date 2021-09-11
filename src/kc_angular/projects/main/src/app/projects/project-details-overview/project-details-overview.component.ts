@@ -96,7 +96,8 @@ export class ProjectDetailsOverviewComponent implements OnInit, OnDestroy {
   }
 
   navigate(id: string) {
-    this.projectService.setCurrentProject(id);
+    if (id !== this.currentProject.id.value)
+      this.projectService.setCurrentProject(id);
   }
 
   addTopics() {
@@ -106,7 +107,6 @@ export class ProjectDetailsOverviewComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.topics.onFocus();
     })
-    console.log('topic element: ',);
   }
 
   onDetailClick() {

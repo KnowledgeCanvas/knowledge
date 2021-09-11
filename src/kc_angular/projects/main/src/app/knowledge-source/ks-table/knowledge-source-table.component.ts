@@ -1,16 +1,17 @@
 import {Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild} from '@angular/core';
 import {ProjectService} from "../../../../../ks-lib/src/lib/services/projects/project.service";
-import {ProjectModel} from "projects/ks-lib/src/lib/models/project.model";
+import {ProjectModel, ProjectUpdateRequest} from "projects/ks-lib/src/lib/models/project.model";
 import {IngestType, KnowledgeSource} from "projects/ks-lib/src/lib/models/knowledge.source.model";
-import {KcDialogService} from "../../../../../ks-lib/src/lib/services/dialog/kc-dialog.service";
+import {KcDialogRequest, KcDialogService} from "../../../../../ks-lib/src/lib/services/dialog/kc-dialog.service";
 import {animate, state, style, transition, trigger} from "@angular/animations";
-import {MatSort} from "@angular/material/sort";
+import {MatSort, Sort} from "@angular/material/sort";
 import {MatTableDataSource} from "@angular/material/table";
 import {MatPaginator} from "@angular/material/paginator";
 import {Subscription} from "rxjs";
 import {Clipboard} from "@angular/cdk/clipboard";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {BrowserViewDialogService} from "../../../../../ks-lib/src/lib/services/browser-view-dialog/browser-view-dialog.service";
+import {UuidModel} from "../../../../../ks-lib/src/lib/models/uuid.model";
 
 @Component({
   selector: 'app-knowledge-source-table',
@@ -30,7 +31,7 @@ export class KnowledgeSourceTableComponent implements OnInit, OnDestroy, OnChang
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   knowledgeSource: KnowledgeSource[] = [];
   dataSource: MatTableDataSource<KnowledgeSource>;
-  columnsToDisplay: string[] = ['icon', 'title', 'actions', 'dateCreated', 'dateModified', 'ingestType'];
+  columnsToDisplay: string[] = ['icon', 'title', 'dateCreated', 'dateModified', 'ingestType', 'actions'];
   expandedElement: KnowledgeSource | null = null;
   subscription?: Subscription;
   hideTable: boolean;
@@ -39,6 +40,7 @@ export class KnowledgeSourceTableComponent implements OnInit, OnDestroy, OnChang
 
   constructor(private browserViewDialogService: BrowserViewDialogService,
               private projectService: ProjectService,
+              private confirmDialog: KcDialogService,
               private dialogService: KcDialogService,
               private snackbar: MatSnackBar,
               private clipboard: Clipboard) {
@@ -46,11 +48,9 @@ export class KnowledgeSourceTableComponent implements OnInit, OnDestroy, OnChang
     this.hideTable = true;
   }
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   ngOnChanges(changes: SimpleChanges) {
-    console.log('Got new project for table: ', changes);
     let project = changes.project.currentValue;
     if (!project || !project.id) {
       console.error('Expected project but received: ', project);
@@ -75,6 +75,14 @@ export class KnowledgeSourceTableComponent implements OnInit, OnDestroy, OnChang
 
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
+
+    // Ignore case if the column values are strings. Otherwise X, Y, Z appears before a, b, c, etc...
+    this.dataSource.sortingDataAccessor = (data: any, sortHeaderId: string): string => {
+      if (typeof data[sortHeaderId] === 'string') {
+        return data[sortHeaderId].toLocaleLowerCase();
+      }
+      return data[sortHeaderId];
+    }
 
     setTimeout(() => {
       this.hideTable = this.dataSource.data.length === 0;
@@ -131,8 +139,29 @@ export class KnowledgeSourceTableComponent implements OnInit, OnDestroy, OnChang
   }
 
   delete(ks: KnowledgeSource) {
-    // TODO: implement this........
-    console.error('Delete KS not implemented yet!');
+    let confirmDialogConfig: KcDialogRequest = {
+      actionButtonText: "Delete Permanently",
+      actionToTake: 'delete',
+      cancelButtonText: "Cancel",
+      listToDisplay: [ks],
+      message: "Are you sure you want to delete this Knowledge Source?",
+      title: `Delete`
+
+    }
+    this.dialogService.open(confirmDialogConfig);
+    this.dialogService.confirmed().subscribe((confirmed) => {
+      if (confirmed) {
+        if (this.project && this.project.id.value !== '') {
+          let update: ProjectUpdateRequest = {
+            id: this.project.id,
+            removeKnowledgeSource: [ks]
+          }
+          this.projectService.updateProject(update);
+        } else {
+          console.error(`Attempting to remove ${ks.title} with invalid project id...`);
+        }
+      }
+    })
   }
 
   rowClicked(element: any) {

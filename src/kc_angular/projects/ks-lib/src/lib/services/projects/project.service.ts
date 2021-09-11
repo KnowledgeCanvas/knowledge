@@ -262,7 +262,6 @@ export class ProjectService {
     this.projectSource.push(projectToUpdate);
 
     if (projectUpdate.id.value !== this.selectedSource.value.id.value || shouldUpdate) {
-      console.log('Updating project for visible changes...');
       this.setCurrentProject(projectUpdate.id.value);
       this.refreshTree();
     }

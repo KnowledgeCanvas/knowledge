@@ -23,7 +23,7 @@ export class SearchResultsComponent implements OnInit {
   ksQueueLoadingSubscription: Subscription;
 
   constructor(private browserViewDialogService: BrowserViewDialogService,
-              private canvasDropService: KsDropService,
+              private ksDropService: KsDropService,
               private ksQueueService: KsQueueService,
               private projectService: ProjectService,
               public dialog: MatDialog) {
@@ -44,7 +44,7 @@ export class SearchResultsComponent implements OnInit {
   }
 
   drop(event: CdkDragDrop<any>) {
-    this.canvasDropService.drop(event);
+    this.ksDropService.drop(event);
     this.ksQueue = [...this.ksQueue];
   }
 

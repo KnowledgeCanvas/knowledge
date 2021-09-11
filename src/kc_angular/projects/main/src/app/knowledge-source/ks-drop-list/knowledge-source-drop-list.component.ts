@@ -1,4 +1,4 @@
-import {Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild} from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {CdkDragDrop} from "@angular/cdk/drag-drop";
 import {KsDropService} from "../../../../../ks-lib/src/lib/services/ks-drop/ks-drop.service";
 import {MatDialog} from "@angular/material/dialog";
@@ -11,7 +11,8 @@ import {FaviconExtractorService} from "../../../../../ks-lib/src/lib/services/fa
 import {StorageService} from "../../../../../ks-lib/src/lib/services/storage/storage.service";
 import {KsFactoryService} from "../../../../../ks-lib/src/lib/services/ks-factory/ks-factory.service";
 import {BrowserViewDialogService} from "../../../../../ks-lib/src/lib/services/browser-view-dialog/browser-view-dialog.service";
-import {Observable, Subscribable, Subscription} from "rxjs";
+import {Subscription} from "rxjs";
+import {KsQueueService} from "../ks-queue-service/ks-queue.service";
 
 export interface KsSortBy {
   index: number;
@@ -72,6 +73,7 @@ export class KnowledgeSourceDropListComponent implements OnInit, OnDestroy {
   constructor(private browserViewDialogService: BrowserViewDialogService,
               private faviconService: FaviconExtractorService,
               private ksDropService: KsDropService,
+              private ksQueueService: KsQueueService,
               private projectService: ProjectService,
               private storageService: StorageService,
               private ksFactory: KsFactoryService,
@@ -162,11 +164,17 @@ export class KnowledgeSourceDropListComponent implements OnInit, OnDestroy {
       addKnowledgeSource: [ks]
     }
     this.projectService.updateProject(update);
+
   }
 
   onKsDropEvent($event: CdkDragDrop<any>) {
     this.ksDropService.drop($event);
+
+    // Updates are not propagated unless we do this
     this.ksList = [...this.ksList];
+
+    // The Queue Service must be updated because the Drop Service isn't listening to these events
+    this.ksQueueService.remove($event.item.data);
 
     // If the dropped item is coming from a different list, save it to the project immediately
     if ($event.previousContainer !== $event.container) {

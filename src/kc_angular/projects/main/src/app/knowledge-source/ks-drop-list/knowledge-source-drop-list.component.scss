@@ -77,6 +77,10 @@
   display: flex;
 }
 
+.project-knowledge-source-viewport:last-child {
+  padding-bottom: 100px !important;
+}
+
 .cdk-virtual-scroll-data-source .project-knowledge-source-viewport .cdk-virtual-scroll-content-wrapper {
   flex-direction: column;
   display: flex;

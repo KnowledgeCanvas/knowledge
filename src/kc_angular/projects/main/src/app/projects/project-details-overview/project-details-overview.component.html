@@ -12,6 +12,13 @@
     </div>
   </div>
 
+  <div class="project-overview-calendar">
+    <div class="container">
+      <h2>{{currentProject.name}} / Calendar</h2>
+      <app-project-calendar [calendar]="currentProject.calendar" (start)="calStart($event)" (end)="calEnd($event)"></app-project-calendar>
+    </div>
+  </div>
+
   <div class="project-topic-list-container">
     <div class="container">
       <h2>{{currentProject.name}} / Topics</h2>
@@ -25,13 +32,6 @@
       <h2>{{currentProject.name}} / Knowledge Sources</h2>
     </div>
     <app-knowledge-source-table [project]="currentProject"></app-knowledge-source-table>
-  </div>
-
-  <div class="project-overview-calendar">
-    <div class="container">
-      <h2>{{currentProject.name}} / Calendar</h2>
-      <app-project-calendar [calendar]="currentProject.calendar" (start)="calStart($event)" (end)="calEnd($event)"></app-project-calendar>
-    </div>
   </div>
 
   <div class="project-summary-container">

@@ -48,9 +48,7 @@ export class SearchSettingsComponent implements OnInit, OnChanges {
       this.numResults.setValue(`${changes.searchSettings.currentValue.numResults}`);
       if (searchSettings.provider) {
         for (let provider of this.providers) {
-          console.log('Checking provider: ', provider, ' against ', searchSettings.provider);
           if (provider.value === searchSettings.provider) {
-            console.log('Setting provider to: ', provider.value);
             this.provider = {value: provider.value, view: provider.view};
           }
         }
@@ -93,7 +91,6 @@ export class SearchSettingsComponent implements OnInit, OnChanges {
 
 
   onProviderChange($event: MatSelectChange) {
-    console.log('Setting provider to: ', this.provider.value);
     this.updateSettings();
   }
 }
