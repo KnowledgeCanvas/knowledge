@@ -10,7 +10,8 @@ export class ProjectModel {
   authors?: string[] = [];
   description?: string = '';
   readonly dateCreated: string = '';
-  readonly dateModified: string = '';
+  dateModified: string = '';
+  dateAccessed: string = '';
   readonly parentId?: UuidModel = {value: ''};
   subprojects?: string[] = [];
   topics?: string[] = [];
@@ -27,6 +28,7 @@ export class ProjectModel {
     this.parentId = parentId;
     this.dateCreated = Date();
     this.dateModified = Date();
+    this.dateAccessed = Date();
     this.calendar = new KcCalendar();
   }
 }

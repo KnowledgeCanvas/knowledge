@@ -1,36 +1,64 @@
-<div class="project-overview-container">
-
+<div class="project-overview-container" #projectOverview>
   <div class="project-overview-header">
-    <h1>{{currentProject.name}}</h1>
+    <div class="project-breadcrumb-container">
+      <div *ngFor="let ancestor of ancestors">
+        <button class="project-breadcrumb" (click)="navigate(ancestor.id)">{{ancestor.title}}</button>
+      </div>
+    </div>
+    <div>
+      <button (click)="addTopics()">Add Topics</button>
+      <button *ngIf="!detailsHidden" (click)="onDetailClick()">Hide Details</button>
+      <button *ngIf="detailsHidden" (click)="onDetailClick()">Show Details</button>
+    </div>
+  </div>
+
+  <div class="project-topic-list-container">
+    <div class="container">
+      <h2>{{currentProject.name}} / Topics</h2>
+      <app-project-topic-list [sourceRef]="'app-project-summary'" #topics></app-project-topic-list>
+    </div>
+  </div>
+
+
+  <div class="project-ks-list-container" *ngIf="currentProject.knowledgeSource && currentProject.knowledgeSource.length > 0">
+    <div class="container">
+      <h2>{{currentProject.name}} / Knowledge Sources</h2>
+    </div>
+    <app-knowledge-source-table [project]="currentProject"></app-knowledge-source-table>
+  </div>
+
+  <div class="project-overview-calendar">
+    <div class="container">
+      <h2>{{currentProject.name}} / Calendar</h2>
+      <app-project-calendar [calendar]="currentProject.calendar" (start)="calStart($event)" (end)="calEnd($event)"></app-project-calendar>
+    </div>
   </div>
 
   <div class="project-summary-container">
-    <div class="container">
-      <h2>{{currentProject.name}} Details</h2>
-      <div class="row">
-        <button mat-button *ngIf="!detailsHidden" (click)="detailsHidden = !detailsHidden">Hide Details</button>
-        <button mat-button *ngIf="detailsHidden" (click)="detailsHidden = !detailsHidden">Show Details</button>
-        <div class="col right">
-          <div class="ks-info-controls" [style.display]="detailsHidden ? 'none': 'block'">
-            <button mat-icon-button (click)="openAll()">
-              <mat-icon>
-                unfold_more
-              </mat-icon>
-            </button>
-            <button mat-icon-button (click)="closeAll()">
-              <mat-icon>
-                unfold_less
-              </mat-icon>
-            </button>
-          </div>
+    <div class="container" [style.display]="detailsHidden ? 'none': 'block'">
+      <div class="row no-pad no-margin flex-row-center-between">
+        <div style="width: 50%">
+          <h2>{{currentProject.name}} / Details</h2>
+        </div>
+        <div class="ks-info-controls">
+          <button mat-icon-button (click)="openAll()">
+            <mat-icon>
+              unfold_more
+            </mat-icon>
+          </button>
+          <button mat-icon-button (click)="closeAll()">
+            <mat-icon>
+              unfold_less
+            </mat-icon>
+          </button>
         </div>
       </div>
 
-      <div class="project-accordion-container" [style.display]="detailsHidden ? 'none': 'block'">
+      <div class="project-accordion-container">
         <mat-accordion #accordion="matAccordion" [multi]="true" togglePosition="after" class="ks-details-accordion">
           <!--        TODO: implement notes features (add a note, delete a note, etc)-->
 
-          <mat-expansion-panel>
+          <mat-expansion-panel expanded>
             <mat-expansion-panel-header>
               <mat-panel-title>Description</mat-panel-title>
               <mat-panel-description></mat-panel-description>
@@ -49,17 +77,17 @@
             </mat-expansion-panel-header>
           </mat-expansion-panel>
 
-          <mat-expansion-panel [expanded]="currentProject.topics && currentProject.topics.length > 0">
-            <mat-expansion-panel-header>
-              <mat-panel-title>Topics</mat-panel-title>
-              <mat-panel-description></mat-panel-description>
-              <div class="mat-panel-body">
-                <ng-template matExpansionPanelContent>
-                  <app-project-topic-list [sourceRef]="'app-project-summary'"></app-project-topic-list>
-                </ng-template>
-              </div>
-            </mat-expansion-panel-header>
-          </mat-expansion-panel>
+          <!--          <mat-expansion-panel [expanded]="currentProject.topics && currentProject.topics.length > 0">-->
+          <!--            <mat-expansion-panel-header>-->
+          <!--              <mat-panel-title>Topics</mat-panel-title>-->
+          <!--              <mat-panel-description></mat-panel-description>-->
+          <!--              <div class="mat-panel-body">-->
+          <!--                <ng-template matExpansionPanelContent>-->
+          <!--                  -->
+          <!--                </ng-template>-->
+          <!--              </div>-->
+          <!--            </mat-expansion-panel-header>-->
+          <!--          </mat-expansion-panel>-->
 
           <mat-expansion-panel>
             <mat-expansion-panel-header>
@@ -81,17 +109,19 @@
 
           <mat-expansion-panel>
             <mat-expansion-panel-header>
-              <mat-panel-title>Calendar</mat-panel-title>
+              <mat-panel-title>Timeline</mat-panel-title>
               <mat-panel-description></mat-panel-description>
               <div class="mat-panel-body">
                 <ng-template matExpansionPanelContent>
-                  <app-project-calendar [calendar]="currentProject.calendar" (start)="calStart($event)" (end)="calEnd($event)"></app-project-calendar>
                   <div class="row">
                     <div class="col s4 left">
-                      <b>Created:</b>   {{currentProject.dateCreated | date}}
+                      <b>Created:</b>   {{currentProject.dateCreated | date: 'shortDate'}}
+                    </div>
+                    <div class="col s4">
+                      <b>Accessed:</b>  {{currentProject.dateAccessed | date: 'shortDate'}}
                     </div>
                     <div class="col s4 right">
-                      <b>Changed:</b>  {{currentProject.dateModified | date}}
+                      <b>Changed:</b>  {{currentProject.dateModified | date: 'shortDate'}}
                     </div>
                   </div>
                 </ng-template>
@@ -102,11 +132,5 @@
       </div>
     </div>
   </div>
-  <div class="project-ks-list-container" *ngIf="currentProject.knowledgeSource && currentProject.knowledgeSource.length > 0">
-    <div class="container">
-      <mat-divider></mat-divider>
-      <h2>{{currentProject.name}} Knowledge Sources</h2>
-    </div>
-    <app-knowledge-source-table></app-knowledge-source-table>
-  </div>
+
 </div>

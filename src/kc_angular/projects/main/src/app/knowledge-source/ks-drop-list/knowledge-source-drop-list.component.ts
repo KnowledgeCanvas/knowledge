@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild} from '@angular/core';
 import {CdkDragDrop} from "@angular/cdk/drag-drop";
 import {KsDropService} from "../../../../../ks-lib/src/lib/services/ks-drop/ks-drop.service";
 import {MatDialog} from "@angular/material/dialog";
@@ -11,6 +11,7 @@ import {FaviconExtractorService} from "../../../../../ks-lib/src/lib/services/fa
 import {StorageService} from "../../../../../ks-lib/src/lib/services/storage/storage.service";
 import {KsFactoryService} from "../../../../../ks-lib/src/lib/services/ks-factory/ks-factory.service";
 import {BrowserViewDialogService} from "../../../../../ks-lib/src/lib/services/browser-view-dialog/browser-view-dialog.service";
+import {Observable, Subscribable, Subscription} from "rxjs";
 
 export interface KsSortBy {
   index: number;
@@ -24,7 +25,7 @@ export interface KsSortBy {
   templateUrl: './knowledge-source-drop-list.component.html',
   styleUrls: ['./knowledge-source-drop-list.component.scss']
 })
-export class KnowledgeSourceDropListComponent implements OnInit {
+export class KnowledgeSourceDropListComponent implements OnInit, OnDestroy {
   @ViewChild('ksSortKey') ksSortKeyElementRef: ElementRef = {} as ElementRef;
   project: ProjectModel | null = null;
   ksList: KnowledgeSource[] = [];
@@ -32,6 +33,7 @@ export class KnowledgeSourceDropListComponent implements OnInit {
   tooltip: string = '';
   CONTAINER_ID = 'knowledge-canvas-sidebar';
   private sortByIndex = 0;
+  private subscription: Subscription | null = null;
 
   // TODO: Ideally each KS could also be sorted by rating
   private sortByList: KsSortBy[] = [
@@ -77,7 +79,7 @@ export class KnowledgeSourceDropListComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.projectService.currentProject.subscribe(project => {
+    this.subscription = this.projectService.currentProject.subscribe(project => {
       // Update project when necessary
       this.project = null;
       this.ksList = [];
@@ -133,6 +135,11 @@ export class KnowledgeSourceDropListComponent implements OnInit {
         this.hideSortHeader = this.ksList.length <= 1;
       });
     });
+  }
+
+  ngOnDestroy() {
+    if (this.subscription)
+      this.subscription.unsubscribe();
   }
 
   addKsToProject(ks: KnowledgeSource) {
@@ -193,7 +200,8 @@ export class KnowledgeSourceDropListComponent implements OnInit {
   openKsInfoDialog(node: KnowledgeSource) {
     let dialogInput: KsInfoDialogInput = {
       source: 'ks-drop-list',
-      ks: node
+      ks: node,
+      projectId: this.project ? this.project.id.value : undefined
     }
 
     const dialogRef = this.dialog.open(KsInfoDialogComponent, {

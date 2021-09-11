@@ -40,6 +40,7 @@ export class SearchResultsComponent implements OnInit {
 
   ngOnDestroy() {
     this.ksQueueSubscription.unsubscribe();
+    this.ksQueueLoadingSubscription.unsubscribe();
   }
 
   drop(event: CdkDragDrop<any>) {
@@ -50,7 +51,8 @@ export class SearchResultsComponent implements OnInit {
   displayContextPopup(ks: KnowledgeSource): void {
     let dialogInput: KsInfoDialogInput = {
       source: 'ks-queue',
-      ks: ks
+      ks: ks,
+      projectId: this.projectService.getCurrentProjectId().value
     }
 
     const dialogRef = this.dialog.open(KsInfoDialogComponent, {
