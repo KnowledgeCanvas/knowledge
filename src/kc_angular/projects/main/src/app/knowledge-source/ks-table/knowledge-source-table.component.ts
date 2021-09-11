@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild} from '@angular/core';
 import {ProjectService} from "../../../../../ks-lib/src/lib/services/projects/project.service";
 import {ProjectModel} from "projects/ks-lib/src/lib/models/project.model";
 import {IngestType, KnowledgeSource} from "projects/ks-lib/src/lib/models/knowledge.source.model";
@@ -12,13 +12,6 @@ import {Clipboard} from "@angular/cdk/clipboard";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {BrowserViewDialogService} from "../../../../../ks-lib/src/lib/services/browser-view-dialog/browser-view-dialog.service";
 
-interface KsChecklist {
-  title: string;
-  checked: boolean;
-  id: string;
-  type: IngestType
-}
-
 @Component({
   selector: 'app-knowledge-source-table',
   templateUrl: './knowledge-source-table.component.html',
@@ -31,13 +24,13 @@ interface KsChecklist {
     ]),
   ],
 })
-export class KnowledgeSourceTableComponent implements OnInit, AfterViewInit, OnDestroy {
+export class KnowledgeSourceTableComponent implements OnInit, OnDestroy, OnChanges {
+  @Input() project: ProjectModel | undefined;
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-  project: ProjectModel | null = new ProjectModel('', {value: ''});
   knowledgeSource: KnowledgeSource[] = [];
   dataSource: MatTableDataSource<KnowledgeSource>;
-  columnsToDisplay: string[] = ['icon', 'title', 'ingestType', 'actions'];
+  columnsToDisplay: string[] = ['icon', 'title', 'actions', 'dateCreated', 'dateModified', 'ingestType'];
   expandedElement: KnowledgeSource | null = null;
   subscription?: Subscription;
   hideTable: boolean;
@@ -56,20 +49,32 @@ export class KnowledgeSourceTableComponent implements OnInit, AfterViewInit, OnD
   ngOnInit(): void {
   }
 
-  ngAfterViewInit() {
-    this.subscription = this.projectService.currentProject.subscribe((project: ProjectModel) => {
-      this.project = project;
-      this.filter = '';
+  ngOnChanges(changes: SimpleChanges) {
+    console.log('Got new project for table: ', changes);
+    let project = changes.project.currentValue;
+    if (!project || !project.id) {
+      console.error('Expected project but received: ', project);
+      return;
+    }
 
-      if (project.knowledgeSource && project.knowledgeSource.length > 0) {
-        this.dataSource = new MatTableDataSource<KnowledgeSource>(project.knowledgeSource);
-      } else {
-        this.dataSource = new MatTableDataSource<KnowledgeSource>([]);
-      }
+    if (changes.project.firstChange) {
+      setTimeout(() => {
+        this.update(project);
+      })
+    } else {
+      this.update(project);
+    }
+  }
 
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-    });
+  update(project: ProjectModel) {
+    if (project.knowledgeSource && project.knowledgeSource.length > 0) {
+      this.dataSource = new MatTableDataSource<KnowledgeSource>(project.knowledgeSource);
+    } else {
+      this.dataSource = new MatTableDataSource<KnowledgeSource>([]);
+    }
+
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
 
     setTimeout(() => {
       this.hideTable = this.dataSource.data.length === 0;
@@ -122,7 +127,7 @@ export class KnowledgeSourceTableComponent implements OnInit, AfterViewInit, OnD
   }
 
   openKC(ks: KnowledgeSource) {
-    this.browserViewDialogService.open({ks:ks});
+    this.browserViewDialogService.open({ks: ks});
   }
 
   delete(ks: KnowledgeSource) {
