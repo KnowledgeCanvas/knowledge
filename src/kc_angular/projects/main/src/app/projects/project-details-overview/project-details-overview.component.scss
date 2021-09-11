@@ -1,5 +1,6 @@
 .project-overview-container {
-  max-height: calc(100% - 86px);
+  // 36px is the height of the breadcrum and action toolbar that floats above the project overview
+  max-height: calc(100% - 36px);
   overflow: auto;
   display: flex;
   flex-direction: column;
