@@ -21,7 +21,7 @@
     "pack": "electron-builder --dir",
     "dist": "electron-builder --publish never",
     "dist-all": "electron-builder -mwl --publish never",
-    "publish": "electron-builder --publish always",
+    "publish": "electron-builder -mwl --publish always",
     "purge": "rm -rf node_modules && yarn workspaces run purge",
     "start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1",
