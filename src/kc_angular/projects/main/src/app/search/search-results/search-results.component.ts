@@ -23,7 +23,7 @@ export class SearchResultsComponent implements OnInit {
   ksQueueLoadingSubscription: Subscription;
 
   constructor(private browserViewDialogService: BrowserViewDialogService,
-              private canvasDropService: KsDropService,
+              private ksDropService: KsDropService,
               private ksQueueService: KsQueueService,
               private projectService: ProjectService,
               public dialog: MatDialog) {
@@ -40,17 +40,19 @@ export class SearchResultsComponent implements OnInit {
 
   ngOnDestroy() {
     this.ksQueueSubscription.unsubscribe();
+    this.ksQueueLoadingSubscription.unsubscribe();
   }
 
   drop(event: CdkDragDrop<any>) {
-    this.canvasDropService.drop(event);
+    this.ksDropService.drop(event);
     this.ksQueue = [...this.ksQueue];
   }
 
   displayContextPopup(ks: KnowledgeSource): void {
     let dialogInput: KsInfoDialogInput = {
       source: 'ks-queue',
-      ks: ks
+      ks: ks,
+      projectId: this.projectService.getCurrentProjectId().value
     }
 
     const dialogRef = this.dialog.open(KsInfoDialogComponent, {

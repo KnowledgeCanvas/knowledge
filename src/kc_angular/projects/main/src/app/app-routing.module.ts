@@ -2,7 +2,7 @@ import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 import {SettingsComponent} from "./settings/settings.component";
 import {ProjectDetailsOverviewComponent} from "./projects/project-details-overview/project-details-overview.component";
-import {KnowledgeSourceEditListComponent} from "./knowledge-source/ks-edit-list/knowledge-source-edit-list.component";
+import {KnowledgeSourceTableComponent} from "./knowledge-source/ks-table/knowledge-source-table.component";
 import {FilesComponent} from "./ingest/files/file-list/files.component";
 import {ProjectsComponent} from "./projects/projects.component";
 import {StorageSettingsComponent} from "./settings/storage-settings/storage-settings.component";
@@ -27,7 +27,7 @@ const routes: Routes = [
         outlet: OUTLET_PROJECT_DETAILS
       },
       {path: 'app-knowledge-graph', component: KnowledgeGraphComponent, outlet: OUTLET_PROJECT_DETAILS},
-      {path: 'app-ks-edit-list', component: KnowledgeSourceEditListComponent, outlet: OUTLET_PROJECT_DETAILS}]
+      {path: 'app-ks-table', component: KnowledgeSourceTableComponent, outlet: OUTLET_PROJECT_DETAILS}]
   },
   {path: 'app-files', component: FilesComponent},
   {

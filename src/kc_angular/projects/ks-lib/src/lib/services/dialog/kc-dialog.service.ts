@@ -29,14 +29,14 @@ export class KcDialogService {
     this.dialogRef = this.dialog.open(ConfirmDialogComponent, {data: options});
   }
 
-  public confirmed(): Observable<any> {
+  public confirmed(): Observable<boolean> {
     if (this.dialogRef != null) {
       return this.dialogRef.afterClosed().pipe(take(1), map(res => {
           return res;
         }
       ));
     } else {
-      return new Observable<any>();
+      return new Observable<boolean>();
     }
 
   }

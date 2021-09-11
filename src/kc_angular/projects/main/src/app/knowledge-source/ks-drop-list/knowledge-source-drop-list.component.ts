@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {CdkDragDrop} from "@angular/cdk/drag-drop";
 import {KsDropService} from "../../../../../ks-lib/src/lib/services/ks-drop/ks-drop.service";
 import {MatDialog} from "@angular/material/dialog";
@@ -11,6 +11,8 @@ import {FaviconExtractorService} from "../../../../../ks-lib/src/lib/services/fa
 import {StorageService} from "../../../../../ks-lib/src/lib/services/storage/storage.service";
 import {KsFactoryService} from "../../../../../ks-lib/src/lib/services/ks-factory/ks-factory.service";
 import {BrowserViewDialogService} from "../../../../../ks-lib/src/lib/services/browser-view-dialog/browser-view-dialog.service";
+import {Subscription} from "rxjs";
+import {KsQueueService} from "../ks-queue-service/ks-queue.service";
 
 export interface KsSortBy {
   index: number;
@@ -24,7 +26,7 @@ export interface KsSortBy {
   templateUrl: './knowledge-source-drop-list.component.html',
   styleUrls: ['./knowledge-source-drop-list.component.scss']
 })
-export class KnowledgeSourceDropListComponent implements OnInit {
+export class KnowledgeSourceDropListComponent implements OnInit, OnDestroy {
   @ViewChild('ksSortKey') ksSortKeyElementRef: ElementRef = {} as ElementRef;
   project: ProjectModel | null = null;
   ksList: KnowledgeSource[] = [];
@@ -32,6 +34,7 @@ export class KnowledgeSourceDropListComponent implements OnInit {
   tooltip: string = '';
   CONTAINER_ID = 'knowledge-canvas-sidebar';
   private sortByIndex = 0;
+  private subscription: Subscription | null = null;
 
   // TODO: Ideally each KS could also be sorted by rating
   private sortByList: KsSortBy[] = [
@@ -70,6 +73,7 @@ export class KnowledgeSourceDropListComponent implements OnInit {
   constructor(private browserViewDialogService: BrowserViewDialogService,
               private faviconService: FaviconExtractorService,
               private ksDropService: KsDropService,
+              private ksQueueService: KsQueueService,
               private projectService: ProjectService,
               private storageService: StorageService,
               private ksFactory: KsFactoryService,
@@ -77,7 +81,7 @@ export class KnowledgeSourceDropListComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.projectService.currentProject.subscribe(project => {
+    this.subscription = this.projectService.currentProject.subscribe(project => {
       // Update project when necessary
       this.project = null;
       this.ksList = [];
@@ -135,6 +139,11 @@ export class KnowledgeSourceDropListComponent implements OnInit {
     });
   }
 
+  ngOnDestroy() {
+    if (this.subscription)
+      this.subscription.unsubscribe();
+  }
+
   addKsToProject(ks: KnowledgeSource) {
     // Make sure there is an active project for redundancy
     if (!this.project) {
@@ -155,11 +164,17 @@ export class KnowledgeSourceDropListComponent implements OnInit {
       addKnowledgeSource: [ks]
     }
     this.projectService.updateProject(update);
+
   }
 
   onKsDropEvent($event: CdkDragDrop<any>) {
     this.ksDropService.drop($event);
+
+    // Updates are not propagated unless we do this
     this.ksList = [...this.ksList];
+
+    // The Queue Service must be updated because the Drop Service isn't listening to these events
+    this.ksQueueService.remove($event.item.data);
 
     // If the dropped item is coming from a different list, save it to the project immediately
     if ($event.previousContainer !== $event.container) {
@@ -193,7 +208,8 @@ export class KnowledgeSourceDropListComponent implements OnInit {
   openKsInfoDialog(node: KnowledgeSource) {
     let dialogInput: KsInfoDialogInput = {
       source: 'ks-drop-list',
-      ks: node
+      ks: node,
+      projectId: this.project ? this.project.id.value : undefined
     }
 
     const dialogRef = this.dialog.open(KsInfoDialogComponent, {

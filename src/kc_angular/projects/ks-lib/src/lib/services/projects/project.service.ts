@@ -2,11 +2,7 @@ import {Injectable} from '@angular/core';
 import {ProjectTree, ProjectTreeNode} from "projects/ks-lib/src/lib/models/project.tree.model";
 import {BehaviorSubject} from 'rxjs';
 import {HttpHeaders} from '@angular/common/http';
-import {
-  ProjectCreationRequest,
-  ProjectModel,
-  ProjectUpdateRequest
-} from "projects/ks-lib/src/lib/models/project.model";
+import {ProjectCreationRequest, ProjectModel, ProjectUpdateRequest} from "projects/ks-lib/src/lib/models/project.model";
 import {KnowledgeSource} from "projects/ks-lib/src/lib/models/knowledge.source.model";
 import {UuidService} from "../uuid/uuid.service";
 import {UuidModel} from "projects/ks-lib/src/lib/models/uuid.model";
@@ -38,11 +34,6 @@ export class ProjectService {
     this.tree = new ProjectTree();
     this.lookup = new Map();
     this.projectSource = [];
-
-    this.currentProject.subscribe((project) => {
-      if (project.id && project.id.value.length > 10)
-        this.storageService.kcCurrentProject = project.id.value;
-    });
 
     this.getAllProjects().then((projects: ProjectModel[]) => {
       this.projectSource = projects;
@@ -216,6 +207,8 @@ export class ProjectService {
       return;
     }
 
+    let shouldUpdate: boolean = false;
+
     if (projectUpdate.name && projectUpdate.name !== projectToUpdate.name) {
       projectToUpdate.name = projectUpdate.name;
     }
@@ -223,11 +216,13 @@ export class ProjectService {
     // Handle knowledge source removal
     if (projectUpdate.removeKnowledgeSource && projectUpdate.removeKnowledgeSource.length > 0) {
       projectToUpdate = this.removeKnowledgeSource(projectToUpdate, projectUpdate.removeKnowledgeSource);
+      shouldUpdate = true;
     }
 
     // Handle knowledge source insertion
     if (projectUpdate.addKnowledgeSource && projectUpdate.addKnowledgeSource.length > 0) {
       projectToUpdate = this.addKnowledgeSource(projectToUpdate, projectUpdate.addKnowledgeSource);
+      shouldUpdate = true;
     }
 
     // Handle knowledge source update
@@ -257,22 +252,43 @@ export class ProjectService {
       projectToUpdate.topics = projectUpdate.overWriteTopics;
     }
 
+    projectToUpdate.dateModified = Date();
+
     // Persist project to storage system
-    let projectString = JSON.stringify(projectToUpdate);
-    window.localStorage.setItem(projectUpdate.id.value, projectString);
+    this.storageService.updateProject(projectToUpdate);
 
     // Update project source
     this.projectSource = this.projectSource.filter(p => p.id.value !== projectUpdate.id.value);
     this.projectSource.push(projectToUpdate);
-    this.setCurrentProject(projectUpdate.id.value);
-    this.refreshTree();
+
+    if (projectUpdate.id.value !== this.selectedSource.value.id.value || shouldUpdate) {
+      this.setCurrentProject(projectUpdate.id.value);
+      this.refreshTree();
+    }
   }
 
   setCurrentProject(id: string): void {
+    // TODO: come up with an intelligent way to avoid updating projects when visual changes are not needed
+    // Refuse to set project if id is identical to current project
+    // if (id === this.selectedSource.value.id.value) {
+    //   console.warn('Refusing to update project because ')
+    //   return;
+    // }
+
     let project = this.projectSource.find(p => p.id.value === id);
 
     if (project) {
+      // Update access date any time a project is viewed
+      project.dateAccessed = Date();
+
+      // Set current project and notify subscribers
       this.selectedSource.next(project);
+
+      // Persist project to storage system
+      this.storageService.updateProject(project);
+
+      // Persist active project ID to storage system
+      this.storageService.kcCurrentProject = project.id.value;
     } else {
       console.error('ProjectService failed to find ID in setCurrentProject: ', id);
     }
@@ -315,6 +331,21 @@ export class ProjectService {
       for (let subProjectId of project.subprojects) {
         ret = ret.concat(this.getSubTree(subProjectId));
       }
+    }
+    return ret;
+  }
+
+  getAncestors(id: string): ProjectIdentifiers[] {
+    let project = this.projectSource.find(k => k.id.value === id);
+    let ret: ProjectIdentifiers[] = [];
+    if (!project) {
+      console.error('Attempting to find project that doesn\'t exist with ID: ', id);
+      return ret;
+    }
+
+    ret.push({id: project.id.value, title: project.name});
+    if (project.parentId && project.parentId.value !== '') {
+      ret = [...this.getAncestors(project.parentId.value), ...ret];
     }
     return ret;
   }

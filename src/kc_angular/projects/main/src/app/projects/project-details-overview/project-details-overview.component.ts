@@ -1,29 +1,46 @@
-import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
-import {ProjectService} from "../../../../../ks-lib/src/lib/services/projects/project.service";
+import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {ProjectIdentifiers, ProjectService} from "../../../../../ks-lib/src/lib/services/projects/project.service";
 import {ProjectModel} from "projects/ks-lib/src/lib/models/project.model";
 import {MatAccordion} from "@angular/material/expansion";
 import {KcCalendar} from "../../../../../ks-lib/src/lib/models/calendar.model";
+import {Subscription} from "rxjs";
+import {ProjectTopicListComponent} from "../project-topic-list/project-topic-list.component";
 
 @Component({
   selector: 'app-canvas-details-overview',
   templateUrl: './project-details-overview.component.html',
   styleUrls: ['./project-details-overview.component.scss']
 })
-export class ProjectDetailsOverviewComponent implements OnInit {
-  @ViewChild('accordion', {static: true}) Accordion?: MatAccordion
+export class ProjectDetailsOverviewComponent implements OnInit, OnDestroy {
+  @ViewChild('projectOverview', {static: true}) container!: ElementRef;
+  @ViewChild('accordion', {static: true}) Accordion!: MatAccordion
+  @ViewChild('topics', {static: true}) topics!: ProjectTopicListComponent;
   currentProject: ProjectModel = new ProjectModel('', {value: ''});
   notes: string[] = [];
+  detailsHidden: boolean = true;
+  ancestors: ProjectIdentifiers[] = [];
+  topicsHidden: boolean = true;
+  private subscription: Subscription;
 
   constructor(private projectService: ProjectService) {
-    projectService.currentProject.subscribe((data) => {
-      if (!data.calendar)
-        data.calendar = new KcCalendar();
-      this.currentProject = data;
-      this.openAll();
+    this.subscription = projectService.currentProject.subscribe((project: ProjectModel) => {
+      if (!project.calendar)
+        project.calendar = new KcCalendar();
+      this.currentProject = project;
+      this.ancestors = projectService.getAncestors(project.id.value);
+      this.topicsHidden = !project.topics || project.topics.length === 0;
     });
   }
 
+  breadCrumbClick(id: string) {
+    console.log('clicked breadcrumb with ID: ', id);
+  }
+
   ngOnInit(): void {
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 
   setDescription() {
@@ -75,6 +92,33 @@ export class ProjectDetailsOverviewComponent implements OnInit {
         return 'work'
       default:
         return 'folder';
+    }
+  }
+
+  navigate(id: string) {
+    if (id !== this.currentProject.id.value)
+      this.projectService.setCurrentProject(id);
+  }
+
+  addTopics() {
+    this.topicsHidden = false;
+    // const element = this.renderer.selectRootElement('#elementId');
+
+    setTimeout(() => {
+      this.topics.onFocus();
+    })
+  }
+
+  onDetailClick() {
+    this.detailsHidden = !this.detailsHidden;
+
+    if (!this.detailsHidden) {
+      try {
+        setTimeout(() => {
+          this.container.nativeElement.scrollTop = this.container.nativeElement.scrollHeight;
+        })
+      } catch (err) {
+      }
     }
   }
 }

@@ -1,14 +1,15 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ProjectModel} from "projects/ks-lib/src/lib/models/project.model";
 import {ProjectService} from "../../../../../ks-lib/src/lib/services/projects/project.service";
 import {Router} from "@angular/router";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'app-canvas-details',
   templateUrl: './project-viewport.component.html',
   styleUrls: ['./project-viewport.component.scss']
 })
-export class ProjectViewportComponent implements OnInit {
+export class ProjectViewportComponent implements OnInit, OnDestroy {
   @ViewChild("matNavTab", {static: false}) matNavTab: ElementRef = {} as ElementRef;
   project: ProjectModel | null = null;
   activeLinkIndex = 1;
@@ -25,36 +26,32 @@ export class ProjectViewportComponent implements OnInit {
       link: 'app-knowledge-graph',
       index: 1,
       disabled: true
-    },
-    {
-      label: 'Knowledge Sources',
-      link: 'app-ks-edit-list',
-      index: 2,
-      disabled: true
     }
   ];
   activeLink = this.navLinks[0].index;
+  private subscription: Subscription
 
   constructor(private projectService: ProjectService, private router: Router) {
-    this.projectService.currentProject.subscribe(project => {
+    this.subscription = this.projectService.currentProject.subscribe(project => {
       if (project?.name && project?.id.value !== '') {
         this.project = project;
       } else {
         this.project = null;
       }
-      // TODO: re-enable Knowledge Graph once we get a working implementation
-      // this.navLinks[1].disabled = this.navLinks[2].disabled = (!project || !project.knowledgeSource || project.knowledgeSource.length === 0);
-      this.navLinks[2].disabled = (!project || !project.knowledgeSource || project.knowledgeSource.length === 0);
     });
   }
 
   ngOnInit(): void {
     this.activeLinkIndex = 1;
-    this.router.events.subscribe((res) => {
+    this.router.events.subscribe(() => {
       let newIndex = this.navLinks.find(tab => tab.link === '.' + this.router.url);
       if (newIndex)
         this.activeLinkIndex = this.navLinks.indexOf(newIndex);
     });
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 
 }

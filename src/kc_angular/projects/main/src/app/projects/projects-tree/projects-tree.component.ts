@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {MatTreeFlatDataSource, MatTreeFlattener} from '@angular/material/tree';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {ProjectTreeFlatNode, ProjectTreeNode} from "projects/ks-lib/src/lib/models/project.tree.model";
@@ -8,13 +8,14 @@ import {MatDialog} from '@angular/material/dialog';
 import {KcDialogRequest, KcDialogService} from "../../../../../ks-lib/src/lib/services/dialog/kc-dialog.service";
 import {ProjectCreationDialogComponent} from "../project-creation-dialog/project-creation-dialog.component";
 import {MatMenuTrigger} from "@angular/material/menu";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'app-projects-tree',
   templateUrl: './projects-tree.component.html',
   styleUrls: ['./projects-tree.component.scss']
 })
-export class ProjectsTreeComponent implements OnInit {
+export class ProjectsTreeComponent implements OnInit, OnDestroy {
   @ViewChild(MatMenuTrigger)
   contextMenu!: MatMenuTrigger;
   contextMenuPosition = {x: '0px', y: '0px'};
@@ -27,6 +28,7 @@ export class ProjectsTreeComponent implements OnInit {
   treeControl: FlatTreeControl<ProjectTreeFlatNode>;
   treeFlattener: MatTreeFlattener<ProjectTreeNode, ProjectTreeFlatNode>;
   dataSource: MatTreeFlatDataSource<ProjectTreeNode, ProjectTreeFlatNode>;
+  private subscription: Subscription
 
   constructor(private dialogService: KcDialogService,
               private projectService: ProjectService,
@@ -46,7 +48,7 @@ export class ProjectsTreeComponent implements OnInit {
       }
     });
 
-    this.projectService.currentProject.subscribe(current => {
+    this.subscription = this.projectService.currentProject.subscribe(current => {
       this.activeProject = current;
       this.activeId = current.id.value;
     });
@@ -67,6 +69,10 @@ export class ProjectsTreeComponent implements OnInit {
 
   ngOnInit(): void {
     // this.subscribeToProjects();
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 
   transformer = (node: ProjectTreeNode, level: number) => {
@@ -112,7 +118,7 @@ export class ProjectsTreeComponent implements OnInit {
       return;
     }
 
-    let list: ProjectIdentifiers[] = [];
+    let list: ProjectIdentifiers[];
     if (project && project.subprojects && project.subprojects.length > 0)
       list = this.projectService.getSubTree(id);
     else

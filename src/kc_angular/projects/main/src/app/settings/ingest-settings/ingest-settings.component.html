@@ -1,12 +1,22 @@
 <app-settings-common-header header="Ingest"></app-settings-common-header>
 
 <div class="container">
-  <p style="color: red">Autoscan functionality is considered
-    <b>experimental</b> and may cause data loss, use at your own risk</p>
   <div class="row">
-    <mat-icon [matTooltip]="autoscanHelp"
-              matTooltipClass="tool-tip">info
-    </mat-icon>
+    <div class="col">
+      <h2>Autoscan</h2>
+    </div>
+    <div class="col">
+      <mat-icon [matTooltip]="autoscanHelp"
+                matTooltipClass="tool-tip">info
+      </mat-icon>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <mat-hint style="color: red">Autoscan functionality is considered <b>experimental</b> and may cause data loss, use at your own risk</mat-hint>
+    </div>
+  </div>
+  <div class="row">
     <div class="col s4">
       <mat-slide-toggle [(ngModel)]="ingestSettings.autoscan" (change)="autoscanClicked($event)">
         Autoscan
@@ -16,12 +26,12 @@
       <mat-slide-toggle [(ngModel)]="ingestSettings.managed"
                         [disabled]="ingestSettings.autoscan === true"
                         (change)="managedClicked($event)">
-        Manage files for me
+        Manage My Files
       </mat-slide-toggle>
     </div>
     <div class="col s4" *ngIf="ingestSettings.autoscan">
       <mat-slide-toggle [(ngModel)]="ingestSettings.preserveTimestamps"
-                        (change)="preserveClicked($event)">Preserve original timestamps
+                        (change)="preserveClicked($event)">Preserve Timestamps
       </mat-slide-toggle>
     </div>
   </div>
@@ -42,7 +52,7 @@
   <div class="kc-danger-zone" *ngIf="ingestSettings.autoscan">
 <!--    <h2 style="color:red">Danger Zone</h2>-->
     <div>
-      <b>Extremely important:</b> all files in the chosen directory will be moved to a new directory and their names
+      <b>Extremely important:</b> All files in the chosen directory will be moved to a new directory and their names
       will be changed. <b>DO NOT</b> change this to a directory that contains files you care about or if you need direct
       access to the files in it. We recommend you create a new folder or use the default folder instead. The default
       folder has already been created for you inside your Downloads folder.

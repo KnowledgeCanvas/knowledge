@@ -1,0 +1,80 @@
+table {
+  width: 100%;
+}
+
+.ks-table-header {
+  user-select: none;
+}
+
+tr.ks-table-detail-row {
+  height: 0;
+}
+
+
+
+tr.ks-table-element-row:not(.ks-table-expanded-row):hover {
+  .app-theme-dark {
+    background: #3c3c3c;
+  }
+  .app-theme-light {
+    background: #efefef;
+  }
+
+  cursor: pointer;
+}
+
+tr.ks-table-element-row:not(.ks-table-expanded-row):active {
+  .app-theme-dark {
+    background: #3c3c3c;
+  }
+  .app-theme-light {
+    background: #efefef;
+  }
+}
+
+.ks-table-element-row td {
+  border-bottom-width: 0;
+}
+
+.ks-table-expanded-detail {
+  overflow: hidden;
+  display: flex;
+}
+
+.knowledge-source-description {
+  padding: 16px;
+}
+
+.mat-column-icon {
+  width: 40px;
+  padding-left: 12px !important;
+  padding-right: 12px !important;
+  user-select: none;
+}
+
+.mat-column-title {
+  width: 100%;
+}
+
+.mat-column-dateCreated {
+
+}
+
+.mat-column-dateModified {
+
+}
+
+.mat-column-dateAccessed {
+
+}
+
+.mat-column-ingestType {
+  width: 80px;
+  user-select: none;
+}
+
+.mat-column-actions {
+  min-width: 160px;
+  max-width: 160px;
+  padding-right: 12px !important;
+}

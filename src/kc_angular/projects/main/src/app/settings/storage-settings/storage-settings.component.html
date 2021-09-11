@@ -1,22 +1,25 @@
 <app-settings-common-header header="Storage"></app-settings-common-header>
-
 <div class="container">
   <div class="kc-danger-zone">
     <h2 style="color: red">Danger Zone</h2>
-    <div class="flex-row-center-between">
+    <div class="flex-row-center-between" style="margin-bottom: 8px">
       <div>
-        Delete all files.
+        Delete Local files
       </div>
       <div>
         <button mat-button color="warn" (click)="deleteFiles()">
-          Delete Files
+          <b>Delete Files</b>
         </button>
       </div>
     </div>
-
-    <div class="flex-row-center-between">
+    <div style="margin-top: 8px; margin-bottom: 8px">
+      <mat-divider></mat-divider>
+    </div>
+    <div class="flex-row-center-between"  style="margin-top: 8px">
       <div>
-        Delete all knowledge sources, files, projects, etc.
+        <b>Delete Everything</b>
+        <br>
+        Factory Reset (delete knowledge sources, files, projects, etc.)
       </div>
       <div>
         <button mat-button color="warn" (click)="deleteEverything()">

@@ -1,16 +1,30 @@
 .project-overview-container {
-  max-height: calc(100% - 60px);
+  max-height: calc(100% - 48px);
   overflow: auto;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-content: center;
+  align-items: stretch;
+  justify-content: flex-start;
 }
 
-.project-overview-header {
+.project-breadcrumb-container {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
   justify-content: flex-start;
-  align-content: center;
+  align-items: center;
+}
+
+.project-overview-header {
+  display: flex;
   padding-left: 16px;
+  padding-right: 16px;
   padding-top: 8px;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
 }
 
 .project-summary-container {
@@ -20,6 +34,23 @@
   flex-wrap: nowrap;
   align-content: center;
   align-items: flex-start;
+}
+
+.project-overview-scrollable {
+  overflow: auto;
+}
+
+.project-topic-list-container {
+  margin: 10px;
+}
+
+.project-ks-list-container {
+  max-height: 50%;
+  margin: 10px;
+}
+
+.project-overview-calendar {
+  margin: 10px;
 }
 
 app-project-summary {

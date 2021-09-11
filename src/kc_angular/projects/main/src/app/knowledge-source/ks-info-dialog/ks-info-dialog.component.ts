@@ -1,21 +1,21 @@
-import {Component, Inject, OnInit, SecurityContext} from '@angular/core';
+import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {KnowledgeSource} from "projects/ks-lib/src/lib/models/knowledge.source.model";
-import {DomSanitizer, SafeUrl} from "@angular/platform-browser";
+import {DomSanitizer} from "@angular/platform-browser";
 import {ExtractionService} from "../../../../../ks-lib/src/lib/services/extraction/extraction.service";
 import {ProjectService} from "../../../../../ks-lib/src/lib/services/projects/project.service";
 import {KsQueueService} from "../ks-queue-service/ks-queue.service";
 import {ProjectModel, ProjectUpdateRequest} from "projects/ks-lib/src/lib/models/project.model";
-import {MatTabChangeEvent} from "@angular/material/tabs";
 import {Clipboard} from "@angular/cdk/clipboard";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {ElectronIpcService} from "../../../../../ks-lib/src/lib/services/electron-ipc/electron-ipc.service";
-import {IpcResponse, KsBrowserViewRequest, KsThumbnailRequest} from "kc_electron/src/app/models/electron.ipc.model";
 import {FormControl} from "@angular/forms";
+import {UuidModel} from "../../../../../ks-lib/src/lib/models/uuid.model";
 
 export interface KsInfoDialogInput {
   source: 'ks-drop-list' | 'ks-queue',
   ks: KnowledgeSource
+  projectId?: string
 }
 
 export interface KsInfoDialogOutput {
@@ -29,18 +29,17 @@ export interface KsInfoDialogOutput {
   templateUrl: './ks-info-dialog.component.html',
   styleUrls: ['./ks-info-dialog.component.scss']
 })
-export class KsInfoDialogComponent implements OnInit {
+export class KsInfoDialogComponent implements OnInit, OnDestroy {
   currentProject: ProjectModel | null = null;
   ks: KnowledgeSource;
   url: string | null = null;
-  safeUrl: SafeUrl | undefined;
   sourceRef: 'ks-drop-list' | 'ks-queue' | 'undefined' = 'undefined';
-  viewReady: boolean = false;
   ksChanged: boolean = false;
   title: string = '';
   thumbnail: string | undefined = undefined;
   selectedTab = new FormControl(0);
   previewSelected: boolean = false;
+  projectId?: string;
 
   constructor(public dialogRef: MatDialogRef<KsInfoDialogComponent>,
               @Inject(MAT_DIALOG_DATA) public input: KsInfoDialogInput,
@@ -51,12 +50,6 @@ export class KsInfoDialogComponent implements OnInit {
               private _sanitizer: DomSanitizer,
               private clipboard: Clipboard,
               private snackBar: MatSnackBar) {
-
-    this.projectService.currentProject.subscribe((project) => {
-      this.currentProject = project;
-    });
-
-
     /**
      * This intercepts all calls to close the current dialog. Therefore, methods
      * that want to do something after the dialog has been closed must do so by
@@ -72,9 +65,13 @@ export class KsInfoDialogComponent implements OnInit {
     this.ks = input.ks;
     this.title = input.ks.title;
     this.sourceRef = input.source;
+    this.projectId = input.projectId;
   }
 
   ngOnInit(): void {
+  }
+
+  ngOnDestroy() {
   }
 
   openInBrowser() {
@@ -101,18 +98,10 @@ export class KsInfoDialogComponent implements OnInit {
   }
 
   importSource() {
-    if (this.currentProject?.id) {
-      // Set timestamp based on when the source was actually improted into the system
-      // this.ks.dateCreated = new Date();
-      // this.ks.dateAccessed = new Date();
-      // this.ks.dateModified = new Date();
-
-      // this.ks.notes = new KnowledgeSourceNotes();
-      // this.ks.notes.text = this.notes;
-
+    if (this.projectId) {
       // Update the project to persist the new source
       let projectUpdate: ProjectUpdateRequest = {
-        id: this.currentProject.id,
+        id: new UuidModel(this.projectId),
         addKnowledgeSource: [this.ks]
       }
 
@@ -127,9 +116,12 @@ export class KsInfoDialogComponent implements OnInit {
   }
 
   removeSource() {
-    if (this.currentProject?.id) {
+    // TODO: call confirm dialog to make sure the user wants to do this...
+    if (this.projectId) {
+      console.log('Removing ', this.ks, ' from project ', this.projectId);
+
       let update: ProjectUpdateRequest = {
-        id: this.currentProject.id,
+        id: new UuidModel(this.projectId),
         removeKnowledgeSource: [this.ks]
       }
       this.projectService.updateProject(update);
@@ -168,10 +160,10 @@ export class KsInfoDialogComponent implements OnInit {
     }
 
     // Only update the KS if it's in ks-drop-list... otherwise we're in ks-queue and shouldn't update project
-    if (this.currentProject?.id && this.sourceRef == 'ks-drop-list') {
+    if (this.projectId && this.sourceRef == 'ks-drop-list') {
       this.ks.dateModified = new Date();
       let update: ProjectUpdateRequest = {
-        id: this.currentProject?.id,
+        id: new UuidModel(this.projectId),
         updateKnowledgeSource: [this.ks]
       }
       this.projectService.updateProject(update);

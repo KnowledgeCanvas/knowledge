@@ -92,14 +92,15 @@ export class StorageService {
   }
 
   saveProject(project: ProjectModel) {
-    let projectString = JSON.stringify(project);
-    window.localStorage.setItem(project.id.value, projectString);
+    this.updateProject(project);
 
+    // Get all projects
     let projectListString = window.localStorage.getItem(this.KC_ALL_PROJECT_IDS);
     let projectList: string[] = [];
     if (projectListString) {
       projectList = JSON.parse(projectListString);
     }
+
 
     if (projectList?.length > 0) {
       let id = projectList.find(item => item === project.id.value);
@@ -119,6 +120,11 @@ export class StorageService {
     for (let project of projects) {
       this.saveProject(project);
     }
+  }
+
+  updateProject(project: ProjectModel) {
+    let projectString = JSON.stringify(project);
+    window.localStorage.setItem(project.id.value, projectString);
   }
 
   deleteProject(id: string) {
