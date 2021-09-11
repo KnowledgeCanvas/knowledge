@@ -1,6 +1,6 @@
 {
   "name": "knowledge-canvas",
-  "version": "0.2.0",
+  "version": "0.2.2",
   "author": "Rob Royce <robertris2@gmail.com> (https://robroyce.dev)",
   "description": "",
   "private": true,
@@ -54,7 +54,8 @@
       "bucket": "knowledge-canvas"
     },
     "mac": {
-      "category": "knowledge.canvas.app"
+      "category": "public.app-category.education",
+      "target": "dmg"
     },
     "linux": {
       "target": [
@@ -63,7 +64,7 @@
     },
     "win": {
       "target": [
-        "portable"
+        "nsis"
       ]
     }
   }
