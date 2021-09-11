@@ -30,14 +30,14 @@ export class KnowledgeSourceTableComponent implements OnInit, OnDestroy, OnChang
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   knowledgeSource: KnowledgeSource[] = [];
   dataSource: MatTableDataSource<KnowledgeSource>;
-  columnsToDisplay: string[] = ['icon', 'title', 'dateCreated', 'dateModified', 'ingestType'];
+  columnsToDisplay: string[] = ['icon', 'title', 'dateCreated','dateAccessed', 'dateModified', 'ingestType'];
   expandedElement: KnowledgeSource | null = null;
   subscription?: Subscription;
   hideTable: boolean;
   filter: string = '';
   truncateLength: number = 100;
 
-  private initialDisplayedColumns: string[] = ['icon', 'title', 'dateCreated', 'dateModified', 'ingestType'];
+  private initialDisplayedColumns: string[] = ['icon', 'title', 'dateCreated', 'dateAccessed', 'dateModified', 'ingestType'];
 
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {
@@ -82,11 +82,11 @@ export class KnowledgeSourceTableComponent implements OnInit, OnDestroy, OnChang
       this.columnsToDisplay = this.initialDisplayedColumns;
       this.truncateLength = 120;
     } else if(width > 900) {
-      this.columnsToDisplay = this.initialDisplayedColumns.filter(c => c !== 'dateCreated');
+      this.columnsToDisplay = this.initialDisplayedColumns.filter(c => c !== 'dateCreated' && c !== 'dateAccessed');
       this.truncateLength = 60;
     } else {
       this.truncateLength = 30;
-      this.columnsToDisplay = this.initialDisplayedColumns.filter(c => c !== 'dateCreated' && c !== 'dateModified');
+      this.columnsToDisplay = this.initialDisplayedColumns.filter(c => c !== 'dateCreated' && c !== 'dateModified' && c !== 'dateAccessed');
     }
   }
 
@@ -102,9 +102,18 @@ export class KnowledgeSourceTableComponent implements OnInit, OnDestroy, OnChang
 
     // Ignore case if the column values are strings. Otherwise X, Y, Z appears before a, b, c, etc...
     this.dataSource.sortingDataAccessor = (data: any, sortHeaderId: string): string => {
+
+      // Make sure dates show up in proper numerical order
+      if (sortHeaderId === 'dateCreated' || sortHeaderId === 'dateModified' || sortHeaderId === 'dateAccessed') {
+        return new Date(data[sortHeaderId]).valueOf().toString();
+      }
+
+      // Make sure strings are case insensitive
       if (typeof data[sortHeaderId] === 'string') {
         return data[sortHeaderId].toLocaleLowerCase();
       }
+
+      // Otherwise, no custom sort order needed
       return data[sortHeaderId];
     }
 

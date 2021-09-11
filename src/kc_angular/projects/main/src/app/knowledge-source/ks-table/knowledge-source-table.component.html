@@ -32,6 +32,11 @@
       <td mat-cell *matCellDef="let element">{{element.dateCreated | date: 'shortDate'}}</td>
     </ng-container>
 
+    <ng-container matColumnDef="dateAccessed">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header class="ks-table-header">Reviewed</th>
+      <td mat-cell *matCellDef="let element">{{element.dateAccessed | date: 'shortDate'}}</td>
+    </ng-container>
+
     <ng-container matColumnDef="dateModified">
       <th mat-header-cell *matHeaderCellDef mat-sort-header class="ks-table-header">Modified</th>
       <td mat-cell *matCellDef="let element">{{element.dateModified | date: 'shortDate'}}</td>
