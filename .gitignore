@@ -11,3 +11,5 @@ serc/kc_angular/node_modules
 src/kc_angular/dist/
 src/kc_electron/dist/
 src/kc_electron/node_modules/
+/.yarnrc
+/.yarn/

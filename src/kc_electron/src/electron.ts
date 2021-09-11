@@ -2,6 +2,7 @@ import {IpcResponse} from "./app/models/electron.ipc.model";
 import {FileModel} from "./app/models/file.model";
 
 const {app, BrowserWindow, BrowserView, ipcMain, dialog, shell} = require('electron');
+const {autoUpdater} = require("electron-updater");
 const nativeImage = require('electron').nativeImage
 const http = require('http');
 const url = require('url');
@@ -123,12 +124,13 @@ app.on('window-all-closed', function () {
 });
 
 
-app.whenReady().then(() => {
+app.on('ready', function() {
     kcMainWindow = createMainWindow();
+    autoUpdater.checkForUpdatesAndNotify();
     app.on('activate', function () {
         if (BrowserWindow.getAllWindows().length === 0) createMainWindow();
-    })
-})
+    });
+});
 
 
 /**
@@ -292,6 +294,52 @@ settingsService.ingest.subscribe((ingest: any) => {
     }, appEnv.ingest.interval);
 });
 
+/**
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ AUTO UPDATE
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ */
+autoUpdater.on('checking-for-update', () => {
+    kcMainWindow.webContents.send('message', 'Checking for update...');
+});
+
+autoUpdater.on('update-available', (info: any) => {
+    kcMainWindow.webContents.send('message', 'Update available.');
+});
+
+autoUpdater.on('update-not-available', (info: any) => {
+    kcMainWindow.webContents.send('message', 'Update not available.');
+});
+
+autoUpdater.on('error', (err: any) => {
+    kcMainWindow.webContents.send('message', 'Error in auto-updater. ' + err);
+});
+
+autoUpdater.on('download-progress', (progressObj: any) => {
+    let log_message = "Download speed: " + progressObj.bytesPerSecond;
+    log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
+    log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
+    kcMainWindow.webContents.send('message', log_message);
+});
+
+autoUpdater.on('update-downloaded', (info: any) => {
+    kcMainWindow.webContents.send('message', 'Update downloaded');
+});
 
 /**
  *
