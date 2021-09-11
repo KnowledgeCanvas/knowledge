@@ -13,6 +13,7 @@ import {BrowserViewDialogService} from "../../../../../ks-lib/src/lib/services/b
   styleUrls: ['./search-bar.component.scss']
 })
 export class SearchBarComponent implements OnInit {
+  recents: string[] = [];
   searchForm: FormGroup;
   searchTerm = new FormControl();
   searchResults: string = '';
@@ -40,9 +41,15 @@ export class SearchBarComponent implements OnInit {
 
   EnterSubmit($event: any) {
     let ks = this.ksFactory.searchKS(this.searchTerm.value);
+
     let dialogRef = this.browserViewDialogService.open({ks: ks});
+
     dialogRef.afterClosed().subscribe((results) => {
       this.searchTerm.reset();
     });
+
+    this.recents.unshift(this.searchTerm.value);
+
+    this.recents.length = this.recents.length < 5 ? this.recents.length : 5;
   }
 }

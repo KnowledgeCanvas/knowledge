@@ -1,17 +1,16 @@
-import {Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild} from '@angular/core';
+import {Component, HostListener, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild} from '@angular/core';
 import {ProjectService} from "../../../../../ks-lib/src/lib/services/projects/project.service";
 import {ProjectModel, ProjectUpdateRequest} from "projects/ks-lib/src/lib/models/project.model";
 import {IngestType, KnowledgeSource} from "projects/ks-lib/src/lib/models/knowledge.source.model";
 import {KcDialogRequest, KcDialogService} from "../../../../../ks-lib/src/lib/services/dialog/kc-dialog.service";
 import {animate, state, style, transition, trigger} from "@angular/animations";
-import {MatSort, Sort} from "@angular/material/sort";
+import {MatSort} from "@angular/material/sort";
 import {MatTableDataSource} from "@angular/material/table";
 import {MatPaginator} from "@angular/material/paginator";
 import {Subscription} from "rxjs";
 import {Clipboard} from "@angular/cdk/clipboard";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {BrowserViewDialogService} from "../../../../../ks-lib/src/lib/services/browser-view-dialog/browser-view-dialog.service";
-import {UuidModel} from "../../../../../ks-lib/src/lib/models/uuid.model";
 
 @Component({
   selector: 'app-knowledge-source-table',
@@ -31,11 +30,19 @@ export class KnowledgeSourceTableComponent implements OnInit, OnDestroy, OnChang
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   knowledgeSource: KnowledgeSource[] = [];
   dataSource: MatTableDataSource<KnowledgeSource>;
-  columnsToDisplay: string[] = ['icon', 'title', 'dateCreated', 'dateModified', 'ingestType', 'actions'];
+  columnsToDisplay: string[] = ['icon', 'title', 'dateCreated','dateAccessed', 'dateModified', 'ingestType'];
   expandedElement: KnowledgeSource | null = null;
   subscription?: Subscription;
   hideTable: boolean;
   filter: string = '';
+  truncateLength: number = 100;
+
+  private initialDisplayedColumns: string[] = ['icon', 'title', 'dateCreated', 'dateAccessed', 'dateModified', 'ingestType'];
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    this.setTableColumnsByScreenWidth(event.target.innerWidth);
+  }
 
 
   constructor(private browserViewDialogService: BrowserViewDialogService,
@@ -48,7 +55,9 @@ export class KnowledgeSourceTableComponent implements OnInit, OnDestroy, OnChang
     this.hideTable = true;
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.setTableColumnsByScreenWidth(window.innerWidth);
+  }
 
   ngOnChanges(changes: SimpleChanges) {
     let project = changes.project.currentValue;
@@ -66,6 +75,21 @@ export class KnowledgeSourceTableComponent implements OnInit, OnDestroy, OnChang
     }
   }
 
+  setTableColumnsByScreenWidth(width: number) {
+    console.log('Setting columns based on width of: ', width);
+
+    if (width > 1000) {
+      this.columnsToDisplay = this.initialDisplayedColumns;
+      this.truncateLength = 120;
+    } else if(width > 900) {
+      this.columnsToDisplay = this.initialDisplayedColumns.filter(c => c !== 'dateCreated' && c !== 'dateAccessed');
+      this.truncateLength = 60;
+    } else {
+      this.truncateLength = 30;
+      this.columnsToDisplay = this.initialDisplayedColumns.filter(c => c !== 'dateCreated' && c !== 'dateModified' && c !== 'dateAccessed');
+    }
+  }
+
   update(project: ProjectModel) {
     if (project.knowledgeSource && project.knowledgeSource.length > 0) {
       this.dataSource = new MatTableDataSource<KnowledgeSource>(project.knowledgeSource);
@@ -78,9 +102,18 @@ export class KnowledgeSourceTableComponent implements OnInit, OnDestroy, OnChang
 
     // Ignore case if the column values are strings. Otherwise X, Y, Z appears before a, b, c, etc...
     this.dataSource.sortingDataAccessor = (data: any, sortHeaderId: string): string => {
+
+      // Make sure dates show up in proper numerical order
+      if (sortHeaderId === 'dateCreated' || sortHeaderId === 'dateModified' || sortHeaderId === 'dateAccessed') {
+        return new Date(data[sortHeaderId]).valueOf().toString();
+      }
+
+      // Make sure strings are case insensitive
       if (typeof data[sortHeaderId] === 'string') {
         return data[sortHeaderId].toLocaleLowerCase();
       }
+
+      // Otherwise, no custom sort order needed
       return data[sortHeaderId];
     }
 

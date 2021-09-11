@@ -1,17 +1,16 @@
-<div class="project-overview-container" #projectOverview>
-  <div class="project-overview-header">
-    <div class="project-breadcrumb-container">
-      <div *ngFor="let ancestor of ancestors">
-        <button class="project-breadcrumb" (click)="navigate(ancestor.id)">{{ancestor.title}}</button>
-      </div>
-    </div>
-    <div>
-      <button (click)="addTopics()">Add Topics</button>
-      <button *ngIf="!detailsHidden" (click)="onDetailClick()">Hide Details</button>
-      <button *ngIf="detailsHidden" (click)="onDetailClick()">Show Details</button>
+<div class="project-overview-header">
+  <div class="project-breadcrumb-container">
+    <div *ngFor="let ancestor of ancestors">
+      <button class="project-breadcrumb" (click)="navigate(ancestor.id)">{{ancestor.title}}</button>
     </div>
   </div>
-
+  <div>
+    <button (click)="addTopics()">Add Topics</button>
+    <button *ngIf="!detailsHidden" (click)="onDetailClick()">Hide Details</button>
+    <button *ngIf="detailsHidden" (click)="onDetailClick()">Show Details</button>
+  </div>
+</div>
+<div class="project-overview-container" #projectOverview>
   <div class="project-overview-calendar">
     <div class="container">
       <h2>{{currentProject.name}} / Calendar</h2>

@@ -2,6 +2,10 @@ table {
   width: 100%;
 }
 
+.ks-table-container {
+
+}
+
 .ks-table-header {
   user-select: none;
 }
@@ -9,8 +13,6 @@ table {
 tr.ks-table-detail-row {
   height: 0;
 }
-
-
 
 tr.ks-table-element-row:not(.ks-table-expanded-row):hover {
   .app-theme-dark {
@@ -39,10 +41,18 @@ tr.ks-table-element-row:not(.ks-table-expanded-row):active {
 .ks-table-expanded-detail {
   overflow: hidden;
   display: flex;
+  flex-direction: column;
 }
 
 .knowledge-source-description {
   padding: 16px;
+  word-wrap: break-word;
+}
+
+.knowledge-source-actions {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .mat-column-icon {
