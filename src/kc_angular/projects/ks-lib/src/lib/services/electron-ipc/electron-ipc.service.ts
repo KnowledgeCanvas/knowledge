@@ -32,6 +32,7 @@ export class ElectronIpcService {
   private receiveOnce = window.api.receiveOnce;
   private removeAllListeners = window.api.removeAllListeners;
   private channels = {
+    autoUpdateReceive: 'electron-auto-update',
     browserExtensionResults: 'app-chrome-extension-results',
     browserView: 'electron-browser-view',
     browserViewCanGoBack: 'electron-browser-view-can-go-back',
@@ -45,6 +46,10 @@ export class ElectronIpcService {
     browserViewNavEvents: 'electron-browser-view-nav-events',
     browserViewRefresh: 'electron-browser-view-refresh',
     browserViewResults: 'electron-browser-view-results',
+    checkCurrentVersion: 'electron-auto-update-current-version',
+    checkCurrentVersionResults: 'electron-auto-update-current-version-results',
+    checkForUpdates: 'electron-check-for-update',
+    checkForUpdatesResults: 'electron-check-for-update-results',
     closeBrowserView: 'electron-close-browser-view',
     closeBrowserViewResults: 'electron-close-browser-view-results',
     generateUuid: 'app-generate-uuid',
@@ -80,7 +85,25 @@ export class ElectronIpcService {
 
   private _bvStateTimer: any = Date.now()
 
+  private _currentVersion = new BehaviorSubject<string>('');
+  version = this._currentVersion.asObservable();
+
   constructor(private zone: NgZone) {
+    console.log('Ipc Service setting up...');
+    /**
+     * Listen for auto update messages
+     */
+    this.receive(this.channels.autoUpdateReceive, (response: IpcResponse) => {
+      console.log('Received message from auto update: ', response);
+    });
+
+    this.receive(this.channels.checkCurrentVersionResults, (response: IpcResponse) => {
+      this._currentVersion.next(response.success?.data);
+    });
+
+    /**
+     * Listen for incoming browser extension results
+     */
     this.receive(this.channels.browserViewNavEvents, (response: IpcResponse) => {
       this.zone.run(() => {
         if (response.error) {
@@ -118,6 +141,16 @@ export class ElectronIpcService {
           this._bvUrl.next(response.success.data);
       });
     });
+
+    this.getCurrentVersion();
+  }
+
+  checkForUpdates() {
+    this.send(this.channels.checkForUpdates);
+  }
+
+  getCurrentVersion() {
+    this.send(this.channels.checkCurrentVersion);
   }
 
   triggerBrowserViewStateUpdate() {

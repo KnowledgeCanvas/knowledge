@@ -19,6 +19,7 @@ const MAIN_ENTRY: string = path.join(app.getAppPath(), 'src', 'kc_angular', 'dis
     settingsService,
     BrowserWindow,
     BrowserView,
+    autoUpdater,
     nativeImage,
     ipcMain,
     dialog,
@@ -124,9 +125,9 @@ app.on('window-all-closed', function () {
 });
 
 
-app.on('ready', function() {
+app.on('ready', function () {
     kcMainWindow = createMainWindow();
-    autoUpdater.checkForUpdatesAndNotify();
+    // autoUpdater.checkForUpdatesAndNotify();
     app.on('activate', function () {
         if (BrowserWindow.getAllWindows().length === 0) createMainWindow();
     });
@@ -315,30 +316,74 @@ settingsService.ingest.subscribe((ingest: any) => {
  *
  */
 autoUpdater.on('checking-for-update', () => {
-    kcMainWindow.webContents.send('message', 'Checking for update...');
+    let message: IpcResponse = {
+        error: undefined,
+        success: {
+            data: 'Auto updater checking for update...'
+        }
+    }
+    kcMainWindow.webContents.send('electron-auto-update', message);
 });
 
 autoUpdater.on('update-available', (info: any) => {
-    kcMainWindow.webContents.send('message', 'Update available.');
+    let message: IpcResponse = {
+        error: undefined,
+        success: {
+            data: info,
+            message: 'Auto updater found new update...'
+        }
+    }
+    kcMainWindow.webContents.send('electron-auto-update', message);
 });
 
 autoUpdater.on('update-not-available', (info: any) => {
-    kcMainWindow.webContents.send('message', 'Update not available.');
+    let message: IpcResponse = {
+        error: undefined,
+        success: {
+            data: info,
+            message: 'No updates available...'
+        }
+    }
+    kcMainWindow.webContents.send('electron-auto-update', message);
 });
 
 autoUpdater.on('error', (err: any) => {
-    kcMainWindow.webContents.send('message', 'Error in auto-updater. ' + err);
+    let message: IpcResponse = {
+        error: {
+            code: 501,
+            label: http.STATUS_CODES['501'],
+            message: err
+        },
+        success: undefined
+    }
+    kcMainWindow.webContents.send('electron-auto-update', message);
 });
 
 autoUpdater.on('download-progress', (progressObj: any) => {
     let log_message = "Download speed: " + progressObj.bytesPerSecond;
     log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
     log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
-    kcMainWindow.webContents.send('message', log_message);
+
+    let message: IpcResponse = {
+        error: undefined,
+        success: {
+            message: log_message
+        }
+    }
+    kcMainWindow.webContents.send('electron-auto-update', log_message);
 });
 
+console.log('autoUpdater: ', autoUpdater.currentVersion);
+
 autoUpdater.on('update-downloaded', (info: any) => {
-    kcMainWindow.webContents.send('message', 'Update downloaded');
+    let message: IpcResponse = {
+        error: undefined,
+        success: {
+            data: info,
+            message: 'Update finished downloading...'
+        }
+    }
+    kcMainWindow.webContents.send('electron-auto-update', 'Update downloaded');
 });
 
 /**

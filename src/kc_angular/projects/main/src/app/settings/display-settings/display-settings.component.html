@@ -1,11 +1,28 @@
-<app-settings-common-header header="Display"></app-settings-common-header>
+<app-settings-common-header header="General"></app-settings-common-header>
 
 <div class="container">
   <div class="row">
-    <div class="col s4">
+    <div class="col">
+      <h2>Theme</h2>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
       <mat-slide-toggle [(ngModel)]="darkMode" (change)="themeChanged($event)">
         Dark Mode
       </mat-slide-toggle>
+    </div>
+  </div>
+  <mat-divider></mat-divider>
+  <div class="row">
+    <div class="col">
+      <h2>Updates</h2>
+      <mat-hint>Current Version: {{currentVersion}}</mat-hint>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col center">
+      <button style="width: 150px" mat-raised-button (click)="checkForUpdates()" [disabled]="checkingForUpdate">{{updateButtonMessage}}</button>
     </div>
   </div>
 </div>

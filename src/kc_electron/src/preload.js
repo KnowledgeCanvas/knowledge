@@ -1,12 +1,14 @@
 const {contextBridge, ipcRenderer} = require('electron');
 
 // whitelist channels
-let validSendChannels = [
+const validSendChannels = [
     "app-extract-website",
     "app-generate-uuid",
     "app-get-settings",
     "app-prompt-for-directory",
     "app-save-settings",
+    "electron-check-for-update",
+    "electron-auto-update-current-version",
     "electron-browser-view",
     "electron-browser-view-can-go-back",
     "electron-browser-view-can-go-forward",
@@ -34,11 +36,13 @@ const validReceiveOnceChannels = [
     'electron-open-local-file-results',
 ];
 const validReceiveChannels = [
+    "app-chrome-extension-results",
+    "app-ingest-watcher-results",
+    "electron-auto-update",
+    "electron-auto-update-current-version-results",
     "electron-browser-view-can-go-back-results",
     "electron-browser-view-can-go-forward-results",
     "electron-browser-view-current-url-results",
-    "app-chrome-extension-results",
-    "app-ingest-watcher-results",
     "electron-browser-view-nav-events"
 ]
 
