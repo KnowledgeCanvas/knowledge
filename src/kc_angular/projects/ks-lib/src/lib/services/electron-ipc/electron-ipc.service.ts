@@ -88,7 +88,6 @@ export class ElectronIpcService {
           return;
         } else if (response.success?.data) {
           let url = response.success.data;
-          console.log('Response from nav event: ', url);
           this.browserViewNavEvent.next(url);
         }
         this.triggerBrowserViewStateUpdate();

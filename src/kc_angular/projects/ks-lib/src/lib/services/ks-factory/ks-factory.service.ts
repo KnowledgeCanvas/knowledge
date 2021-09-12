@@ -68,7 +68,6 @@ export class KsFactoryService {
         ks.accessLink = searchTerm ? `https://www.google.com/search?q=${encodeURIComponent(searchTerm)}` : `https://www.google.com/`;
     }
 
-    console.log('Returning googleKS: ', ks);
     return ks;
   }
 
@@ -87,7 +86,6 @@ export class KsFactoryService {
     return new Promise<KnowledgeSource>((resolve) => {
       const link = typeof ks.accessLink === 'string' ? ks.accessLink : ks.accessLink.href
       this.extractionService.extractWebsiteMetadata(link).then((metadata) => {
-        console.log('Got metadata: ', metadata);
         if (metadata.title)
           ks.title = metadata.title;
         if (ks.reference.source.website)

@@ -87,16 +87,12 @@ export class ProjectCreationDialogComponent implements OnInit {
 
   create(): void {
     // TODO: validate project names (no blanks, etc.)
-    console.log('Submitting form...', this.projectCreationForm);
-
     let name = (this.name?.value || '').trim();
 
     if (name.length > 0) {
       this.project.name = name;
       this.project.type = (this.type?.value || 'default');
       this.project.description = (this.description?.value || '');
-
-      console.log('Setting description: ', this.project.description);
 
       if (this.project.type === 'school') {
         let homework: ProjectCreationRequest = {
@@ -118,11 +114,7 @@ export class ProjectCreationDialogComponent implements OnInit {
   }
 
   addTopic($event: string[]) {
-    console.log('Received topics: ', $event);
-
     this.project.topics = [...$event];
-    // this.projectCreationForm.setValue({['topics']: [...$event]});
-    // console.log('Set topics to: ', this.topics?.value)
   }
 
   onNameChange() {

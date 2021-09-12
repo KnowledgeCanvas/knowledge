@@ -226,7 +226,6 @@ export class KnowledgeSourceDropListComponent implements OnInit, OnDestroy {
           id: this.project.id,
           updateKnowledgeSource: [result.ks]
         }
-        console.log('Reulting KS: ', result.ks);
         this.projectService.updateProject(update);
       }
 

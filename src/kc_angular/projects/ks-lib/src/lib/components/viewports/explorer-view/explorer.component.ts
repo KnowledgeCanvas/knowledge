@@ -121,12 +121,11 @@ export class ExplorerComponent implements OnInit, OnDestroy {
   }
 
   save() {
-    console.log('Saving url: ', this.displayUrl);
+    console.error('Save not implemented!');
     // TODO: there should be a service that creates KS automatically from link...
   }
 
   setViewReady(viewReady: any) {
-    console.log('View ready: ', viewReady);
     this.viewReady = viewReady;
   }
 

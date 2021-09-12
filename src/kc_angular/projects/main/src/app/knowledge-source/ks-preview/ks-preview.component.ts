@@ -278,13 +278,11 @@ export class KsPreviewComponent implements OnInit, OnDestroy {
 
 
   save() {
-    console.log('Saving url: ', this.activeBrowserViewUrl);
     this.ksFactory.make('website', this.activeBrowserViewUrl).then((ks) => {
       if (!ks) {
         console.warn('Undefined Knowledge Source on apparent success...');
         return;
       }
-      console.log('Got ks from factory: ', ks);
 
       this.snackbar.open('Adding to "Up Next"!', 'Dismiss', {
         duration: 3000,

@@ -18,7 +18,6 @@ export class DigitalWellnessSettingsComponent implements OnInit {
 
 
   constructor(private bottomSheetRef: MatBottomSheetRef, @Inject(MAT_BOTTOM_SHEET_DATA) public data: WellnessSettingsModel) {
-    console.log('setting values: ', data);
     this.minutes.setValue(data.timerMinutes);
     this.seconds.setValue(data.timerSeconds);
     this.breakMinutes.setValue(data.breakMinutes);
@@ -52,7 +51,6 @@ export class DigitalWellnessSettingsComponent implements OnInit {
       autostartAfterBreak: this.autostartAfterBreak,
       allowOverride: this.allowOverride
     }
-    console.log('submitting new values: ', result);
     this.bottomSheetRef.dismiss(result)
   }
 

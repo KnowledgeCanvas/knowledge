@@ -32,10 +32,6 @@ export class ProjectDetailsOverviewComponent implements OnInit, OnDestroy {
     });
   }
 
-  breadCrumbClick(id: string) {
-    console.log('clicked breadcrumb with ID: ', id);
-  }
-
   ngOnInit(): void {
   }
 
@@ -60,7 +56,6 @@ export class ProjectDetailsOverviewComponent implements OnInit, OnDestroy {
   }
 
   calStart($event: any) {
-    console.log('Calendar start changed: ', $event);
     if (this.currentProject.calendar) {
       this.currentProject.calendar.start = $event;
     } else {
@@ -72,7 +67,6 @@ export class ProjectDetailsOverviewComponent implements OnInit, OnDestroy {
   }
 
   calEnd($event: any) {
-    console.log('Calendar end changed: ', $event);
     if (this.currentProject.calendar) {
       this.currentProject.calendar.end = $event;
     } else {

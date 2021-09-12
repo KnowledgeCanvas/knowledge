@@ -76,8 +76,6 @@ export class KnowledgeSourceTableComponent implements OnInit, OnDestroy, OnChang
   }
 
   setTableColumnsByScreenWidth(width: number) {
-    console.log('Setting columns based on width of: ', width);
-
     if (width > 1000) {
       this.columnsToDisplay = this.initialDisplayedColumns;
       this.truncateLength = 120;

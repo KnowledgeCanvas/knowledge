@@ -162,12 +162,6 @@ export class KnowledgeSourceImportDialogComponent implements OnInit {
     let searchTerm = project.topics.join(' AND ');
     let ks = this.ksFactory.searchKS(searchTerm);
     this.browserViewDialogService.open({ks:ks});
-
-    console.log('searching for term: ', searchTerm);
-
     this.dialogRef.close();
-    // this.ksQueueService.topicSearch(project.topics).then((result) => {
-    //
-    // });
   }
 }

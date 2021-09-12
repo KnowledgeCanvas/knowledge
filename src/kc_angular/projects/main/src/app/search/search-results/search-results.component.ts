@@ -68,7 +68,6 @@ export class SearchResultsComponent implements OnInit {
       if (result.ks && result.ksChanged) {
         let found = this.ksQueue.find(k => k.id.value === result.ks?.id.value);
         if (found) {
-          console.log('Ks found: ', found);
           found = result.ks;
         }
       }

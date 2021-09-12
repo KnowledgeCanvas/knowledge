@@ -30,12 +30,7 @@ export class ExtractionService {
       this.httpClient.get(url, {responseType: 'text'}).subscribe((htmlString) => {
         let parser = new DOMParser();
         let htmlDoc = parser.parseFromString(htmlString, 'text/html');
-
-        console.log('Attempting to get innerText from html: ', htmlDoc);
-
         let title = htmlDoc.getElementsByTagName('title')
-
-        console.log('Title elements: ', title);
 
         if (title && title.length > 0)
           metadata.title = title[0].innerText;

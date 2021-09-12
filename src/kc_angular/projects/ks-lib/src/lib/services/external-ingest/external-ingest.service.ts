@@ -38,7 +38,6 @@ export class ExternalIngestService {
       this.ksFactory.make('website', sanitized).then((ks) => {
         if (!ks)
           return;
-        console.log('Got KS from factory: ', ks);
         this.externalKS.next([ks]);
       }).catch((reason) => {
         console.warn('Unable to create Knowledge Source from extension because: ', reason);

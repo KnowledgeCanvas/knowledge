@@ -50,7 +50,6 @@ export class FileViewComponent implements OnInit, OnChanges {
   }
 
   headerEvents(headerEvent: KcViewportHeaderEvent) {
-    console.log('Received header event: ', headerEvent);
     this.clickEvent.emit(headerEvent);
   }
 }

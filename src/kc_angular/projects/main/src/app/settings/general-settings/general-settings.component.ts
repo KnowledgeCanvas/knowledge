@@ -17,7 +17,6 @@ export class GeneralSettingsComponent implements OnInit {
   constructor(private settingsService: SettingsService) {
     settingsService.settings.subscribe(settings => {
       this.settings = settings;
-      console.log('Received settings: ', settings);
 
       if (settings.ingest) {
         this.ingest = settings.ingest;

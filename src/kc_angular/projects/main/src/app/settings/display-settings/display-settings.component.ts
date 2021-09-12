@@ -20,9 +20,7 @@ export class DisplaySettingsComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    console.log('Changes: ', changes);
     if (changes.displaySettings.currentValue || changes.displaySettings.firstChange) {
-      console.log('Checking if dark mode..');
       this.darkMode = changes.displaySettings.currentValue.theme === 'app-theme-dark';
     }
   }
@@ -35,8 +33,6 @@ export class DisplaySettingsComponent implements OnInit, OnChanges {
   }
 
   themeChanged($event: MatSlideToggleChange) {
-    console.log('theme slider changed: ', $event);
-    // TODO: actually change the theme...
     this.displaySettings.theme = $event.checked ? 'app-theme-dark' : 'app-theme-light';
     this.settingsModified.emit(this.displaySettings);
   }

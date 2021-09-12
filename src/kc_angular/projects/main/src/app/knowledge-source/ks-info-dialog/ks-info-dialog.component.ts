@@ -104,9 +104,6 @@ export class KsInfoDialogComponent implements OnInit, OnDestroy {
         id: new UuidModel(this.projectId),
         addKnowledgeSource: [this.ks]
       }
-
-      console.log('Adding knowledge source to project: ', this.ks);
-
       this.projectService.updateProject(projectUpdate);
       this.ksQueueService.remove(this.ks);
       this.dialogRef.close();
@@ -118,8 +115,6 @@ export class KsInfoDialogComponent implements OnInit, OnDestroy {
   removeSource() {
     // TODO: call confirm dialog to make sure the user wants to do this...
     if (this.projectId) {
-      console.log('Removing ', this.ks, ' from project ', this.projectId);
-
       let update: ProjectUpdateRequest = {
         id: new UuidModel(this.projectId),
         removeKnowledgeSource: [this.ks]
@@ -172,8 +167,6 @@ export class KsInfoDialogComponent implements OnInit, OnDestroy {
 
   ksModified(modified: boolean) {
     this.ksChanged = modified;
-
-    console.log('Ks was modified: ', this.ks);
   }
 
   removeQueueItem() {

@@ -128,8 +128,6 @@ export class ProjectService {
   }
 
   newProject(project: ProjectCreationRequest): any {
-    console.log('Creating new project: ', project);
-
     let uuid: UuidModel[] = this.uuidService.generate(1);
 
     let projectId: UuidModel = uuid[0];
@@ -422,8 +420,6 @@ export class ProjectService {
 
   private addKnowledgeSource(project: ProjectModel, add: KnowledgeSource[]): ProjectModel {
     // TODO: eventually make sure there are no duplicates...
-    console.log('Adding knowledge source to project: ', add);
-
     if (project.knowledgeSource && project.knowledgeSource.length > 0)
       project.knowledgeSource = [...project.knowledgeSource, ...add];
     else

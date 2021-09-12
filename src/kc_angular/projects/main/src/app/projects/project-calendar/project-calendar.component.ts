@@ -21,12 +21,10 @@ export class ProjectCalendarComponent implements OnInit, OnChanges {
   }
 
   startDateChange($event: MatDatepickerInputEvent<ExtractDateTypeFromSelection<DateRange<any>>, DateRange<any>>) {
-    console.log('Start On change: ', $event);
     this.start.emit($event.value);
   }
 
   endDateChange($event: MatDatepickerInputEvent<ExtractDateTypeFromSelection<DateRange<any>>, DateRange<any>>) {
-    console.log('End On change: ', $event);
     this.end.emit($event.value);
   }
 }
