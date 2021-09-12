@@ -1,4 +1,4 @@
-import {IpcResponse} from "../models/electron.ipc.model";
+import {IpcMessage} from "../models/electron.ipc.model";
 
 let share: any = (global as any).share;
 let http: any = share.http;
@@ -22,7 +22,7 @@ let createServer = () => {
         // console.log('Meta: ', req.body);
 
         if (q.link) {
-            let ipcResponse: IpcResponse = {
+            let ipcResponse: IpcMessage = {
                 error: undefined,
                 success: {data: q.link}
             }

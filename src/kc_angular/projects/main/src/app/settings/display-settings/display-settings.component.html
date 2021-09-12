@@ -17,7 +17,7 @@
   <div class="row">
     <div class="col">
       <h2>Updates</h2>
-      <mat-hint>Current Version: {{currentVersion}}</mat-hint>
+      <mat-hint *ngIf="currentVersion">Current Version: {{currentVersion}}</mat-hint>
     </div>
   </div>
   <div class="row">

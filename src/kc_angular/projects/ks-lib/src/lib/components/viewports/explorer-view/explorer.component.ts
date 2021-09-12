@@ -3,7 +3,7 @@ import {ElectronIpcService} from "../../../services/electron-ipc/electron-ipc.se
 import {ExtractionService} from "../../../services/extraction/extraction.service";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {Clipboard} from "@angular/cdk/clipboard";
-import {IpcResponse} from "kc_electron/src/app/models/electron.ipc.model";
+import {IpcMessage} from "kc_electron/src/app/models/electron.ipc.model";
 import {KnowledgeSource} from "../../../models/knowledge.source.model";
 
 export interface KsExplorerInput {
@@ -108,7 +108,7 @@ export class ExplorerComponent implements OnInit, OnDestroy {
     this.getBrowserViewState();
   }
 
-  onIpcResponse(response: IpcResponse) {
+  onIpcResponse(response: IpcMessage) {
     if (response.error) {
       // TODO: show a more meaningful error and possibly try to resolve...
       console.error(response.error);

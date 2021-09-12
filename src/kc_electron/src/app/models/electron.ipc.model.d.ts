@@ -7,7 +7,7 @@ export interface IpcError {
     label: string;
     message: string;
 }
-export interface IpcResponse {
+export interface IpcMessage {
     error: IpcError | undefined;
     success: IpcSuccess | undefined;
 }

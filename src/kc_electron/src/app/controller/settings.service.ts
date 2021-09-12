@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import {EnvironmentModel} from "../models/environment.model";
 import {BehaviorSubject} from 'rxjs';
+import {IngestSettingsModel} from "../models/ingest.model";
 
 const RET_OK = 0;
 const RET_FAIL = -1;
@@ -13,7 +14,7 @@ appEnv = new ApplicationEnvironment().getEnvironment();
 
 
 class SettingsService {
-    private ingestSubject = new BehaviorSubject<any>({});
+    private ingestSubject = new BehaviorSubject<IngestSettingsModel>({autoscan: false, managed: false});
     ingest = this.ingestSubject.asObservable();
 
     constructor() {

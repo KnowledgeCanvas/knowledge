@@ -1,4 +1,4 @@
-import {IpcResponse, KcUuidRequest} from "../models/electron.ipc.model";
+import {IpcMessage, KcUuidRequest} from "../models/electron.ipc.model";
 import {EnvironmentModel} from "../models/environment.model";
 
 const share: any = (global as any).share;
@@ -34,7 +34,7 @@ module.exports = {generateUuid, getSettings, setSettings}
  */
 generateUuid = ipcMain.on("app-generate-uuid", (event: any, args: any) => {
     let kcMainWindow: any = share.BrowserWindow.getAllWindows()[0];
-    let response: IpcResponse = {
+    let response: IpcMessage = {
         error: undefined,
         success: undefined
     }

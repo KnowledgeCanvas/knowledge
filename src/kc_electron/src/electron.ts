@@ -1,5 +1,6 @@
-import {IpcResponse} from "./app/models/electron.ipc.model";
+import {IpcMessage} from "./app/models/electron.ipc.model";
 import {FileModel} from "./app/models/file.model";
+import {UpdateCheckResult} from "electron-updater";
 
 const {app, BrowserWindow, BrowserView, ipcMain, dialog, shell} = require('electron');
 const {autoUpdater} = require("electron-updater");
@@ -12,7 +13,6 @@ const path = require('path');
 const mime = require('mime-types');
 const settingsService = require('./app/controller/settings.service');
 const uuid = require('uuid');
-const DEBUG: boolean = false;
 const MAIN_ENTRY: string = path.join(app.getAppPath(), 'src', 'kc_angular', 'dist', 'main', 'index.html');
 
 (global as any).share = {
@@ -34,10 +34,18 @@ const MAIN_ENTRY: string = path.join(app.getAppPath(), 'src', 'kc_angular', 'dis
 
 console.log('Dirname: ', __dirname);
 
+require('./app/controller/update');
+
+require('./app/ipc');
+
+require('./app/ingest');
+
 const browserExtensionServer = require('./app/server/server');
-const browserIpc = require('./app/ipc/ipc-index').browserIpc;
+
+const browserIpc = require('./app/ipc').browserIpc;
 
 let appEnv = settingsService.getSettings();
+
 let kcMainWindow: typeof BrowserWindow;
 
 browserExtensionServer.createServer();
@@ -52,7 +60,7 @@ browserExtensionServer.createServer();
  *
  *
  *
- *
+ * Main Window Functions
  *
  *
  *
@@ -65,10 +73,10 @@ browserExtensionServer.createServer();
  *
  */
 function createMainWindow() {
-    console.log('Startup URL entry point is: ', MAIN_ENTRY);
     let WIDTH: number = parseInt(appEnv.DEFAULT_WINDOW_WIDTH);
+
     let HEIGHT: number = parseInt(appEnv.DEFAULT_WINDOW_HEIGHT);
-    console.log('Starting with window sizes: ', WIDTH, HEIGHT);
+
     const config = {
         show: false,
         minWidth: 800,
@@ -87,6 +95,14 @@ function createMainWindow() {
 
     kcMainWindow = new BrowserWindow(config);
 
+    setMainWindowListeners();
+
+    kcMainWindow.loadFile(MAIN_ENTRY);
+
+    return kcMainWindow;
+}
+
+function setMainWindowListeners() {
     // TODO: Determine if the following is the best we can do for page load failure
     // We need to explicitly reload the index upon refresh (note this is only needed in Electron)
     kcMainWindow.webContents.on('did-fail-load', () => {
@@ -99,24 +115,40 @@ function createMainWindow() {
         kcMainWindow = null;
     });
 
+    // Handle event in which a new window is created (i.e. when a user clicks on a link that is meant to open in new tab, etc)
     kcMainWindow.webContents.on('new-window', (event: any, url: string) => {
         console.log('New window requested: ', url);
         event.preventDefault();
         shell.openExternal(url);
     });
 
-    kcMainWindow.loadFile(MAIN_ENTRY);
-
+    // Show the window once it's ready
     kcMainWindow.once('ready-to-show', () => {
         kcMainWindow.show();
     });
-
-
-    console.log('Main window has ID: ', kcMainWindow.id);
-
-    return kcMainWindow;
 }
 
+/**
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ * Set APP listeners
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ */
 
 app.on('window-all-closed', function () {
     // MacOS apps typically do not quit all the way when a window is closed...
@@ -124,13 +156,20 @@ app.on('window-all-closed', function () {
         app.quit()
 });
 
+app.on('activate', () => {
+    if (BrowserWindow.getAllWindows().length === 0) {
+        createMainWindow();
+    }
+});
+
 
 app.on('ready', function () {
-    kcMainWindow = createMainWindow();
-    // autoUpdater.checkForUpdatesAndNotify();
-    app.on('activate', function () {
-        if (BrowserWindow.getAllWindows().length === 0) createMainWindow();
+    autoUpdater.checkForUpdatesAndNotify().then((value: UpdateCheckResult | null) => {
+        console.log('Update Check Results: ', value);
+    }).catch((reason: any) => {
+        console.error('Update Check Error: ', reason);
     });
+    kcMainWindow = createMainWindow();
 });
 
 
@@ -276,7 +315,7 @@ settingsService.ingest.subscribe((ingest: any) => {
             let responses: any[] = [];
 
             for (let fileToPush of filesToPush) {
-                let response: IpcResponse = {
+                let response: IpcMessage = {
                     error: undefined,
                     success: {
                         data: fileToPush
@@ -295,118 +334,29 @@ settingsService.ingest.subscribe((ingest: any) => {
     }, appEnv.ingest.interval);
 });
 
-/**
- *
- *
- *
- *
- *
- *
- *
- *
- AUTO UPDATE
- *
- *
- *
- *
- *
- *
- *
- *
- *
- */
-autoUpdater.on('checking-for-update', () => {
-    let message: IpcResponse = {
-        error: undefined,
-        success: {
-            data: 'Auto updater checking for update...'
-        }
-    }
-    kcMainWindow.webContents.send('electron-auto-update', message);
-});
-
-autoUpdater.on('update-available', (info: any) => {
-    let message: IpcResponse = {
-        error: undefined,
-        success: {
-            data: info,
-            message: 'Auto updater found new update...'
-        }
-    }
-    kcMainWindow.webContents.send('electron-auto-update', message);
-});
-
-autoUpdater.on('update-not-available', (info: any) => {
-    let message: IpcResponse = {
-        error: undefined,
-        success: {
-            data: info,
-            message: 'No updates available...'
-        }
-    }
-    kcMainWindow.webContents.send('electron-auto-update', message);
-});
-
-autoUpdater.on('error', (err: any) => {
-    let message: IpcResponse = {
-        error: {
-            code: 501,
-            label: http.STATUS_CODES['501'],
-            message: err
-        },
-        success: undefined
-    }
-    kcMainWindow.webContents.send('electron-auto-update', message);
-});
-
-autoUpdater.on('download-progress', (progressObj: any) => {
-    let log_message = "Download speed: " + progressObj.bytesPerSecond;
-    log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
-    log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
-
-    let message: IpcResponse = {
-        error: undefined,
-        success: {
-            message: log_message
-        }
-    }
-    kcMainWindow.webContents.send('electron-auto-update', log_message);
-});
-
-console.log('autoUpdater: ', autoUpdater.currentVersion);
-
-autoUpdater.on('update-downloaded', (info: any) => {
-    let message: IpcResponse = {
-        error: undefined,
-        success: {
-            data: info,
-            message: 'Update finished downloading...'
-        }
-    }
-    kcMainWindow.webContents.send('electron-auto-update', 'Update downloaded');
-});
-
-/**
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- */
 function copyFileToFolder(filePath: string, newFilePath: string) {
     fs.copyFileSync(filePath, newFilePath);
 }
+
+
+/**
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ */
