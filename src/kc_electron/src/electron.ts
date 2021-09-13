@@ -1,5 +1,6 @@
-import {IpcResponse} from "./app/models/electron.ipc.model";
+import {IpcMessage} from "./app/models/electron.ipc.model";
 import {FileModel} from "./app/models/file.model";
+import {UpdateCheckResult} from "electron-updater";
 
 const {app, BrowserWindow, BrowserView, ipcMain, dialog, shell} = require('electron');
 const {autoUpdater} = require("electron-updater");
@@ -12,13 +13,13 @@ const path = require('path');
 const mime = require('mime-types');
 const settingsService = require('./app/controller/settings.service');
 const uuid = require('uuid');
-const DEBUG: boolean = false;
 const MAIN_ENTRY: string = path.join(app.getAppPath(), 'src', 'kc_angular', 'dist', 'main', 'index.html');
 
 (global as any).share = {
     settingsService,
     BrowserWindow,
     BrowserView,
+    autoUpdater,
     nativeImage,
     ipcMain,
     dialog,
@@ -33,14 +34,27 @@ const MAIN_ENTRY: string = path.join(app.getAppPath(), 'src', 'kc_angular', 'dis
 
 console.log('Dirname: ', __dirname);
 
-const browserExtensionServer = require('./app/server/server');
-const browserIpc = require('./app/ipc/ipc-index').browserIpc;
+// Setup auto update
+require('./app/controller/update');
 
-let appEnv = settingsService.getSettings();
-let kcMainWindow: typeof BrowserWindow;
+// Setup IPC
+require('./app/ipc');
+
+// Setup knowledge source ingestion
+require('./app/ingest');
+
+// Start browser extension server
+const browserExtensionServer = require('./app/server/server');
+
+const browserIpc = require('./app/ipc').browserIpc;
 
 browserExtensionServer.createServer();
 
+// Get application settings
+let appEnv = settingsService.getSettings();
+
+// Declare main window for later use
+let kcMainWindow: typeof BrowserWindow;
 
 /**
  *
@@ -51,7 +65,7 @@ browserExtensionServer.createServer();
  *
  *
  *
- *
+ * Main Window Functions
  *
  *
  *
@@ -64,10 +78,10 @@ browserExtensionServer.createServer();
  *
  */
 function createMainWindow() {
-    console.log('Startup URL entry point is: ', MAIN_ENTRY);
     let WIDTH: number = parseInt(appEnv.DEFAULT_WINDOW_WIDTH);
+
     let HEIGHT: number = parseInt(appEnv.DEFAULT_WINDOW_HEIGHT);
-    console.log('Starting with window sizes: ', WIDTH, HEIGHT);
+
     const config = {
         show: false,
         minWidth: 800,
@@ -86,6 +100,10 @@ function createMainWindow() {
 
     kcMainWindow = new BrowserWindow(config);
 
+    setMainWindowListeners();
+}
+
+function setMainWindowListeners() {
     // TODO: Determine if the following is the best we can do for page load failure
     // We need to explicitly reload the index upon refresh (note this is only needed in Electron)
     kcMainWindow.webContents.on('did-fail-load', () => {
@@ -98,24 +116,40 @@ function createMainWindow() {
         kcMainWindow = null;
     });
 
+    // Handle event in which a new window is created (i.e. when a user clicks on a link that is meant to open in new tab, etc)
     kcMainWindow.webContents.on('new-window', (event: any, url: string) => {
         console.log('New window requested: ', url);
         event.preventDefault();
         shell.openExternal(url);
     });
 
-    kcMainWindow.loadFile(MAIN_ENTRY);
-
+    // Show the window once it's ready
     kcMainWindow.once('ready-to-show', () => {
         kcMainWindow.show();
     });
-
-
-    console.log('Main window has ID: ', kcMainWindow.id);
-
-    return kcMainWindow;
 }
 
+/**
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ * Set APP listeners
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ */
 
 app.on('window-all-closed', function () {
     // MacOS apps typically do not quit all the way when a window is closed...
@@ -123,13 +157,26 @@ app.on('window-all-closed', function () {
         app.quit()
 });
 
+app.on('activate', () => {
+    if (BrowserWindow.getAllWindows().length === 0) {
+        createMainWindow();
+    }
+});
 
-app.on('ready', function() {
-    kcMainWindow = createMainWindow();
-    autoUpdater.checkForUpdatesAndNotify();
-    app.on('activate', function () {
-        if (BrowserWindow.getAllWindows().length === 0) createMainWindow();
-    });
+
+app.on('ready', function () {
+    // Create window but wait to load and show until after update
+    createMainWindow();
+
+    autoUpdater.checkForUpdatesAndNotify().then((update: UpdateCheckResult | null) => {
+        if (update) {
+            console.log('Update Check Results: ', update);
+        }
+    }).catch((reason: any) => {
+        console.error('Update Check Error: ', reason);
+    }).finally(() => {
+        kcMainWindow.loadFile(MAIN_ENTRY);
+    })
 });
 
 
@@ -275,7 +322,7 @@ settingsService.ingest.subscribe((ingest: any) => {
             let responses: any[] = [];
 
             for (let fileToPush of filesToPush) {
-                let response: IpcResponse = {
+                let response: IpcMessage = {
                     error: undefined,
                     success: {
                         data: fileToPush
@@ -294,74 +341,29 @@ settingsService.ingest.subscribe((ingest: any) => {
     }, appEnv.ingest.interval);
 });
 
-/**
- *
- *
- *
- *
- *
- *
- *
- *
- AUTO UPDATE
- *
- *
- *
- *
- *
- *
- *
- *
- *
- */
-autoUpdater.on('checking-for-update', () => {
-    kcMainWindow.webContents.send('message', 'Checking for update...');
-});
-
-autoUpdater.on('update-available', (info: any) => {
-    kcMainWindow.webContents.send('message', 'Update available.');
-});
-
-autoUpdater.on('update-not-available', (info: any) => {
-    kcMainWindow.webContents.send('message', 'Update not available.');
-});
-
-autoUpdater.on('error', (err: any) => {
-    kcMainWindow.webContents.send('message', 'Error in auto-updater. ' + err);
-});
-
-autoUpdater.on('download-progress', (progressObj: any) => {
-    let log_message = "Download speed: " + progressObj.bytesPerSecond;
-    log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
-    log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
-    kcMainWindow.webContents.send('message', log_message);
-});
-
-autoUpdater.on('update-downloaded', (info: any) => {
-    kcMainWindow.webContents.send('message', 'Update downloaded');
-});
-
-/**
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- */
 function copyFileToFolder(filePath: string, newFilePath: string) {
     fs.copyFileSync(filePath, newFilePath);
 }
+
+
+/**
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ */

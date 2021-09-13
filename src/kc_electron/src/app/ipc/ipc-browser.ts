@@ -1,4 +1,4 @@
-import {IpcResponse, KsBrowserViewRequest, KsBrowserViewResponse} from "../models/electron.ipc.model";
+import {IpcMessage, KsBrowserViewRequest, KsBrowserViewResponse} from "../models/electron.ipc.model";
 
 const share: any = (global as any).share;
 const BrowserWindow: any = share.BrowserWindow;
@@ -138,7 +138,7 @@ closeBrowserView = ipcMain.on('electron-close-browser-view', () => {
         ipcMain.removeAllListeners(bvEventListener);
     }
 
-    let response: IpcResponse = {
+    let response: IpcMessage = {
         error: undefined,
         success: {data: true}
     }
@@ -170,11 +170,11 @@ closeBrowserView = ipcMain.on('electron-close-browser-view', () => {
  */
 openBrowserView = ipcMain.on('electron-browser-view', (event: any, args: KsBrowserViewRequest) => {
     let kcMainWindow: any = share.BrowserWindow.getAllWindows()[0];
-    let response: IpcResponse = {
+    let response: IpcMessage = {
         error: undefined,
         success: undefined
     }
-    let navEventsResponse: IpcResponse = {
+    let navEventsResponse: IpcMessage = {
         error: undefined,
         success: undefined
     }
@@ -254,7 +254,7 @@ openBrowserView = ipcMain.on('electron-browser-view', (event: any, args: KsBrows
     ipcMain.on('electron-browser-view-can-go-back', (_: any) => {
         if (!kcBrowserView.webContents)
             return;
-        let response: IpcResponse = {
+        let response: IpcMessage = {
             error: undefined,
             success: {data: kcBrowserView.webContents.canGoBack()}
         }
@@ -264,7 +264,7 @@ openBrowserView = ipcMain.on('electron-browser-view', (event: any, args: KsBrows
     ipcMain.on('electron-browser-view-can-go-forward', (_: any) => {
         if (!kcBrowserView.webContents)
             return;
-        let response: IpcResponse = {
+        let response: IpcMessage = {
             error: undefined,
             success: {data: kcBrowserView.webContents.canGoForward()}
         }
@@ -274,7 +274,7 @@ openBrowserView = ipcMain.on('electron-browser-view', (event: any, args: KsBrows
     ipcMain.on('electron-browser-view-current-url', (_: any) => {
         if (!kcBrowserView.webContents)
             return;
-        let response: IpcResponse = {
+        let response: IpcMessage = {
             error: undefined,
             success: {data: kcBrowserView.webContents.getURL()}
         }

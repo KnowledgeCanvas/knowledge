@@ -1,4 +1,4 @@
-import {IpcResponse, KsThumbnailRequest, PromptForDirectoryRequest} from "../models/electron.ipc.model";
+import {IpcMessage, KsThumbnailRequest, PromptForDirectoryRequest} from "../models/electron.ipc.model";
 
 const share: any = (global as any).share;
 const ipcMain: any = share.ipcMain;
@@ -26,7 +26,7 @@ promptForDirectory = ipcMain.on('app-prompt-for-directory', (event: any, request
     }
     let kcMainWindow: any = share.BrowserWindow.getAllWindows()[0];
     const result = dialog.showOpenDialogSync(kcMainWindow, request);
-    let response: IpcResponse = {
+    let response: IpcMessage = {
         error: undefined,
         success: undefined
     }
@@ -53,7 +53,7 @@ promptForDirectory = ipcMain.on('app-prompt-for-directory', (event: any, request
  */
 openLocalFile = ipcMain.on('electron-open-local-file', (event: any, filePath: string) => {
     shell.openPath(path.resolve(filePath)).then((outcome: string) => {
-        let response: IpcResponse = {error: undefined, success: undefined}
+        let response: IpcMessage = {error: undefined, success: undefined}
         if (outcome === '') {
             response.success = {data: true}
         } else {
@@ -78,7 +78,7 @@ openLocalFile = ipcMain.on('electron-open-local-file', (event: any, filePath: st
  */
 getFileThumbnail = ipcMain.on('electron-get-file-thumbnail', (event: any, requests: KsThumbnailRequest[]) => {
     let kcMainWindow: any = share.BrowserWindow.getAllWindows()[0];
-    let responses: IpcResponse[] = [];
+    let responses: IpcMessage[] = [];
     let actions: any[] = [];
 
     if (requests.length <= 0) {
@@ -104,7 +104,7 @@ getFileThumbnail = ipcMain.on('electron-get-file-thumbnail', (event: any, reques
 
     Promise.all(actions).then((thumbnails) => {
         for (let thumbnail of thumbnails) {
-            let response: IpcResponse = {
+            let response: IpcMessage = {
                 error: undefined,
                 success: {data: thumbnail.toDataURL()}
             }
@@ -114,7 +114,7 @@ getFileThumbnail = ipcMain.on('electron-get-file-thumbnail', (event: any, reques
         kcMainWindow.webContents.send('electron-get-file-thumbnail-results', responses);
     }).catch((reason) => {
         console.error('Caught promise exception while getting thumbnail: ', reason);
-        let response: IpcResponse = {
+        let response: IpcMessage = {
             error: {
                 code: 501,
                 label: http.STATUS_CODES['501'],
@@ -139,7 +139,7 @@ getFileIcon = ipcMain.on('electron-get-file-icon', (event: any, filePaths: strin
         return;
     }
     let kcMainWindow: any = share.BrowserWindow.getAllWindows()[0];
-    let responses: IpcResponse[] = [];
+    let responses: IpcMessage[] = [];
     let options = {size: 'normal'}
     let actions: any[] = [];
     for (let filePath of filePaths) {
@@ -147,7 +147,7 @@ getFileIcon = ipcMain.on('electron-get-file-icon', (event: any, filePaths: strin
     }
     Promise.all(actions).then((icons) => {
         for (let icon of icons) {
-            let response: IpcResponse = {
+            let response: IpcMessage = {
                 error: undefined,
                 success: {data: icon.toDataURL()}
             }

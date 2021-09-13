@@ -9,7 +9,7 @@ export interface IpcError {
     message: string;
 }
 
-export interface IpcResponse {
+export interface IpcMessage {
     error: IpcError | undefined;
     success: IpcSuccess | undefined;
 }

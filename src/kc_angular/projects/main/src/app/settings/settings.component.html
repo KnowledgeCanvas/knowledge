@@ -1,44 +1,31 @@
-<mat-drawer-container class="kc-settings-container">
-  <mat-drawer mode="side" opened class="kc-settings-drawer">
-<!--    <div class="flex-row-center-start">-->
-<!--            <button mat-icon-button (click)="back()" hidden>-->
-<!--              <mat-icon>arrow_back</mat-icon>-->
-<!--            </button>-->
-<!--      <div class="kc-h1">-->
-<!--        Settings-->
-<!--      </div>-->
-<!--    </div>-->
-<!--    <mat-divider></mat-divider>-->
-    <div>
-      <mat-nav-list>
-        <a [routerLink]="[{ outlets: { 'settings-router' : ['app-general-settings']}}] "
-           mat-list-item
-           routerLinkActive>All Settings</a>
-                <mat-divider></mat-divider>
-                <a [routerLink]="[{ outlets: { 'settings-router' : ['app-ingest-settings']}}] "
-                   mat-list-item
-                   routerLinkActive>Ingest</a>
+<!--<mat-drawer-container class="kc-settings-container">-->
+<!--  <mat-drawer mode="side" opened class="kc-settings-drawer">-->
+<!--    <div>-->
+<!--      <mat-nav-list>-->
+<!--        <a [routerLink]="[{ outlets: { 'settings-router' : ['app-general-settings']}}] "-->
+<!--           mat-list-item-->
+<!--           routerLinkActive>All Settings</a>-->
+<!--                <mat-divider></mat-divider>-->
+<!--                <a [routerLink]="[{ outlets: { 'settings-router' : ['app-ingest-settings']}}] "-->
+<!--                   mat-list-item-->
+<!--                   routerLinkActive>Ingest</a>-->
 <!--                <mat-divider></mat-divider>-->
 <!--                <a [routerLink]="[{ outlets: { 'settings-router' : ['app-display-settings']}}] "-->
 <!--                   mat-list-item-->
 <!--                   routerLinkActive>Display</a>-->
-                <mat-divider></mat-divider>
-                <a [routerLink]="[{ outlets: { 'settings-router' : ['app-search-settings']}}] "
-                   mat-list-item
-                   routerLinkActive>Search</a>
-                <mat-divider></mat-divider>
-                <a [routerLink]="[{ outlets: { 'settings-router' : ['app-storage-settings']}}] "
-                   mat-list-item
-                   routerLinkActive>Storage</a>
-      </mat-nav-list>
-    </div>
-  </mat-drawer>
-  <mat-drawer-content class="kc-settings-content">
-    <router-outlet name="settings-router"></router-outlet>
-  </mat-drawer-content>
-</mat-drawer-container>
-
-
-
-
-
+<!--                <mat-divider></mat-divider>-->
+<!--                <a [routerLink]="[{ outlets: { 'settings-router' : ['app-search-settings']}}] "-->
+<!--                   mat-list-item-->
+<!--                   routerLinkActive>Search</a>-->
+<!--                <mat-divider></mat-divider>-->
+<!--                <a [routerLink]="[{ outlets: { 'settings-router' : ['app-storage-settings']}}] "-->
+<!--                   mat-list-item-->
+<!--                   routerLinkActive>Storage</a>-->
+<!--      </mat-nav-list>-->
+<!--    </div>-->
+<!--  </mat-drawer>-->
+<!--  <mat-drawer-content class="kc-settings-content">-->
+<!--    <router-outlet name="settings-router"></router-outlet>-->
+<!--  </mat-drawer-content>-->
+<!--</mat-drawer-container>-->
+<app-general-settings></app-general-settings>

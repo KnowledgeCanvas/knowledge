@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import {EnvironmentModel} from "../models/environment.model";
 import {BehaviorSubject} from 'rxjs';
+import {IngestSettingsModel} from "../models/ingest.model";
 
 const RET_OK = 0;
 const RET_FAIL = -1;
@@ -13,7 +14,7 @@ appEnv = new ApplicationEnvironment().getEnvironment();
 
 
 class SettingsService {
-    private ingestSubject = new BehaviorSubject<any>({});
+    private ingestSubject = new BehaviorSubject<IngestSettingsModel>({autoscan: false, managed: false});
     ingest = this.ingestSubject.asObservable();
 
     constructor() {
@@ -25,7 +26,6 @@ class SettingsService {
         try {
             let raw = fs.readFileSync(appEnv.settingsFilePath, 'utf8');
             settings = JSON.parse(raw.toString());
-            // console.log('Settings retrieved from file (', appEnv.settingsPath, '): ', settings);
         } catch (e) {
             console.error('SettingsService: File IO error occurred on read.');
             console.error(e);
@@ -39,9 +39,8 @@ class SettingsService {
             ...settings
         };
 
-        if (appEnv.ingest) {
-            this.ingestSubject.next(appEnv.ingest);
-        }
+        // TODO: only update observable if the ingest settings have changed.. otherwise this call is pointless
+        this.ingestSubject.next(appEnv.ingest);
 
         return appEnv;
     }

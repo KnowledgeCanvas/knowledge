@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SecurityContext, SimpleChanges} from '@angular/core';
 import {ElectronIpcService} from "../../../services/electron-ipc/electron-ipc.service";
-import {IpcResponse, KsBrowserViewRequest} from "kc_electron/src/app/models/electron.ipc.model";
+import {IpcMessage, KsBrowserViewRequest} from "kc_electron/src/app/models/electron.ipc.model";
 import {DomSanitizer} from "@angular/platform-browser";
 import {KcViewportHeaderConfig, KcViewportHeaderEvent} from "../shared/viewport-header/viewport-header.component";
 import {Subscription} from "rxjs";
@@ -28,7 +28,7 @@ export interface KcBrowserViewClickEvent extends KcViewportHeaderEvent {
 export class BrowserViewComponent implements OnInit, OnChanges, OnDestroy {
   @Input() kcBrowserViewConfig!: KcBrowserViewConfig;
   @Output() viewReady = new EventEmitter<boolean>();
-  @Output() onIpcResponse = new EventEmitter<IpcResponse>();
+  @Output() onIpcResponse = new EventEmitter<IpcMessage>();
   @Output() navEvent = new EventEmitter<KcBrowserViewNavEvent>();
   @Output() clickEvent = new EventEmitter<KcBrowserViewClickEvent>();
   @Output() selectEvent = new EventEmitter();
@@ -118,7 +118,7 @@ export class BrowserViewComponent implements OnInit, OnChanges, OnDestroy {
       height: Math.ceil(position.height)
     }
 
-    this.ipcService.openBrowserView(request).then((response: IpcResponse) => {
+    this.ipcService.openBrowserView(request).then((response: IpcMessage) => {
       if (response.success) {
         this.viewReady.emit(true);
       }

@@ -2,7 +2,7 @@ import {Injectable, NgZone} from '@angular/core';
 import {UuidModel} from "projects/ks-lib/src/lib/models/uuid.model";
 import {BehaviorSubject, Observable} from 'rxjs';
 import {SettingsModel} from "projects/ks-lib/src/lib/models/settings.model";
-import {IpcResponse, KsBrowserViewRequest, KsThumbnailRequest} from "kc_electron/src/app/models/electron.ipc.model";
+import {IpcMessage, KsBrowserViewRequest, KsThumbnailRequest} from "kc_electron/src/app/models/electron.ipc.model";
 import {FileModel} from "../../models/file.model";
 
 export interface ElectronNavEvent {
@@ -32,6 +32,7 @@ export class ElectronIpcService {
   private receiveOnce = window.api.receiveOnce;
   private removeAllListeners = window.api.removeAllListeners;
   private channels = {
+    autoUpdateReceive: 'electron-auto-update',
     browserExtensionResults: 'app-chrome-extension-results',
     browserView: 'electron-browser-view',
     browserViewCanGoBack: 'electron-browser-view-can-go-back',
@@ -45,6 +46,10 @@ export class ElectronIpcService {
     browserViewNavEvents: 'electron-browser-view-nav-events',
     browserViewRefresh: 'electron-browser-view-refresh',
     browserViewResults: 'electron-browser-view-results',
+    checkCurrentVersion: 'app-get-current-version',
+    checkCurrentVersionResults: 'app-get-current-version-results',
+    checkForUpdates: 'electron-check-for-update',
+    checkForUpdatesResults: 'electron-check-for-update-results',
     closeBrowserView: 'electron-close-browser-view',
     closeBrowserViewResults: 'electron-close-browser-view-results',
     generateUuid: 'app-generate-uuid',
@@ -80,8 +85,26 @@ export class ElectronIpcService {
 
   private _bvStateTimer: any = Date.now()
 
+  private _currentVersion = new BehaviorSubject<string>('');
+  version = this._currentVersion.asObservable();
+
   constructor(private zone: NgZone) {
-    this.receive(this.channels.browserViewNavEvents, (response: IpcResponse) => {
+    console.log('Ipc Service setting up...');
+    /**
+     * Listen for auto update messages
+     */
+    this.receive(this.channels.autoUpdateReceive, (response: IpcMessage) => {
+      console.log('Received message from auto update: ', response);
+    });
+
+    this.receive(this.channels.checkCurrentVersionResults, (response: IpcMessage) => {
+      this._currentVersion.next(response.success?.data);
+    });
+
+    /**
+     * Listen for incoming browser extension results
+     */
+    this.receive(this.channels.browserViewNavEvents, (response: IpcMessage) => {
       this.zone.run(() => {
         if (response.error) {
           console.error(response.error);
@@ -98,26 +121,36 @@ export class ElectronIpcService {
      * Pre-register call backs which will feed the above observables
      *
      */
-    this.receive(this.channels.browserViewCanGoBackResults, (response: IpcResponse) => {
+    this.receive(this.channels.browserViewCanGoBackResults, (response: IpcMessage) => {
       this.zone.run(() => {
         if (response.success)
           this._bvCanGoBack.next(response.success.data);
       });
     });
 
-    this.receive(this.channels.browserViewCanGoForwardResults, (response: IpcResponse) => {
+    this.receive(this.channels.browserViewCanGoForwardResults, (response: IpcMessage) => {
       this.zone.run(() => {
         if (response.success)
           this._bvCanGoForward.next(response.success.data);
       });
     });
 
-    this.receive(this.channels.browserViewCurrentUrlResults, (response: IpcResponse) => {
+    this.receive(this.channels.browserViewCurrentUrlResults, (response: IpcMessage) => {
       this.zone.run(() => {
         if (response.success)
           this._bvUrl.next(response.success.data);
       });
     });
+
+    this.getCurrentVersion();
+  }
+
+  checkForUpdates() {
+    this.send(this.channels.checkForUpdates);
+  }
+
+  getCurrentVersion() {
+    this.send(this.channels.checkCurrentVersion);
   }
 
   triggerBrowserViewStateUpdate() {
@@ -150,7 +183,7 @@ export class ElectronIpcService {
     this._bvCanGoForward.next(false);
     this._bvUrl.next('');
 
-    this.receiveOnce(this.channels.closeBrowserViewResults, (response: IpcResponse) => {
+    this.receiveOnce(this.channels.closeBrowserViewResults, (response: IpcMessage) => {
       this.removeAllListeners(this.channels.closeBrowserViewResults);
       this.zone.run(() => {
         if (response.success) {
@@ -165,7 +198,7 @@ export class ElectronIpcService {
 
   getFileIcon(paths: string[]): Promise<any[]> {
     return new Promise<any[]>((resolve) => {
-      this.receiveOnce(this.channels.getFileIconResults, (responses: IpcResponse[]) => {
+      this.receiveOnce(this.channels.getFileIconResults, (responses: IpcMessage[]) => {
         this.removeAllListeners(this.channels.getFileIconResults);
         let icons: any[] = [];
         for (let response of responses) {
@@ -186,7 +219,7 @@ export class ElectronIpcService {
       if (requests.length < 1)
         reject();
 
-      this.receiveOnce(this.channels.getFileThumbnailResults, (responses: IpcResponse[]) => {
+      this.receiveOnce(this.channels.getFileThumbnailResults, (responses: IpcMessage[]) => {
         this.removeAllListeners(this.channels.getFileThumbnailResults);
         this.zone.run(() => {
           let thumbnails: any[] = [];
@@ -206,7 +239,7 @@ export class ElectronIpcService {
 
   promptForDirectory(request: PromptForDirectoryRequest): Promise<string> {
     return new Promise<string>((resolve, reject) => {
-      this.receiveOnce(this.channels.promptForDirectoryResults, (response: IpcResponse) => {
+      this.receiveOnce(this.channels.promptForDirectoryResults, (response: IpcMessage) => {
         this.removeAllListeners(this.channels.promptForDirectoryResults);
         this.zone.run(() => {
           if (response.error) {
@@ -222,9 +255,9 @@ export class ElectronIpcService {
     });
   }
 
-  openBrowserView(request: KsBrowserViewRequest): Promise<IpcResponse> {
-    return new Promise<IpcResponse>((resolve) => {
-      this.receiveOnce(this.channels.browserViewResults, (response: IpcResponse) => {
+  openBrowserView(request: KsBrowserViewRequest): Promise<IpcMessage> {
+    return new Promise<IpcMessage>((resolve) => {
+      this.receiveOnce(this.channels.browserViewResults, (response: IpcMessage) => {
         this.removeAllListeners(this.channels.browserViewResults);
         this.zone.run(() => {
 
@@ -239,7 +272,7 @@ export class ElectronIpcService {
 
   openLocalFile(path: string): Promise<boolean> {
     return new Promise<boolean>((resolve) => {
-      this.receiveOnce(this.channels.openLocalFileResults, (response: IpcResponse) => {
+      this.receiveOnce(this.channels.openLocalFileResults, (response: IpcMessage) => {
         this.removeAllListeners(this.channels.openLocalFileResults);
         this.zone.run(() => {
           if (response.success?.data) {
@@ -279,7 +312,7 @@ export class ElectronIpcService {
 
   generateUuid(quantity: number): Promise<UuidModel[]> {
     return new Promise<UuidModel[]>((resolve, reject) => {
-      this.receiveOnce(this.channels.generateUuidResults, (response: IpcResponse) => {
+      this.receiveOnce(this.channels.generateUuidResults, (response: IpcMessage) => {
         this.removeAllListeners(this.channels.generateUuidResults);
         this.zone.run(() => {
           if (response.success?.data) {
@@ -301,7 +334,7 @@ export class ElectronIpcService {
 
   fileWatcher(): Observable<FileModel[]> {
     return new Observable<FileModel[]>((subscriber) => {
-      this.receive(this.channels.ingestWatcherResults, (responses: IpcResponse[]) => {
+      this.receive(this.channels.ingestWatcherResults, (responses: IpcMessage[]) => {
         this.zone.run(() => {
           let files: FileModel[] = [];
 
@@ -322,7 +355,7 @@ export class ElectronIpcService {
 
   browserWatcher(): Observable<string> {
     return new Observable<string>((subscriber) => {
-      this.receive(this.channels.browserExtensionResults, (response: IpcResponse) => {
+      this.receive(this.channels.browserExtensionResults, (response: IpcMessage) => {
         this.zone.run(() => {
           if (response.success?.data && typeof response.success.data === 'string') {
             subscriber.next(response.success.data);
