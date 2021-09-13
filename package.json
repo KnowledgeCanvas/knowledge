@@ -2,7 +2,7 @@
   "name": "knowledge-canvas",
   "version": "0.2.3",
   "author": "Rob Royce <robertris2@gmail.com> (https://robroyce.dev)",
-  "description": "",
+  "description": "Knowledge Canvas -- Electron and Angular implementation",
   "private": true,
   "postinstall": "electron-builder install-app-deps",
   "workspaces": [
@@ -24,6 +24,7 @@
     "publish": "electron-builder -mwl --publish always",
     "purge": "rm -rf node_modules && yarn workspaces run purge",
     "start": "electron .",
+    "start-debug": "electron . --inspect=5858",
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch-main": "cd src/kc_angular && yarn run watch-main",
     "watch-main-dev": "cd src/kc_angular && yarn run watch-main-dev",
@@ -36,16 +37,16 @@
     "appId": "com.knowledgecanvas.app",
     "productName": "Knowledge Canvas",
     "directories": {
-      "buildResources": "resources"
+      "buildResources": "Resources"
     },
     "files": [
       "src/kc_angular/dist/**/*",
       "src/kc_electron/dist/**/*",
-      "resources/**/*"
+      "Resources/**/*"
     ],
     "extraResources": [
       {
-        "from": "resources/app.env",
+        "from": "Resources/app.env",
         "to": "app.env"
       }
     ],
