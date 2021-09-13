@@ -89,7 +89,6 @@ export class ElectronIpcService {
   version = this._currentVersion.asObservable();
 
   constructor(private zone: NgZone) {
-    console.log('Ipc Service setting up...');
     /**
      * Listen for auto update messages
      */
