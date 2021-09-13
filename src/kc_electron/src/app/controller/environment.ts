@@ -14,7 +14,10 @@ const downloadPath = path.join(homeDir, 'Downloads');
 const appPath = path.join(homeDir, '.' + appTitle);
 const filesPath = path.join(appPath, 'files');
 const pdfPath = path.join(filesPath, 'pdfs');
-const resources = path.join(process.cwd(), 'resources');
+const resources = path.join(process.cwd(), 'Resources');
+
+console.log('Resources path: ', resources);
+
 const envPath = path.resolve(resources, 'app.env');
 const projectsPath = path.join(appPath, 'Projects');
 const ingestSettings = {

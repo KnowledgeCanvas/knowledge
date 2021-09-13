@@ -4,9 +4,7 @@ const autoUpdater = share.autoUpdater;
 
 import {IpcMessage} from "../models/electron.ipc.model";
 
-console.log('Initializing Auto Update IPC...');
-
-let checkForUpdate = ipcMain.on('electron-check-for-update', (event: any) => {
+let checkForUpdate = ipcMain.on('electron-check-for-update', (_: any) => {
     autoUpdater.checkForUpdates().then((result: any) => {
         console.warn('Result from check for update: ', result);
     }).catch((error: any) => {
@@ -14,9 +12,8 @@ let checkForUpdate = ipcMain.on('electron-check-for-update', (event: any) => {
     });
 });
 
-let getCurrentVersion = ipcMain.on('app-get-current-version', (event: any) => {
+let getCurrentVersion = ipcMain.on('app-get-current-version', (_: any) => {
     let kcMainWindow: any = share.BrowserWindow.getAllWindows()[0];
-
     let message: IpcMessage = {
         error: undefined,
         success: {

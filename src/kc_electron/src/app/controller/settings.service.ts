@@ -26,7 +26,6 @@ class SettingsService {
         try {
             let raw = fs.readFileSync(appEnv.settingsFilePath, 'utf8');
             settings = JSON.parse(raw.toString());
-            // console.log('Settings retrieved from file (', appEnv.settingsPath, '): ', settings);
         } catch (e) {
             console.error('SettingsService: File IO error occurred on read.');
             console.error(e);
@@ -40,9 +39,8 @@ class SettingsService {
             ...settings
         };
 
-        if (appEnv.ingest) {
-            this.ingestSubject.next(appEnv.ingest);
-        }
+        // TODO: only update observable if the ingest settings have changed.. otherwise this call is pointless
+        this.ingestSubject.next(appEnv.ingest);
 
         return appEnv;
     }

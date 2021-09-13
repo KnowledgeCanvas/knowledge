@@ -34,22 +34,27 @@ const MAIN_ENTRY: string = path.join(app.getAppPath(), 'src', 'kc_angular', 'dis
 
 console.log('Dirname: ', __dirname);
 
+// Setup auto update
 require('./app/controller/update');
 
+// Setup IPC
 require('./app/ipc');
 
+// Setup knowledge source ingestion
 require('./app/ingest');
 
+// Start browser extension server
 const browserExtensionServer = require('./app/server/server');
 
 const browserIpc = require('./app/ipc').browserIpc;
 
-let appEnv = settingsService.getSettings();
-
-let kcMainWindow: typeof BrowserWindow;
-
 browserExtensionServer.createServer();
 
+// Get application settings
+let appEnv = settingsService.getSettings();
+
+// Declare main window for later use
+let kcMainWindow: typeof BrowserWindow;
 
 /**
  *
@@ -96,10 +101,6 @@ function createMainWindow() {
     kcMainWindow = new BrowserWindow(config);
 
     setMainWindowListeners();
-
-    kcMainWindow.loadFile(MAIN_ENTRY);
-
-    return kcMainWindow;
 }
 
 function setMainWindowListeners() {
@@ -164,12 +165,18 @@ app.on('activate', () => {
 
 
 app.on('ready', function () {
-    autoUpdater.checkForUpdatesAndNotify().then((value: UpdateCheckResult | null) => {
-        console.log('Update Check Results: ', value);
+    // Create window but wait to load and show until after update
+    createMainWindow();
+
+    autoUpdater.checkForUpdatesAndNotify().then((update: UpdateCheckResult | null) => {
+        if (update) {
+            console.log('Update Check Results: ', update);
+        }
     }).catch((reason: any) => {
         console.error('Update Check Error: ', reason);
-    });
-    kcMainWindow = createMainWindow();
+    }).finally(() => {
+        kcMainWindow.loadFile(MAIN_ENTRY);
+    })
 });
 
 

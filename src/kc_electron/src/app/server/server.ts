@@ -2,8 +2,6 @@ import {IpcMessage} from "../models/electron.ipc.model";
 
 let share: any = (global as any).share;
 let http: any = share.http;
-let ipcMain: any = share.ipcMain;
-let BrowserWindow: any = share.BrowserWindow;
 let url: any = share.url;
 
 let createServer = () => {
