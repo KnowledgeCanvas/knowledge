@@ -1,5 +1,5 @@
 <div class="knowledge-canvas-container" [style.height]="searchBarVisible ? 'calc(100vh - 170px)' : 'calc(100vh - 73px)'">
-  <app-canvas-source-list></app-canvas-source-list>
+  <app-canvas-source-list [style.display]="searchBarVisible ? 'block' : 'none'"></app-canvas-source-list>
 <!--  <app-canvas-details></app-canvas-details>-->
   <app-canvas-details-overview></app-canvas-details-overview>
 </div>
