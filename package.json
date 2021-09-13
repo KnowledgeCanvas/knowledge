@@ -21,7 +21,8 @@
     "pack": "electron-builder --dir",
     "dist": "electron-builder --publish never",
     "dist-all": "electron-builder -mwl --publish never",
-    "publish": "electron-builder -mwl --publish always",
+    "publish": "electron-builder --publish always",
+    "publish-all": "electron-builder -mwl --publish always",
     "purge": "rm -rf node_modules && yarn workspaces run purge",
     "release": "standard-version",
     "start": "electron .",
@@ -59,7 +60,7 @@
     },
     "mac": {
       "category": "public.app-category.education",
-      "target": "dmg",
+      "target": ["dmg", "zip"],
       "darkModeSupport": true
     },
     "linux": {
