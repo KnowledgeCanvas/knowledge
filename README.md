@@ -36,8 +36,10 @@ yarn start &
 ```
 
 3. **Note:** changes made to Electron require you to restart the app
+   
+You can also choose to run `yarn watch-main` and `yarn watch-electron` (without the `-dev`), but they will take longer to transpile and build, and no source map will be produced.
 
-# Create distributable binaries for MacOS and Windows
+# Create distributable binaries for MacOS, Windows and Linux
 
 1. Clean and reinstall dependencies, then build the project:
 
@@ -51,7 +53,7 @@ yarn build
 2. Create the distributables:
 
 ```shell
-yarn dist
+yarn dist-all
 ```
 
 # Debugging
@@ -78,3 +80,16 @@ We can do the same as above, but in WebStorm
 4. Give it a name and set it to port 5858
 5. Click "Ok"
 6. Select the configuration and press the "Debug" button
+
+## Viewing main process output after app has been packaged
+
+### MacOS
+1. Run the appropriate commands (i.e. `yarn build` > `yarn dist`)
+2. From the project root directory: `cd dist/mac/Knowledge\ Canvas.app/Contents`
+3. Run `./MacOS/Knowledge\ Canvas`
+
+Note that this *must* be run from the `Contents` folder
+
+## Viewing main process output after app has been installed
+The only different between this and the above is where the `Contents` folder is located.
+In most cases, you must run the command from `/Applications/Knowledge Canvas.app/Contents`
