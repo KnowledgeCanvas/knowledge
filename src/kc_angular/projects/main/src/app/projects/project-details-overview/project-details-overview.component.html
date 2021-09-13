@@ -1,13 +1,18 @@
 <div class="project-overview-header">
   <div class="project-breadcrumb-container">
+    <div *ngIf="tooManyAncestorsToDisplay">
+      <button class="project-breadcrumb" disabled>&hellip;</button>
+    </div>
     <div *ngFor="let ancestor of ancestors">
-      <button class="project-breadcrumb" (click)="navigate(ancestor.id)">{{ancestor.title}}</button>
+      <button class="project-breadcrumb" (click)="navigate(ancestor.id)">{{ancestor.title | truncate: [16, '...']}}</button>
     </div>
   </div>
+  <div style="min-width: 8px; max-width: 8px"></div>
   <div>
-    <button (click)="addTopics()">Add Topics</button>
-    <button *ngIf="!detailsHidden" (click)="onDetailClick()">Hide Details</button>
-    <button *ngIf="detailsHidden" (click)="onDetailClick()">Show Details</button>
+    <button class="project-breadcrumb" (click)="addKnowledgeSource()">+ Source</button>
+    <button class="project-breadcrumb" (click)="addTopics()">+ Topic</button>
+    <button class="project-breadcrumb" *ngIf="!detailsHidden" (click)="onDetailClick()">- Details</button>
+    <button class="project-breadcrumb" *ngIf="detailsHidden" (click)="onDetailClick()">+ Details</button>
   </div>
 </div>
 <div class="project-overview-container" #projectOverview>

@@ -5,6 +5,10 @@ import {MatAccordion} from "@angular/material/expansion";
 import {KcCalendar} from "../../../../../ks-lib/src/lib/models/calendar.model";
 import {Subscription} from "rxjs";
 import {ProjectTopicListComponent} from "../project-topic-list/project-topic-list.component";
+import {KnowledgeSourceImportDialogComponent, KsImportDialogOutput} from "../../knowledge-source/ks-import-dialog/knowledge-source-import-dialog.component";
+import {MatDialog} from "@angular/material/dialog";
+import {KsFactoryService} from "../../../../../ks-lib/src/lib/services/ks-factory/ks-factory.service";
+import {BrowserViewDialogService} from "../../../../../ks-lib/src/lib/services/browser-view-dialog/browser-view-dialog.service";
 
 @Component({
   selector: 'app-canvas-details-overview',
@@ -21,13 +25,24 @@ export class ProjectDetailsOverviewComponent implements OnInit, OnDestroy {
   ancestors: ProjectIdentifiers[] = [];
   topicsHidden: boolean = true;
   private subscription: Subscription;
+  tooManyAncestorsToDisplay: boolean = false;
 
-  constructor(private projectService: ProjectService) {
+  constructor(private projectService: ProjectService, private dialog: MatDialog, private ksFactory: KsFactoryService, private browserViewDialogService: BrowserViewDialogService) {
     this.subscription = projectService.currentProject.subscribe((project: ProjectModel) => {
       if (!project.calendar)
         project.calendar = new KcCalendar();
       this.currentProject = project;
-      this.ancestors = projectService.getAncestors(project.id.value);
+
+      // Show up to 3 breadcrumbs (including current project)
+      let ancestors = projectService.getAncestors(project.id.value);
+
+      if (ancestors.length > 3) {
+        this.ancestors = ancestors.slice(ancestors.length - 3);
+        this.tooManyAncestorsToDisplay = true;
+      } else {
+        this.ancestors = ancestors;
+        this.tooManyAncestorsToDisplay = false;
+      }
       this.topicsHidden = !project.topics || project.topics.length === 0;
     });
   }
@@ -114,5 +129,26 @@ export class ProjectDetailsOverviewComponent implements OnInit, OnDestroy {
       } catch (err) {
       }
     }
+  }
+
+  addKnowledgeSource() {
+    const dialogRef = this.dialog.open(KnowledgeSourceImportDialogComponent, {
+      width: 'auto',
+      minWidth: '512px',
+      maxWidth: '1024px',
+      maxHeight: '80vh',
+      data: this.currentProject
+    });
+
+    dialogRef.afterClosed().subscribe((output: KsImportDialogOutput) => {
+      if (output && output.ingestType === 'search') {
+        this.openSearchBrowserView();
+      }
+    })
+  }
+
+  openSearchBrowserView() {
+    let searchKS = this.ksFactory.searchKS();
+    this.browserViewDialogService.open({ks: searchKS});
   }
 }

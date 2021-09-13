@@ -10,12 +10,20 @@
   justify-content: flex-start;
 }
 
+.project-breadcrumb {
+  max-height: 21px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
 .project-breadcrumb-container {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
   justify-content: flex-start;
   align-items: center;
+  max-height: 21px
 }
 
 .project-overview-header {
@@ -53,11 +61,6 @@
 }
 
 .project-overview-calendar {
-  margin: 10px;
-}
-
-app-project-summary {
-  width: 100%;
   margin: 10px;
 }
 
