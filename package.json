@@ -1,6 +1,6 @@
 {
   "name": "knowledge-canvas",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "author": "Rob Royce <robertris2@gmail.com> (https://robroyce.dev)",
   "description": "Knowledge Canvas -- Electron and Angular implementation",
   "private": true,
@@ -60,7 +60,10 @@
     },
     "mac": {
       "category": "public.app-category.education",
-      "target": ["dmg", "zip"],
+      "target": [
+        "dmg",
+        "zip"
+      ],
       "darkModeSupport": true
     },
     "linux": {
