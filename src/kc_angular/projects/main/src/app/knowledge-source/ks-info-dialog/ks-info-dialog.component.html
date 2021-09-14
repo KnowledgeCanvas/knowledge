@@ -8,13 +8,12 @@
   <app-ks-info [ks]="ks" (ksModified)="ksModified($event)"></app-ks-info>
 </div>
 
-<div mat-dialog-actions *ngIf="selectedTab.value === 0">
-  <button mat-button (click)="preview()">Preview</button>
-  <button *ngIf="this.ks.ingestType !== 'file'" mat-button (click)="openInBrowser()">Open in...</button>
-  <button *ngIf="this.ks.ingestType === 'file'" mat-button (click)="openLocally()">Open in...</button>
-  <button *ngIf="this.ks.ingestType === 'file'" mat-button (click)="copyLink()" >Copy Path</button>
-  <button *ngIf="this.ks.ingestType !== 'file'" mat-button (click)="copyLink()" >Copy Link</button>
+<div mat-dialog-actions>
+  <button *ngIf="sourceRef !== 'ks-drop-list'" mat-button (click)="preview()">Preview</button>
+  <button *ngIf="sourceRef !== 'ks-drop-list' && this.ks.ingestType !== 'file'" mat-button (click)="openInBrowser()">Open in...</button>
+  <button *ngIf="sourceRef !== 'ks-drop-list' && this.ks.ingestType === 'file'" mat-button (click)="openLocally()">Open in...</button>
+  <button *ngIf="sourceRef !== 'ks-drop-list' && this.ks.ingestType === 'file'" mat-button (click)="copyLink()" >Copy Path</button>
+  <button *ngIf="sourceRef !== 'ks-drop-list' && this.ks.ingestType !== 'file'" mat-button (click)="copyLink()" >Copy Link</button>
   <button *ngIf="sourceRef !== 'ks-drop-list'" mat-button (click)="importSource()" color="primary">Add to Project</button>
   <button *ngIf="sourceRef !== 'ks-drop-list'" mat-button (click)="removeQueueItem()" color="warn">Remove from Up Next</button>
-  <button *ngIf="sourceRef === 'ks-drop-list'" mat-button color="warn" (click)="removeSource()">Remove from Project</button>
 </div>
