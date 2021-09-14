@@ -6,7 +6,6 @@ import {ProjectModel, ProjectUpdateRequest} from "projects/ks-lib/src/lib/models
 import {ProjectService} from "../../../../../ks-lib/src/lib/services/projects/project.service";
 import {KnowledgeSource} from "projects/ks-lib/src/lib/models/knowledge.source.model";
 import {KnowledgeSourceImportDialogComponent, KsImportDialogOutput} from "../ks-import-dialog/knowledge-source-import-dialog.component";
-import {KsInfoDialogComponent, KsInfoDialogInput, KsInfoDialogOutput} from "../ks-info-dialog/ks-info-dialog.component";
 import {FaviconExtractorService} from "../../../../../ks-lib/src/lib/services/favicon/favicon-extractor.service";
 import {StorageService} from "../../../../../ks-lib/src/lib/services/storage/storage.service";
 import {KsFactoryService} from "../../../../../ks-lib/src/lib/services/ks-factory/ks-factory.service";
@@ -14,6 +13,8 @@ import {BrowserViewDialogService} from "../../../../../ks-lib/src/lib/services/b
 import {Subscription} from "rxjs";
 import {KsQueueService} from "../ks-queue-service/ks-queue.service";
 import {KsPreviewOutput} from "../ks-preview/ks-preview.component";
+import {KsInfoDialogService} from "../../../../../ks-lib/src/lib/services/ks-info-dialog.service";
+import {KsInfoDialogOutput} from "../ks-info-dialog/ks-info-dialog.component";
 
 export interface KsSortBy {
   index: number;
@@ -75,6 +76,7 @@ export class KnowledgeSourceDropListComponent implements OnInit, OnDestroy {
   ];
 
   constructor(private browserViewDialogService: BrowserViewDialogService,
+              private ksInfoDialogService: KsInfoDialogService,
               private faviconService: FaviconExtractorService,
               private ksDropService: KsDropService,
               private ksQueueService: KsQueueService,
@@ -213,39 +215,24 @@ export class KnowledgeSourceDropListComponent implements OnInit, OnDestroy {
     this.browserViewDialogService.open({ks: searchKS});
   }
 
-  openKsInfoDialog(node: KnowledgeSource) {
-    let dialogInput: KsInfoDialogInput = {
-      source: 'ks-drop-list',
-      ks: node,
-      projectId: this.project ? this.project.id.value : undefined
-    }
-
-    const dialogRef = this.dialog.open(KsInfoDialogComponent, {
-      minWidth: '65vw',
-      width: 'auto',
-      height: 'auto',
-      maxHeight: '90vh',
-      data: dialogInput,
-      autoFocus: false
-    });
-    dialogRef.afterClosed().subscribe((result: KsInfoDialogOutput) => {
-      if (result.ksChanged && this.project) {
+  openKsInfoDialog(ks: KnowledgeSource) {
+    this.ksInfoDialogService.open(ks, this.project ? this.project.id.value : undefined).then((output: KsInfoDialogOutput) => {
+      if (output.ksChanged && this.project) {
         let update: ProjectUpdateRequest = {
           id: this.project.id,
-          updateKnowledgeSource: [result.ks]
+          updateKnowledgeSource: [output.ks]
         }
+
         this.projectService.updateProject(update);
       }
-
-      if (result.preview) {
-        this.preview(result.ks);
+      if (output.preview) {
+        this.preview(output.ks);
       }
-    })
+    });
   }
 
   preview(ks: KnowledgeSource) {
     const dialogRef = this.browserViewDialogService.open({ks: ks})
-
     dialogRef.componentInstance.output.subscribe((output: KsPreviewOutput) => {
       if (!this.project)
         return;
