@@ -13,8 +13,6 @@ export class FaviconExtractorService {
   private defaultIcon = 'assets/img/default.png';
   private loadingGif = 'assets/img/loading.gif';
   private fileIcon = 'assets/img/pdf.png';
-  private googleIcon = 'assets/img/icons/google/google.png';
-  private savedIcons: any[] = [];
 
   constructor(private httpClient: HttpClient, private sanitizer: DomSanitizer) {
   }
@@ -22,7 +20,7 @@ export class FaviconExtractorService {
   // NOTE: https://stackoverflow.com/a/45630579
   // NOTE: https://stackoverflow.com/a/15750809
   // NOTE: https://erikmartinjordan.com/get-favicon-google-api
-  extract(urls: string[]): Promise<any[]> {
+  async extract(urls: string[]): Promise<any[]> {
     return new Promise((resolve, reject) => {
       if (urls === undefined)
         reject(undefined);
