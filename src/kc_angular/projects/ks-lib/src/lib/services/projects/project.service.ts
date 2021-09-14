@@ -200,12 +200,11 @@ export class ProjectService {
   updateProject(projectUpdate: ProjectUpdateRequest) {
     // Make sure the target project exists
     let projectToUpdate = this.projectSource.find(p => p.id.value === projectUpdate.id.value);
+
     if (!projectToUpdate) {
       console.error(`Project not found: `, projectUpdate.id.value);
       return;
     }
-
-    let shouldUpdate: boolean = false;
 
     if (projectUpdate.name && projectUpdate.name !== projectToUpdate.name) {
       projectToUpdate.name = projectUpdate.name;
@@ -214,13 +213,11 @@ export class ProjectService {
     // Handle knowledge source removal
     if (projectUpdate.removeKnowledgeSource && projectUpdate.removeKnowledgeSource.length > 0) {
       projectToUpdate = this.removeKnowledgeSource(projectToUpdate, projectUpdate.removeKnowledgeSource);
-      shouldUpdate = true;
     }
 
     // Handle knowledge source insertion
     if (projectUpdate.addKnowledgeSource && projectUpdate.addKnowledgeSource.length > 0) {
       projectToUpdate = this.addKnowledgeSource(projectToUpdate, projectUpdate.addKnowledgeSource);
-      shouldUpdate = true;
     }
 
     // Handle knowledge source update
@@ -258,11 +255,8 @@ export class ProjectService {
     // Update project source
     this.projectSource = this.projectSource.filter(p => p.id.value !== projectUpdate.id.value);
     this.projectSource.push(projectToUpdate);
-
-    if (projectUpdate.id.value !== this.selectedSource.value.id.value || shouldUpdate) {
-      this.setCurrentProject(projectUpdate.id.value);
-      this.refreshTree();
-    }
+    this.setCurrentProject(projectUpdate.id.value);
+    this.refreshTree();
   }
 
   setCurrentProject(id: string): void {
@@ -455,10 +449,6 @@ export class ProjectService {
         }
       }
     }
-    return project;
-  }
-
-  private updateTopics(project: ProjectModel, topics: string[]) {
     return project;
   }
 }

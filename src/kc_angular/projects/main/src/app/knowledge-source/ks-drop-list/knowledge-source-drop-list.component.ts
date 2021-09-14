@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
 import {CdkDragDrop} from "@angular/cdk/drag-drop";
 import {KsDropService} from "../../../../../ks-lib/src/lib/services/ks-drop/ks-drop.service";
 import {MatDialog} from "@angular/material/dialog";
@@ -13,6 +13,7 @@ import {KsFactoryService} from "../../../../../ks-lib/src/lib/services/ks-factor
 import {BrowserViewDialogService} from "../../../../../ks-lib/src/lib/services/browser-view-dialog/browser-view-dialog.service";
 import {Subscription} from "rxjs";
 import {KsQueueService} from "../ks-queue-service/ks-queue.service";
+import {KsPreviewOutput} from "../ks-preview/ks-preview.component";
 
 export interface KsSortBy {
   index: number;
@@ -28,11 +29,14 @@ export interface KsSortBy {
 })
 export class KnowledgeSourceDropListComponent implements OnInit, OnDestroy {
   @ViewChild('ksSortKey') ksSortKeyElementRef: ElementRef = {} as ElementRef;
+  @Output() ksListVisibility = new EventEmitter<boolean>();
+  @Input() ksListVisible: boolean = false;
   project: ProjectModel | null = null;
   ksList: KnowledgeSource[] = [];
   hideSortHeader: boolean = true;
   tooltip: string = '';
   CONTAINER_ID = 'knowledge-canvas-sidebar';
+
   private sortByIndex = 0;
   private subscription: Subscription | null = null;
 
@@ -82,17 +86,21 @@ export class KnowledgeSourceDropListComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.subscription = this.projectService.currentProject.subscribe(project => {
+      console.log('KS Drop List got a new project...\n', project);
+
       // Update project when necessary
       this.project = null;
+
       this.ksList = [];
+
       if (!project || !project.name || project.id.value === '') {
         return;
       }
+
       this.project = project;
 
       // Update knowledge source list when necessary
       if (!project.knowledgeSource || project.knowledgeSource.length <= 0) {
-        this.ksList = [];
         this.hideSortHeader = true;
         return;
       }
@@ -202,7 +210,7 @@ export class KnowledgeSourceDropListComponent implements OnInit, OnDestroy {
 
   openSearchBrowserView() {
     let searchKS = this.ksFactory.searchKS();
-    const dialogRef = this.browserViewDialogService.open({ks: searchKS});
+    this.browserViewDialogService.open({ks: searchKS});
   }
 
   openKsInfoDialog(node: KnowledgeSource) {
@@ -230,17 +238,28 @@ export class KnowledgeSourceDropListComponent implements OnInit, OnDestroy {
       }
 
       if (result.preview) {
-        // TODO: open ks-preview dialog here
         this.preview(result.ks);
       }
     })
   }
 
   preview(ks: KnowledgeSource) {
-    let dialogRef = this.browserViewDialogService.open({ks: ks});
-    dialogRef.afterClosed().subscribe((results) => {
-      // TODO: update KS with new timestamps (accessed, modified if necessary)
-    });
+    const dialogRef = this.browserViewDialogService.open({ks: ks})
+
+    dialogRef.componentInstance.output.subscribe((output: KsPreviewOutput) => {
+      if (!this.project)
+        return;
+
+      let ks = output.ks;
+      ks.dateAccessed = new Date();
+
+      let update: ProjectUpdateRequest = {
+        id: this.project.id,
+        updateKnowledgeSource: [ks]
+      }
+
+      this.projectService.updateProject(update);
+    })
   }
 
   sortPrevious() {
@@ -264,6 +283,11 @@ export class KnowledgeSourceDropListComponent implements OnInit, OnDestroy {
       default: // A-Z, Z-A
         return node.title;
     }
+  }
+
+  toggleVisibility() {
+    this.ksListVisible = !this.ksListVisible;
+    this.ksListVisibility.emit(this.ksListVisible);
   }
 
   private performSort() {

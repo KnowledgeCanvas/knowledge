@@ -1,6 +1,6 @@
-import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
+import {Component, EventEmitter, Inject, OnDestroy, OnInit, Output} from '@angular/core';
 import {KnowledgeSource} from "../../../../../ks-lib/src/lib/models/knowledge.source.model";
-import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from "@angular/material/dialog";
+import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {ElectronIpcService} from "../../../../../ks-lib/src/lib/services/electron-ipc/electron-ipc.service";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {Clipboard} from "@angular/cdk/clipboard";
@@ -25,6 +25,9 @@ export interface KsPreviewOutput {
   styleUrls: ['./ks-preview.component.scss']
 })
 export class KsPreviewComponent implements OnInit, OnDestroy {
+  /** Used to emit output before this dialog is closed */
+  @Output() output = new EventEmitter<KsPreviewOutput>();
+
   // Must be configured to display file view. Should be undefined when displaying browser view
   fileViewConfig: KcFileViewConfig | undefined = undefined;
 
@@ -52,7 +55,6 @@ export class KsPreviewComponent implements OnInit, OnDestroy {
   constructor(public dialogRef: MatDialogRef<KsPreviewComponent>,
               @Inject(MAT_DIALOG_DATA) public input: KsPreviewInput,
               private extractionService: ExtractionService,
-              private dialog: MatDialog,
               private ipcService: ElectronIpcService,
               private ksFactory: KsFactoryService,
               private ksQueue: KsQueueService,
@@ -64,13 +66,14 @@ export class KsPreviewComponent implements OnInit, OnDestroy {
      * that want to do something after the dialog has been closed must do so by
      * setting class parameters, which will be included in the output
      */
+
     this.dialogRef.beforeClosed().subscribe(() => {
       /**
        * TODO: this currently doesn't do anything because there are no changes in the preview dialog
        * However, there will eventually be changes such as highlighting a document or text in a web page...
        */
       let dialogOutput: KsPreviewOutput = {ks: this.ks, ksChanged: this.ksChanged};
-      this.dialogRef.close(dialogOutput);
+      this.output.emit(dialogOutput);
     });
 
     this.ks = input.ks;
