@@ -29,11 +29,22 @@
       <td mat-cell *matCellDef="let element">{{element.title | truncate: [truncateLength, '...']}}</td>
     </ng-container>
 
+    <ng-container matColumnDef="associatedProjects">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header class="ks-table-header">Project</th>
+      <td mat-cell *matCellDef="let element">
+        <button (click)="setActiveProject(element.associatedProjects[0].value)">
+          {{projectNameFromId(element.associatedProjects[0].value)}}
+        </button>
+      </td>
+    </ng-container>
+
     <ng-container matColumnDef="ingestType">
       <th mat-header-cell *matHeaderCellDef mat-sort-header class="ks-table-header">Source</th>
       <td mat-cell *matCellDef="let element">
-        <!--        <mat-icon>{{iconFromIngestType(element.ingestType)}}</mat-icon>-->
-        {{element.ingestType | titlecase}}
+        <mat-icon matTooltip="{{element.ingestType | titlecase}}" matTooltipClass="tool-tip">
+          {{iconFromIngestType(element.ingestType)}}
+        </mat-icon>
+        <!--        {{element.ingestType | titlecase}}-->
     </ng-container>
 
     <ng-container matColumnDef="dateCreated">

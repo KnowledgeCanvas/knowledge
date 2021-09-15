@@ -43,6 +43,7 @@ export class KnowledgeSourceTableComponent implements OnInit, OnDestroy, AfterVi
   showSubProjects: boolean = false;
   pageSize: number = 5;
   private initialDisplayedColumns: string[] = ['icon', 'title', 'dateCreated', 'dateAccessed', 'dateModified', 'ingestType'];
+  private initialDisplayedColumnsWithInheritance: string[] = ['icon', 'title', 'associatedProjects', 'dateCreated', 'dateAccessed', 'dateModified', 'ingestType'];
 
   constructor(private browserViewDialogService: BrowserViewDialogService,
               private ksInfoDialogService: KsInfoDialogService,
@@ -65,11 +66,15 @@ export class KnowledgeSourceTableComponent implements OnInit, OnDestroy, AfterVi
     this.setTableColumnsByScreenWidth(window.innerWidth);
     this.projectService.currentProject.subscribe((project: ProjectModel) => {
       this.showSubProjects = false;
+
       if (this.paginator)
         this.paginator.pageSize = 5;
+
       this.project = project;
+
       this.update(project);
-    })
+    });
+
     setTimeout(() => {
       if (this.project)
         this.update(this.project)
@@ -82,14 +87,19 @@ export class KnowledgeSourceTableComponent implements OnInit, OnDestroy, AfterVi
 
   setTableColumnsByScreenWidth(width: number) {
     if (width > 1000) {
-      this.columnsToDisplay = this.initialDisplayedColumns;
+      this.columnsToDisplay = this.showSubProjects
+        ? this.initialDisplayedColumnsWithInheritance : this.initialDisplayedColumns;
       this.truncateLength = 120;
     } else if (width > 900) {
-      this.columnsToDisplay = this.initialDisplayedColumns.filter(c => c !== 'dateCreated' && c !== 'dateAccessed');
+      this.columnsToDisplay = this.showSubProjects
+        ? this.initialDisplayedColumnsWithInheritance.filter(c => c !== 'dateCreated' && c !== 'dateAccessed')
+        : this.initialDisplayedColumns.filter(c => c !== 'dateCreated' && c !== 'dateAccessed');
       this.truncateLength = 60;
     } else {
       this.truncateLength = 30;
-      this.columnsToDisplay = this.initialDisplayedColumns.filter(c => c !== 'dateCreated' && c !== 'dateModified' && c !== 'dateAccessed');
+      this.columnsToDisplay = this.showSubProjects
+        ? this.initialDisplayedColumnsWithInheritance.filter(c => c !== 'dateCreated' && c !== 'dateModified' && c !== 'dateAccessed')
+        : this.initialDisplayedColumns.filter(c => c !== 'dateCreated' && c !== 'dateModified' && c !== 'dateAccessed');
     }
   }
 
@@ -107,6 +117,7 @@ export class KnowledgeSourceTableComponent implements OnInit, OnDestroy, AfterVi
     if (project.knowledgeSource) {
       for (let ks of project.knowledgeSource) {
         ks.icon = this.faviconService.loading();
+        ks.associatedProjects = ks.associatedProjects ? ks.associatedProjects : [project.id];
         ksList.push(ks);
       }
     }
@@ -128,6 +139,7 @@ export class KnowledgeSourceTableComponent implements OnInit, OnDestroy, AfterVi
 
         for (let ks of subProject.knowledgeSource) {
           ks.icon = this.faviconService.loading();
+          ks.associatedProjects = ks.associatedProjects ? ks.associatedProjects : [subProject.id];
           ksList.push(ks);
         }
       }
@@ -145,6 +157,8 @@ export class KnowledgeSourceTableComponent implements OnInit, OnDestroy, AfterVi
 
     this.setSortingAccessor();
 
+    this.setTableColumnsByScreenWidth(window.innerWidth);
+
     this.hideTable = this.dataSource.data.length === 0;
   }
 
@@ -154,6 +168,10 @@ export class KnowledgeSourceTableComponent implements OnInit, OnDestroy, AfterVi
 
   setSortingAccessor() {
     this.dataSource.sortingDataAccessor = (data: any, sortHeaderId: string): string => {
+      if (sortHeaderId === 'associatedProjects') {
+        return this.projectNameFromId(data[sortHeaderId][0].value);
+      }
+
       // Make sure dates show up in proper numerical order
       if (sortHeaderId === 'dateCreated' || sortHeaderId === 'dateModified' || sortHeaderId === 'dateAccessed') {
         return new Date(data[sortHeaderId]).valueOf().toString();
@@ -176,7 +194,7 @@ export class KnowledgeSourceTableComponent implements OnInit, OnDestroy, AfterVi
       case "website":
         return 'web';
       case "search":
-        return 'web';
+        return 'travel_explore';
       case "file":
         return 'description';
       case "google":
@@ -274,9 +292,22 @@ export class KnowledgeSourceTableComponent implements OnInit, OnDestroy, AfterVi
 
   }
 
-  onShowSubProjectsClicked($event: MatSlideToggleChange) {
-    this.showSubProjects = $event.checked;
+  onShowSubProjectsClicked(toggle: MatSlideToggleChange) {
+    this.showSubProjects = toggle.checked;
     if (this.project)
       this.update(this.project);
+  }
+
+  projectNameFromId(id: string): string {
+    let p = this.projectService.getProject(id);
+    if (p)
+      return p.name;
+    else
+      return '';
+  }
+
+  setActiveProject(id: string) {
+    if (id !== this.project?.id.value)
+      this.projectService.setCurrentProject(id);
   }
 }
