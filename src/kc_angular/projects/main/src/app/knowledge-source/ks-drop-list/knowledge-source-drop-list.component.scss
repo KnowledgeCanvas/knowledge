@@ -1,8 +1,15 @@
 @import "../../../styles/theme";
 
-.ks-info-dialog-backdrop {
-
+.knowledge-source-drop-list {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-content: flex-start;
+  align-items: stretch;
+  height: 100%;
 }
+
 
 .ks-sort-label {
   text-align: center;
@@ -73,12 +80,8 @@
   margin-bottom: 15px;
   overflow-y: auto;
   flex-wrap: nowrap;
-  height: inherit;
+  height: calc(100% - 97px);
   display: flex;
-}
-
-.project-knowledge-source-viewport:last-child {
-  padding-bottom: 100px !important;
 }
 
 .cdk-virtual-scroll-data-source .project-knowledge-source-viewport .cdk-virtual-scroll-content-wrapper {
@@ -118,4 +121,25 @@
 .cdk-virtual-scroll-orientation-vertical .cdk-virtual-scroll-content-wrapper {
   min-width: 100%;
   height: 100%;
+}
+
+.ks-drop-list-visibility-container {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: flex-end;
+  align-content: center;
+}
+
+.ks-drop-list-visibility-toggle {
+  position: absolute;
+}
+
+.ks-drop-list-open {
+  left: 48px;
+}
+
+.ks-drop-list-closed {
+  left: 0;
 }

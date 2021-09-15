@@ -11,10 +11,7 @@ export interface BrowserViewDialogConfig {
   providedIn: 'root'
 })
 export class BrowserViewDialogService {
-  dialogRef: MatDialogRef<KsPreviewComponent> | null;
-
-  constructor(private dialog: MatDialog) {
-    this.dialogRef = null;
+  constructor(public dialog: MatDialog) {
   }
 
   open(options: BrowserViewDialogConfig): MatDialogRef<KsPreviewComponent> {
@@ -30,7 +27,7 @@ export class BrowserViewDialogService {
       maxHeight: 'calc(100vh - 72px)',
       data: ksPreviewInput
     }
-    this.dialogRef = this.dialog.open(KsPreviewComponent, config);
-    return this.dialogRef;
+
+    return this.dialog.open(KsPreviewComponent, config);
   }
 }

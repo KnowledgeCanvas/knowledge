@@ -1,17 +1,12 @@
 import {Injectable} from '@angular/core';
 import {ProjectTree, ProjectTreeNode} from "projects/ks-lib/src/lib/models/project.tree.model";
 import {BehaviorSubject} from 'rxjs';
-import {HttpHeaders} from '@angular/common/http';
 import {ProjectCreationRequest, ProjectModel, ProjectUpdateRequest} from "projects/ks-lib/src/lib/models/project.model";
 import {KnowledgeSource} from "projects/ks-lib/src/lib/models/knowledge.source.model";
 import {UuidService} from "../uuid/uuid.service";
 import {UuidModel} from "projects/ks-lib/src/lib/models/uuid.model";
 import {StorageService} from "../storage/storage.service";
 import {KcCalendar} from "../../models/calendar.model";
-
-export const contentHeaders = new HttpHeaders()
-  .set('Accept', 'application/json')
-  .set('Content-Type', 'application/json');
 
 export interface ProjectIdentifiers {
   id: string;
@@ -200,12 +195,11 @@ export class ProjectService {
   updateProject(projectUpdate: ProjectUpdateRequest) {
     // Make sure the target project exists
     let projectToUpdate = this.projectSource.find(p => p.id.value === projectUpdate.id.value);
+
     if (!projectToUpdate) {
       console.error(`Project not found: `, projectUpdate.id.value);
       return;
     }
-
-    let shouldUpdate: boolean = false;
 
     if (projectUpdate.name && projectUpdate.name !== projectToUpdate.name) {
       projectToUpdate.name = projectUpdate.name;
@@ -214,13 +208,11 @@ export class ProjectService {
     // Handle knowledge source removal
     if (projectUpdate.removeKnowledgeSource && projectUpdate.removeKnowledgeSource.length > 0) {
       projectToUpdate = this.removeKnowledgeSource(projectToUpdate, projectUpdate.removeKnowledgeSource);
-      shouldUpdate = true;
     }
 
     // Handle knowledge source insertion
     if (projectUpdate.addKnowledgeSource && projectUpdate.addKnowledgeSource.length > 0) {
       projectToUpdate = this.addKnowledgeSource(projectToUpdate, projectUpdate.addKnowledgeSource);
-      shouldUpdate = true;
     }
 
     // Handle knowledge source update
@@ -258,11 +250,8 @@ export class ProjectService {
     // Update project source
     this.projectSource = this.projectSource.filter(p => p.id.value !== projectUpdate.id.value);
     this.projectSource.push(projectToUpdate);
-
-    if (projectUpdate.id.value !== this.selectedSource.value.id.value || shouldUpdate) {
-      this.setCurrentProject(projectUpdate.id.value);
-      this.refreshTree();
-    }
+    this.setCurrentProject(projectUpdate.id.value);
+    this.refreshTree();
   }
 
   setCurrentProject(id: string): void {
@@ -355,6 +344,14 @@ export class ProjectService {
       return;
     }
 
+    if (project.parentId) {
+      let parent = this.projectSource.find(p => p.id.value === project?.parentId?.value);
+      if (parent && parent.subprojects) {
+        parent.subprojects = parent.subprojects.filter(p => p !== id);
+        this.storageService.updateProject(parent);
+      }
+    }
+
     if (project.subprojects && project.subprojects.length > 0) {
       for (let subProject of project.subprojects) {
         this.recursiveDelete(subProject);
@@ -362,6 +359,9 @@ export class ProjectService {
     }
 
     this.projectSource = this.projectSource.filter(item => item.id.value !== id);
+
+    console.log('Deleted project: ', this.getProject(id));
+
     this.storageService.deleteProject(id);
   }
 
@@ -455,10 +455,6 @@ export class ProjectService {
         }
       }
     }
-    return project;
-  }
-
-  private updateTopics(project: ProjectModel, topics: string[]) {
     return project;
   }
 }

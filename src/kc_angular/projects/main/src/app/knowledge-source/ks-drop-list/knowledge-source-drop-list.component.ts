@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
 import {CdkDragDrop} from "@angular/cdk/drag-drop";
 import {KsDropService} from "../../../../../ks-lib/src/lib/services/ks-drop/ks-drop.service";
 import {MatDialog} from "@angular/material/dialog";
@@ -6,13 +6,15 @@ import {ProjectModel, ProjectUpdateRequest} from "projects/ks-lib/src/lib/models
 import {ProjectService} from "../../../../../ks-lib/src/lib/services/projects/project.service";
 import {KnowledgeSource} from "projects/ks-lib/src/lib/models/knowledge.source.model";
 import {KnowledgeSourceImportDialogComponent, KsImportDialogOutput} from "../ks-import-dialog/knowledge-source-import-dialog.component";
-import {KsInfoDialogComponent, KsInfoDialogInput, KsInfoDialogOutput} from "../ks-info-dialog/ks-info-dialog.component";
 import {FaviconExtractorService} from "../../../../../ks-lib/src/lib/services/favicon/favicon-extractor.service";
 import {StorageService} from "../../../../../ks-lib/src/lib/services/storage/storage.service";
 import {KsFactoryService} from "../../../../../ks-lib/src/lib/services/ks-factory/ks-factory.service";
 import {BrowserViewDialogService} from "../../../../../ks-lib/src/lib/services/browser-view-dialog/browser-view-dialog.service";
 import {Subscription} from "rxjs";
 import {KsQueueService} from "../ks-queue-service/ks-queue.service";
+import {KsPreviewOutput} from "../ks-preview/ks-preview.component";
+import {KsInfoDialogService} from "../../../../../ks-lib/src/lib/services/ks-info-dialog.service";
+import {KsInfoDialogOutput} from "../ks-info-dialog/ks-info-dialog.component";
 
 export interface KsSortBy {
   index: number;
@@ -28,11 +30,14 @@ export interface KsSortBy {
 })
 export class KnowledgeSourceDropListComponent implements OnInit, OnDestroy {
   @ViewChild('ksSortKey') ksSortKeyElementRef: ElementRef = {} as ElementRef;
+  @Output() ksListVisibility = new EventEmitter<boolean>();
+  @Input() ksListVisible: boolean = false;
   project: ProjectModel | null = null;
   ksList: KnowledgeSource[] = [];
   hideSortHeader: boolean = true;
   tooltip: string = '';
   CONTAINER_ID = 'knowledge-canvas-sidebar';
+
   private sortByIndex = 0;
   private subscription: Subscription | null = null;
 
@@ -71,6 +76,7 @@ export class KnowledgeSourceDropListComponent implements OnInit, OnDestroy {
   ];
 
   constructor(private browserViewDialogService: BrowserViewDialogService,
+              private ksInfoDialogService: KsInfoDialogService,
               private faviconService: FaviconExtractorService,
               private ksDropService: KsDropService,
               private ksQueueService: KsQueueService,
@@ -84,58 +90,31 @@ export class KnowledgeSourceDropListComponent implements OnInit, OnDestroy {
     this.subscription = this.projectService.currentProject.subscribe(project => {
       // Update project when necessary
       this.project = null;
-      this.ksList = [];
+
       if (!project || !project.name || project.id.value === '') {
         return;
       }
+
       this.project = project;
+      this.ksList = [];
 
       // Update knowledge source list when necessary
       if (!project.knowledgeSource || project.knowledgeSource.length <= 0) {
-        this.ksList = [];
         this.hideSortHeader = true;
         return;
       }
 
-      // Prepare KS list for display by gathering icons
-      let newList: KnowledgeSource[] = [];
-      let faviconRequests = [];
-
       for (let ks of project.knowledgeSource) {
-        if (!ks.iconUrl) {
-          // TODO: change file favicon from current PDF icon...
-          if (ks.ingestType === 'file')
-            ks.iconUrl = this.faviconService.file();
-          else
-            ks.iconUrl = this.faviconService.generic();
-        }
-
-        faviconRequests.push(ks.iconUrl);
-
-        if (ks.ingestType !== 'file')
-          ks.icon = this.faviconService.loading();
-
-        newList.push(ks);
+        ks.icon = this.faviconService.loading();
       }
+      this.ksList = project.knowledgeSource ? project.knowledgeSource : [];
+      this.sortByIndex = this.storageService.sortByIndex || 0;
+      this.hideSortHeader = this.ksList.length <= 1;
 
-      this.faviconService.extract(faviconRequests).then((icons) => {
-        if (!project.knowledgeSource) {
-          let err = 'Critical error occurred while requesting favicons for KS models.';
-          console.error(err);
-          throw new Error(err);
-        }
-
-        for (let i = 0; i < project.knowledgeSource.length; i++) {
-          let ks = newList[i];
-          if (ks.ingestType !== 'file')
-            ks.icon = icons[i];
-        }
-
-        this.ksList = newList;
-        this.sortByIndex = this.storageService.sortByIndex || 0;
+      setTimeout(() => {
         this.performSort();
-        this.hideSortHeader = this.ksList.length <= 1;
-      });
+      }, 200);
+
     });
   }
 
@@ -202,45 +181,41 @@ export class KnowledgeSourceDropListComponent implements OnInit, OnDestroy {
 
   openSearchBrowserView() {
     let searchKS = this.ksFactory.searchKS();
-    const dialogRef = this.browserViewDialogService.open({ks: searchKS});
+    this.browserViewDialogService.open({ks: searchKS});
   }
 
-  openKsInfoDialog(node: KnowledgeSource) {
-    let dialogInput: KsInfoDialogInput = {
-      source: 'ks-drop-list',
-      ks: node,
-      projectId: this.project ? this.project.id.value : undefined
-    }
-
-    const dialogRef = this.dialog.open(KsInfoDialogComponent, {
-      minWidth: '65vw',
-      width: 'auto',
-      height: 'auto',
-      maxHeight: '90vh',
-      data: dialogInput,
-      autoFocus: false
-    });
-    dialogRef.afterClosed().subscribe((result: KsInfoDialogOutput) => {
-      if (result.ksChanged && this.project) {
+  openKsInfoDialog(ks: KnowledgeSource) {
+    this.ksInfoDialogService.open(ks, this.project ? this.project.id.value : undefined).then((output: KsInfoDialogOutput) => {
+      if (output.ksChanged && this.project) {
         let update: ProjectUpdateRequest = {
           id: this.project.id,
-          updateKnowledgeSource: [result.ks]
+          updateKnowledgeSource: [output.ks]
         }
+
         this.projectService.updateProject(update);
       }
-
-      if (result.preview) {
-        // TODO: open ks-preview dialog here
-        this.preview(result.ks);
+      if (output.preview) {
+        this.preview(output.ks);
       }
-    })
+    });
   }
 
   preview(ks: KnowledgeSource) {
-    let dialogRef = this.browserViewDialogService.open({ks: ks});
-    dialogRef.afterClosed().subscribe((results) => {
-      // TODO: update KS with new timestamps (accessed, modified if necessary)
-    });
+    const dialogRef = this.browserViewDialogService.open({ks: ks})
+    dialogRef.componentInstance.output.subscribe((output: KsPreviewOutput) => {
+      if (!this.project)
+        return;
+
+      let ks = output.ks;
+      ks.dateAccessed = new Date();
+
+      let update: ProjectUpdateRequest = {
+        id: this.project.id,
+        updateKnowledgeSource: [ks]
+      }
+
+      this.projectService.updateProject(update);
+    })
   }
 
   sortPrevious() {
@@ -264,6 +239,11 @@ export class KnowledgeSourceDropListComponent implements OnInit, OnDestroy {
       default: // A-Z, Z-A
         return node.title;
     }
+  }
+
+  toggleVisibility() {
+    this.ksListVisible = !this.ksListVisible;
+    this.ksListVisibility.emit(this.ksListVisible);
   }
 
   private performSort() {

@@ -3,18 +3,10 @@
 .projects-tree-controls-container {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: space-evenly;
   align-items: center;
   flex-wrap: nowrap;
 }
-
-//.mat-tree-node:nth-child(even) {
-//  background-color: #F0F0F0;
-//}
-//
-//.mat-tree-node:nth-child(odd) {
-//  background-color: #FBFCFD;
-//}
 
 .mat-tree-node {
   max-height: 32px !important;

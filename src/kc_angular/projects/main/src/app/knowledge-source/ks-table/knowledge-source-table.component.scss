@@ -63,7 +63,12 @@ tr.ks-table-element-row:not(.ks-table-expanded-row):active {
 }
 
 .mat-column-title {
-  width: 100%;
+  width: auto;
+}
+
+.mat-column-associatedProjects {
+  width: auto;
+  padding-right: 8px !important;
 }
 
 .mat-column-dateCreated {
@@ -77,6 +82,8 @@ tr.ks-table-element-row:not(.ks-table-expanded-row):active {
 .mat-column-dateAccessed {
 
 }
+
+
 
 .mat-column-ingestType {
   width: 80px;

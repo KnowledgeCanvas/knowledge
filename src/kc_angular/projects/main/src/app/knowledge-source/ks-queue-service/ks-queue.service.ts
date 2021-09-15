@@ -4,11 +4,7 @@ import {BehaviorSubject, forkJoin} from "rxjs";
 import {GoogleSearchResultsModel, SearchModel} from "projects/ks-lib/src/lib/models/google.search.results.model";
 import {DomSanitizer} from '@angular/platform-browser';
 import {FaviconExtractorService} from "../../../../../ks-lib/src/lib/services/favicon/favicon-extractor.service";
-import {
-  KnowledgeSource,
-  KnowledgeSourceReference,
-  SourceModel
-} from "projects/ks-lib/src/lib/models/knowledge.source.model";
+import {KnowledgeSource, KnowledgeSourceReference, SourceModel} from "projects/ks-lib/src/lib/models/knowledge.source.model";
 import {SettingsService} from "../../../../../ks-lib/src/lib/services/settings/settings.service";
 import {SettingsModel} from "projects/ks-lib/src/lib/models/settings.model";
 import {MatDialog} from "@angular/material/dialog";
@@ -75,13 +71,9 @@ export class KsQueueService {
           let source = new SourceModel(undefined, result, undefined);
           let link = new URL(result.link);
           let ref = new KnowledgeSourceReference('search', source, link);
-
-          // TODO: remove ingestType from KS constructor since it's already in the reference
           let ks = new KnowledgeSource(result.title, uuids[i], 'search', ref);
           ks.snippet = result.snippet;
           ks.iconUrl = link.hostname;
-          // TODO: remove googleItem from any KS
-          ks.googleItem = result;
           ks.icon = icons[i];
 
           // TODO: extract more meta tags...

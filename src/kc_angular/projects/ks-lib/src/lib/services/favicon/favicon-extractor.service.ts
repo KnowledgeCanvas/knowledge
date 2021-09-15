@@ -2,6 +2,8 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {DomSanitizer} from "@angular/platform-browser";
 import {forkJoin} from "rxjs";
+import {KnowledgeSource} from "../../models/knowledge.source.model";
+import {ElectronIpcService} from "../electron-ipc/electron-ipc.service";
 
 @Injectable({
   providedIn: 'root'
@@ -12,17 +14,14 @@ export class FaviconExtractorService {
   private googleFaviconServiceSuffix = `&sz=${this.googleFaviconSize}`;
   private defaultIcon = 'assets/img/default.png';
   private loadingGif = 'assets/img/loading.gif';
-  private fileIcon = 'assets/img/pdf.png';
-  private googleIcon = 'assets/img/icons/google/google.png';
-  private savedIcons: any[] = [];
 
-  constructor(private httpClient: HttpClient, private sanitizer: DomSanitizer) {
+  constructor(private httpClient: HttpClient, private sanitizer: DomSanitizer, private ipcService: ElectronIpcService) {
   }
 
   // NOTE: https://stackoverflow.com/a/45630579
   // NOTE: https://stackoverflow.com/a/15750809
   // NOTE: https://erikmartinjordan.com/get-favicon-google-api
-  extract(urls: string[]): Promise<any[]> {
+  async extract(urls: string[]): Promise<any[]> {
     return new Promise((resolve, reject) => {
       if (urls === undefined)
         reject(undefined);
@@ -31,6 +30,12 @@ export class FaviconExtractorService {
       let promises = [];
 
       for (let url of urls) {
+        if (url.includes('github')) {
+          url = 'https://github.com/favicon.ico';
+        } else if (url.includes('google.com')) {
+          url = 'https://google.com/favicon.ico';
+        }
+
         let getUrl = `${this.googleFaviconServicePrefix}${url}${this.googleFaviconServiceSuffix}`;
         promises.push(this.httpClient.get(getUrl, {responseType: 'blob'}));
       }
@@ -38,16 +43,39 @@ export class FaviconExtractorService {
       forkJoin(promises).subscribe((blobs) => {
         for (let blob of blobs) {
           let objectURL = URL.createObjectURL(blob);
-
-          // TODO: figure out how to get past this via some other means
           let icon = this.sanitizer.bypassSecurityTrustUrl(objectURL);
-
           icons.push(icon);
         }
         resolve(icons);
+      }, (error) => {
+        console.error('Error while trying to retrieve icons: ', error);
       });
     });
   }
+
+  async extractFromKsList(ksList: KnowledgeSource[]): Promise<KnowledgeSource[]> {
+    for (let i = 0; i < ksList.length; i++) {
+      let ks = ksList[i];
+      ks.icon = this.loading();
+
+      if (ks.ingestType === 'file' && typeof ks.accessLink === 'string') {
+        await this.ipcService.getFileIcon([ks.accessLink]).then((icon) => {
+          ks.icon = this.sanitizer.bypassSecurityTrustUrl(icon[0]);
+        })
+      } else {
+        if (typeof ks.accessLink === 'string') {
+          ks.accessLink = new URL(ks.accessLink);
+        }
+        let iconUrl = ks.accessLink.hostname;
+        ks.iconUrl = iconUrl;
+        await this.extract([iconUrl]).then((icon) => {
+          ks.icon = icon[0];
+        });
+      }
+    }
+    return ksList;
+  }
+
 
   loading() {
     return this.loadingGif;
@@ -58,6 +86,6 @@ export class FaviconExtractorService {
   }
 
   file() {
-    return this.fileIcon;
+    return this.defaultIcon;
   }
 }

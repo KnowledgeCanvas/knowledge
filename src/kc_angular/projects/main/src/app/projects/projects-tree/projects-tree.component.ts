@@ -64,11 +64,7 @@ export class ProjectsTreeComponent implements OnInit, OnDestroy {
 
   hasNoName = (_: number, nodeData: ProjectTreeFlatNode) => nodeData.name === '';
 
-  subscribeToProjects(): void {
-  }
-
   ngOnInit(): void {
-    // this.subscribeToProjects();
   }
 
   ngOnDestroy() {
@@ -101,7 +97,8 @@ export class ProjectsTreeComponent implements OnInit, OnDestroy {
   }
 
   selectProject(id: string): void {
-    this.projectService.setCurrentProject(id);
+    if (id !== this.activeProject?.id.value)
+      this.projectService.setCurrentProject(id);
   }
 
   delete(): void {

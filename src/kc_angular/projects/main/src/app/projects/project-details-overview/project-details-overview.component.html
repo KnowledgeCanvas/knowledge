@@ -31,11 +31,11 @@
   </div>
 
 
-  <div class="project-ks-list-container" *ngIf="currentProject.knowledgeSource && currentProject.knowledgeSource.length > 0">
+  <div class="project-ks-list-container">
     <div class="container">
       <h2>{{currentProject.name}} / Knowledge Sources</h2>
     </div>
-    <app-knowledge-source-table [project]="currentProject"></app-knowledge-source-table>
+    <app-knowledge-source-table></app-knowledge-source-table>
   </div>
 
   <div class="project-summary-container">
