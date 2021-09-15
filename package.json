@@ -2,7 +2,7 @@
   "name": "knowledge-canvas",
   "version": "0.3.0",
   "author": "Rob Royce <robertris2@gmail.com> (https://robroyce.dev)",
-  "description": "Knowledge Canvas -- Electron and Angular implementation",
+  "description": "Knowledge Canvas is an application for students, researchers, and life-long learners who need help managing their digital ecosystem through use of search, knowledge graphs, and more.",
   "private": true,
   "postinstall": "electron-builder install-app-deps",
   "workspaces": [

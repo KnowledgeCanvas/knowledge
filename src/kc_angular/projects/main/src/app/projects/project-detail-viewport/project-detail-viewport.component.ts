@@ -13,14 +13,13 @@ export class ProjectDetailViewportComponent implements OnInit {
   project: ProjectModel | null = null;
 
   constructor(private projectService: ProjectService) {
-    this.reset();
-  }
-
-  reset(): void {
     this.project = null;
 
     this.projectService.currentProject.subscribe(project => {
-      this.project = project;
+      if (project.id.value.trim() !== '')
+        this.project = project;
+      else
+        this.project = null;
     });
   }
 
