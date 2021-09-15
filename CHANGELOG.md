@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.1](https://github.com/RobRoyce/knowledge-canvas/compare/v0.3.0...v0.3.1) (2021-09-15)
+
+
+### Bug Fixes
+
+* **Projects:** squashed a bug that allows users to see project details when no projects exist ([631f642](https://github.com/RobRoyce/knowledge-canvas/commit/631f64294386b7ae1b10164458313880f7d4dd74))
+
 ## [0.3.0](https://github.com/RobRoyce/knowledge-canvas/compare/v0.2.5...v0.3.0) (2021-09-15)
 
 
