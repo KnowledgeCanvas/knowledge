@@ -88,18 +88,15 @@ export class KnowledgeSourceDropListComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.subscription = this.projectService.currentProject.subscribe(project => {
-      console.log('KS Drop List got a new project...\n', project);
-
       // Update project when necessary
       this.project = null;
-
-      this.ksList = [];
 
       if (!project || !project.name || project.id.value === '') {
         return;
       }
 
       this.project = project;
+      this.ksList = [];
 
       // Update knowledge source list when necessary
       if (!project.knowledgeSource || project.knowledgeSource.length <= 0) {
@@ -107,45 +104,17 @@ export class KnowledgeSourceDropListComponent implements OnInit, OnDestroy {
         return;
       }
 
-      // Prepare KS list for display by gathering icons
-      let newList: KnowledgeSource[] = [];
-      let faviconRequests = [];
-
       for (let ks of project.knowledgeSource) {
-        if (!ks.iconUrl) {
-          // TODO: change file favicon from current PDF icon...
-          if (ks.ingestType === 'file')
-            ks.iconUrl = this.faviconService.file();
-          else
-            ks.iconUrl = this.faviconService.generic();
-        }
-
-        faviconRequests.push(ks.iconUrl);
-
-        if (ks.ingestType !== 'file')
-          ks.icon = this.faviconService.loading();
-
-        newList.push(ks);
+        ks.icon = this.faviconService.loading();
       }
+      this.ksList = project.knowledgeSource ? project.knowledgeSource : [];
+      this.sortByIndex = this.storageService.sortByIndex || 0;
+      this.hideSortHeader = this.ksList.length <= 1;
 
-      this.faviconService.extract(faviconRequests).then((icons) => {
-        if (!project.knowledgeSource) {
-          let err = 'Critical error occurred while requesting favicons for KS models.';
-          console.error(err);
-          throw new Error(err);
-        }
-
-        for (let i = 0; i < project.knowledgeSource.length; i++) {
-          let ks = newList[i];
-          if (ks.ingestType !== 'file')
-            ks.icon = icons[i];
-        }
-
-        this.ksList = newList;
-        this.sortByIndex = this.storageService.sortByIndex || 0;
+      setTimeout(() => {
         this.performSort();
-        this.hideSortHeader = this.ksList.length <= 1;
-      });
+      }, 200);
+
     });
   }
 

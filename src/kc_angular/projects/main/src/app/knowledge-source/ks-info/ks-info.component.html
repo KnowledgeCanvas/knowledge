@@ -44,18 +44,6 @@
         </mat-expansion-panel-header>
       </mat-expansion-panel>
 
-      <mat-expansion-panel *ngIf="snippet && snippet.length > 0" [expanded]="true">
-        <mat-expansion-panel-header>
-          <mat-panel-title>Snippet</mat-panel-title>
-          <mat-panel-description></mat-panel-description>
-          <div class="mat-panel-body">
-            <ng-template matExpansionPanelContent>
-              {{snippet}}
-            </ng-template>
-          </div>
-        </mat-expansion-panel-header>
-      </mat-expansion-panel>
-
       <mat-expansion-panel [expanded]="true">
         <mat-expansion-panel-header>
           <mat-panel-title>Notes</mat-panel-title>

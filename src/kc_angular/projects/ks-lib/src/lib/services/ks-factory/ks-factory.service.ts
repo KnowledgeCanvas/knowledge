@@ -41,6 +41,7 @@ export class KsFactoryService {
 
   searchKS(searchTerm?: string): KnowledgeSource {
     let ks: KnowledgeSource = {
+      authors: [], description: "",
       title: "Knowledge Canvas Search", id: {value: "kc-search-ks"},
       reference: {
         ingestType: "website",
@@ -54,7 +55,7 @@ export class KsFactoryService {
       icon: ''
     }
 
-    switch(this.provider) {
+    switch (this.provider) {
       case 'google':
         ks.accessLink = searchTerm ? `https://www.google.com/search?q=${encodeURIComponent(searchTerm)}` : `https://www.google.com/`;
         break;

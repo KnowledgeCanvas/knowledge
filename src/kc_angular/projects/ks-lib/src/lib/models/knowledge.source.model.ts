@@ -42,13 +42,11 @@ export class KnowledgeSourceReference {
 
 export class KnowledgeSource {
   associatedProjects?: UuidModel[];
-  authors?: AuthorModel[];
+  authors: AuthorModel[] = [];
   dateCreated: Date;
   dateAccessed: Date;
   dateModified: Date;
-  description?: string;
-  fileItem?: FileModel;
-  googleItem?: SearchModel;
+  description: string = '';
   icon?: any;
   iconUrl?: string;
   id: UuidModel;

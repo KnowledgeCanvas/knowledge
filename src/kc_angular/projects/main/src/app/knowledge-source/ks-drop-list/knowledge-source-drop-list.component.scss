@@ -80,12 +80,8 @@
   margin-bottom: 15px;
   overflow-y: auto;
   flex-wrap: nowrap;
-  height: inherit;
+  height: calc(100% - 97px);
   display: flex;
-}
-
-.project-knowledge-source-viewport:last-child {
-  padding-bottom: 100px !important;
 }
 
 .cdk-virtual-scroll-data-source .project-knowledge-source-viewport .cdk-virtual-scroll-content-wrapper {
