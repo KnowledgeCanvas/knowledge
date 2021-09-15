@@ -1,17 +1,12 @@
 import {Injectable} from '@angular/core';
 import {ProjectTree, ProjectTreeNode} from "projects/ks-lib/src/lib/models/project.tree.model";
 import {BehaviorSubject} from 'rxjs';
-import {HttpHeaders} from '@angular/common/http';
 import {ProjectCreationRequest, ProjectModel, ProjectUpdateRequest} from "projects/ks-lib/src/lib/models/project.model";
 import {KnowledgeSource} from "projects/ks-lib/src/lib/models/knowledge.source.model";
 import {UuidService} from "../uuid/uuid.service";
 import {UuidModel} from "projects/ks-lib/src/lib/models/uuid.model";
 import {StorageService} from "../storage/storage.service";
 import {KcCalendar} from "../../models/calendar.model";
-
-export const contentHeaders = new HttpHeaders()
-  .set('Accept', 'application/json')
-  .set('Content-Type', 'application/json');
 
 export interface ProjectIdentifiers {
   id: string;
@@ -349,6 +344,14 @@ export class ProjectService {
       return;
     }
 
+    if (project.parentId) {
+      let parent = this.projectSource.find(p => p.id.value === project?.parentId?.value);
+      if (parent && parent.subprojects) {
+        parent.subprojects = parent.subprojects.filter(p => p !== id);
+        this.storageService.updateProject(parent);
+      }
+    }
+
     if (project.subprojects && project.subprojects.length > 0) {
       for (let subProject of project.subprojects) {
         this.recursiveDelete(subProject);
@@ -356,6 +359,9 @@ export class ProjectService {
     }
 
     this.projectSource = this.projectSource.filter(item => item.id.value !== id);
+
+    console.log('Deleted project: ', this.getProject(id));
+
     this.storageService.deleteProject(id);
   }
 
