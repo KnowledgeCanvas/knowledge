@@ -1,6 +1,6 @@
 {
   "name": "knowledge-canvas",
-  "version": "0.2.5",
+  "version": "0.3.0",
   "author": "Rob Royce <robertris2@gmail.com> (https://robroyce.dev)",
   "description": "Knowledge Canvas -- Electron and Angular implementation",
   "private": true,
