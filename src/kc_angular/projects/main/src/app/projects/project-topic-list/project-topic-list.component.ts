@@ -22,8 +22,7 @@ import {MatDialog} from "@angular/material/dialog";
 })
 export class ProjectTopicListComponent implements OnInit, OnChanges, OnDestroy {
   @Input() sourceRef: string | undefined = undefined;
-  @Output() topicEvent = new EventEmitter<string[]>();
-  @ViewChild('topicInput') topicInput: ElementRef<HTMLInputElement> = {} as ElementRef;
+  @Output() change = new EventEmitter<string[]>();
   @ViewChild(MatAutocompleteTrigger, {static: true}) trigger: MatAutocompleteTrigger | undefined;
   project: ProjectModel = new ProjectModel('', {value: ''}, 'default');
   selectable: boolean = false;
@@ -78,7 +77,7 @@ export class ProjectTopicListComponent implements OnInit, OnChanges, OnDestroy {
       this.topics.push(value);
 
       if (!this.sourceRef) {
-        this.topicEvent.emit(this.topics);
+        this.change.emit(this.topics);
       } else {
         this.updateProject();
       }
@@ -105,7 +104,7 @@ export class ProjectTopicListComponent implements OnInit, OnChanges, OnDestroy {
       this.topics.push(event.option.viewValue);
 
       if (!this.sourceRef)
-        this.topicEvent.emit(this.topics);
+        this.change.emit(this.topics);
       else
         this.updateProject();
 
