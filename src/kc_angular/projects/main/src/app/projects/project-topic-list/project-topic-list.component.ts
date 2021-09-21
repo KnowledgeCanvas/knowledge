@@ -21,7 +21,10 @@ import {MatDialog} from "@angular/material/dialog";
   styleUrls: ['./project-topic-list.component.scss']
 })
 export class ProjectTopicListComponent implements OnInit, OnChanges, OnDestroy {
-  @Input() sourceRef: string | undefined = undefined;
+  @Input() kcComponentType: 'project' | 'ks' | undefined = undefined;
+
+  @Input() list: string[] | undefined = undefined;
+
   @Output() change = new EventEmitter<string[]>();
   @ViewChild(MatAutocompleteTrigger, {static: true}) trigger: MatAutocompleteTrigger | undefined;
   project: ProjectModel = new ProjectModel('', {value: ''}, 'default');
@@ -76,7 +79,8 @@ export class ProjectTopicListComponent implements OnInit, OnChanges, OnDestroy {
     if (value && !this.topics.includes(value)) {
       this.topics.push(value);
 
-      if (!this.sourceRef) {
+      // If no source reference is provided,
+      if (!this.kcComponentType) {
         this.change.emit(this.topics);
       } else {
         this.updateProject();
@@ -94,7 +98,7 @@ export class ProjectTopicListComponent implements OnInit, OnChanges, OnDestroy {
     const index = this.topics.indexOf(topic);
     if (index >= 0) {
       this.topics.splice(index, 1);
-      if (this.sourceRef)
+      if (this.kcComponentType)
         this.updateProject();
     }
   }
@@ -103,7 +107,7 @@ export class ProjectTopicListComponent implements OnInit, OnChanges, OnDestroy {
     if (!this.topics.includes(event.option.viewValue)) {
       this.topics.push(event.option.viewValue);
 
-      if (!this.sourceRef)
+      if (!this.kcComponentType)
         this.change.emit(this.topics);
       else
         this.updateProject();
