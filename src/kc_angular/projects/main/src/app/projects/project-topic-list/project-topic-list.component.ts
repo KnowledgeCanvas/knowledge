@@ -26,15 +26,25 @@ export class ProjectTopicListComponent implements OnInit, OnChanges, OnDestroy {
   @Input() list: string[] | undefined = undefined;
 
   @Output() change = new EventEmitter<string[]>();
+
   @ViewChild(MatAutocompleteTrigger, {static: true}) trigger: MatAutocompleteTrigger | undefined;
+
   project: ProjectModel = new ProjectModel('', {value: ''}, 'default');
+
   selectable: boolean = false;
+
   removable: boolean = true;
+
   readonly separatorKeysCodes = [ENTER, COMMA] as const;
-  topicCtrl = new FormControl();
+
+  topicInput = new FormControl();
+
   filteredTopics: Observable<string[]>;
+
   topics: string[] = [];
-  allTopics: string[] = ['Computer Science', 'AI/ML'];
+
+  allTopics: string[] = [];
+
   private subscription: Subscription;
 
   constructor(private topicService: TopicService,
@@ -55,7 +65,7 @@ export class ProjectTopicListComponent implements OnInit, OnChanges, OnDestroy {
         this.allTopics.push(topic.name);
     });
 
-    this.filteredTopics = this.topicCtrl.valueChanges.pipe(
+    this.filteredTopics = this.topicInput.valueChanges.pipe(
       startWith(null),
       map((topic: string | null) => topic ? this._filter(topic) : this.allTopics.slice()));
   }
@@ -89,8 +99,8 @@ export class ProjectTopicListComponent implements OnInit, OnChanges, OnDestroy {
       this.createTopic(value);
     }
 
-    event.chipInput!.clear();
-    this.topicCtrl.setValue(null);
+    this.topicInput.setValue(null);
+
     this.trigger?.openPanel();
   }
 
@@ -114,9 +124,7 @@ export class ProjectTopicListComponent implements OnInit, OnChanges, OnDestroy {
 
     }
 
-    this.topicInput.nativeElement.value = '';
-
-    this.topicCtrl.setValue(null);
+    this.topicInput.setValue(null);
 
     this.trigger?.openPanel();
   }
