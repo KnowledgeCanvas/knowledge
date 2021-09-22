@@ -1,10 +1,10 @@
-import {Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
-import {COMMA, ENTER} from "@angular/cdk/keycodes";
+import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
+import {COMMA} from "@angular/cdk/keycodes";
 import {TopicService} from "../../../../../ks-lib/src/lib/services/topics/topic.service";
-import {MatChipInputEvent} from "@angular/material/chips";
+import {MatChipInput, MatChipInputEvent} from "@angular/material/chips";
 import {ProjectModel, ProjectUpdateRequest} from "projects/ks-lib/src/lib/models/project.model";
 import {ProjectService} from "../../../../../ks-lib/src/lib/services/projects/project.service";
-import {MatAutocompleteSelectedEvent, MatAutocompleteTrigger} from "@angular/material/autocomplete";
+import {MatAutocompleteSelectedEvent} from "@angular/material/autocomplete";
 import {FormControl} from "@angular/forms";
 import {Observable, Subscription} from "rxjs";
 import {map, startWith} from "rxjs/operators";
@@ -21,23 +21,21 @@ import {MatDialog} from "@angular/material/dialog";
   styleUrls: ['./project-topic-list.component.scss']
 })
 export class ProjectTopicListComponent implements OnInit, OnChanges, OnDestroy {
-  @Input() kcComponentType: 'project' | 'ks' | undefined = undefined;
+  @Input() kcComponentType: 'project' | 'ks' | 'new' | undefined = undefined;
 
-  @Input() list: string[] | undefined = undefined;
+  @Output() topicAdded = new EventEmitter<string[]>();
 
-  @Output() change = new EventEmitter<string[]>();
-
-  @ViewChild(MatAutocompleteTrigger, {static: true}) trigger: MatAutocompleteTrigger | undefined;
+  @ViewChild(MatChipInput, {static: false}) matChipInput: MatChipInput | undefined;
 
   project: ProjectModel = new ProjectModel('', {value: ''}, 'default');
 
-  selectable: boolean = false;
+  selectable: boolean = true;
 
   removable: boolean = true;
 
-  readonly separatorKeysCodes = [ENTER, COMMA] as const;
+  readonly separatorKeysCodes = [COMMA] as const
 
-  topicInput = new FormControl();
+  topicInput: FormControl = new FormControl();
 
   filteredTopics: Observable<string[]>;
 
@@ -67,11 +65,12 @@ export class ProjectTopicListComponent implements OnInit, OnChanges, OnDestroy {
 
     this.filteredTopics = this.topicInput.valueChanges.pipe(
       startWith(null),
-      map((topic: string | null) => topic ? this._filter(topic) : this.allTopics.slice()));
+      map((topic: string | null) => topic ? this.filter(topic) : this.allTopics.slice()));
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (!changes.sourceRef.currentValue) {
+    if (!changes.kcComponentType?.currentValue) {
+      console.warn('Topic List - Unexpected Input');
       this.topics = [];
     }
   }
@@ -83,25 +82,31 @@ export class ProjectTopicListComponent implements OnInit, OnChanges, OnDestroy {
     this.subscription.unsubscribe();
   }
 
-  add(event: MatChipInputEvent): void {
-    const value = (event.value || '').trim();
+  add(input: MatChipInputEvent | string): void {
+    let value;
 
-    if (value && !this.topics.includes(value)) {
-      this.topics.push(value);
-
-      // If no source reference is provided,
-      if (!this.kcComponentType) {
-        this.change.emit(this.topics);
-      } else {
-        this.updateProject();
-      }
-
-      this.createTopic(value);
+    if (typeof input === 'string') {
+      value = input.trim();
+    } else {
+      value = (input.value || '').trim();
     }
 
-    this.topicInput.setValue(null);
+    if (this.topics.includes(value) || value === '') {
+      this.resetInput();
+      return;
+    }
 
-    this.trigger?.openPanel();
+    this.topics.push(value);
+
+    if (!this.kcComponentType) {
+      this.topicAdded.emit(this.topics);
+    } else {
+      this.updateProject();
+    }
+
+    this.createTopic(value);
+
+    this.resetInput();
   }
 
   remove(topic: string): void {
@@ -113,20 +118,17 @@ export class ProjectTopicListComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  selected(event: MatAutocompleteSelectedEvent): void {
-    if (!this.topics.includes(event.option.viewValue)) {
-      this.topics.push(event.option.viewValue);
-
-      if (!this.kcComponentType)
-        this.change.emit(this.topics);
-      else
-        this.updateProject();
-
+  resetInput() {
+    if (this.matChipInput) {
+      this.matChipInput.clear();
     }
+    this.filteredTopics = this.topicInput.valueChanges.pipe(
+      startWith(null),
+      map((topic: string | null) => topic ? this.filter(topic) : this.allTopics.slice()));
+  }
 
-    this.topicInput.setValue(null);
-
-    this.trigger?.openPanel();
+  selected(event: MatAutocompleteSelectedEvent): void {
+    this.add(event.option.viewValue);
   }
 
   topicClicked(topic: string) {
@@ -134,12 +136,7 @@ export class ProjectTopicListComponent implements OnInit, OnChanges, OnDestroy {
     this.browserViewDialogService.open({ks: ks});
   }
 
-  onFocus() {
-    this.trigger?._onChange('');
-    this.trigger?.openPanel();
-  }
-
-  private _filter(value: string): string[] {
+  private filter(value: string): string[] {
     const filterValue = value.toLowerCase();
     return this.allTopics.filter(topic => topic.toLowerCase().includes(filterValue));
   }
