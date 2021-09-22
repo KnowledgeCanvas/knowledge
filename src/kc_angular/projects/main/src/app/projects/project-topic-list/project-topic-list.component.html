@@ -1,11 +1,8 @@
-<mat-form-field class="project-topic-list" appearance="fill" (change)="auto.showPanel = true">
+<mat-form-field class="project-topic-list" appearance="fill">
   <mat-label>Topics</mat-label>
   <mat-chip-list #chipList aria-label="Project Tags">
-    <mat-chip matTooltip="Click to search for {{topic}}!"
-              (click)="topicClicked(topic)"
+    <mat-chip (click)="topicClicked(topic)"
               *ngFor="let topic of topics"
-              matTooltipClass="tool-tip"
-              matTooltipShowDelay="1000"
               [selectable]="selectable"
               (removed)="remove(topic)"
               [removable]="removable">
@@ -14,17 +11,15 @@
     </mat-chip>
     <input [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
            (matChipInputTokenEnd)="add($event)"
-            (focus)="onFocus()"
-           placeholder="Add a Topic..."
+           placeholder="Add topics separated by a comma..."
            [matChipInputFor]="chipList"
-           [formControl]="topicCtrl"
-           [matAutocomplete]="auto"
-           #topicInput>
+           [formControl]="topicInput"
+           [matAutocomplete]="auto">
   </mat-chip-list>
-  <mat-hint *ngIf="sourceRef !== undefined && topics.length > 0">Hint: You can click on any topic to perform an instant web search!</mat-hint>
+  <mat-hint *ngIf="kcComponentType !== undefined && topics.length > 0">Hint: You can click on any topic to perform an instant web search!</mat-hint>
 
   <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
-    <mat-option *ngFor="let topic of filteredTopics | async" [value]="topic" (click)="onFocus()">
+    <mat-option *ngFor="let topic of filteredTopics | async" [value]="topic">
       {{topic}}
     </mat-option>
   </mat-autocomplete>

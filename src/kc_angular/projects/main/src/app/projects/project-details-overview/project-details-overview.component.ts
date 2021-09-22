@@ -111,11 +111,6 @@ export class ProjectDetailsOverviewComponent implements OnInit, OnDestroy {
 
   addTopics() {
     this.topicsHidden = false;
-    // const element = this.renderer.selectRootElement('#elementId');
-
-    setTimeout(() => {
-      this.topics.onFocus();
-    })
   }
 
   onDetailClick() {
