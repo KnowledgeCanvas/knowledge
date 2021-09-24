@@ -26,6 +26,7 @@ import {MatTooltipModule} from "@angular/material/tooltip";
 import {MatSlideToggleModule} from "@angular/material/slide-toggle";
 import { TruncatePipe } from './pipes/truncate.pipe';
 import { ProjectBreadcrumbPipe } from './pipes/project-breadcrumb.pipe';
+import { KnowledgeSourceDragAndDropListComponent } from './components/knowledge-source-drag-and-drop-list/knowledge-source-drag-and-drop-list.component';
 
 declare global {
   interface Window {
@@ -49,7 +50,8 @@ declare global {
     ViewportHeaderComponent,
     ViewportFooterComponent,
     TruncatePipe,
-    ProjectBreadcrumbPipe
+    ProjectBreadcrumbPipe,
+    KnowledgeSourceDragAndDropListComponent
   ],
   imports: [
     MatIconModule,
@@ -80,7 +82,8 @@ declare global {
     ViewportHeaderComponent,
     ViewportFooterComponent,
     TruncatePipe,
-    ProjectBreadcrumbPipe
+    ProjectBreadcrumbPipe,
+    KnowledgeSourceDragAndDropListComponent
   ],
   providers: []
 })
