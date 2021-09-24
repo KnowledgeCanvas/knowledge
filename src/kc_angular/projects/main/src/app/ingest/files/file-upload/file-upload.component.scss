@@ -1,5 +1,3 @@
-@import "../../../../styles/theme";
-
 .dropzone-container {
   height: 100%;
   width: 100%;
@@ -41,7 +39,7 @@ input {
 }
 
 .dropzone-input-button {
-  background-color: $kc-secondary-color-dark;
+  background-color: var(--kc-secondary-color-dark);
   //padding: 8px 16px;
   margin-bottom: 5px;
 }
@@ -73,6 +71,7 @@ input {
 
   .single-file {
     display: flex;
+    flex-grow: 1;
     padding: 0.5rem;
     justify-content: space-between;
     align-items: center;
@@ -84,8 +83,6 @@ input {
       cursor: pointer;
       align-self: flex-end;
     }
-    display: flex;
-    flex-grow: 1;
 
     .name {
       font-size: 14px;

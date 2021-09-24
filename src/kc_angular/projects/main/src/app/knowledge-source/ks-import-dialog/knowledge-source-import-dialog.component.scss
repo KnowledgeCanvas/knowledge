@@ -1,5 +1,3 @@
-@import "../../../styles/theme";
-
 .search-bar-form {
   width: 100%;
 }
@@ -10,7 +8,7 @@ mat-grid-tile {
 }
 
 .mat-grid-tile:hover {
-  box-shadow: $kc-primary-color-light 0 0 3px 3px;
+  box-shadow: var(--kc-primary-color-light) 0 0 3px 3px;
 }
 
 .ingest-panel-card {

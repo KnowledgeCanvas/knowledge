@@ -1,25 +1,23 @@
-@import "theme";
-
 .mat-toolbar-row, .mat-toolbar-single-row {
   height: unset !important;
   padding: 0 !important;
 }
 
 .mat-radio-button.mat-accent.mat-radio-checked .mat-radio-outer-circle {
-  border-color: $kc-secondary-color-dark !important;
+  border-color: var(--kc-secondary-color-dark) !important;
 }
 
 .mat-radio-button.mat-accent .mat-radio-inner-circle, .mat-radio-button.mat-accent .mat-radio-ripple .mat-ripple-element:not(.mat-radio-persistent-ripple), .mat-radio-button.mat-accent.mat-radio-checked .mat-radio-persistent-ripple, .mat-radio-button.mat-accent:active .mat-radio-persistent-ripple {
-  background-color: $kc-secondary-color-dark !important;
+  background-color: var(--kc-secondary-color-dark) !important;
 }
 
 .mat-radio-outer-circle {
-  color: $kc-secondary-color-dark !important;
+  color: var(--kc-secondary-color-dark) !important;
 }
 
 .mat-checkbox-ripple .mat-ripple-element,
 .mat-checkbox-checked.mat-accent .mat-checkbox-background {
-  background-color: $kc-secondary-color-med !important;
+  background-color: var(--kc-secondary-color-med) !important;
   color: #1d1d1d !important;
 }
 
@@ -48,28 +46,28 @@
 //}
 
 //.mat-slide-toggle.mat-checked .mat-slide-toggle-bar {
-//  background-color: rgba($kc-secondary-color-med, 0.4) !important;
+//  background-color: rgba(var(--kc-secondary-color-med), 0.4) !important;
 //}
 //
 //.mat-slide-toggle.mat-checked .mat-slide-toggle-thumb {
-//  background-color: $kc-secondary-color-med !important;
+//  background-color: var(--kc-secondary-color-med) !important;
 //}
 //
 //.mat-focused .mat-form-field-label {
-//  color: $kc-primary-color-light !important;
+//  color: var(--kc-primary-color-light) !important;
 //}
 //
 //.mat-form-field .mat-focused .mat-form-field-label {
-//  color: $kc-primary-color-light !important;
+//  color: var(--kc-primary-color-light) !important;
 //}
 //
 //.mat-form-field-ripple {
-//  background-color: $kc-primary-color-light !important;
-//  color: $kc-primary-color-light !important;
+//  background-color: var(--kc-primary-color-light) !important;
+//  color: var(--kc-primary-color-light) !important;
 //}
 //
 //.mat-input-element {
-//  caret-color: $kc-primary-color-light !important;
+//  caret-color: var(--kc-primary-color-light) !important;
 //}
 
 .mat-chip {
@@ -90,10 +88,10 @@
 //}
 
 //.mat-button.mat-warn, .mat-icon-button.mat-warn, .mat-stroked-button.mat-warn {
-//  color: $kc-secondary-color-dark;
+//  color: var(--kc-secondary-color-dark);
 //}
 .mat-tab-group.mat-primary .mat-ink-bar, .mat-tab-nav-bar.mat-primary .mat-ink-bar {
-  background-color: $kc-primary-color-light;
+  background-color: var(--kc-primary-color-light);
 }
 
 //.mat-progress-bar-fill::after {

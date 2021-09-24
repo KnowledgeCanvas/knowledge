@@ -1,7 +1,7 @@
 <div class="knowledge-source-drop-list">
   <div class="cdk-virtual-scroll-data-source" [style.display]="ksListVisible ? 'block' : 'none'">
 
-    <div class="canvas-node-container canvas-add-node pulsate-fwd"
+    <div class="knowledge-source-image-container canvas-add-node jello-vertical"
          matTooltip="Click to add a new source"
          [matTooltipClass]="{'tool-tip':true}"
          matTooltipShowDelay="250"
@@ -34,7 +34,7 @@
            cdkDropList>
 
         <div matTooltip="{{getKsTooltip(node) | titlecase}}"
-             class="canvas-node-container truncated"
+             class="knowledge-source-image-container truncated"
              [matTooltipClass]="{'tool-tip':true}"
              (click)="openKsInfoDialog(node)"
              *ngFor="let node of ksList"

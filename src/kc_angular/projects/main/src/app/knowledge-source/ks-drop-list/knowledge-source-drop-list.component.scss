@@ -1,5 +1,3 @@
-@import "../../../styles/theme";
-
 .knowledge-source-drop-list {
   display: flex;
   flex-direction: row;
@@ -17,7 +15,7 @@
   font-size: 12px;
 
   .ks-sort-key {
-    color: $kc-primary-color-light;
+    color: var(--kc-primary-color-light);
     text-decoration: underline;
     font-size: 12px;
     cursor: help;
@@ -55,21 +53,8 @@
   border: 2px;
 }
 
-.knowledge-canvas-sidebar-title {
-  border-bottom: solid 1px lightgrey;
-  justify-content: center;
-  align-content: center;
-  flex-direction: column;
-  align-items: center;
-  min-height: 48px;
-  flex-wrap: nowrap;
-  height: 48px;
-  display: flex;
-}
-
 .canvas-add-node {
-  background-color: $kc-secondary-color-dark !important;
-  cursor: pointer;
+  background-color: var(--kc-secondary-color-dark) !important;
 }
 
 .cdk-virtual-scroll-data-source .project-knowledge-source-viewport {
@@ -84,28 +69,6 @@
   display: flex;
 }
 
-.cdk-virtual-scroll-data-source .project-knowledge-source-viewport .cdk-virtual-scroll-content-wrapper {
-  flex-direction: column;
-  display: flex;
-}
-
-.search-result-dialog-icon {
-  min-height: 32px !important;
-  max-height: 32px !important;
-  min-width: 32px !important;
-  max-width: 32px !important;
-  height: 32px !important;
-  width: 32px !important;
-}
-
-.cdk-virtual-scroll-content-wrapper {
-  height: 100% !important;
-}
-
-.cdk-virtual-scroll-content-wrapper {
-  height: 100% !important;
-}
-
 .cdk-virtual-scroll-data-source {
   border-right: solid 1px lightgrey;
   justify-content: flex-start;
@@ -115,11 +78,6 @@
   flex-wrap: nowrap;
   max-width: 64px;
   display: flex;
-  height: 100%;
-}
-
-.cdk-virtual-scroll-orientation-vertical .cdk-virtual-scroll-content-wrapper {
-  min-width: 100%;
   height: 100%;
 }
 
