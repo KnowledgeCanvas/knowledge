@@ -27,6 +27,8 @@ import {MatSlideToggleModule} from "@angular/material/slide-toggle";
 import { TruncatePipe } from './pipes/truncate.pipe';
 import { ProjectBreadcrumbPipe } from './pipes/project-breadcrumb.pipe';
 import { KnowledgeSourceDragAndDropListComponent } from './components/knowledge-source-drag-and-drop-list/knowledge-source-drag-and-drop-list.component';
+import { KsDndVerticalDirective } from './directives/ksDnd/ks-dnd-vertical.directive';
+import { KsDndHorizontalDirective } from './directives/ksDnd/ks-dnd-horizontal.directive';
 
 declare global {
   interface Window {
@@ -51,7 +53,9 @@ declare global {
     ViewportFooterComponent,
     TruncatePipe,
     ProjectBreadcrumbPipe,
-    KnowledgeSourceDragAndDropListComponent
+    KnowledgeSourceDragAndDropListComponent,
+    KsDndVerticalDirective,
+    KsDndHorizontalDirective
   ],
   imports: [
     MatIconModule,
