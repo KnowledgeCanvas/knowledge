@@ -1,31 +1,24 @@
+/**
+ Copyright 2021 Rob Royce
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
+
 import {Injectable} from '@angular/core';
 import {TopicModel} from 'projects/ks-lib/src/lib/models/topic.model';
 import {UuidService} from '../uuid/uuid.service';
 import {BehaviorSubject} from "rxjs";
 
-let tempTopicSource: TopicModel[] = [
-  {
-    id: {value: '697b08fe-df4d-4bbc-9518-d421d0258148'},
-    name: 'Computer Science',
-    description: 'The study of the hardware and software components of computers.',
-    dateCreated: Date(),
-    dateUpdated: Date()
-  },
-  {
-    id: {value: 'd009de90-962d-4cf9-9f7d-3e892d64d517'},
-    name: 'AI/ML',
-    description: 'The study of artificial intelligence and machine learning.',
-    dateCreated: Date(),
-    dateUpdated: Date()
-  },
-  {
-    id: {value: "f91b448f-77d4-40c0-aae9-b68232fa48dd"},
-    name: "Homework",
-    description: "Homework and other school related stuff.",
-    dateCreated: Date(),
-    dateUpdated: Date()
-  }
-]
 
 @Injectable({
   providedIn: 'root'
@@ -50,7 +43,7 @@ export class TopicService {
     let uuid = this.uuidService.generate(1)[0];
     let topic = new TopicModel(uuid, topicStr);
     let topicSource = [...this.topicSource.value, topic];
-    topicSource = this.sort(topicSource);
+    topicSource = TopicService.sort(topicSource);
 
     // Persist to localStorage
     let topicSourceStr = JSON.stringify(topicSource);
@@ -69,7 +62,7 @@ export class TopicService {
     return this.topicSource.value.find(topic => topic.name === topicStr);
   }
 
-  private sort(topicList: TopicModel[]): TopicModel[] {
+  private static sort(topicList: TopicModel[]): TopicModel[] {
     topicList.sort((a, b) => {
       let x = a.name.toLowerCase();
       let y = b.name.toLowerCase();

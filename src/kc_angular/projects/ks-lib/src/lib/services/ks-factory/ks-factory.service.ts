@@ -1,3 +1,19 @@
+/**
+ Copyright 2021 Rob Royce
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
+
 import {Injectable} from '@angular/core';
 import {UuidService} from "../uuid/uuid.service";
 import {IngestType, KnowledgeSource, KnowledgeSourceReference, SourceModel} from "../../models/knowledge.source.model";
@@ -100,7 +116,7 @@ export class KsFactoryService {
   }
 
   private getWebsiteIcon(ks: KnowledgeSource): Promise<KnowledgeSource> {
-    return new Promise<KnowledgeSource>((resolve, reject) => {
+    return new Promise<KnowledgeSource>((resolve) => {
       ks.iconUrl = typeof ks.accessLink === 'string' ? ks.accessLink : ks.accessLink.hostname;
       ks.icon = this.faviconService.generic();
 

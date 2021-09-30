@@ -1,3 +1,19 @@
+/**
+ Copyright 2021 Rob Royce
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
+
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {IngestSettingsModel} from "projects/ks-lib/src/lib/models/settings.model";
 import {MatSlideToggleChange} from "@angular/material/slide-toggle";
@@ -55,19 +71,19 @@ export class IngestSettingsComponent implements OnInit, OnChanges {
     this.updateSettings();
   }
 
-  autoscanLocationClicked($event: Event) {
+  autoscanLocationClicked(_: Event) {
     this.updateSettings();
   }
 
-  managedClicked($event: MatSlideToggleChange) {
+  managedClicked(_: MatSlideToggleChange) {
     this.updateSettings();
   }
 
-  preserveClicked($event: MatSlideToggleChange) {
+  preserveClicked(_: MatSlideToggleChange) {
     this.updateSettings();
   }
 
-  onIntervalChange($event: Event) {
+  onIntervalChange(_: Event) {
     let newInterval: number = this.interval as any;
 
     if (newInterval > this.MAX_INTERVAL || newInterval < this.MIN_INTERVAL) {
