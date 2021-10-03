@@ -21,11 +21,32 @@ import {MatDialog} from "@angular/material/dialog";
 import {KnowledgeSource} from "projects/ks-lib/src/lib/models/knowledge.source.model";
 import {KsInfoDialogComponent, KsInfoDialogInput, KsInfoDialogOutput} from "../../knowledge-source/ks-info-dialog/ks-info-dialog.component";
 import {BrowserViewDialogService} from "../../../../../ks-lib/src/lib/services/browser-view-dialog/browser-view-dialog.service";
+import {animate, style, transition, trigger} from "@angular/animations";
 
 @Component({
   selector: 'app-search-results',
   templateUrl: './search-results.component.html',
-  styleUrls: ['./search-results.component.scss']
+  styleUrls: ['./search-results.component.scss'],
+  animations: [
+    trigger(
+      'searchBarAnimation', [
+        transition(
+          ':enter', [
+            style({height: 0, opacity: 0}),
+            animate('250ms ease-out',
+              style({height: 99, opacity: 1}))
+          ]
+        ),
+        transition(
+          ':leave', [
+            style({height: 99, opacity: 1}),
+            animate('250ms ease-in',
+              style({height: 0, opacity: 0}))
+          ]
+        )
+      ]
+    )
+  ]
 })
 export class SearchResultsComponent implements OnInit, OnChanges, OnDestroy {
   ksListId = 'ksQueue';
@@ -34,7 +55,7 @@ export class SearchResultsComponent implements OnInit, OnChanges, OnDestroy {
   ksQueueLoading: boolean = false;
 
   @Input()
-  ksList: KnowledgeSource[] = [];
+  ksQueue: KnowledgeSource[] = [];
 
   @Input()
   kcProjectId: string | undefined = undefined;
@@ -64,7 +85,7 @@ export class SearchResultsComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes.ksList) {
-      this.ksList = changes.ksList.currentValue;
+      this.ksQueue = changes.ksList.currentValue;
     }
   }
 
@@ -90,7 +111,7 @@ export class SearchResultsComponent implements OnInit, OnChanges, OnDestroy {
 
     dialogRef.afterClosed().subscribe((result: KsInfoDialogOutput) => {
       if (result.ks && result.ksChanged) {
-        let found = this.ksList.find(k => k.id.value === result.ks?.id.value);
+        let found = this.ksQueue.find(k => k.id.value === result.ks?.id.value);
         if (found) {
           found = result.ks;
         }
@@ -104,14 +125,15 @@ export class SearchResultsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   clearResults() {
-    this.ksList = [];
+    this.ksQueue = [];
     this.ksQueueCleared.emit();
   }
 
   importAll() {
     if (!this.kcProjectId)
       return;
-    this.ksImported.emit(this.ksList);
+
+    this.ksImported.emit(this.ksQueue);
     this.clearResults();
   }
 
@@ -120,8 +142,13 @@ export class SearchResultsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ksListChanged(ksList: KnowledgeSource[]) {
-    this.ksList = ksList;
-    if (ksList.length === 0)
+    this.ksQueue = ksList;
+    if (ksList.length === 0) {
       this.ksQueueCleared.emit();
+    }
+  }
+
+  ksRemovedFromQueue($event: KnowledgeSource) {
+    this.ksRemoved.emit($event);
   }
 }

@@ -24,6 +24,7 @@
     [ksListSortBy]="'Z-a'"
     [ksToolTips]="true"
     (ksListChanged)="ksListChanged($event)"
+    (ksRemoved)="ksRemovedFromProject($event)"
     (ksListSorted)="ksListSorted($event)"
     (ksSelected)="projectKsSelected($event)">
   </ks-lib-knowledge-source-drag-and-drop-list>

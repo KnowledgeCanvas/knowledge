@@ -130,7 +130,6 @@ export class FileUploadComponent implements OnInit, OnChanges {
           id: new UuidModel(this.parentId),
           addKnowledgeSource: ksList
         }
-        console.log('Update Project from submit in FileUpload...');
         this.projectService.updateProject(projectUpdate);
       }
       this.dialogRef.close();

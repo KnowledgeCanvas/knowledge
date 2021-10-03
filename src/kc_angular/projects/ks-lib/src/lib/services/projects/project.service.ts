@@ -369,8 +369,6 @@ export class ProjectService {
 
     if (currentProject) {
       let found = this.projectSource.find(p => p.id.value === currentProject);
-
-      console.debug('Setting current project from initialize in ProjectService');
       if (found)
         this.setCurrentProject(currentProject);
       else

@@ -18,7 +18,6 @@
 import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges} from '@angular/core';
 import {ProjectModel} from "projects/ks-lib/src/lib/models/project.model";
 import {KnowledgeSource} from "../../../../../ks-lib/src/lib/models/knowledge.source.model";
-import {CdkDragDrop} from "@angular/cdk/drag-drop";
 import {KsDropService} from "../../../../../ks-lib/src/lib/services/ks-drop/ks-drop.service";
 import {KsInfoDialogService} from "../../../../../ks-lib/src/lib/services/ks-info-dialog.service";
 
@@ -86,6 +85,10 @@ export class KnowledgeCanvasComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   ksListSorted(ksList: KnowledgeSource[]) {
-    // TODO
+    // TODO: do we want to take action when the list is sorted?
+  }
+
+  ksRemovedFromProject($event: KnowledgeSource) {
+    // TODO: do we want to take action when a KS is removed?
   }
 }

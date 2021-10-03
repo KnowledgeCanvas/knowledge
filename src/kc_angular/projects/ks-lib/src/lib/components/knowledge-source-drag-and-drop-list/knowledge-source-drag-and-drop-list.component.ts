@@ -98,11 +98,13 @@ export class KnowledgeSourceDragAndDropListComponent implements OnInit, OnChange
         if (confirmed) {
           this.ksList = this.ksList.filter(k => k.id.value !== ks.id.value);
           this.ksListChanged.emit(this.ksList);
+          this.ksRemoved.emit(ks);
         }
       })
     } else {
       this.ksList = this.ksList.filter(k => k.id.value !== ks.id.value);
       this.ksListChanged.emit(this.ksList);
+      this.ksRemoved.emit(ks);
     }
   }
 

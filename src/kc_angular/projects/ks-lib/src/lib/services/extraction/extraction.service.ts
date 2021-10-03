@@ -60,17 +60,6 @@ export class ExtractionService {
         }).finally(() => {
           resolve(metadata);
         })
-
-        // TODO: Revisit this after defining metadata schema
-        // let meta = htmlDoc.getElementsByTagName( 'meta' );
-        // console.log('Meta tags for ', url, ': ');
-        // console.log(meta);
-        //
-        // for (let i = 0; i < meta.length; i++) {
-        //   console.log(meta[i].outerHTML);
-        // }
-
-
       });
     });
   }

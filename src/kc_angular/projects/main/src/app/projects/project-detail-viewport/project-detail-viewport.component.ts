@@ -15,12 +15,12 @@
  */
 
 
-import {Component, OnDestroy, OnInit, ViewEncapsulation} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Subscription} from "rxjs";
 import {ProjectModel, ProjectUpdateRequest} from "projects/ks-lib/src/lib/models/project.model";
 import {ProjectService} from "../../../../../ks-lib/src/lib/services/projects/project.service";
 import {KnowledgeSource} from "../../../../../ks-lib/src/lib/models/knowledge.source.model";
 import {KsQueueService} from "../../knowledge-source/ks-queue-service/ks-queue.service";
-import {Subscription} from "rxjs";
 import {KcDialogRequest, KcDialogService} from "../../../../../ks-lib/src/lib/services/dialog/kc-dialog.service";
 
 
@@ -28,7 +28,6 @@ import {KcDialogRequest, KcDialogService} from "../../../../../ks-lib/src/lib/se
   selector: 'app-project-detail-viewport',
   templateUrl: './project-detail-viewport.component.html',
   styleUrls: ['./project-detail-viewport.component.scss'],
-  encapsulation: ViewEncapsulation.None
 })
 export class ProjectDetailViewportComponent implements OnInit, OnDestroy {
   kcProject: ProjectModel | null = null;
@@ -56,7 +55,6 @@ export class ProjectDetailViewportComponent implements OnInit, OnDestroy {
     })
 
     this.kcProjectSubscription = this.projectService.currentProject.subscribe(project => {
-      console.debug('ProjectDetailViewport got updated project: ', project);
       if (project.id.value.trim() !== '')
         this.kcProject = project;
       else
@@ -82,12 +80,12 @@ export class ProjectDetailViewportComponent implements OnInit, OnDestroy {
       addKnowledgeSource: $event,
       id: this.kcProject.id
     }
-    console.log('Update Project from ksImported in ProjectDetailViewport...');
     this.projectService.updateProject(update);
   }
 
   ksQueueCleared() {
     this.ksQueueService.clearResults();
+
   }
 
   ksRemoved($event: KnowledgeSource) {
@@ -111,7 +109,6 @@ export class ProjectDetailViewportComponent implements OnInit, OnDestroy {
         id: this.kcProject.id,
         removeKnowledgeSource: [$event]
       }
-      console.log('Update Project from ksRemoved in ProjectDetailViewport...');
       this.projectService.updateProject(update);
     });
   }
@@ -121,8 +118,6 @@ export class ProjectDetailViewportComponent implements OnInit, OnDestroy {
   }
 
   ksAdded($event: KnowledgeSource[]) {
-    console.log('Adding KS to project: ', $event);
-
     if (!this.kcProject) {
       return;
     }
@@ -130,12 +125,10 @@ export class ProjectDetailViewportComponent implements OnInit, OnDestroy {
     let update: ProjectUpdateRequest = {
       id: this.kcProject.id
     }
-    console.log('Update Project from ksAdded in ProjectDetailViewport...');
     this.projectService.updateProject(update);
   }
 
   projectChanged($event: ProjectModel) {
-    console.log('Updating project from project details viewport...', $event);
     this.projectService.updateProject({
       id: $event.id
     })

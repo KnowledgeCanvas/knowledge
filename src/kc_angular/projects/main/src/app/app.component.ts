@@ -80,13 +80,10 @@ export class AppComponent implements OnInit, AfterViewInit {
         this.elementRef.nativeElement.style.display = 'block';
       }
     });
-
-    console.log('App Root ElementRef: ', this.elementRef);
     this.elementRef.nativeElement.style.display = 'none';
   }
 
   ngOnInit() {
-    console.log('Electron API: ', window.api);
   }
 
   ngAfterViewInit() {
@@ -205,10 +202,6 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   homeClicked() {
     this.router.navigate(['/app-projects']);
-  }
-
-  topLogoClicked() {
-    // TODO: eventually this should take the user to the KC app website
   }
 
   resetTimerValues() {

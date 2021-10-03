@@ -25,7 +25,7 @@
   <div cdkDropListGroup class="project-detail-container">
 
     <app-search-results
-      [ksList]="ksQueue"
+      [ksQueue]="ksQueue"
       [kcProjectId]="kcProject.id.value"
       [ksQueueLoading]="loading"
       (ksImported)="ksImported($event)"

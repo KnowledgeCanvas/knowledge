@@ -12,28 +12,30 @@
 <!--See the License for the specific language governing permissions and-->
 <!--limitations under the License.-->
 
+<div *ngIf="ksQueue.length > 0" [@searchBarAnimation]>
+  <div class="search-results-header">
+    <div class="">
+      <b>Up Next</b>
+      <div *ngIf="ksQueue.length > 0">
+        Displaying <b>{{ksQueue?.length}}</b> result(s)
+      </div>
+    </div>
 
-<div class="search-results-header" *ngIf="ksList.length > 0">
-  <div class="">
-    <b>Up Next</b>
-    <div *ngIf="ksList.length > 0">
-      Displaying <b>{{ksList?.length}}</b> result(s)
+    <div *ngIf="ksQueue.length > 0" class="ks-queue-import-buttons">
+      <button (click)="importAll()" color="primary" mat-button>Import All</button>
+      <button (click)="clearResults()" color="warn" mat-button>Clear Results</button>
     </div>
   </div>
 
-  <div *ngIf="ksList.length > 0" class="ks-queue-import-buttons">
-    <button (click)="importAll()" color="primary" mat-button>Import All</button>
-    <button (click)="clearResults()" color="warn" mat-button>Clear Results</button>
-  </div>
+  <ks-lib-knowledge-source-drag-and-drop-list
+    [ksList]="ksQueue"
+    [ksListId]="ksListId"
+    [ksWarnOnDelete]="false"
+    (ksRemoved)="ksRemovedFromQueue($event)"
+    ksListOrientation="horizontal"
+    [ksToolTips]="true"
+    (ksSelected)="ksSelected($event)"
+    (ksListChanged)="ksListChanged($event)"
+    class="search-results-dnd">
+  </ks-lib-knowledge-source-drag-and-drop-list>
 </div>
-
-<ks-lib-knowledge-source-drag-and-drop-list
-  [ksList]="ksList"
-  [ksListId]="ksListId"
-  [ksWarnOnDelete]="false"
-  ksListOrientation="horizontal"
-  [ksToolTips]="true"
-  (ksSelected)="ksSelected($event)"
-  (ksListChanged)="ksListChanged($event)"
-  class="search-results-dnd">
-</ks-lib-knowledge-source-drag-and-drop-list>
