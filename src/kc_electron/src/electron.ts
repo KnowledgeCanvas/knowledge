@@ -79,8 +79,9 @@ let kcMainWindow: typeof BrowserWindow;
  */
 function createMainWindow() {
     let WIDTH: number = parseInt(appEnv.DEFAULT_WINDOW_WIDTH);
-
     let HEIGHT: number = parseInt(appEnv.DEFAULT_WINDOW_HEIGHT);
+    let darkMode = appEnv.display.theme === 'app-theme-dark';
+    let backgroundColor = darkMode ? '#2e2c29' : '#F9F9F9';
 
     const config = {
         show: false,
@@ -88,7 +89,7 @@ function createMainWindow() {
         width: WIDTH ? WIDTH : 1280,
         minHeight: 800,
         height: HEIGHT ? HEIGHT : 1000,
-        backgroundColor: '#2e2c29',
+        backgroundColor: backgroundColor,
         title: 'Knowledge Canvas',
         webPreferences: {
             nodeIntegration: false, // is default value after Electron v5

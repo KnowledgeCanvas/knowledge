@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {MatDialog} from "@angular/material/dialog";
 import {DigitalWellnessComponent} from "../../../ks-lib/src/lib/components/digital-wellness/digital-wellness.component";
 import {MatBottomSheet} from "@angular/material/bottom-sheet";
@@ -14,7 +14,9 @@ import {OverlayContainer} from "@angular/cdk/overlay";
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit, AfterViewInit {
+  @ViewChild('appThemeRoot', {static: true}) appThemeRoot!: ElementRef;
+
   notRunningTooltip = 'Click the button to start your timer. Knowledge Canvas will let you know when it\'s time for' +
     ' a break!';
   runningTooltip = 'Click the button to pause your timer';
@@ -25,7 +27,7 @@ export class AppComponent {
   timerReady = false;
   timer = '15m 00s'
   interval: any;
-  darkMode: boolean = true;
+  darkMode: boolean = false;
   private timerMinutes = 25;
   private timerSeconds = 0;
   private breakMinutes = 5;
@@ -39,6 +41,7 @@ export class AppComponent {
 
   constructor(private dialog: MatDialog, private router: Router,
               private overlayContainer: OverlayContainer,
+              private elementRef: ElementRef,
               private settingsService: SettingsService,
               private ksQueueService: KsQueueService,
               private bottomSheet: MatBottomSheet,) {
@@ -57,8 +60,22 @@ export class AppComponent {
       if (settings && settings.display) {
         this.changeTheme(settings.display.theme);
         this.darkMode = settings.display.theme === 'app-theme-dark';
+        this.elementRef.nativeElement.style.display = 'block';
       }
     });
+
+    console.log('App Root ElementRef: ', this.elementRef);
+    this.elementRef.nativeElement.style.display = 'none';
+  }
+
+  ngOnInit() {
+    console.log('Electron API: ', window.api);
+  }
+
+  ngAfterViewInit() {
+    if (this.darkMode) {
+      this.appThemeRoot.nativeElement.classList.add('app-theme-dark');
+    }
   }
 
   changeTheme(theme: 'app-theme-dark' | 'app-theme-light') {
@@ -195,7 +212,7 @@ export class AppComponent {
     };
 
     const dialogRef = this.dialog.open(DigitalWellnessComponent, options);
-    dialogRef.afterClosed().subscribe((result) => {
+    dialogRef.afterClosed().subscribe((_) => {
       clearInterval(this.interval);
       this.breaking = false;
       this.timerRunning = false;
