@@ -1,31 +1,56 @@
 import {Injectable} from '@angular/core';
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from "@angular/cdk/drag-drop";
-import {KnowledgeSource} from "projects/ks-lib/src/lib/models/knowledge.source.model";
 
+export type KsDropServiceRegistration = {
+  containerId: string,
+  receiveFrom: string[],
+  sendTo: string[],
+  allowSort: boolean
+}
 
-// TODO: rename this to KsDropService
 @Injectable({
   providedIn: 'root'
 })
 export class KsDropService {
+  registration: KsDropServiceRegistration[] = [];
 
   constructor() {
   }
 
+  register(dropListRegistration: KsDropServiceRegistration) {
+    this.registration.push(dropListRegistration);
+  }
+
+  unregister(containerId: string) {
+    this.registration = this.registration.filter(r => r.containerId !== containerId);
+  }
+
   drop($event: CdkDragDrop<any>) {
-    if ($event.previousContainer === $event.container) {
-      moveItemInArray($event.container.data, $event.previousIndex, $event.currentIndex);
-    } else {
-      transferArrayItem($event.previousContainer.data, $event.container.data, $event.previousIndex, $event.currentIndex);
+    let allowed = this.allowed($event.previousContainer.id, $event.container.id, $event.item.data);
+
+    if (allowed) {
+      if ($event.previousContainer === $event.container) {
+        moveItemInArray($event.container.data, $event.previousIndex, $event.currentIndex);
+      } else {
+        transferArrayItem($event.previousContainer.data, $event.container.data, $event.previousIndex, $event.currentIndex);
+      }
     }
 
     return $event.container.data;
   }
 
-  update($event: CdkDragDrop<any>): void {
-  }
+  private allowed(from: string, to: string): boolean {
+    let fromList = this.registration.find(sr => sr.containerId === from);
+    let toList = this.registration.find(sr => sr.containerId === to);
 
-  dropSource(data: KnowledgeSource) {
+    if (!fromList || !toList) {
+      return false;
+    }
 
+    if (from === to && fromList.allowSort && toList.allowSort) {
+      return true;
+    }
+
+    return !(!toList.receiveFrom.includes(from) || !fromList.sendTo.includes(to));
   }
 }
