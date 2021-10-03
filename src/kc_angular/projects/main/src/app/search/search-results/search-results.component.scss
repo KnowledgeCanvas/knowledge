@@ -60,3 +60,8 @@ app-search-bar {
   top: 8px;
   left: calc(50% - 198px);
 }
+
+.search-results-dnd {
+  display: flex;
+  border-bottom: 1px solid grey;
+}

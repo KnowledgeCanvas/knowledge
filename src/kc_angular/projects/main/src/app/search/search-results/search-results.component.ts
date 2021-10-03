@@ -1,14 +1,8 @@
-import {Component, OnInit} from '@angular/core';
-import {CdkDragDrop} from "@angular/cdk/drag-drop";
+import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges} from '@angular/core';
 import {KsDropService} from "../../../../../ks-lib/src/lib/services/ks-drop/ks-drop.service";
-import {Subscription} from "rxjs";
-import {MatDialog, MatDialogConfig} from "@angular/material/dialog";
-import {KsQueueService} from "../../knowledge-source/ks-queue-service/ks-queue.service";
+import {MatDialog} from "@angular/material/dialog";
 import {KnowledgeSource} from "projects/ks-lib/src/lib/models/knowledge.source.model";
 import {KsInfoDialogComponent, KsInfoDialogInput, KsInfoDialogOutput} from "../../knowledge-source/ks-info-dialog/ks-info-dialog.component";
-import {ProjectService} from "../../../../../ks-lib/src/lib/services/projects/project.service";
-import {ProjectUpdateRequest} from "projects/ks-lib/src/lib/models/project.model";
-import {KsPreviewComponent, KsPreviewInput} from "../../knowledge-source/ks-preview/ks-preview.component";
 import {BrowserViewDialogService} from "../../../../../ks-lib/src/lib/services/browser-view-dialog/browser-view-dialog.service";
 
 @Component({
@@ -16,43 +10,56 @@ import {BrowserViewDialogService} from "../../../../../ks-lib/src/lib/services/b
   templateUrl: './search-results.component.html',
   styleUrls: ['./search-results.component.scss']
 })
-export class SearchResultsComponent implements OnInit {
-  loading: boolean = false;
-  ksQueue: KnowledgeSource[] = [];
-  ksQueueSubscription: Subscription;
-  ksQueueLoadingSubscription: Subscription;
+export class SearchResultsComponent implements OnInit, OnChanges, OnDestroy {
+  ksListId = 'ksQueue';
+
+  @Input()
+  ksQueueLoading: boolean = false;
+
+  @Input()
+  ksList: KnowledgeSource[] = [];
+
+  @Input()
+  kcProjectId: string | undefined = undefined;
+
+  @Output()
+  ksQueueCleared = new EventEmitter<any>();
+
+  @Output()
+  ksImported = new EventEmitter<KnowledgeSource[]>();
+
+  @Output()
+  ksRemoved = new EventEmitter<KnowledgeSource>();
 
   constructor(private browserViewDialogService: BrowserViewDialogService,
               private ksDropService: KsDropService,
-              private ksQueueService: KsQueueService,
-              private projectService: ProjectService,
               public dialog: MatDialog) {
-    this.ksQueueSubscription = this.ksQueueService.ksQueue.subscribe((results: KnowledgeSource[]) => {
-      this.ksQueue = results;
-    });
-    this.ksQueueLoadingSubscription = this.ksQueueService.loading.subscribe((loading) => {
-      this.loading = loading;
+    ksDropService.register({
+      containerId: this.ksListId,
+      receiveFrom: [],
+      sendTo: ['projectKsList'],
+      allowSort: true
     });
   }
 
   ngOnInit(): void {
   }
 
-  ngOnDestroy() {
-    this.ksQueueSubscription.unsubscribe();
-    this.ksQueueLoadingSubscription.unsubscribe();
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.ksList) {
+      this.ksList = changes.ksList.currentValue;
+    }
   }
 
-  drop(event: CdkDragDrop<any>) {
-    this.ksDropService.drop(event);
-    this.ksQueue = [...this.ksQueue];
+  ngOnDestroy() {
+    this.ksDropService.unregister(this.ksListId);
   }
 
   displayContextPopup(ks: KnowledgeSource): void {
     let dialogInput: KsInfoDialogInput = {
       source: 'ks-queue',
       ks: ks,
-      projectId: this.projectService.getCurrentProjectId().value
+      projectId: this.kcProjectId
     }
 
     const dialogRef = this.dialog.open(KsInfoDialogComponent, {
@@ -66,35 +73,38 @@ export class SearchResultsComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((result: KsInfoDialogOutput) => {
       if (result.ks && result.ksChanged) {
-        let found = this.ksQueue.find(k => k.id.value === result.ks?.id.value);
+        let found = this.ksList.find(k => k.id.value === result.ks?.id.value);
         if (found) {
           found = result.ks;
         }
       }
 
       if (result.preview) {
-        this.preview(result.ks);
+        this.browserViewDialogService.open({ks: ks});
       }
 
     })
   }
 
-  preview(ks: KnowledgeSource) {
-    this.browserViewDialogService.open({ks:ks});
-  }
-
   clearResults() {
-    this.ksQueue = [];
-    this.ksQueueService.clearResults();
+    this.ksList = [];
+    this.ksQueueCleared.emit();
   }
 
   importAll() {
-    let currentProjectId = this.projectService.getCurrentProjectId();
-    let update: ProjectUpdateRequest = {
-      id: currentProjectId,
-      addKnowledgeSource: this.ksQueue
-    }
-    this.projectService.updateProject(update);
+    if (!this.kcProjectId)
+      return;
+    this.ksImported.emit(this.ksList);
     this.clearResults();
+  }
+
+  ksSelected($event: KnowledgeSource) {
+    this.displayContextPopup($event);
+  }
+
+  ksListChanged(ksList: KnowledgeSource[]) {
+    this.ksList = ksList;
+    if (ksList.length === 0)
+      this.ksQueueCleared.emit();
   }
 }
