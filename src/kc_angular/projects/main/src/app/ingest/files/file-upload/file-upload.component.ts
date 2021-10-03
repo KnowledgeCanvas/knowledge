@@ -90,7 +90,6 @@ export class FileUploadComponent implements OnInit, OnChanges {
     let uuids: UuidModel[] = this.uuidService.generate(this.files.length);
     let ksList: KnowledgeSource[] = [];
     let paths: any[] = [];
-    let icons: any[] = [];
 
     for (let file of this.files) {
       paths.push((file as any).path)
@@ -115,6 +114,7 @@ export class FileUploadComponent implements OnInit, OnChanges {
           id: new UuidModel(this.parentId),
           addKnowledgeSource: ksList
         }
+        console.log('Update Project from submit in FileUpload...');
         this.projectService.updateProject(projectUpdate);
       }
       this.dialogRef.close();

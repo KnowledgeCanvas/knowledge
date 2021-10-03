@@ -36,7 +36,7 @@ export class KnowledgeSourceDragAndDropListComponent implements OnInit, OnChange
 
   @Input()
   ksToolTipDelay: number = 0;
-  
+
   @Input()
   ksListSortBy?: 'a-Z' | 'Z-a' | 'created' | 'accessed' | 'modified';
 

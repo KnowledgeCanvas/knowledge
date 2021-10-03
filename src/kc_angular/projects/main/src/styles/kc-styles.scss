@@ -4,23 +4,23 @@
   margin-right: 8px;
 }
 
-.knowledge-canvas-logo-button-tiny {
+.kc-logo-button-tiny {
   max-height: 24px;
   max-width: 24px;
   border-radius: 12px;
 }
 
-.knowledge-canvas-logo-button-small {
+.kc-logo-button-small {
   max-height: 32px;
   max-width: 32px;
 }
 
-.knowledge-canvas-logo-button-medium {
+.kc-logo-button-medium {
   max-height: 48px;
   max-width: 48px;
 }
 
-.knowledge-canvas-logo-button-large {
+.kc-logo-button-large {
   max-height: 64px;
   max-width: 64px;
 }
@@ -149,9 +149,12 @@
   backdrop-filter: blur(5px);
 }
 
+.ks-icon-container {
+  display: flex;
+}
+
 .cdk-virtual-scroll-data-source .search-result-container,
-.knowledge-source-image-container,
-.cdk-drag-preview {
+.knowledge-source-image-container {
   align-content: center;
   align-items: center;
   background-color: #FFF;
@@ -180,4 +183,23 @@
   width: 32px;
   writing-mode: horizontal-tb;
   z-index: auto;
+}
+
+.ks-icon-affix-hidden {
+  visibility: hidden;
+}
+
+.ks-icon-affix {
+  top: 8px;
+  left: -10px;
+  height: 16px !important;
+  width: 16px !important;
+  line-height: 0 !important;
+
+  .mat-icon {
+    height: 16px !important;
+    width: 16px !important;
+    font-size: 16px !important;
+    line-height: 0 !important;
+  }
 }
