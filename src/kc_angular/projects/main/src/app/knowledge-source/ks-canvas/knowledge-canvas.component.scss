@@ -9,6 +9,10 @@
   position: absolute;
 }
 
+.project-ks-list {
+  min-width: 60px;
+}
+
 app-canvas-details {
   width: 100%;
   min-height: 100%;
@@ -23,4 +27,9 @@ app-canvas-details-overview {
 
 app-canvas-source-list {
   height: 100%
+}
+
+ks-lib-knowledge-source-drag-and-drop-list {
+  height: 100%;
+  border-right: 1px solid grey;
 }
