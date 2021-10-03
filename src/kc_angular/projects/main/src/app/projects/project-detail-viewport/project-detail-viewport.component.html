@@ -13,16 +13,33 @@
 <!--limitations under the License.-->
 
 
-<div *ngIf="!project">
+<div *ngIf="!kcProject">
   <div class="row">
     <div class="col s12 center" style="margin-top: 8px">
-      <h1>👈 Select or create a Project to view its details.</h1>
+      <h1>Select or create a Project to view its details.</h1>
     </div>
   </div>
 </div>
-<div *ngIf="project">
+
+<div *ngIf="kcProject">
   <div cdkDropListGroup class="project-detail-container">
-    <app-search-results></app-search-results>
-    <app-canvas></app-canvas>
+
+    <app-search-results
+      [ksQueue]="ksQueue"
+      [kcProjectId]="kcProject.id.value"
+      [ksQueueLoading]="loading"
+      (ksImported)="ksImported($event)"
+      (ksRemoved)="ksQueueRemove($event)"
+      (ksQueueCleared)="ksQueueCleared()">
+    </app-search-results>
+
+    <app-canvas
+      [kcProject]="kcProject"
+      [searchBarVisible]="ksQueue.length > 0"
+      (ksRemoved)="ksRemoved($event)"
+      (ksAdded)="ksAdded($event)"
+      (projectChanged)="projectChanged($event)">
+    </app-canvas>
+
   </div>
 </div>

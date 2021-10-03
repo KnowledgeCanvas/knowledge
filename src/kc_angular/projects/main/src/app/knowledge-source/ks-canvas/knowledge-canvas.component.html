@@ -14,6 +14,19 @@
 
 
 <div class="knowledge-canvas-container" [style.height]="searchBarVisible ? 'calc(100vh - 170px)' : 'calc(100vh - 73px)'">
-  <app-canvas-source-list [ksListVisible]="searchBarVisible"></app-canvas-source-list>
+  <ks-lib-knowledge-source-drag-and-drop-list
+    #projectList
+    class="project-ks-list"
+    [ksList]="projectKsList"
+    [ksListId]="projectKsListId"
+    [ksListOrientation]="'vertical'"
+    [ksListManualSortingDisabled]="false"
+    [ksListSortBy]="'Z-a'"
+    [ksToolTips]="true"
+    (ksListChanged)="ksListChanged($event)"
+    (ksRemoved)="ksRemovedFromProject($event)"
+    (ksListSorted)="ksListSorted($event)"
+    (ksSelected)="projectKsSelected($event)">
+  </ks-lib-knowledge-source-drag-and-drop-list>
   <app-canvas-details-overview></app-canvas-details-overview>
 </div>

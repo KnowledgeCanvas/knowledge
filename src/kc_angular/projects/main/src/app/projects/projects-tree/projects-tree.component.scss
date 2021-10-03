@@ -14,7 +14,6 @@
  limitations under the License.
  */
 
-@import "../../../styles/theme";
 
 .projects-tree-controls-container {
   display: flex;
@@ -34,5 +33,5 @@
 }
 
 .background-highlight {
-  background-color: rgba($kc-secondary-color-med, 0.75) !important;
+  background-color: rgba(var(--kc-secondary-color-med), 0.75) !important;
 }

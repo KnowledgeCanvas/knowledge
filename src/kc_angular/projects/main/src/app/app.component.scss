@@ -14,7 +14,6 @@
  limitations under the License.
  */
 
-@import "../styles/theme";
 
 .app-sidenav-content {
   flex: 1 1 auto;
@@ -23,7 +22,6 @@
 
 .app-sidenav-toolbar {
   text-align: center;
-  //background: $kc-primary-color-med;
   z-index: 100;
   display: flex;
   justify-content: space-between;
@@ -33,7 +31,6 @@
 
 .app-top-toolbar {
   text-align: center;
-  //background: $kc-primary-color-med;
   z-index: 100;
   display: flex;
   flex-direction: row;
@@ -48,11 +45,6 @@
     flex-direction: row;
     justify-content: flex-start;
   }
-}
-
-.app-top-toolbar-icon {
-  //height: 40px;
-  //width: 40px;
 }
 
 .app-top-toolbar-logo {
@@ -127,7 +119,6 @@
   width: 34%;
   max-width: 34%;
   min-height: 32px;
-  //background: #fff;
   align-content: center;
   justify-content: center;
   align-items: center;

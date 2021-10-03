@@ -20,6 +20,7 @@ import {Observable} from 'rxjs';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {ConfirmDialogComponent} from '../../components/dialogs/confirm-dialog/confirm-dialog.component';
 import {map, take} from 'rxjs/operators';
+import {KnowledgeSource} from "../../models/knowledge.source.model";
 
 export interface KcDialogRequest {
   actionToTake: 'delete' | 'confirm' | 'delete-input-required'
@@ -39,6 +40,24 @@ export class KcDialogService {
 
   constructor(private dialog: MatDialog) {
     this.dialogRef = null;
+  }
+
+  public openWarnDeleteKs(ks: KnowledgeSource): Promise<boolean> {
+    return new Promise<boolean>((resolve) => {
+      let options: KcDialogRequest = {
+        actionButtonText: "Remove",
+        actionToTake: 'delete',
+        cancelButtonText: "Cancel",
+        listToDisplay: [ks],
+        message: "Are you sure you want to remove this knowledge source?",
+        title: `Remove ${ks.title}?`
+
+      }
+      let dialogRef = this.dialog.open(ConfirmDialogComponent, {data: options});
+      dialogRef.afterClosed().subscribe((result) => {
+        resolve(result);
+      })
+    })
   }
 
   public open(options: KcDialogRequest): void {

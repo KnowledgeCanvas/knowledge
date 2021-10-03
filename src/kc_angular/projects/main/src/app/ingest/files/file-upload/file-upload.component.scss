@@ -14,7 +14,6 @@
  limitations under the License.
  */
 
-@import "../../../../styles/theme";
 
 .dropzone-container {
   height: 100%;
@@ -57,7 +56,7 @@ input {
 }
 
 .dropzone-input-button {
-  background-color: $kc-secondary-color-dark;
+  background-color: var(--kc-secondary-color-dark);
   //padding: 8px 16px;
   margin-bottom: 5px;
 }
@@ -89,12 +88,12 @@ input {
 
   .single-file {
     display: flex;
+    flex-grow: 1;
     padding: 0.5rem;
     justify-content: space-between;
     align-items: center;
     border: dashed 1px #979797;
     margin-bottom: 1rem;
-    flex-grow: 1;
 
     img.delete {
       margin-left: 0.5rem;

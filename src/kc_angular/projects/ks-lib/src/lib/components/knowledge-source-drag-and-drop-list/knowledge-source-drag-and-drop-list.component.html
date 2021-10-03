@@ -1,0 +1,42 @@
+<div #ksDnd
+     cdkDropList
+     cdkScrollable
+     class="ks-dnd-list"
+     id="{{ksListId}}"
+     [cdkDropListData]="ksList"
+     [cdkDropListOrientation]="ksListOrientation"
+     [cdkDropListSortingDisabled]="ksListManualSortingDisabled"
+     [cdkDropListAutoScrollStep]="autoScrollStep"
+     [cdkDropListAutoScrollDisabled]="!autoScroll"
+     (cdkDropListExited)="ksListExited.emit($event)"
+     (cdkDropListEntered)="ksListEntered.emit($event)"
+     (cdkDropListDropped)="ksDropped($event)">
+  <ng-container *ngIf="ksList.length > 0">
+    <div *ngFor="let ks of ksList"
+         cdkDrag
+         [cdkDragData]="ks"
+         ksLibHoverClass
+         class="ks-icon-container">
+
+      <ng-container>
+        <div class="knowledge-source-image-container">
+          <img [src]="ks.icon"
+               class="knowledge-source-icon"
+               matTooltip="{{ksToolTips ? ks.title : undefined}}"
+               matTooltipClass="tool-tip"
+               [matTooltipShowDelay]="ksToolTipDelay"
+               (click)="ksSelected.emit(ks)"
+               alt="Knowledge Icon for: {{ks.title}}">
+        </div>
+
+        <button mat-icon-button
+                color="warn"
+                class="ks-icon-affix"
+                (click)="removeKs(ks)">
+          <mat-icon>remove_circle</mat-icon>
+        </button>
+      </ng-container>
+
+    </div>
+  </ng-container>
+</div>

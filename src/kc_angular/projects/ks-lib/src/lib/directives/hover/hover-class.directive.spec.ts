@@ -14,11 +14,13 @@
  limitations under the License.
  */
 
-.knowledge-canvas-details-tabs {
-  width: 100%;
-}
+import { HoverClassDirective } from './hover-class.directive';
+import {ElementRef} from "@angular/core";
 
-app-search-bar {
-  width: 100%;
-  padding-right: 35px;
-}
+describe('HoverClassDirective', () => {
+  it('should create an instance', () => {
+    let elementRef: ElementRef = new ElementRef<any>({});
+    const directive = new HoverClassDirective(elementRef);
+    expect(directive).toBeTruthy();
+  });
+});

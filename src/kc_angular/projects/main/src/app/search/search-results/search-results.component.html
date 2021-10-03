@@ -12,44 +12,30 @@
 <!--See the License for the specific language governing permissions and-->
 <!--limitations under the License.-->
 
+<div *ngIf="ksQueue.length > 0" [@searchBarAnimation]>
+  <div class="search-results-header">
+    <div class="">
+      <b>Up Next</b>
+      <div *ngIf="ksQueue.length > 0">
+        Displaying <b>{{ksQueue?.length}}</b> result(s)
+      </div>
+    </div>
 
-<div class="search-results-header" *ngIf="ksQueue.length > 0">
-  <div class="">
-    <b>Up Next</b>
-    <div *ngIf="ksQueue.length > 0">
-      Displaying <b>{{ksQueue?.length}}</b> result(s)
+    <div *ngIf="ksQueue.length > 0" class="ks-queue-import-buttons">
+      <button (click)="importAll()" color="primary" mat-button>Import All</button>
+      <button (click)="clearResults()" color="warn" mat-button>Clear Results</button>
     </div>
   </div>
 
-  <div *ngIf="ksQueue.length > 0" class="ks-queue-import-buttons">
-    <button (click)="importAll()" color="primary" mat-button>Import All</button>
-    <button (click)="clearResults()" color="warn" mat-button>Clear Results</button>
-  </div>
-</div>
-
-<div class="cdk-virtual-scroll-data-source" *ngIf="ksQueue.length > 0">
-  <div cdkScrollable class="search-result-viewport" *ngIf="!loading">
-    <div cdkDropListOrientation="horizontal"
-         (cdkDropListDropped)="drop($event)"
-         [cdkDropListData]="ksQueue"
-         class="ks-queue-container"
-         id="search-results-list"
-         cdkDropList>
-      <div class="kc-queue-empty-message" *ngIf="ksQueue.length === 0">
-        Nothing left to do, Good work! Check back later after adding new resources.
-      </div>
-      <div class="search-result-container truncated"
-           matTooltip="{{item.title | titlecase}}"
-           [matTooltipClass]="{'tool-tip':true}"
-           (click)="displayContextPopup(item)"
-           *ngFor="let item of ksQueue"
-           matTooltipShowDelay="250"
-           [cdkDragData]="item"
-           cdkDrag>
-
-        <img *ngIf="!item.icon" class="knowledge-source-icon" src="{{item.iconUrl}}" alt="">
-        <img *ngIf="item.icon" class="knowledge-source-icon" [src]="item.icon" alt="">
-      </div>
-    </div>
-  </div>
+  <ks-lib-knowledge-source-drag-and-drop-list
+    [ksList]="ksQueue"
+    [ksListId]="ksListId"
+    [ksWarnOnDelete]="false"
+    (ksRemoved)="ksRemovedFromQueue($event)"
+    ksListOrientation="horizontal"
+    [ksToolTips]="true"
+    (ksSelected)="ksSelected($event)"
+    (ksListChanged)="ksListChanged($event)"
+    class="search-results-dnd">
+  </ks-lib-knowledge-source-drag-and-drop-list>
 </div>

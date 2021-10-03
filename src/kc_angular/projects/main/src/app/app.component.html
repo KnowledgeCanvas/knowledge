@@ -13,7 +13,7 @@
 <!--limitations under the License.-->
 
 
-<div style="height: 100%" class="mat-app-background" [class.app-theme-dark]="darkMode">
+<div #appThemeRoot style="height: 100%" class="mat-app-background" [class.app-theme-dark]="darkMode">
   <mat-sidenav-container class="sidenav-container">
     <mat-sidenav #drawer [attr.role]="'dialog'" [mode]="'over'" [opened]="false">
       <div class="app-sidenav">

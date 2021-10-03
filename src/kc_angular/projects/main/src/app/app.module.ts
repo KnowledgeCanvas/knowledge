@@ -30,7 +30,6 @@ import {HttpClientModule} from "@angular/common/http";
 import {KcDialogService} from "../../../ks-lib/src/lib/services/dialog/kc-dialog.service";
 import {KnowledgeCanvasComponent} from './knowledge-source/ks-canvas/knowledge-canvas.component';
 import {KnowledgeGraphComponent} from './knowledge-graph/knowledge-graph.component';
-import {KnowledgeSourceDropListComponent} from './knowledge-source/ks-drop-list/knowledge-source-drop-list.component';
 import {KnowledgeSourceTableComponent} from './knowledge-source/ks-table/knowledge-source-table.component';
 import {KnowledgeSourceImportDialogComponent} from './knowledge-source/ks-import-dialog/knowledge-source-import-dialog.component';
 import {KsInfoComponent} from './knowledge-source/ks-info/ks-info.component';
@@ -105,7 +104,6 @@ import {A11yModule} from "@angular/cdk/a11y";
     FilesComponent,
     KnowledgeCanvasComponent,
     KnowledgeGraphComponent,
-    KnowledgeSourceDropListComponent,
     KnowledgeSourceTableComponent,
     KnowledgeSourceImportDialogComponent,
     KsInfoComponent,

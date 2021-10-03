@@ -27,8 +27,87 @@ export class StorageService {
   readonly KS_CUSTOM_SORT_INDEX = 'ks-custom-sort-index';
   readonly KS_LIST_SORT_INDEX = 'ks-sort-index';
   private KC_ALL_PROJECT_IDS = 'kc-projects';
+  private db = window.localStorage;
+  private knowledgeSources: KnowledgeSource[] | null = null;
+  private projectList: ProjectModel[] | null = null;
 
   constructor() {
+  }
+
+  get projects(): ProjectModel[] {
+    let projects: ProjectModel[] = [];
+
+    // Get and parse Project list from local storage
+    let projectsStr: string | null = this.db.getItem(this.KC_ALL_PROJECT_IDS);
+
+    if (!projectsStr) {
+      console.warn('Project list does not exist in storage system, creating...');
+      this.db.setItem(this.KC_ALL_PROJECT_IDS, JSON.stringify([]));
+      return projects;
+    }
+
+    let projectIds: string[] = JSON.parse(projectsStr);
+
+    if (!projectIds) {
+      console.warn('Could not deserialize Project list JSON template... ');
+      return projects;
+    }
+
+    if (projectIds.length === 0) {
+      return projects;
+    }
+
+    let pStr: string | null = null;
+    let project: ProjectModel | null = null;
+
+    // Deserialize projects from list of Project IDs
+    for (let pId of projectIds) {
+      pStr = this.db.getItem(pId);
+      if (!pStr) {
+        console.warn('Got Project ID from storage that did not point to a valid project...');
+        pStr = null;
+        continue;
+      }
+
+      project = JSON.parse(pStr);
+      if (!project) {
+        console.warn('Could not deserialize Project JSON template...');
+        project = null;
+        continue;
+      }
+
+      this.knowledgeSources = [];
+
+      // Pre-populate list of Knowledge Sources for later consumption
+      if (project.knowledgeSource && project.knowledgeSource.length > 0) {
+        for (let ks of project.knowledgeSource) {
+          // Fix for invalid serialize/deserialize formatting
+          ks.dateModified = new Date(ks.dateModified);
+          ks.dateAccessed = new Date(ks.dateAccessed);
+          ks.dateCreated = new Date(ks.dateCreated);
+          this.knowledgeSources.push(ks);
+        }
+      }
+      projects.push(project);
+    }
+
+    if (projects.length > 0) {
+      this.projectList = projects;
+    } else {
+      this.projectList = null;
+    }
+
+    return projects;
+  }
+
+  set projects(projectModels: ProjectModel[]) {
+    let pStr: string;
+    for (let project of projectModels) {
+      pStr = JSON.stringify(project);
+      this.db.setItem(project.id.value, pStr);
+    }
+    pStr = JSON.stringify(projectModels);
+    this.db.setItem(this.KC_ALL_PROJECT_IDS, pStr);
   }
 
   get sortByIndex(): number | undefined {
@@ -52,9 +131,10 @@ export class StorageService {
   }
 
   set kcCurrentProject(id: string | null) {
-    if (id === null)
+    if (id === null) {
+      this.db.setItem(this.KC_CURRENT_PROJECT, '');
       return;
-    // TODO: implement UUID verification somehow...
+    }
     window.localStorage.setItem(this.KC_CURRENT_PROJECT, id);
   }
 
@@ -108,16 +188,17 @@ export class StorageService {
   }
 
   saveProject(project: ProjectModel) {
+    // Update initial project
     this.updateProject(project);
 
-    // Get all projects
+    // Get list of all projects
     let projectListString = window.localStorage.getItem(this.KC_ALL_PROJECT_IDS);
     let projectList: string[] = [];
     if (projectListString) {
       projectList = JSON.parse(projectListString);
     }
 
-
+    // Update list of projects to include
     if (projectList?.length > 0) {
       let id = projectList.find(item => item === project.id.value);
       if (!id) {

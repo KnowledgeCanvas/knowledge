@@ -46,7 +46,6 @@ export class KsInfoDialogService {
       });
 
       dialogRef.afterClosed().subscribe((result: KsInfoDialogOutput) => {
-        console.log('Received output from KS INFO DIALOG: ', result);
         resolve(result);
       })
     })

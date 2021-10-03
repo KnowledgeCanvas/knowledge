@@ -21,7 +21,7 @@ import {DomSanitizer} from "@angular/platform-browser";
 import {ExtractionService} from "../../../../../ks-lib/src/lib/services/extraction/extraction.service";
 import {ProjectService} from "../../../../../ks-lib/src/lib/services/projects/project.service";
 import {KsQueueService} from "../ks-queue-service/ks-queue.service";
-import {ProjectModel, ProjectUpdateRequest} from "projects/ks-lib/src/lib/models/project.model";
+import {ProjectUpdateRequest} from "projects/ks-lib/src/lib/models/project.model";
 import {Clipboard} from "@angular/cdk/clipboard";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {ElectronIpcService} from "../../../../../ks-lib/src/lib/services/electron-ipc/electron-ipc.service";
@@ -46,7 +46,6 @@ export interface KsInfoDialogOutput {
   styleUrls: ['./ks-info-dialog.component.scss']
 })
 export class KsInfoDialogComponent implements OnInit, OnDestroy {
-  currentProject: ProjectModel | null = null;
   ks: KnowledgeSource;
   url: string | null = null;
   sourceRef: 'ks-drop-list' | 'ks-queue' | 'undefined' = 'undefined';

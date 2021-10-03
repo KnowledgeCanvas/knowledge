@@ -14,31 +14,123 @@
  limitations under the License.
  */
 
-import {Component, OnInit, ViewEncapsulation} from '@angular/core';
-import {ProjectModel} from "projects/ks-lib/src/lib/models/project.model";
+
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Subscription} from "rxjs";
+import {ProjectModel, ProjectUpdateRequest} from "projects/ks-lib/src/lib/models/project.model";
 import {ProjectService} from "../../../../../ks-lib/src/lib/services/projects/project.service";
+import {KnowledgeSource} from "../../../../../ks-lib/src/lib/models/knowledge.source.model";
+import {KsQueueService} from "../../knowledge-source/ks-queue-service/ks-queue.service";
+import {KcDialogRequest, KcDialogService} from "../../../../../ks-lib/src/lib/services/dialog/kc-dialog.service";
 
 
 @Component({
   selector: 'app-project-detail-viewport',
   templateUrl: './project-detail-viewport.component.html',
   styleUrls: ['./project-detail-viewport.component.scss'],
-  encapsulation: ViewEncapsulation.None
 })
-export class ProjectDetailViewportComponent implements OnInit {
-  project: ProjectModel | null = null;
+export class ProjectDetailViewportComponent implements OnInit, OnDestroy {
+  kcProject: ProjectModel | null = null;
 
-  constructor(private projectService: ProjectService) {
-    this.project = null;
+  ksQueue: KnowledgeSource[] = [];
 
-    this.projectService.currentProject.subscribe(project => {
+  loading: boolean = false;
+
+  private ksQueueSubscription: Subscription;
+
+  private ksQueueLoadingSubscription: Subscription;
+
+  private kcProjectSubscription: Subscription;
+
+  constructor(private projectService: ProjectService,
+              private ksQueueService: KsQueueService,
+              private confirmDialog: KcDialogService
+  ) {
+    this.ksQueueSubscription = ksQueueService.ksQueue.subscribe((ksQueue) => {
+      this.ksQueue = ksQueue;
+    })
+
+    this.ksQueueLoadingSubscription = ksQueueService.loading.subscribe((loading) => {
+      this.loading = loading;
+    })
+
+    this.kcProjectSubscription = this.projectService.currentProject.subscribe(project => {
       if (project.id.value.trim() !== '')
-        this.project = project;
+        this.kcProject = project;
       else
-        this.project = null;
+        this.kcProject = null;
     });
   }
 
   ngOnInit(): void {
+  }
+
+  ngOnDestroy() {
+    this.ksQueueSubscription.unsubscribe();
+    this.ksQueueLoadingSubscription.unsubscribe();
+    this.kcProjectSubscription.unsubscribe();
+  }
+
+  ksImported($event: KnowledgeSource[]) {
+    if (!this.kcProject) {
+      return;
+    }
+
+    let update: ProjectUpdateRequest = {
+      addKnowledgeSource: $event,
+      id: this.kcProject.id
+    }
+    this.projectService.updateProject(update);
+  }
+
+  ksQueueCleared() {
+    this.ksQueueService.clearResults();
+
+  }
+
+  ksRemoved($event: KnowledgeSource) {
+    if (!this.kcProject) {
+      return;
+    }
+    let dialogReq: KcDialogRequest = {
+      actionButtonText: "Remove Source",
+      actionToTake: 'delete',
+      cancelButtonText: "Cancel",
+      listToDisplay: [$event],
+      message: "Are you sure you want to remove this knowledge source?",
+      title: "Delete Source"
+    }
+    this.confirmDialog.open(dialogReq);
+    this.confirmDialog.confirmed().subscribe((confirmed) => {
+      if (!this.kcProject || !confirmed) {
+        return;
+      }
+      const update: ProjectUpdateRequest = {
+        id: this.kcProject.id,
+        removeKnowledgeSource: [$event]
+      }
+      this.projectService.updateProject(update);
+    });
+  }
+
+  ksQueueRemove($event: KnowledgeSource) {
+    this.ksQueueService.remove($event);
+  }
+
+  ksAdded($event: KnowledgeSource[]) {
+    if (!this.kcProject) {
+      return;
+    }
+
+    let update: ProjectUpdateRequest = {
+      id: this.kcProject.id
+    }
+    this.projectService.updateProject(update);
+  }
+
+  projectChanged($event: ProjectModel) {
+    this.projectService.updateProject({
+      id: $event.id
+    })
   }
 }

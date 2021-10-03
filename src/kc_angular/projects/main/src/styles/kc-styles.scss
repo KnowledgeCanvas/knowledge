@@ -20,23 +20,23 @@
   margin-right: 8px;
 }
 
-.knowledge-canvas-logo-button-tiny {
+.kc-logo-button-tiny {
   max-height: 24px;
   max-width: 24px;
   border-radius: 12px;
 }
 
-.knowledge-canvas-logo-button-small {
+.kc-logo-button-small {
   max-height: 32px;
   max-width: 32px;
 }
 
-.knowledge-canvas-logo-button-medium {
+.kc-logo-button-medium {
   max-height: 48px;
   max-width: 48px;
 }
 
-.knowledge-canvas-logo-button-large {
+.kc-logo-button-large {
   max-height: 64px;
   max-width: 64px;
 }
@@ -100,6 +100,7 @@
 .kc-success {
   border: 1px solid green;
   max-width: 100vw !important;
+
   .mat-simple-snackbar-action {
     color: green !important;
   }
@@ -108,6 +109,7 @@
 .kc-danger-zone-snackbar {
   border: 1px solid red !important;
   max-width: 100vw !important;
+
   .mat-simple-snackbar-action {
     color: red !important;
   }
@@ -163,33 +165,57 @@
   backdrop-filter: blur(5px);
 }
 
-.canvas-node-container {
-  box-shadow: inset 0 0 2px 0 rgba(255, 255, 255, .4), inset 0 0 3px 0 rgba(0, 0, 0, .4), inset 0 0 3px 5px rgba(0, 0, 0, .05), 2px 2px 4px 0 rgba(0, 0, 0, .25);
-  writing-mode: horizontal-tb;
-  justify-content: center;
-  box-sizing: border-box;
-  background-color: #FFF;
-  z-index: auto;
-  border: 2px outset #FFF;
+.ks-icon-container {
+  display: flex;
+}
+
+.cdk-virtual-scroll-data-source .search-result-container,
+.knowledge-source-image-container {
   align-content: center;
-  flex-direction: column;
-  white-space: pre-wrap;
   align-items: center;
+  background-color: #FFF;
   border-radius: 32px;
-  text-overflow: fade;
-  flex-wrap: nowrap;
-  max-height: 32px;
-  min-height: 32px;
-  max-width: 32px;
-  min-width: 32px;
-  font-size: 14px;
+  border: 2px outset #FFF;
+  box-shadow: inset 0 0 2px 0 rgba(255, 255, 255, .4), inset 0 0 3px 0 rgba(0, 0, 0, .4), inset 0 0 3px 5px rgba(0, 0, 0, .05), 2px 2px 4px 0 rgba(0, 0, 0, .25);
+  box-sizing: border-box;
   cursor: pointer;
-  overflow: hidden;
   display: flex;
   flex-basis: 0;
-  height: 32px;
-  margin: 8px;
-  padding: 10px;
-  width: 32px;
+  flex-direction: column;
   flex-grow: 1;
+  flex-wrap: nowrap;
+  font-size: 14px;
+  height: 32px;
+  justify-content: center;
+  margin: 8px;
+  max-height: 32px;
+  max-width: 32px;
+  min-height: 32px;
+  min-width: 32px;
+  overflow: hidden;
+  padding: 10px;
+  text-overflow: fade;
+  white-space: pre-wrap;
+  width: 32px;
+  writing-mode: horizontal-tb;
+  z-index: auto;
+}
+
+.ks-icon-affix-hidden {
+  visibility: hidden;
+}
+
+.ks-icon-affix {
+  top: 8px;
+  left: -10px;
+  height: 16px !important;
+  width: 16px !important;
+  line-height: 0 !important;
+
+  .mat-icon {
+    height: 16px !important;
+    width: 16px !important;
+    font-size: 16px !important;
+    line-height: 0 !important;
+  }
 }
