@@ -26,7 +26,7 @@ export class KsDropService {
   }
 
   drop($event: CdkDragDrop<any>) {
-    let allowed = this.allowed($event.previousContainer.id, $event.container.id, $event.item.data);
+    let allowed = this.allowed($event.previousContainer.id, $event.container.id);
 
     if (allowed) {
       if ($event.previousContainer === $event.container) {
