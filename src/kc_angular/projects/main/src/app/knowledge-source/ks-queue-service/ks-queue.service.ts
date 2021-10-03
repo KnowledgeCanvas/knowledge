@@ -1,3 +1,19 @@
+/**
+ Copyright 2021 Rob Royce
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
+
 import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {BehaviorSubject, forkJoin} from "rxjs";
@@ -55,7 +71,7 @@ export class KsQueueService {
   }
 
   createKsFromSearchResults(searchResults: SearchModel[]): Promise<KnowledgeSource[]> {
-    return new Promise<KnowledgeSource[]>((resolve, reject) => {
+    return new Promise<KnowledgeSource[]>((resolve) => {
       let ksResults: KnowledgeSource[] = [];
       let uuids = this.uuidService.generate(searchResults.length);
       let faviconUrls = [];
@@ -99,10 +115,10 @@ export class KsQueueService {
     // Notify subscribers that we are loading new KS into the queue
     this.loadingSubject.next(true);
 
-    let searchTerm: string = '';
+    let searchTerm: string;
     let gets: any[] = [];
     let allResults: SearchModel[] = [];
-    let googleSearchUrl: string = '';
+    let googleSearchUrl: string;
 
     // Perform search for all topics ANDed together on Wikipedia
     // searchTerm = topics.join(' AND ') + ' site:wikipedia.org';

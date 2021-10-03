@@ -4,6 +4,7 @@
   "author": "Rob Royce <robertris2@gmail.com> (https://robroyce.dev)",
   "description": "Knowledge Canvas is an application for students, researchers, and life-long learners who need help managing their digital ecosystem through use of search, knowledge graphs, and more.",
   "private": true,
+  "license": "Apache-2.0",
   "postinstall": "electron-builder install-app-deps",
   "workspaces": [
     "src/kc_electron",

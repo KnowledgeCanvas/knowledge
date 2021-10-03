@@ -1,3 +1,20 @@
+/**
+ Copyright 2021 Rob Royce
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
+
+
 .mat-toolbar-row, .mat-toolbar-single-row {
   height: unset !important;
   padding: 0 !important;
@@ -33,70 +50,14 @@
   width: 100% !important;
 }
 
-//.mat-snack-bar-container {
-//  //background-color: white !important;
-//
-//  .mat-simple-snackbar {
-//    //color: #1d1d1d;
-//  }
-//
-//  .mat-button-wrapper {
-//    //color: #1d1d1d !important; // action text color
-//  }
-//}
-
-//.mat-slide-toggle.mat-checked .mat-slide-toggle-bar {
-//  background-color: rgba(var(--kc-secondary-color-med), 0.4) !important;
-//}
-//
-//.mat-slide-toggle.mat-checked .mat-slide-toggle-thumb {
-//  background-color: var(--kc-secondary-color-med) !important;
-//}
-//
-//.mat-focused .mat-form-field-label {
-//  color: var(--kc-primary-color-light) !important;
-//}
-//
-//.mat-form-field .mat-focused .mat-form-field-label {
-//  color: var(--kc-primary-color-light) !important;
-//}
-//
-//.mat-form-field-ripple {
-//  background-color: var(--kc-primary-color-light) !important;
-//  color: var(--kc-primary-color-light) !important;
-//}
-//
-//.mat-input-element {
-//  caret-color: var(--kc-primary-color-light) !important;
-//}
-
 .mat-chip {
   font-size: 12px !important;
   cursor: pointer !important;
 }
 
-//.mat-option-text .mat-focused {
-//  color: $kc-primary-color-dark;
-//}
-//
-//.mat-primary .mat-option.mat-selected:not(.mat-option-disabled) {
-//  color: $kc-primary-color-dark;
-//}
-//
-//.mat-button.mat-primary, .mat-icon-button.mat-primary, .mat-stroked-button.mat-primary {
-//  color: $kc-primary-color-dark;
-//}
-
-//.mat-button.mat-warn, .mat-icon-button.mat-warn, .mat-stroked-button.mat-warn {
-//  color: var(--kc-secondary-color-dark);
-//}
 .mat-tab-group.mat-primary .mat-ink-bar, .mat-tab-nav-bar.mat-primary .mat-ink-bar {
   background-color: var(--kc-primary-color-light);
 }
-
-//.mat-progress-bar-fill::after {
-//  background-color: $kc-primary-color-dark;
-//}
 
 .tool-tip {
   background-color: white !important;
