@@ -37,7 +37,7 @@ export class ProjectsTreeComponent implements OnInit, OnDestroy {
     this.treeControl = new FlatTreeControl<ProjectTreeFlatNode>(this.getLevel, this.isExpandable);
     this.dataSource = new MatTreeFlatDataSource<ProjectTreeNode, ProjectTreeFlatNode>(this.treeControl, this.treeFlattener);
 
-    this.projectService.allProjects.subscribe((projectNodes: ProjectTreeNode[]) => {
+    this.projectService.projectTree.subscribe((projectNodes: ProjectTreeNode[]) => {
       this.dataSource.data = projectNodes;
       let flattenedNodes = this.treeFlattener.flattenNodes(projectNodes);
       for (let node of flattenedNodes) {
