@@ -72,15 +72,17 @@ export class ProjectDetailViewportComponent implements OnInit, OnDestroy {
   }
 
   ksImported($event: KnowledgeSource[]) {
-    if (!this.kcProject) {
-      return;
-    }
-
-    let update: ProjectUpdateRequest = {
-      addKnowledgeSource: $event,
-      id: this.kcProject.id
-    }
-    this.projectService.updateProject(update);
+    // Timeout used to give other components the chance to finish animations (i.e. don't force a bottleneck)
+    setTimeout(() => {
+      if (!this.kcProject) {
+        return;
+      }
+      let update: ProjectUpdateRequest = {
+        addKnowledgeSource: $event,
+        id: this.kcProject.id
+      }
+      this.projectService.updateProject(update);
+    }, 1000);
   }
 
   ksQueueCleared() {

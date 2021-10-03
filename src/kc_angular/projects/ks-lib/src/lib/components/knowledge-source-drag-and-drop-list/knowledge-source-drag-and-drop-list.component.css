@@ -1,11 +1,12 @@
 .ks-dnd-list {
-  min-width: 60px;
+  width: 62px;
   height: 100%;
   overflow-y: auto;
 }
 
 .ks-dnd-list-horizontal {
-  max-width: 100%;
+  width: 100%;
+  height: 48px;
   overflow-x: auto;
   display: flex;
 }

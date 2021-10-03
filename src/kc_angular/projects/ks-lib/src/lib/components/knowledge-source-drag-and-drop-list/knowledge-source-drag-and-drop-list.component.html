@@ -11,7 +11,7 @@
      (cdkDropListExited)="ksListExited.emit($event)"
      (cdkDropListEntered)="ksListEntered.emit($event)"
      (cdkDropListDropped)="ksDropped($event)">
-  <ng-container *ngIf="ksList.length > 0">
+  <ng-container>
     <div *ngFor="let ks of ksList"
          cdkDrag
          [cdkDragData]="ks"
