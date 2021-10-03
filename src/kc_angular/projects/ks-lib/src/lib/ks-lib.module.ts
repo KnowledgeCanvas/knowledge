@@ -18,17 +18,19 @@ import {MatDividerModule} from "@angular/material/divider";
 import {ProgressBarComponent} from './components/progress-bar/progress-bar.component';
 import {MatProgressBarModule} from "@angular/material/progress-bar";
 import {BrowserViewComponent} from './components/viewports/browser-view/browser-view.component';
-import { FileViewComponent } from './components/viewports/file-view/file-view.component';
-import { ExplorerComponent } from './components/viewports/explorer-view/explorer.component';
-import { ViewportHeaderComponent } from './components/viewports/shared/viewport-header/viewport-header.component';
-import { ViewportFooterComponent } from './components/viewports/shared/viewport-footer/viewport-footer.component';
+import {FileViewComponent} from './components/viewports/file-view/file-view.component';
+import {ExplorerComponent} from './components/viewports/explorer-view/explorer.component';
+import {ViewportHeaderComponent} from './components/viewports/shared/viewport-header/viewport-header.component';
+import {ViewportFooterComponent} from './components/viewports/shared/viewport-footer/viewport-footer.component';
 import {MatTooltipModule} from "@angular/material/tooltip";
 import {MatSlideToggleModule} from "@angular/material/slide-toggle";
-import { TruncatePipe } from './pipes/truncate.pipe';
-import { ProjectBreadcrumbPipe } from './pipes/project-breadcrumb.pipe';
-import { KnowledgeSourceDragAndDropListComponent } from './components/knowledge-source-drag-and-drop-list/knowledge-source-drag-and-drop-list.component';
-import { KsDndVerticalDirective } from './directives/ksDnd/ks-dnd-vertical.directive';
-import { KsDndHorizontalDirective } from './directives/ksDnd/ks-dnd-horizontal.directive';
+import {TruncatePipe} from './pipes/truncate.pipe';
+import {ProjectBreadcrumbPipe} from './pipes/project-breadcrumb.pipe';
+import {KnowledgeSourceDragAndDropListComponent} from './components/knowledge-source-drag-and-drop-list/knowledge-source-drag-and-drop-list.component';
+import {KsDndVerticalDirective} from './directives/ksDnd/ks-dnd-vertical.directive';
+import {KsDndHorizontalDirective} from './directives/ksDnd/ks-dnd-horizontal.directive';
+import {DragDropModule} from "@angular/cdk/drag-drop";
+import { HoverClassDirective } from './directives/hover/hover-class.directive';
 
 declare global {
   interface Window {
@@ -55,7 +57,8 @@ declare global {
     ProjectBreadcrumbPipe,
     KnowledgeSourceDragAndDropListComponent,
     KsDndVerticalDirective,
-    KsDndHorizontalDirective
+    KsDndHorizontalDirective,
+    HoverClassDirective
   ],
   imports: [
     MatIconModule,
@@ -70,7 +73,8 @@ declare global {
     MatDividerModule,
     MatProgressBarModule,
     MatTooltipModule,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    DragDropModule
   ],
   exports: [
     PageHeaderLargeComponent,
@@ -87,7 +91,7 @@ declare global {
     ViewportFooterComponent,
     TruncatePipe,
     ProjectBreadcrumbPipe,
-    KnowledgeSourceDragAndDropListComponent
+    KnowledgeSourceDragAndDropListComponent,
   ],
   providers: []
 })
