@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.3.2](https://github.com/RobRoyce/knowledge-canvas/compare/v0.3.1...v0.3.2) (2021-10-04)
+
+
+### Features
+
+* **Knowledge Source:** add hover directive to display "remove" button while hovering over a KS icon ([4284cea](https://github.com/RobRoyce/knowledge-canvas/commit/4284ceafddecdc4419e9950384f8a3aa43deedc4))
+* **Knowledge Source:** implemented new KS drag-and-drop component. ([2639591](https://github.com/RobRoyce/knowledge-canvas/commit/2639591d38a6f27670ad51c8369ea9151ec6813b))
+
+
+### Bug Fixes
+
+* autocomplete not displaying at appropriate times and sometimes blocks other UI elements. ([04dcf66](https://github.com/RobRoyce/knowledge-canvas/commit/04dcf669acbb234a60ae1aaaa3b09288e978699a))
+* dark mode components briefly showing on startup, even if the user has light mode enabled. ([15f6262](https://github.com/RobRoyce/knowledge-canvas/commit/15f626231dfc916a27a4007e2943fe0813832cfa))
+* prevent ks queue from disappearing when dragging the last element out of it ([f54d2f0](https://github.com/RobRoyce/knowledge-canvas/commit/f54d2f07b234877f6e1c8669bb2d611572ea0e6d))
+* removed multiple stylesheet imports, use root variable instead. ([5ffff04](https://github.com/RobRoyce/knowledge-canvas/commit/5ffff04ae691486d4c3ce02d19441511f6d4aed2))
+* use a more sensible icon for previewing knowledge sources in the table. ([1104865](https://github.com/RobRoyce/knowledge-canvas/commit/110486528326f288977ec4e9eb6f106acacf2b97))
+
 ### [0.3.1](https://github.com/RobRoyce/knowledge-canvas/compare/v0.3.0...v0.3.1) (2021-09-15)
 
 
