@@ -1,0 +1,12 @@
+<div #ksIngestFab class="ks-ingest-fab">
+  <button class="ks-ingest-button"
+          (click)="fabExpand($event)"
+          [class.rotate-center]="hovering"
+          [class.rotate-center-reverse]="!hovering"
+          mat-fab
+          mat-raised-button
+          mat-icon-button
+          color="primary">
+    <mat-icon>add</mat-icon>
+  </button>
+</div>

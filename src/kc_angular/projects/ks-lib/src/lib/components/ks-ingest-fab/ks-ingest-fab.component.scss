@@ -1,0 +1,16 @@
+.ks-ingest-fab {
+  display: flex;
+  position: absolute;
+  bottom: 32px;
+  right: 32px;
+  z-index: 9999999999;
+}
+
+.ks-ingest-button {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+}
