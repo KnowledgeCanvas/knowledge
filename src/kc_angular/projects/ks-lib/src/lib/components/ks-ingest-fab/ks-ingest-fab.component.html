@@ -1,8 +1,15 @@
 <div #ksIngestFab class="ks-ingest-fab">
+  <div *ngIf="hovering" class="ks-ingest-hover" [class.scale-up-br]="hovering" [class.scale-out-br]="!hovering">
+    <ng-container *ngFor="let action of actions">
+      <div class="ks-ingest-action">
+        <button (click)="action.click()">{{action.label}}</button>
+      </div>
+    </ng-container>
+  </div>
   <button class="ks-ingest-button"
           (click)="fabExpand($event)"
-          [class.rotate-center]="hovering"
-          [class.rotate-center-reverse]="!hovering"
+          [class.rotate-center]="ksFabAnimate && hovering"
+          [class.rotate-center-reverse]="ksFabAnimate && !hovering"
           mat-fab
           mat-raised-button
           mat-icon-button

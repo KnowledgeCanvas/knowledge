@@ -1,9 +1,21 @@
 .ks-ingest-fab {
   display: flex;
+  flex-direction: column;
+  align-items: flex-end;
   position: absolute;
   bottom: 32px;
   right: 32px;
   z-index: 9999999999;
+}
+
+.ks-ingest-hover {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.ks-ingest-action {
+  margin-bottom: 24px;
 }
 
 .ks-ingest-button {
