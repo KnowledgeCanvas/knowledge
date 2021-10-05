@@ -22,6 +22,8 @@ import {ProjectService} from "../../../../../ks-lib/src/lib/services/projects/pr
 import {KnowledgeSource} from "../../../../../ks-lib/src/lib/models/knowledge.source.model";
 import {KsQueueService} from "../../knowledge-source/ks-queue-service/ks-queue.service";
 import {KcDialogRequest, KcDialogService} from "../../../../../ks-lib/src/lib/services/dialog/kc-dialog.service";
+import {MatDialog} from "@angular/material/dialog";
+import {FileUploadComponent} from "../../ingest/files/file-upload/file-upload.component";
 
 
 @Component({
@@ -34,26 +36,17 @@ export class ProjectDetailViewportComponent implements OnInit, OnDestroy {
 
   ksQueue: KnowledgeSource[] = [];
 
-  loading: boolean = false;
-
   private ksQueueSubscription: Subscription;
-
-  private ksQueueLoadingSubscription: Subscription;
 
   private kcProjectSubscription: Subscription;
 
   constructor(private projectService: ProjectService,
               private ksQueueService: KsQueueService,
-              private confirmDialog: KcDialogService
-  ) {
+              private confirmDialog: KcDialogService,
+              private dialog: MatDialog) {
     this.ksQueueSubscription = ksQueueService.ksQueue.subscribe((ksQueue) => {
       this.ksQueue = ksQueue;
     })
-
-    this.ksQueueLoadingSubscription = ksQueueService.loading.subscribe((loading) => {
-      this.loading = loading;
-    })
-
     this.kcProjectSubscription = this.projectService.currentProject.subscribe(project => {
       if (project.id.value.trim() !== '')
         this.kcProject = project;
@@ -62,12 +55,50 @@ export class ProjectDetailViewportComponent implements OnInit, OnDestroy {
     });
   }
 
+  addFile = () => {
+    this.dialog.open(FileUploadComponent);
+  }
+
+  addLink = () => {
+    console.log('Add a link...');
+  }
+
+  topicSearch = () => {
+    console.log('Topic search...');
+  }
+
+  search = () => {
+    console.log('Search...');
+  }
+
+  ksFabActions: { icon: string, label: string, click: () => void }[] = [
+    {
+      icon: 'description',
+      label: 'Add files',
+      click: this.addFile
+    },
+    {
+      icon: 'web',
+      label: 'Add a link',
+      click: this.addLink
+    },
+    {
+      icon: 'topic',
+      label: 'Topic search',
+      click: this.topicSearch
+    },
+    {
+      icon: 'travel_explore',
+      label: 'Search the web',
+      click: this.search
+    }
+  ]
+
   ngOnInit(): void {
   }
 
   ngOnDestroy() {
     this.ksQueueSubscription.unsubscribe();
-    this.ksQueueLoadingSubscription.unsubscribe();
     this.kcProjectSubscription.unsubscribe();
   }
 
@@ -87,7 +118,6 @@ export class ProjectDetailViewportComponent implements OnInit, OnDestroy {
 
   ksQueueCleared() {
     this.ksQueueService.clearResults();
-
   }
 
   ksRemoved($event: KnowledgeSource) {
@@ -123,7 +153,6 @@ export class ProjectDetailViewportComponent implements OnInit, OnDestroy {
     if (!this.kcProject) {
       return;
     }
-
     let update: ProjectUpdateRequest = {
       id: this.kcProject.id
     }
