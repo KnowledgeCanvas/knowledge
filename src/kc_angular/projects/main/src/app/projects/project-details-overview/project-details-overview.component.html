@@ -38,14 +38,6 @@
     </div>
   </div>
 
-  <div class="project-topic-list-container">
-    <div class="container">
-      <h2>{{currentProject.name}} / Topics</h2>
-      <app-project-topic-list [kcComponentType]="'project'" #topics></app-project-topic-list>
-    </div>
-  </div>
-
-
   <div class="project-ks-list-container">
     <div class="container">
       <h2>{{currentProject.name}} / Knowledge Sources</h2>
@@ -54,7 +46,7 @@
   </div>
 
   <div class="project-summary-container">
-    <div class="container" [style.display]="detailsHidden ? 'none': 'block'">
+    <div class="container">
       <div class="row no-pad no-margin flex-row-center-between">
         <div style="width: 50%">
           <h2>{{currentProject.name}} / Details</h2>
@@ -79,6 +71,17 @@
 
           <mat-expansion-panel expanded>
             <mat-expansion-panel-header>
+              <mat-panel-title>Topics</mat-panel-title>
+              <div class="mat-panel-body">
+                <ng-template matExpansionPanelContent>
+                  <app-project-topic-list [kcComponentType]="'project'" #topics></app-project-topic-list>
+                </ng-template>
+              </div>
+            </mat-expansion-panel-header>
+          </mat-expansion-panel>
+
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
               <mat-panel-title>Description</mat-panel-title>
               <mat-panel-description></mat-panel-description>
               <div class="mat-panel-body">
@@ -95,18 +98,6 @@
               </div>
             </mat-expansion-panel-header>
           </mat-expansion-panel>
-
-          <!--          <mat-expansion-panel [expanded]="currentProject.topics && currentProject.topics.length > 0">-->
-          <!--            <mat-expansion-panel-header>-->
-          <!--              <mat-panel-title>Topics</mat-panel-title>-->
-          <!--              <mat-panel-description></mat-panel-description>-->
-          <!--              <div class="mat-panel-body">-->
-          <!--                <ng-template matExpansionPanelContent>-->
-          <!--                  -->
-          <!--                </ng-template>-->
-          <!--              </div>-->
-          <!--            </mat-expansion-panel-header>-->
-          <!--          </mat-expansion-panel>-->
 
           <mat-expansion-panel>
             <mat-expansion-panel-header>
