@@ -1,5 +1,9 @@
-<div #ksIngestFab class="ks-ingest-fab">
-  <div *ngIf="visible" class="ks-ingest-hover" [class.slide-in-blurred-bottom]="hovering" [class.slide-out-blurred-bottom]="!hovering">
+<div class="ks-ingest-fab">
+  <div *ngIf="expanded"
+       class="ks-ingest-hover"
+       #ksFabHover
+       [class.slide-in-blurred-bottom]="ksFabAnimate && hovering"
+       [class.slide-out-blurred-bottom]="ksFabAnimate && !hovering">
     <ng-container *ngFor="let action of ksFabActions">
       <div class="ks-ingest-action">
         <button mat-raised-button
@@ -13,14 +17,14 @@
       </div>
     </ng-container>
   </div>
-  <button class="ks-ingest-button"
-          [class.rotate-center]="ksFabAnimate && hovering"
-          [class.rotate-center-reverse]="ksFabAnimate && !hovering"
-          (click)="fabClicked()"
-          mat-fab
-          mat-raised-button
+  <button mat-fab
           mat-icon-button
-          color="primary">
+          color="primary"
+          class="ks-ingest-button"
+          #ksFabButton
+          [class.rotate-center]="ksFabAnimate && ksFabExpandOnHover && hovering"
+          [class.rotate-center-reverse]="ksFabAnimate && ksFabExpandOnHover && !hovering"
+          (click)="fabClicked()">
     <mat-icon>add</mat-icon>
   </button>
 </div>

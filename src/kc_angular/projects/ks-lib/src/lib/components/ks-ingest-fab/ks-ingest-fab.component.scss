@@ -1,17 +1,18 @@
 .ks-ingest-fab {
+  align-items: flex-end;
+  bottom: 0;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  padding: 32px;
   position: absolute;
-  bottom: 32px;
-  right: 32px;
+  right: 0;
   z-index: 9999999999;
 }
 
 .ks-ingest-hover {
+  align-items: flex-end;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
 }
 
 .ks-ingest-action {
@@ -19,10 +20,10 @@
 }
 
 .ks-ingest-button {
+  align-content: center;
+  align-items: center;
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
-  align-content: center;
   justify-content: center;
-  align-items: center;
 }
