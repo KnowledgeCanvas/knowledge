@@ -21,10 +21,6 @@ import {MatAccordion} from "@angular/material/expansion";
 import {KcCalendar} from "../../../../../ks-lib/src/lib/models/calendar.model";
 import {Subscription} from "rxjs";
 import {ProjectTopicListComponent} from "../project-topic-list/project-topic-list.component";
-import {KnowledgeSourceImportDialogComponent, KsImportDialogOutput} from "../../knowledge-source/ks-import-dialog/knowledge-source-import-dialog.component";
-import {MatDialog} from "@angular/material/dialog";
-import {KsFactoryService} from "../../../../../ks-lib/src/lib/services/ks-factory/ks-factory.service";
-import {BrowserViewDialogService} from "../../../../../ks-lib/src/lib/services/browser-view-dialog/browser-view-dialog.service";
 
 @Component({
   selector: 'app-canvas-details-overview',
@@ -37,13 +33,11 @@ export class ProjectDetailsOverviewComponent implements OnInit, OnDestroy {
   @ViewChild('topics', {static: true}) topics!: ProjectTopicListComponent;
   currentProject: ProjectModel = new ProjectModel('', {value: ''});
   notes: string[] = [];
-  detailsHidden: boolean = true;
   ancestors: ProjectIdentifiers[] = [];
-  topicsHidden: boolean = true;
-  private subscription: Subscription;
   tooManyAncestorsToDisplay: boolean = false;
+  private subscription: Subscription;
 
-  constructor(private projectService: ProjectService, private dialog: MatDialog, private ksFactory: KsFactoryService, private browserViewDialogService: BrowserViewDialogService) {
+  constructor(private projectService: ProjectService) {
     this.subscription = projectService.currentProject.subscribe((project: ProjectModel) => {
       if (!project.calendar)
         project.calendar = new KcCalendar();
@@ -59,7 +53,6 @@ export class ProjectDetailsOverviewComponent implements OnInit, OnDestroy {
         this.ancestors = ancestors;
         this.tooManyAncestorsToDisplay = false;
       }
-      this.topicsHidden = !project.topics || project.topics.length === 0;
     });
   }
 
@@ -107,59 +100,8 @@ export class ProjectDetailsOverviewComponent implements OnInit, OnDestroy {
     this.projectService.updateProject({id: this.currentProject.id});
   }
 
-  getProjectIcon(): string {
-    switch (this.currentProject.type) {
-      case "hobby":
-        return 'supervised_user_circle';
-      case "school":
-        return 'school';
-      case "work":
-        return 'work'
-      default:
-        return 'folder';
-    }
-  }
-
   navigate(id: string) {
     if (id !== this.currentProject.id.value)
       this.projectService.setCurrentProject(id);
-  }
-
-  addTopics() {
-    this.topicsHidden = false;
-  }
-
-  onDetailClick() {
-    this.detailsHidden = !this.detailsHidden;
-
-    if (!this.detailsHidden) {
-      try {
-        setTimeout(() => {
-          this.container.nativeElement.scrollTop = this.container.nativeElement.scrollHeight;
-        })
-      } catch (err) {
-      }
-    }
-  }
-
-  addKnowledgeSource() {
-    const dialogRef = this.dialog.open(KnowledgeSourceImportDialogComponent, {
-      width: 'auto',
-      minWidth: '512px',
-      maxWidth: '1024px',
-      maxHeight: '80vh',
-      data: this.currentProject
-    });
-
-    dialogRef.afterClosed().subscribe((output: KsImportDialogOutput) => {
-      if (output && output.ingestType === 'search') {
-        this.openSearchBrowserView();
-      }
-    })
-  }
-
-  openSearchBrowserView() {
-    let searchKS = this.ksFactory.searchKS();
-    this.browserViewDialogService.open({ks: searchKS});
   }
 }

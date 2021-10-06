@@ -52,9 +52,6 @@ export class SearchResultsComponent implements OnInit, OnChanges, OnDestroy {
   ksListId = 'ksQueue';
 
   @Input()
-  ksQueueLoading: boolean = false;
-
-  @Input()
   ksQueue: KnowledgeSource[] = [];
 
   @Input()

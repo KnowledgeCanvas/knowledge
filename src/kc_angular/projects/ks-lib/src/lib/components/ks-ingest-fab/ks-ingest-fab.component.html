@@ -1,0 +1,46 @@
+<!--
+Copyright 2021 Rob Royce
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<div class="ks-ingest-fab">
+  <div *ngIf="expanded"
+       class="ks-ingest-hover"
+       #ksFabHover
+       [class.slide-in-blurred-bottom]="ksFabAnimate && hovering"
+       [class.slide-out-blurred-bottom]="ksFabAnimate && !hovering">
+    <ng-container *ngFor="let action of ksFabActions">
+      <div class="ks-ingest-action">
+        <button mat-raised-button
+                mat-icon-button
+                (click)="action.click()"
+                [matTooltip]="action.label"
+                matTooltipShowDelay="500"
+                matTooltipClass="tool-tip">
+          <mat-icon>{{action.icon}}</mat-icon>
+        </button>
+      </div>
+    </ng-container>
+  </div>
+  <button mat-fab
+          mat-icon-button
+          color="primary"
+          class="ks-ingest-button"
+          #ksFabButton
+          [class.rotate-center]="ksFabAnimate && ksFabExpandOnHover && hovering"
+          [class.rotate-center-reverse]="ksFabAnimate && ksFabExpandOnHover && !hovering"
+          (click)="fabClicked()">
+    <mat-icon>add</mat-icon>
+  </button>
+</div>

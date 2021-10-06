@@ -1,16 +1,18 @@
-<!--Copyright 2021 Rob Royce-->
+<!--
+Copyright 2021 Rob Royce
 
-<!--Licensed under the Apache License, Version 2.0 (the "License");-->
-<!--you may not use this file except in compliance with the License.-->
-<!--You may obtain a copy of the License at-->
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-<!--http://www.apache.org/licenses/LICENSE-2.0-->
+http://www.apache.org/licenses/LICENSE-2.0
 
-<!--Unless required by applicable law or agreed to in writing, software-->
-<!--distributed under the License is distributed on an "AS IS" BASIS,-->
-<!--WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.-->
-<!--See the License for the specific language governing permissions and-->
-<!--limitations under the License.-->
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
 
 
 <div class="project-overview-header">
@@ -22,13 +24,6 @@
       <button class="project-breadcrumb" (click)="navigate(ancestor.id)">{{ancestor.title | truncate: [16, '...']}}</button>
     </div>
   </div>
-  <div style="min-width: 8px; max-width: 8px"></div>
-  <div>
-    <button class="project-breadcrumb" (click)="addKnowledgeSource()">+ Source</button>
-    <button class="project-breadcrumb" (click)="addTopics()">+ Topic</button>
-    <button class="project-breadcrumb" *ngIf="!detailsHidden" (click)="onDetailClick()">- Details</button>
-    <button class="project-breadcrumb" *ngIf="detailsHidden" (click)="onDetailClick()">+ Details</button>
-  </div>
 </div>
 <div class="project-overview-container" #projectOverview>
   <div class="project-overview-calendar">
@@ -38,14 +33,6 @@
     </div>
   </div>
 
-  <div class="project-topic-list-container">
-    <div class="container">
-      <h2>{{currentProject.name}} / Topics</h2>
-      <app-project-topic-list [kcComponentType]="'project'" #topics></app-project-topic-list>
-    </div>
-  </div>
-
-
   <div class="project-ks-list-container">
     <div class="container">
       <h2>{{currentProject.name}} / Knowledge Sources</h2>
@@ -54,7 +41,7 @@
   </div>
 
   <div class="project-summary-container">
-    <div class="container" [style.display]="detailsHidden ? 'none': 'block'">
+    <div class="container">
       <div class="row no-pad no-margin flex-row-center-between">
         <div style="width: 50%">
           <h2>{{currentProject.name}} / Details</h2>
@@ -79,6 +66,17 @@
 
           <mat-expansion-panel expanded>
             <mat-expansion-panel-header>
+              <mat-panel-title>Topics</mat-panel-title>
+              <div class="mat-panel-body">
+                <ng-template matExpansionPanelContent>
+                  <app-project-topic-list [kcComponentType]="'project'" #topics></app-project-topic-list>
+                </ng-template>
+              </div>
+            </mat-expansion-panel-header>
+          </mat-expansion-panel>
+
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
               <mat-panel-title>Description</mat-panel-title>
               <mat-panel-description></mat-panel-description>
               <div class="mat-panel-body">
@@ -95,18 +93,6 @@
               </div>
             </mat-expansion-panel-header>
           </mat-expansion-panel>
-
-          <!--          <mat-expansion-panel [expanded]="currentProject.topics && currentProject.topics.length > 0">-->
-          <!--            <mat-expansion-panel-header>-->
-          <!--              <mat-panel-title>Topics</mat-panel-title>-->
-          <!--              <mat-panel-description></mat-panel-description>-->
-          <!--              <div class="mat-panel-body">-->
-          <!--                <ng-template matExpansionPanelContent>-->
-          <!--                  -->
-          <!--                </ng-template>-->
-          <!--              </div>-->
-          <!--            </mat-expansion-panel-header>-->
-          <!--          </mat-expansion-panel>-->
 
           <mat-expansion-panel>
             <mat-expansion-panel-header>

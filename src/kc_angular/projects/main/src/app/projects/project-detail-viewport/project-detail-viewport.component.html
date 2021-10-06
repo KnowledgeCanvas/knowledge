@@ -27,7 +27,6 @@
     <app-search-results
       [ksQueue]="ksQueue"
       [kcProjectId]="kcProject.id.value"
-      [ksQueueLoading]="loading"
       (ksImported)="ksImported($event)"
       (ksRemoved)="ksQueueRemove($event)"
       (ksQueueCleared)="ksQueueCleared()">
@@ -40,6 +39,11 @@
       (ksAdded)="ksAdded($event)"
       (projectChanged)="projectChanged($event)">
     </app-canvas>
+
+    <ks-lib-ks-ingest-fab
+      [kcProjectId]="kcProject.id.value"
+      [ksFabActions]="ksFabActions">
+    </ks-lib-ks-ingest-fab>
 
   </div>
 </div>

@@ -14,21 +14,15 @@
  limitations under the License.
  */
 
-import {Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild} from '@angular/core';
-import {FormBuilder} from "@angular/forms";
-import {FileService} from "../../../../../../ks-lib/src/lib/services/file/file.service";
+import {Component, ElementRef, Inject, Input, OnChanges, OnInit, SimpleChanges, ViewChild} from '@angular/core';
 import {ProjectIdentifiers, ProjectService} from "../../../../../../ks-lib/src/lib/services/projects/project.service";
 import {FileModel} from "projects/ks-lib/src/lib/models/file.model";
-import {MatDialogRef} from "@angular/material/dialog";
+import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {UuidService} from "../../../../../../ks-lib/src/lib/services/uuid/uuid.service";
 import {FaviconExtractorService} from "../../../../../../ks-lib/src/lib/services/favicon/favicon-extractor.service";
 import {KsQueueService} from "../../../knowledge-source/ks-queue-service/ks-queue.service";
 import {UuidModel} from "projects/ks-lib/src/lib/models/uuid.model";
-import {
-  KnowledgeSource,
-  KnowledgeSourceReference,
-  SourceModel
-} from "projects/ks-lib/src/lib/models/knowledge.source.model";
+import {KnowledgeSource, KnowledgeSourceReference, SourceModel} from "projects/ks-lib/src/lib/models/knowledge.source.model";
 import {ProjectModel, ProjectUpdateRequest} from "projects/ks-lib/src/lib/models/project.model";
 import {ElectronIpcService} from "../../../../../../ks-lib/src/lib/services/electron-ipc/electron-ipc.service";
 
@@ -47,11 +41,10 @@ export class FileUploadComponent implements OnInit, OnChanges {
   destination: 'project' | 'queue' = 'queue';
   projectIdentifiers: ProjectIdentifiers[] = [];
 
-  constructor(fb: FormBuilder,
-              private fileService: FileService,
-              private projectService: ProjectService,
+  constructor(private projectService: ProjectService,
               private dialogRef: MatDialogRef<any>,
               private uuidService: UuidService,
+              @Inject(MAT_DIALOG_DATA) public data: ProjectModel,
               private faviconService: FaviconExtractorService,
               private ksQueueService: KsQueueService,
               private ipcService: ElectronIpcService) {
@@ -60,6 +53,11 @@ export class FileUploadComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
+    if (this.data) {
+      this.currentProject = this.data;
+      this.parentId = this.currentProject.id.value;
+      this.projectIdentifiers = this.projectService.ProjectIdentifiers
+    }
   }
 
   ngOnChanges(changes: SimpleChanges) {
