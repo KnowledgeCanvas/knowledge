@@ -24,9 +24,6 @@ import {IngestType} from "projects/ks-lib/src/lib/models/knowledge.source.model"
 import {KsFactoryService} from "../../../../../ks-lib/src/lib/services/ks-factory/ks-factory.service";
 import {BrowserViewDialogService} from "../../../../../ks-lib/src/lib/services/browser-view-dialog/browser-view-dialog.service";
 
-export interface KsImportDialogInput {
-
-}
 
 export interface KsImportDialogOutput {
   ingestType: IngestType
@@ -39,18 +36,13 @@ export interface KsImportDialogOutput {
 })
 export class KnowledgeSourceImportDialogComponent implements OnInit {
   ingestType: IngestType = 'generic';
-  searchTerm: string = '';
   stage_1: boolean = true;
   stage_2: boolean = false;
   stage_3: boolean = false;
   extractionEnabled: boolean = false;
   filesEnabled: boolean = false;
-  topicsEnabled: boolean = false;
   noteEnabled: boolean = false;
-  notes: string = '';
   currentProject: ProjectModel | undefined;
-  destination: 'project' | 'queue' = 'project';
-  color: any;
 
   constructor(private dialogRef: MatDialogRef<any>,
               private browserViewDialogService: BrowserViewDialogService,
@@ -88,20 +80,6 @@ export class KnowledgeSourceImportDialogComponent implements OnInit {
   selectFiles() {
     this.ingestType = 'file';
     this.startTransition();
-  }
-
-  submitSearch() {
-    // this.ksQueueService.search(this.searchTerm).then(() => {
-    //   this.dialogRef.close();
-    // });
-  }
-
-  cancel() {
-    this.dialogRef.close();
-  }
-
-  changeStyle(_: MouseEvent) {
-
   }
 
   private startTransition() {
@@ -177,7 +155,7 @@ export class KnowledgeSourceImportDialogComponent implements OnInit {
 
     let searchTerm = project.topics.join(' AND ');
     let ks = this.ksFactory.searchKS(searchTerm);
-    this.browserViewDialogService.open({ks:ks});
+    this.browserViewDialogService.open({ks: ks});
     this.dialogRef.close();
   }
 }

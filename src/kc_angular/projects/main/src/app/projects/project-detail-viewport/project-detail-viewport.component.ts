@@ -22,8 +22,12 @@ import {ProjectService} from "../../../../../ks-lib/src/lib/services/projects/pr
 import {KnowledgeSource} from "../../../../../ks-lib/src/lib/models/knowledge.source.model";
 import {KsQueueService} from "../../knowledge-source/ks-queue-service/ks-queue.service";
 import {KcDialogRequest, KcDialogService} from "../../../../../ks-lib/src/lib/services/dialog/kc-dialog.service";
-import {MatDialog} from "@angular/material/dialog";
+import {MatDialog, MatDialogConfig} from "@angular/material/dialog";
 import {FileUploadComponent} from "../../ingest/files/file-upload/file-upload.component";
+import {BrowserViewDialogService} from "../../../../../ks-lib/src/lib/services/browser-view-dialog/browser-view-dialog.service";
+import {KsFactoryService} from "../../../../../ks-lib/src/lib/services/ks-factory/ks-factory.service";
+import {WebsiteExtractionComponent} from "../../ingest/website-extraction/website-extraction.component";
+import {MatSnackBar} from "@angular/material/snack-bar";
 
 
 @Component({
@@ -32,7 +36,7 @@ import {FileUploadComponent} from "../../ingest/files/file-upload/file-upload.co
   styleUrls: ['./project-detail-viewport.component.scss'],
 })
 export class ProjectDetailViewportComponent implements OnInit, OnDestroy {
-  kcProject: ProjectModel | null = null;
+  kcProject: ProjectModel | undefined = undefined;
 
   ksQueue: KnowledgeSource[] = [];
 
@@ -40,35 +44,46 @@ export class ProjectDetailViewportComponent implements OnInit, OnDestroy {
 
   private kcProjectSubscription: Subscription;
 
-  constructor(private projectService: ProjectService,
+  constructor(private browserViewDialogService: BrowserViewDialogService,
+              private projectService: ProjectService,
               private ksQueueService: KsQueueService,
               private confirmDialog: KcDialogService,
-              private dialog: MatDialog) {
+              private ksFactory: KsFactoryService,
+              private snackbar: MatSnackBar,
+              private dialog: MatDialog,) {
     this.ksQueueSubscription = ksQueueService.ksQueue.subscribe((ksQueue) => {
       this.ksQueue = ksQueue;
     })
     this.kcProjectSubscription = this.projectService.currentProject.subscribe(project => {
-      if (project.id.value.trim() !== '')
-        this.kcProject = project;
-      else
-        this.kcProject = null;
+      this.kcProject = project.id.value.trim() === '' ? undefined : project;
     });
   }
 
   addFile = () => {
-    this.dialog.open(FileUploadComponent);
+    this.dialog.open(FileUploadComponent, {width: '50%', minWidth: '512px', maxWidth: '650px', data: this.kcProject});
   }
 
   addLink = () => {
-    console.log('Add a link...');
+    const config: MatDialogConfig = {width: '50%', minWidth: '512px', maxWidth: '650px'}
+    this.dialog.open(WebsiteExtractionComponent, config);
   }
 
   topicSearch = () => {
-    console.log('Topic search...');
+    if (!this.kcProject || !this.kcProject.topics || this.kcProject.topics.length === 0) {
+      this.snackbar.open('Add some topics first...', 'Oh, right!', {duration: 3000});
+      return;
+    }
+    let topics: string[] | undefined = this.kcProject.topics;
+    if (topics) {
+      let query = topics.join(' OR ');
+      let searchKS = this.ksFactory.searchKS(query);
+      this.browserViewDialogService.open({ks: searchKS});
+    }
   }
 
   search = () => {
-    console.log('Search...');
+    let searchKS = this.ksFactory.searchKS();
+    this.browserViewDialogService.open({ks: searchKS});
   }
 
   ksFabActions: { icon: string, label: string, click: () => void }[] = [
@@ -102,14 +117,14 @@ export class ProjectDetailViewportComponent implements OnInit, OnDestroy {
     this.kcProjectSubscription.unsubscribe();
   }
 
-  ksImported($event: KnowledgeSource[]) {
+  ksImported(ksList: KnowledgeSource[]) {
     // Timeout used to give other components the chance to finish animations (i.e. don't force a bottleneck)
     setTimeout(() => {
       if (!this.kcProject) {
         return;
       }
       let update: ProjectUpdateRequest = {
-        addKnowledgeSource: $event,
+        addKnowledgeSource: ksList,
         id: this.kcProject.id
       }
       this.projectService.updateProject(update);
@@ -120,7 +135,7 @@ export class ProjectDetailViewportComponent implements OnInit, OnDestroy {
     this.ksQueueService.clearResults();
   }
 
-  ksRemoved($event: KnowledgeSource) {
+  ksRemoved(ks: KnowledgeSource) {
     if (!this.kcProject) {
       return;
     }
@@ -128,7 +143,7 @@ export class ProjectDetailViewportComponent implements OnInit, OnDestroy {
       actionButtonText: "Remove Source",
       actionToTake: 'delete',
       cancelButtonText: "Cancel",
-      listToDisplay: [$event],
+      listToDisplay: [ks],
       message: "Are you sure you want to remove this knowledge source?",
       title: "Delete Source"
     }
@@ -139,29 +154,30 @@ export class ProjectDetailViewportComponent implements OnInit, OnDestroy {
       }
       const update: ProjectUpdateRequest = {
         id: this.kcProject.id,
-        removeKnowledgeSource: [$event]
+        removeKnowledgeSource: [ks]
       }
       this.projectService.updateProject(update);
     });
   }
 
-  ksQueueRemove($event: KnowledgeSource) {
-    this.ksQueueService.remove($event);
+  ksQueueRemove(ks: KnowledgeSource) {
+    this.ksQueueService.remove(ks);
   }
 
-  ksAdded($event: KnowledgeSource[]) {
+  ksAdded(ks: KnowledgeSource[]) {
     if (!this.kcProject) {
       return;
     }
+    // Since the KS has already been added to the project ks list, perform simple update
     let update: ProjectUpdateRequest = {
       id: this.kcProject.id
     }
     this.projectService.updateProject(update);
   }
 
-  projectChanged($event: ProjectModel) {
+  projectChanged(project: ProjectModel) {
     this.projectService.updateProject({
-      id: $event.id
+      id: project.id
     })
   }
 }
