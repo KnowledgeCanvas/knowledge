@@ -81,13 +81,7 @@ export class KnowledgeSourceTableComponent implements OnInit, OnDestroy, AfterVi
   ngOnInit(): void {
     this.setTableColumnsByScreenWidth(window.innerWidth);
     this.projectService.currentProject.subscribe((project: ProjectModel) => {
-      this.showSubProjects = false;
-
-      if (this.paginator)
-        this.paginator.pageSize = 5;
-
       this.project = project;
-
       this.update(project);
     });
 
