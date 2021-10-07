@@ -96,6 +96,14 @@
                     mat-icon-button>
               <mat-icon>open_in_browser</mat-icon>
             </button>
+            <button matTooltip="Show {{element.title}} in file explorer"
+                    *ngIf="element.ingestType === 'file'"
+                    matTooltipClass="tool-tip"
+                    onclick="this.blur()"
+                    (click)="show(element)"
+                    mat-icon-button>
+              <mat-icon>folder_open</mat-icon>
+            </button>
             <button matTooltip="Copy {{element.ingestType === 'file' ? 'file path' : 'link'}} to clipboard"
                     matTooltipClass="tool-tip"
                     onclick="this.blur()"
@@ -110,12 +118,12 @@
                     mat-icon-button>
               <mat-icon>edit</mat-icon>
             </button>
-            <button matTooltip="Delete {{element.title}}"
+            <button matTooltip="Remove {{element.title}}"
                     matTooltipClass="tool-tip"
                     mat-icon-button color="warn"
                     onclick="this.blur()"
                     (click)="delete(element)">
-              <mat-icon>delete</mat-icon>
+              <mat-icon>remove_circle</mat-icon>
             </button>
           </div>
           <br>
@@ -137,5 +145,5 @@
     </tr>
     <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="ks-table-detail-row"></tr>
   </table>
-  <mat-paginator [pageSizeOptions]="[5, 10, 25]" [pageSize]="pageSize" aria-label="Select page of Knowledge Sources"></mat-paginator>
+  <mat-paginator [pageSizeOptions]="[5, 10, 25, 50]" [pageSize]="pageSize" aria-label="Select page of Knowledge Sources"></mat-paginator>
 </div>

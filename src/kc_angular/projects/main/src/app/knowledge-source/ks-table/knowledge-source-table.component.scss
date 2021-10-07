@@ -18,10 +18,6 @@ table {
   width: 100%;
 }
 
-.ks-table-container {
-
-}
-
 .ks-table-header {
   user-select: none;
 }
@@ -31,23 +27,7 @@ tr.ks-table-detail-row {
 }
 
 tr.ks-table-element-row:not(.ks-table-expanded-row):hover {
-  .app-theme-dark {
-    background: #3c3c3c;
-  }
-  .app-theme-light {
-    background: #efefef;
-  }
-
-  cursor: pointer;
-}
-
-tr.ks-table-element-row:not(.ks-table-expanded-row):active {
-  .app-theme-dark {
-    background: #3c3c3c;
-  }
-  .app-theme-light {
-    background: #efefef;
-  }
+  background: #8282828f;
 }
 
 .ks-table-element-row td {

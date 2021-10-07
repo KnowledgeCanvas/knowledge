@@ -14,7 +14,7 @@
  limitations under the License.
  */
 
-import {AfterViewInit, Component, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, EventEmitter, HostListener, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
 import {ProjectService} from "../../../../../ks-lib/src/lib/services/projects/project.service";
 import {ProjectModel, ProjectUpdateRequest} from "projects/ks-lib/src/lib/models/project.model";
 import {IngestType, KnowledgeSource} from "projects/ks-lib/src/lib/models/knowledge.source.model";
@@ -44,21 +44,46 @@ import {KsInfoDialogService} from "../../../../../ks-lib/src/lib/services/ks-inf
   ],
 })
 export class KnowledgeSourceTableComponent implements OnInit, OnDestroy, AfterViewInit {
-  // @Input() project: ProjectModel | undefined;
+  @Output() ksTablePreviewClicked = new EventEmitter<KnowledgeSource>();
+
+  @Output() ksTableOpenClicked = new EventEmitter<KnowledgeSource>();
+
+  @Output() ksTableShowFileClicked = new EventEmitter<KnowledgeSource>();
+
+  @Output() ksTableCopyLinkClicked = new EventEmitter<KnowledgeSource>();
+
+  @Output() ksTableEditClicked = new EventEmitter<KnowledgeSource>();
+
+  @Output() ksTableRemoveClicked = new EventEmitter<KnowledgeSource>();
+
   @ViewChild(MatSort) sort!: MatSort;
+
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+
   project?: ProjectModel;
+
   knowledgeSource: KnowledgeSource[] = [];
+
   dataSource: MatTableDataSource<KnowledgeSource>;
-  columnsToDisplay: string[] = ['icon', 'title', 'dateCreated', 'dateAccessed', 'dateModified', 'ingestType'];
+
   expandedElement: KnowledgeSource | null = null;
+
   subscription?: Subscription;
+
   hideTable: boolean;
+
   filter: string = '';
+
   truncateLength: number = 100;
+
   showSubProjects: boolean = false;
+
   pageSize: number = 5;
+
+  columnsToDisplay: string[] = ['icon', 'title', 'dateCreated', 'dateAccessed', 'dateModified', 'ingestType'];
+
   private initialDisplayedColumns: string[] = ['icon', 'title', 'dateCreated', 'dateAccessed', 'dateModified', 'ingestType'];
+
   private initialDisplayedColumnsWithInheritance: string[] = ['icon', 'title', 'associatedProjects', 'dateCreated', 'dateAccessed', 'dateModified', 'ingestType'];
 
   constructor(private browserViewDialogService: BrowserViewDialogService,
@@ -319,5 +344,9 @@ export class KnowledgeSourceTableComponent implements OnInit, OnDestroy, AfterVi
   setActiveProject(id: string) {
     if (id !== this.project?.id.value)
       this.projectService.setCurrentProject(id);
+  }
+
+  show(element: KnowledgeSource) {
+    this.ksTableShowFileClicked.emit(element);
   }
 }
