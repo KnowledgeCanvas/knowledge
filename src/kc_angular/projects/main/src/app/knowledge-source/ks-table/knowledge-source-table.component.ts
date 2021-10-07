@@ -298,29 +298,40 @@ export class KnowledgeSourceTableComponent implements OnInit, OnDestroy, AfterVi
   }
 
   delete(ks: KnowledgeSource) {
+    let associatedProject: ProjectModel | undefined;
+
+    if (!ks.associatedProjects) {
+      console.error('Attempting to delete knowledge source with no associated project...');
+      return;
+    }
+
+    associatedProject = this.projectService.getProject(ks.associatedProjects[0].value);
+
+    if (!associatedProject) {
+      console.error('Attempting to delete knowledge source with no associated project...');
+      return;
+    }
+
     let confirmDialogConfig: KcDialogRequest = {
       actionButtonText: "Delete Permanently",
       actionToTake: 'delete',
       cancelButtonText: "Cancel",
       listToDisplay: [ks],
-      message: "Are you sure you want to delete this Knowledge Source?",
+      message: `Are you sure you want to delete this Knowledge Source from "${associatedProject.name}"?`,
       title: `Delete`
-
     }
+
     this.dialogService.open(confirmDialogConfig);
+
     this.dialogService.confirmed().subscribe((confirmed) => {
-      if (confirmed) {
-        if (this.project && this.project.id.value !== '') {
-          let update: ProjectUpdateRequest = {
-            id: this.project.id,
-            removeKnowledgeSource: [ks]
-          }
-          this.projectService.updateProject(update);
-        } else {
-          console.error(`Attempting to remove ${ks.title} with invalid project id...`);
+      if (confirmed && associatedProject) {
+        let update: ProjectUpdateRequest = {
+          id: associatedProject.id,
+          removeKnowledgeSource: [ks]
         }
+        this.projectService.updateProject(update);
       }
-    })
+    });
   }
 
   rowClicked(_: any) {
