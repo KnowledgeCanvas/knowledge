@@ -75,7 +75,7 @@ export class ProjectDetailViewportComponent implements OnInit, OnDestroy {
     }
     let topics: string[] | undefined = this.kcProject.topics;
     if (topics) {
-      let query = topics.join(' OR ');
+      let query = topics.join(' AND ');
       let searchKS = this.ksFactory.searchKS(query);
       this.browserViewDialogService.open({ks: searchKS});
     }

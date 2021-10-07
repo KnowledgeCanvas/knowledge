@@ -21,6 +21,8 @@ import {MatAccordion} from "@angular/material/expansion";
 import {KcCalendar} from "../../../../../ks-lib/src/lib/models/calendar.model";
 import {Subscription} from "rxjs";
 import {ProjectTopicListComponent} from "../project-topic-list/project-topic-list.component";
+import {KnowledgeSource} from "../../../../../ks-lib/src/lib/models/knowledge.source.model";
+import {ElectronIpcService} from "../../../../../ks-lib/src/lib/services/electron-ipc/electron-ipc.service";
 
 @Component({
   selector: 'app-canvas-details-overview',
@@ -37,7 +39,7 @@ export class ProjectDetailsOverviewComponent implements OnInit, OnDestroy {
   tooManyAncestorsToDisplay: boolean = false;
   private subscription: Subscription;
 
-  constructor(private projectService: ProjectService) {
+  constructor(private projectService: ProjectService, private ipcService: ElectronIpcService) {
     this.subscription = projectService.currentProject.subscribe((project: ProjectModel) => {
       if (!project.calendar)
         project.calendar = new KcCalendar();
@@ -103,5 +105,12 @@ export class ProjectDetailsOverviewComponent implements OnInit, OnDestroy {
   navigate(id: string) {
     if (id !== this.currentProject.id.value)
       this.projectService.setCurrentProject(id);
+  }
+
+  showFileInExplorer(ks: KnowledgeSource) {
+    if (typeof ks.accessLink !== "string") {
+      return;
+    }
+    this.ipcService.showItemInFolder(ks.accessLink);
   }
 }
