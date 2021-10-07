@@ -25,6 +25,7 @@ const validSendChannels = [
     "app-save-settings",
     "electron-check-for-update",
     "app-get-current-version",
+    "app-show-item-in-folder",
     "electron-browser-view",
     "electron-browser-view-can-go-back",
     "electron-browser-view-can-go-forward",
