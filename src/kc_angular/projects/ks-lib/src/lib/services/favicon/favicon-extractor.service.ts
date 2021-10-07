@@ -28,8 +28,8 @@ export class FaviconExtractorService {
   private googleFaviconSize = '64'
   private googleFaviconServicePrefix = `https://s2.googleusercontent.com/s2/favicons?domain_url=`;
   private googleFaviconServiceSuffix = `&sz=${this.googleFaviconSize}`;
-  private defaultIcon = 'assets/img/default.png';
-  private loadingGif = 'assets/img/loading.gif';
+  private defaultIcon = 'assets/img/kc-icon-greyscale.png';
+  private loadingGif = 'assets/img/kc-icon-greyscale.png';
 
   constructor(private httpClient: HttpClient, private sanitizer: DomSanitizer, private ipcService: ElectronIpcService) {
   }
