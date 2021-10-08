@@ -69,6 +69,7 @@ export class KnowledgeSource {
   ingestType: IngestType;
   snippet?: string;
   sourceRef?: SourceReference;
+  rawText?: string;
   title: string;
   topics?: string[];
   notes: KnowledgeSourceNotes;
