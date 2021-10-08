@@ -29,7 +29,7 @@ import {FaviconExtractorService} from "../../../../../ks-lib/src/lib/services/fa
 import {KsInfoDialogService} from "../../../../../ks-lib/src/lib/services/ks-info-dialog.service";
 
 @Component({
-  selector: 'app-knowledge-source-table',
+  selector: 'ks-table',
   templateUrl: './knowledge-source-table.component.html',
   styleUrls: ['./knowledge-source-table.component.scss'],
   animations: [

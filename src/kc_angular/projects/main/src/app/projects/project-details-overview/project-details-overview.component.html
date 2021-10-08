@@ -37,7 +37,7 @@ limitations under the License.
     <div class="container">
       <h2>{{currentProject.name}} / Knowledge Sources</h2>
     </div>
-    <app-knowledge-source-table
+    <ks-table
       (ksTableShowFileClicked)="ksMenuShowFileClicked.emit($event)"
       (ksTableCopyLinkClicked)="ksMenuCopyLinkClicked.emit($event)"
       (ksTableEditClicked)="ksMenuEditClicked.emit($event)"
