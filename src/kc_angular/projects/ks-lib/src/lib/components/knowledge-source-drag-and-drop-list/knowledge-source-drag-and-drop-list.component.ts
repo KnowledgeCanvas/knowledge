@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
 import {KnowledgeSource} from "../../models/knowledge.source.model";
 import {CdkDragDrop, CdkDragEnter, CdkDragExit, CdkDropList, DropListOrientation} from "@angular/cdk/drag-drop";
 import {KsDropService} from "../../services/ks-drop/ks-drop.service";
@@ -38,6 +38,9 @@ export class KnowledgeSourceDragAndDropListComponent implements OnInit, OnChange
   ksToolTipDelay: number = 0;
 
   @Input()
+  ksEnableContextMenu: boolean = false;
+
+  @Input()
   ksListSortBy?: 'a-Z' | 'Z-a' | 'created' | 'accessed' | 'modified';
 
   @Output()
@@ -57,6 +60,32 @@ export class KnowledgeSourceDragAndDropListComponent implements OnInit, OnChange
 
   @Output()
   ksRemoved = new EventEmitter<KnowledgeSource>();
+
+  @Output()
+  ksMenuCopyLinkClicked = new EventEmitter<KnowledgeSource>();
+
+  @Output()
+  ksMenuEditClicked = new EventEmitter<KnowledgeSource>();
+
+  @Output()
+  ksMenuOpenClicked = new EventEmitter<KnowledgeSource>();
+
+  @Output()
+  ksMenuPreviewClicked = new EventEmitter<KnowledgeSource>();
+
+  @Output()
+  ksMenuRemoveClicked = new EventEmitter<KnowledgeSource>();
+
+  @Output()
+  ksMenuShowFileClicked = new EventEmitter<KnowledgeSource>();
+
+  ksForContextMenu?: KnowledgeSource;
+
+  isDisplayContextMenu: boolean = false;
+
+  rightClickMenuPositionX: number = 0;
+
+  rightClickMenuPositionY: number = 0;
 
   @ViewChild('ksDnd', {static: true}) private cdkDropList!: CdkDropList;
 
@@ -116,6 +145,26 @@ export class KnowledgeSourceDragAndDropListComponent implements OnInit, OnChange
     } else {
       this.ksListChanged.emit(this.ksList);
     }
+  }
+
+  ksContextMenu($event: MouseEvent, ks: KnowledgeSource) {
+    this.ksForContextMenu = ks;
+    this.isDisplayContextMenu = true;
+    this.rightClickMenuPositionX = $event.clientX;
+    this.rightClickMenuPositionY = $event.clientY;
+  }
+
+  getRightClickMenuStyle() {
+    return {
+      position: 'fixed',
+      left: `${this.rightClickMenuPositionX}px`,
+      top: `${this.rightClickMenuPositionY}px`
+    }
+  }
+
+  @HostListener('document:click')
+  documentClick(): void {
+    this.isDisplayContextMenu = false;
   }
 
   private sortItems() {

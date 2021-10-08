@@ -16,16 +16,13 @@
 
 import {AfterViewInit, Component, EventEmitter, HostListener, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
 import {ProjectService} from "../../../../../ks-lib/src/lib/services/projects/project.service";
-import {ProjectModel, ProjectUpdateRequest} from "projects/ks-lib/src/lib/models/project.model";
+import {ProjectModel} from "projects/ks-lib/src/lib/models/project.model";
 import {IngestType, KnowledgeSource} from "projects/ks-lib/src/lib/models/knowledge.source.model";
-import {KcDialogRequest, KcDialogService} from "../../../../../ks-lib/src/lib/services/dialog/kc-dialog.service";
 import {animate, state, style, transition, trigger} from "@angular/animations";
 import {MatSort} from "@angular/material/sort";
 import {MatTableDataSource} from "@angular/material/table";
 import {MatPaginator} from "@angular/material/paginator";
 import {Subscription} from "rxjs";
-import {Clipboard} from "@angular/cdk/clipboard";
-import {MatSnackBar} from "@angular/material/snack-bar";
 import {BrowserViewDialogService} from "../../../../../ks-lib/src/lib/services/browser-view-dialog/browser-view-dialog.service";
 import {MatSlideToggleChange} from "@angular/material/slide-toggle";
 import {FaviconExtractorService} from "../../../../../ks-lib/src/lib/services/favicon/favicon-extractor.service";
@@ -62,8 +59,6 @@ export class KnowledgeSourceTableComponent implements OnInit, OnDestroy, AfterVi
 
   project?: ProjectModel;
 
-  knowledgeSource: KnowledgeSource[] = [];
-
   dataSource: MatTableDataSource<KnowledgeSource>;
 
   expandedElement: KnowledgeSource | null = null;
@@ -82,6 +77,14 @@ export class KnowledgeSourceTableComponent implements OnInit, OnDestroy, AfterVi
 
   columnsToDisplay: string[] = ['icon', 'title', 'dateCreated', 'dateAccessed', 'dateModified', 'ingestType'];
 
+  rightClickMenuPositionX: number = 0;
+
+  rightClickMenuPositionY: number = 0;
+
+  isDisplayContextMenu: boolean = false;
+
+  ksForContextMenu?: KnowledgeSource;
+
   private initialDisplayedColumns: string[] = ['icon', 'title', 'dateCreated', 'dateAccessed', 'dateModified', 'ingestType'];
 
   private initialDisplayedColumnsWithInheritance: string[] = ['icon', 'title', 'associatedProjects', 'dateCreated', 'dateAccessed', 'dateModified', 'ingestType'];
@@ -89,11 +92,7 @@ export class KnowledgeSourceTableComponent implements OnInit, OnDestroy, AfterVi
   constructor(private browserViewDialogService: BrowserViewDialogService,
               private ksInfoDialogService: KsInfoDialogService,
               private faviconService: FaviconExtractorService,
-              private projectService: ProjectService,
-              private confirmDialog: KcDialogService,
-              private dialogService: KcDialogService,
-              private snackbar: MatSnackBar,
-              private clipboard: Clipboard) {
+              private projectService: ProjectService) {
     this.dataSource = new MatTableDataSource<KnowledgeSource>([])
     this.hideTable = true;
   }
@@ -254,86 +253,6 @@ export class KnowledgeSourceTableComponent implements OnInit, OnDestroy, AfterVi
     }
   }
 
-  copy(ks: KnowledgeSource) {
-    this.clipboard.copy(typeof ks.accessLink === 'string' ? ks.accessLink : ks.accessLink.href);
-    this.snackbar.open('Copied to clipboard!', 'Dismiss', {duration: 2000, panelClass: 'kc-success'});
-  }
-
-  edit(ks: KnowledgeSource) {
-    this.ksInfoDialogService.open(ks, this.project ? this.project.id.value : undefined).then((output) => {
-      if (output.ksChanged && this.project) {
-        let update: ProjectUpdateRequest = {
-          id: this.project.id,
-          updateKnowledgeSource: [output.ks]
-        }
-
-        this.projectService.updateProject(update);
-      }
-      if (output.preview) {
-        this.preview(output.ks);
-      }
-    })
-  }
-
-  open(ks: KnowledgeSource) {
-    window.open(typeof ks.accessLink === 'string' ? ks.accessLink : ks.accessLink.href);
-  }
-
-  preview(ks: KnowledgeSource) {
-    const dialogRef = this.browserViewDialogService.open({ks: ks});
-    dialogRef.componentInstance.output.subscribe((output) => {
-      if (!this.project)
-        return;
-
-      let ks = output.ks;
-      ks.dateAccessed = new Date();
-
-      let update: ProjectUpdateRequest = {
-        id: this.project.id,
-        updateKnowledgeSource: [ks]
-      }
-
-      this.projectService.updateProject(update);
-    });
-  }
-
-  delete(ks: KnowledgeSource) {
-    let associatedProject: ProjectModel | undefined;
-
-    if (!ks.associatedProjects) {
-      console.error('Attempting to delete knowledge source with no associated project...');
-      return;
-    }
-
-    associatedProject = this.projectService.getProject(ks.associatedProjects[0].value);
-
-    if (!associatedProject) {
-      console.error('Attempting to delete knowledge source with no associated project...');
-      return;
-    }
-
-    let confirmDialogConfig: KcDialogRequest = {
-      actionButtonText: "Delete Permanently",
-      actionToTake: 'delete',
-      cancelButtonText: "Cancel",
-      listToDisplay: [ks],
-      message: `Are you sure you want to delete this Knowledge Source from "${associatedProject.name}"?`,
-      title: `Delete`
-    }
-
-    this.dialogService.open(confirmDialogConfig);
-
-    this.dialogService.confirmed().subscribe((confirmed) => {
-      if (confirmed && associatedProject) {
-        let update: ProjectUpdateRequest = {
-          id: associatedProject.id,
-          removeKnowledgeSource: [ks]
-        }
-        this.projectService.updateProject(update);
-      }
-    });
-  }
-
   rowClicked(_: any) {
 
   }
@@ -359,5 +278,28 @@ export class KnowledgeSourceTableComponent implements OnInit, OnDestroy, AfterVi
 
   show(element: KnowledgeSource) {
     this.ksTableShowFileClicked.emit(element);
+  }
+
+  displayContextMenu($event: MouseEvent, ks: KnowledgeSource) {
+    this.isDisplayContextMenu = true;
+
+    this.ksForContextMenu = ks;
+
+    this.rightClickMenuPositionX = $event.clientX;
+
+    this.rightClickMenuPositionY = $event.clientY;
+  }
+
+  getRightClickMenuStyle() {
+    return {
+      position: 'fixed',
+      left: `${this.rightClickMenuPositionX}px`,
+      top: `${this.rightClickMenuPositionY}px`
+    }
+  }
+
+  @HostListener('document:click')
+  documentClick(): void {
+    this.isDisplayContextMenu = false;
   }
 }

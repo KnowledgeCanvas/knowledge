@@ -26,7 +26,22 @@
     (ksListChanged)="ksListChanged($event)"
     (ksRemoved)="ksRemovedFromProject($event)"
     (ksListSorted)="ksListSorted($event)"
-    (ksSelected)="projectKsSelected($event)">
+    (ksSelected)="projectKsSelected($event)"
+    [ksEnableContextMenu]="true"
+    (ksMenuShowFileClicked)="ksShow($event)"
+    (ksMenuRemoveClicked)="ksRemove($event)"
+    (ksMenuPreviewClicked)="ksPreview($event)"
+    (ksMenuOpenClicked)="ksOpen($event)"
+    (ksMenuEditClicked)="ksEdit($event)"
+    (ksMenuCopyLinkClicked)="ksCopy($event)"
+  >
   </ks-lib-knowledge-source-drag-and-drop-list>
-  <app-canvas-details-overview></app-canvas-details-overview>
+  <app-canvas-details-overview
+    (ksMenuShowFileClicked)="ksShow($event)"
+    (ksMenuRemoveClicked)="ksRemove($event)"
+    (ksMenuPreviewClicked)="ksPreview($event)"
+    (ksMenuOpenClicked)="ksOpen($event)"
+    (ksMenuEditClicked)="ksEdit($event)"
+    (ksMenuCopyLinkClicked)="ksCopy($event)"
+  ></app-canvas-details-overview>
 </div>

@@ -48,6 +48,8 @@ import {KsDndHorizontalDirective} from './directives/ksDnd/ks-dnd-horizontal.dir
 import {DragDropModule} from "@angular/cdk/drag-drop";
 import { HoverClassDirective } from './directives/hover/hover-class.directive';
 import { KsIngestFabComponent } from './components/ks-ingest-fab/ks-ingest-fab.component';
+import { KsContextMenuComponent } from './components/ks-context-menu/ks-context-menu.component';
+import {MatMenuModule} from "@angular/material/menu";
 
 declare global {
   interface Window {
@@ -76,7 +78,8 @@ declare global {
     KsDndVerticalDirective,
     KsDndHorizontalDirective,
     HoverClassDirective,
-    KsIngestFabComponent
+    KsIngestFabComponent,
+    KsContextMenuComponent
   ],
   imports: [
     MatIconModule,
@@ -92,7 +95,8 @@ declare global {
     MatProgressBarModule,
     MatTooltipModule,
     MatSlideToggleModule,
-    DragDropModule
+    DragDropModule,
+    MatMenuModule
   ],
   exports: [
     PageHeaderLargeComponent,
@@ -110,7 +114,8 @@ declare global {
     TruncatePipe,
     ProjectBreadcrumbPipe,
     KnowledgeSourceDragAndDropListComponent,
-    KsIngestFabComponent
+    KsIngestFabComponent,
+    KsContextMenuComponent
   ],
   providers: []
 })

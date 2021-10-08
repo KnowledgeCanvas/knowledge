@@ -14,7 +14,7 @@
  limitations under the License.
  */
 
-import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, EventEmitter, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
 import {ProjectIdentifiers, ProjectService} from "../../../../../ks-lib/src/lib/services/projects/project.service";
 import {ProjectModel} from "projects/ks-lib/src/lib/models/project.model";
 import {MatAccordion} from "@angular/material/expansion";
@@ -22,7 +22,6 @@ import {KcCalendar} from "../../../../../ks-lib/src/lib/models/calendar.model";
 import {Subscription} from "rxjs";
 import {ProjectTopicListComponent} from "../project-topic-list/project-topic-list.component";
 import {KnowledgeSource} from "../../../../../ks-lib/src/lib/models/knowledge.source.model";
-import {ElectronIpcService} from "../../../../../ks-lib/src/lib/services/electron-ipc/electron-ipc.service";
 
 @Component({
   selector: 'app-canvas-details-overview',
@@ -31,15 +30,40 @@ import {ElectronIpcService} from "../../../../../ks-lib/src/lib/services/electro
 })
 export class ProjectDetailsOverviewComponent implements OnInit, OnDestroy {
   @ViewChild('projectOverview', {static: true}) container!: ElementRef;
+
   @ViewChild('accordion', {static: true}) Accordion!: MatAccordion
+
   @ViewChild('topics', {static: true}) topics!: ProjectTopicListComponent;
+
+  @Output()
+  ksMenuCopyLinkClicked = new EventEmitter<KnowledgeSource>();
+
+  @Output()
+  ksMenuEditClicked = new EventEmitter<KnowledgeSource>();
+
+  @Output()
+  ksMenuOpenClicked = new EventEmitter<KnowledgeSource>();
+
+  @Output()
+  ksMenuPreviewClicked = new EventEmitter<KnowledgeSource>();
+
+  @Output()
+  ksMenuRemoveClicked = new EventEmitter<KnowledgeSource>();
+
+  @Output()
+  ksMenuShowFileClicked = new EventEmitter<KnowledgeSource>();
+
   currentProject: ProjectModel = new ProjectModel('', {value: ''});
+
   notes: string[] = [];
+
   ancestors: ProjectIdentifiers[] = [];
+
   tooManyAncestorsToDisplay: boolean = false;
+
   private subscription: Subscription;
 
-  constructor(private projectService: ProjectService, private ipcService: ElectronIpcService) {
+  constructor(private projectService: ProjectService) {
     this.subscription = projectService.currentProject.subscribe((project: ProjectModel) => {
       if (!project.calendar)
         project.calendar = new KcCalendar();
@@ -105,12 +129,5 @@ export class ProjectDetailsOverviewComponent implements OnInit, OnDestroy {
   navigate(id: string) {
     if (id !== this.currentProject.id.value)
       this.projectService.setCurrentProject(id);
-  }
-
-  showFileInExplorer(ks: KnowledgeSource) {
-    if (typeof ks.accessLink !== "string") {
-      return;
-    }
-    this.ipcService.showItemInFolder(ks.accessLink);
   }
 }

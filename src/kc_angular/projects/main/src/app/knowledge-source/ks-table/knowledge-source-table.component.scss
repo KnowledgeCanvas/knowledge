@@ -28,6 +28,7 @@ tr.ks-table-detail-row {
 
 tr.ks-table-element-row:not(.ks-table-expanded-row):hover {
   background: #8282828f;
+  cursor: context-menu;
 }
 
 .ks-table-element-row td {
@@ -43,12 +44,6 @@ tr.ks-table-element-row:not(.ks-table-expanded-row):hover {
 .knowledge-source-description {
   padding: 16px;
   word-wrap: break-word;
-}
-
-.knowledge-source-actions {
-  display: inline-flex;
-  flex-direction: row;
-  align-items: center;
 }
 
 .mat-column-icon {

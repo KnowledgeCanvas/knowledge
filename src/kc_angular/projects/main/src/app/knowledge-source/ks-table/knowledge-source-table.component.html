@@ -80,53 +80,7 @@
     <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
     <ng-container matColumnDef="expandedDetail">
       <td mat-cell *matCellDef="let element" [attr.colspan]="columnsToDisplay.length">
-        <div class="ks-table-expanded-detail" [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
-          <div class="knowledge-source-actions">
-            <button matTooltip="Preview {{element.title}}"
-                    matTooltipClass="tool-tip"
-                    onclick="this.blur()"
-                    (click)="preview(element)"
-                    mat-icon-button>
-              <mat-icon>preview</mat-icon>
-            </button>
-            <button matTooltip="Open {{element.title}} in default {{element.ingestType === 'file' ? 'application' : 'browser'}}"
-                    matTooltipClass="tool-tip"
-                    onclick="this.blur()"
-                    (click)="open(element)"
-                    mat-icon-button>
-              <mat-icon>open_in_browser</mat-icon>
-            </button>
-            <button matTooltip="Show {{element.title}} in file explorer"
-                    *ngIf="element.ingestType === 'file'"
-                    matTooltipClass="tool-tip"
-                    onclick="this.blur()"
-                    (click)="show(element)"
-                    mat-icon-button>
-              <mat-icon>folder_open</mat-icon>
-            </button>
-            <button matTooltip="Copy {{element.ingestType === 'file' ? 'file path' : 'link'}} to clipboard"
-                    matTooltipClass="tool-tip"
-                    onclick="this.blur()"
-                    (click)="copy(element)"
-                    mat-icon-button>
-              <mat-icon>content_copy</mat-icon>
-            </button>
-            <button matTooltip="Edit {{element.title}}"
-                    matTooltipClass="tool-tip"
-                    onclick="this.blur()"
-                    (click)="edit(element)"
-                    mat-icon-button>
-              <mat-icon>edit</mat-icon>
-            </button>
-            <button matTooltip="Remove {{element.title}}"
-                    matTooltipClass="tool-tip"
-                    mat-icon-button color="warn"
-                    onclick="this.blur()"
-                    (click)="delete(element)">
-              <mat-icon>remove_circle</mat-icon>
-            </button>
-          </div>
-          <br>
+        <div class="ks-table-expanded-detail" [@detailExpand]="element == expandedElement && element.description ? 'expanded' : 'collapsed'">
           <div class="knowledge-source-description" *ngIf="element.description && !element.snippet">
             {{element.description}}
           </div>
@@ -139,7 +93,9 @@
 
     <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
     <tr (click)="expandedElement = expandedElement === element ? null : element; rowClicked(element)"
-        mat-row *matRowDef="let element; columns: columnsToDisplay;"
+        (contextmenu)="displayContextMenu($event, element); false"
+        mat-row
+        *matRowDef="let element; columns: columnsToDisplay;"
         [class.ks-table-expanded-row]="expandedElement === element"
         class="ks-table-element-row">
     </tr>
@@ -147,3 +103,14 @@
   </table>
   <mat-paginator [pageSizeOptions]="[5, 10, 25, 50]" [pageSize]="pageSize" aria-label="Select page of Knowledge Sources"></mat-paginator>
 </div>
+<ks-lib-ks-context-menu
+  *ngIf="isDisplayContextMenu"
+  [ks]="ksForContextMenu"
+  (ksMenuCopyLinkClicked)="ksTableCopyLinkClicked.emit($event)"
+  (ksMenuEditClicked)="ksTableEditClicked.emit($event)"
+  (ksMenuOpenClicked)="ksTableOpenClicked.emit($event)"
+  (ksMenuPreviewClicked)="ksTablePreviewClicked.emit($event)"
+  (ksMenuRemoveClicked)="ksTableRemoveClicked.emit($event)"
+  (ksMenuShowFileClicked)="ksTableShowFileClicked.emit($event)"
+  [ngStyle]="getRightClickMenuStyle()"
+></ks-lib-ks-context-menu>

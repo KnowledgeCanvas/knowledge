@@ -26,6 +26,7 @@
                matTooltipClass="tool-tip"
                [matTooltipShowDelay]="ksToolTipDelay"
                (click)="ksSelected.emit(ks)"
+               (contextmenu)="ksContextMenu($event, ks)"
                alt="Knowledge Icon for: {{ks.title}}">
         </div>
 
@@ -40,3 +41,14 @@
     </div>
   </ng-container>
 </div>
+<ks-lib-ks-context-menu
+  *ngIf="isDisplayContextMenu && ksEnableContextMenu"
+  [ks]="ksForContextMenu"
+  (ksMenuCopyLinkClicked)="ksMenuCopyLinkClicked.emit($event)"
+  (ksMenuEditClicked)="ksMenuEditClicked.emit($event)"
+  (ksMenuOpenClicked)="ksMenuOpenClicked.emit($event)"
+  (ksMenuPreviewClicked)="ksMenuPreviewClicked.emit($event)"
+  (ksMenuRemoveClicked)="ksMenuRemoveClicked.emit($event)"
+  (ksMenuShowFileClicked)="ksMenuShowFileClicked.emit($event)"
+  [ngStyle]="getRightClickMenuStyle()"
+></ks-lib-ks-context-menu>
