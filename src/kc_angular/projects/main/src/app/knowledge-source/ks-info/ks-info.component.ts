@@ -70,14 +70,14 @@ export class KsInfoComponent implements OnInit, OnChanges {
   }
 
   setDescription() {
-    if (this.ks) {
+    if (this.ks && this.ks.description !== this.description) {
       this.ks.description = this.description;
       this.ksModified.emit(true);
     }
   }
 
   setTitle() {
-    if (this.ks) {
+    if (this.ks && this.ks.title !== this.title) {
       this.ks.title = this.title;
       this.ksModified.emit(true);
     }
