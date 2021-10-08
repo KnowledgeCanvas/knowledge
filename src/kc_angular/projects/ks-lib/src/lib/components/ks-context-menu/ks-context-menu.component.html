@@ -1,36 +1,44 @@
 <ng-container>
+  <!--  Empty element required to trigger menu programmatically-->
   <div [matMenuTriggerFor]="menu"></div>
+
   <mat-menu #menu="matMenu">
     <button onclick="this.blur()"
             (click)="ksMenuPreviewClicked.emit(ks)"
             mat-menu-item>
-      <mat-icon>preview</mat-icon> Preview
+      <mat-icon>preview</mat-icon>
+      Preview
     </button>
     <button onclick="this.blur()"
             (click)="ksMenuOpenClicked.emit(ks)"
             mat-menu-item>
-      <mat-icon>open_in_browser</mat-icon> Open in...
+      <mat-icon>open_in_browser</mat-icon>
+      Open in...
     </button>
     <button *ngIf="ks && ks.ingestType === 'file'"
             onclick="this.blur()"
             (click)="ksMenuShowFileClicked.emit(ks)"
             mat-menu-item>
-      <mat-icon>folder_open</mat-icon> Show in folder
+      <mat-icon>folder_open</mat-icon>
+      Show in folder
     </button>
     <button onclick="this.blur()"
             (click)="ksMenuCopyLinkClicked.emit(ks)"
             mat-menu-item>
-      <mat-icon>content_copy</mat-icon> Copy {{ks && ks.ingestType === 'file' ? 'path' : 'link'}}
+      <mat-icon>content_copy</mat-icon>
+      Copy {{ks && ks.ingestType === 'file' ? 'path' : 'link'}}
     </button>
     <button onclick="this.blur()"
             (click)="ksMenuEditClicked.emit(ks)"
             mat-menu-item>
-      <mat-icon>edit</mat-icon> Edit
+      <mat-icon>edit</mat-icon>
+      Edit
     </button>
     <button mat-menu-item
             onclick="this.blur()"
             (click)="ksMenuRemoveClicked.emit(ks)">
-      <mat-icon>remove_circle</mat-icon> Remove
+      <mat-icon>remove_circle</mat-icon>
+      Remove
     </button>
 
   </mat-menu>
