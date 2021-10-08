@@ -22,11 +22,15 @@ table {
   user-select: none;
 }
 
+tr {
+  user-select: none;
+}
+
 tr.ks-table-detail-row {
   height: 0;
 }
 
-tr.ks-table-element-row:not(.ks-table-expanded-row):hover {
+tr.ks-table-element-row:hover {
   background: #8282828f;
   cursor: context-menu;
 }
@@ -41,7 +45,7 @@ tr.ks-table-element-row:not(.ks-table-expanded-row):hover {
   flex-direction: column;
 }
 
-.knowledge-source-description {
+.ks-description {
   padding: 16px;
   word-wrap: break-word;
 }

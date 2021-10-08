@@ -14,7 +14,7 @@
  limitations under the License.
  */
 
-import {AfterViewInit, Component, EventEmitter, HostListener, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
 import {ProjectService} from "../../../../../ks-lib/src/lib/services/projects/project.service";
 import {ProjectModel} from "projects/ks-lib/src/lib/models/project.model";
 import {IngestType, KnowledgeSource} from "projects/ks-lib/src/lib/models/knowledge.source.model";
@@ -41,52 +41,33 @@ import {KsInfoDialogService} from "../../../../../ks-lib/src/lib/services/ks-inf
   ],
 })
 export class KnowledgeSourceTableComponent implements OnInit, OnDestroy, AfterViewInit {
+  @Input() ksList: KnowledgeSource[] = [];
+  @Input() ksTableAllowSubprojectExpansion: boolean = true;
+  @Output() ksTableShowSubprojects = new EventEmitter<boolean>();
   @Output() ksTablePreviewClicked = new EventEmitter<KnowledgeSource>();
-
   @Output() ksTableOpenClicked = new EventEmitter<KnowledgeSource>();
-
   @Output() ksTableShowFileClicked = new EventEmitter<KnowledgeSource>();
-
   @Output() ksTableCopyLinkClicked = new EventEmitter<KnowledgeSource>();
-
   @Output() ksTableEditClicked = new EventEmitter<KnowledgeSource>();
-
   @Output() ksTableRemoveClicked = new EventEmitter<KnowledgeSource>();
-
+  @Output() ksModified = new EventEmitter<KnowledgeSource>();
   @ViewChild(MatSort) sort!: MatSort;
-
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-
   project?: ProjectModel;
-
   dataSource: MatTableDataSource<KnowledgeSource>;
-
   expandedElement: KnowledgeSource | null = null;
-
   subscription?: Subscription;
-
   hideTable: boolean;
-
   filter: string = '';
-
   truncateLength: number = 100;
-
   showSubProjects: boolean = false;
-
   pageSize: number = 5;
-
-  columnsToDisplay: string[] = ['icon', 'title', 'dateCreated', 'dateAccessed', 'dateModified', 'ingestType'];
-
   rightClickMenuPositionX: number = 0;
-
   rightClickMenuPositionY: number = 0;
-
   isDisplayContextMenu: boolean = false;
-
   ksForContextMenu?: KnowledgeSource;
-
+  columnsToDisplay: string[] = ['icon', 'title', 'dateCreated', 'dateAccessed', 'dateModified', 'ingestType'];
   private initialDisplayedColumns: string[] = ['icon', 'title', 'dateCreated', 'dateAccessed', 'dateModified', 'ingestType'];
-
   private initialDisplayedColumnsWithInheritance: string[] = ['icon', 'title', 'associatedProjects', 'dateCreated', 'dateAccessed', 'dateModified', 'ingestType'];
 
   constructor(private browserViewDialogService: BrowserViewDialogService,
@@ -100,6 +81,11 @@ export class KnowledgeSourceTableComponent implements OnInit, OnDestroy, AfterVi
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {
     this.setTableColumnsByScreenWidth(event.target.innerWidth);
+  }
+
+  @HostListener('document:click')
+  documentClick(): void {
+    this.isDisplayContextMenu = false;
   }
 
   ngOnInit(): void {
@@ -123,12 +109,12 @@ export class KnowledgeSourceTableComponent implements OnInit, OnDestroy, AfterVi
     if (width > 1000) {
       this.columnsToDisplay = this.showSubProjects
         ? this.initialDisplayedColumnsWithInheritance : this.initialDisplayedColumns;
-      this.truncateLength = 120;
+      this.truncateLength = 50;
     } else if (width > 900) {
       this.columnsToDisplay = this.showSubProjects
         ? this.initialDisplayedColumnsWithInheritance.filter(c => c !== 'dateCreated' && c !== 'dateAccessed')
         : this.initialDisplayedColumns.filter(c => c !== 'dateCreated' && c !== 'dateAccessed');
-      this.truncateLength = 60;
+      this.truncateLength = 40;
     } else {
       this.truncateLength = 30;
       this.columnsToDisplay = this.showSubProjects
@@ -186,13 +172,10 @@ export class KnowledgeSourceTableComponent implements OnInit, OnDestroy, AfterVi
     this.dataSource = new MatTableDataSource<KnowledgeSource>(ksList);
 
     this.dataSource.paginator = this.paginator;
-
     this.dataSource.sort = this.sort;
 
     this.setSortingAccessor();
-
     this.setTableColumnsByScreenWidth(window.innerWidth);
-
     this.hideTable = this.dataSource.data.length === 0;
   }
 
@@ -246,15 +229,13 @@ export class KnowledgeSourceTableComponent implements OnInit, OnDestroy, AfterVi
       const filterValue = ($event.target as HTMLInputElement).value;
       this.dataSource.filter = filterValue.trim().toLowerCase();
     }
-
-
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
     }
   }
 
-  rowClicked(_: any) {
-
+  ksRowClicked(ks: KnowledgeSource) {
+    this.expandedElement = this.expandedElement === ks ? null : ks;
   }
 
   onShowSubProjectsClicked(toggle: MatSlideToggleChange) {
@@ -280,14 +261,11 @@ export class KnowledgeSourceTableComponent implements OnInit, OnDestroy, AfterVi
     this.ksTableShowFileClicked.emit(element);
   }
 
-  displayContextMenu($event: MouseEvent, ks: KnowledgeSource) {
-    this.isDisplayContextMenu = true;
-
+  openContextMenu($event: MouseEvent, ks: KnowledgeSource) {
     this.ksForContextMenu = ks;
-
     this.rightClickMenuPositionX = $event.clientX;
-
     this.rightClickMenuPositionY = $event.clientY;
+    this.isDisplayContextMenu = true;
   }
 
   getRightClickMenuStyle() {
@@ -296,10 +274,5 @@ export class KnowledgeSourceTableComponent implements OnInit, OnDestroy, AfterVi
       left: `${this.rightClickMenuPositionX}px`,
       top: `${this.rightClickMenuPositionY}px`
     }
-  }
-
-  @HostListener('document:click')
-  documentClick(): void {
-    this.isDisplayContextMenu = false;
   }
 }
