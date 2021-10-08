@@ -258,8 +258,10 @@ export class ProjectService {
       // Update access date any time a project is viewed
       project.dateAccessed = Date();
 
-      // Set current project and notify subscribers
-      this.selectedSource.next(project);
+      // Set current project and notify subscribers (if and only if the project is not already current)
+      if (this.selectedSource.value.id.value !== project.id.value) {
+        this.selectedSource.next(project);
+      }
 
       // Persist project to storage system
       this.storageService.updateProject(project);
