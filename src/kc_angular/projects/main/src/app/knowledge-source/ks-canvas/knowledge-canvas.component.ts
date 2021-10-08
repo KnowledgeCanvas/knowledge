@@ -73,6 +73,9 @@ export class KnowledgeCanvasComponent implements OnInit, OnDestroy, OnChanges {
 
   projectKsSelected($event: KnowledgeSource) {
     this.ksInfoDialog.open($event, this.kcProject?.id.value).then((ksInfoOutput) => {
+      if (ksInfoOutput.ksChanged) {
+        this.ksModified(ksInfoOutput.ks);
+      }
     })
   }
 
