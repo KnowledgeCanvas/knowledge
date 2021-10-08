@@ -37,11 +37,13 @@
   >
   </ks-lib-knowledge-source-drag-and-drop-list>
   <app-canvas-details-overview
+    [kcProject]="kcProject"
     (ksMenuShowFileClicked)="ksShow($event)"
     (ksMenuRemoveClicked)="ksRemove($event)"
     (ksMenuPreviewClicked)="ksPreview($event)"
     (ksMenuOpenClicked)="ksOpen($event)"
     (ksMenuEditClicked)="ksEdit($event)"
     (ksMenuCopyLinkClicked)="ksCopy($event)"
+    (ksModified)="ksModified($event)"
   ></app-canvas-details-overview>
 </div>

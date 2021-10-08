@@ -33,23 +33,12 @@ import {Clipboard} from "@angular/cdk/clipboard";
   styleUrls: ['./knowledge-canvas.component.scss']
 })
 export class KnowledgeCanvasComponent implements OnInit, OnDestroy, OnChanges {
-  @Input()
-  kcProject: ProjectModel | null = null;
-
-  @Input()
-  searchBarVisible: boolean = false;
-
-  @Output()
-  ksRemoved = new EventEmitter<KnowledgeSource>();
-
-  @Output()
-  ksAdded = new EventEmitter<KnowledgeSource[]>();
-
-  @Output()
-  projectChanged = new EventEmitter<ProjectModel>();
-
+  @Input() kcProject!: ProjectModel;
+  @Input() searchBarVisible: boolean = false;
+  @Output() ksRemoved = new EventEmitter<KnowledgeSource>();
+  @Output() ksAdded = new EventEmitter<KnowledgeSource[]>();
+  @Output() projectChanged = new EventEmitter<ProjectModel>();
   projectKsList: KnowledgeSource[] = [];
-
   projectKsListId = 'projectKsList';
 
   constructor(private ksDropService: KsDropService,
@@ -60,8 +49,7 @@ export class KnowledgeCanvasComponent implements OnInit, OnDestroy, OnChanges {
               private dialogService: KcDialogService,
               private ipcService: ElectronIpcService,
               private snackbar: MatSnackBar,
-              private clipboard: Clipboard
-  ) {
+              private clipboard: Clipboard) {
     ksDropService.register({
       containerId: this.projectKsListId,
       receiveFrom: ['ksQueue'],
@@ -195,12 +183,7 @@ export class KnowledgeCanvasComponent implements OnInit, OnDestroy, OnChanges {
 
     this.ksInfoDialogService.open(ks, projectId.id.value).then((output) => {
       if (output.ksChanged && this.kcProject && projectId) {
-        output.ks.dateModified = new Date();
-        let update: ProjectUpdateRequest = {
-          id: projectId.id,
-          updateKnowledgeSource: [output.ks]
-        }
-        this.projectService.updateProject(update);
+        this.ksModified(output.ks);
       }
       if (output.preview) {
         this.ksPreview(output.ks);
@@ -211,5 +194,27 @@ export class KnowledgeCanvasComponent implements OnInit, OnDestroy, OnChanges {
   ksCopy(ks: KnowledgeSource) {
     this.clipboard.copy(typeof ks.accessLink === 'string' ? ks.accessLink : ks.accessLink.href);
     this.snackbar.open('Copied to clipboard!', 'Dismiss', {duration: 2000, panelClass: 'kc-success'});
+  }
+
+  ksModified(ks: KnowledgeSource) {
+    if (!ks.associatedProjects) {
+      console.error('Knowledge Source has no associated project...');
+      return;
+    }
+
+    let associatedProject = ks.associatedProjects[0].value;
+    let project = this.projectService.getProject(associatedProject);
+    if (!project) {
+      console.error('Knowledge Source has no associated project...');
+      return;
+    }
+
+    ks.dateModified = new Date();
+
+    let update: ProjectUpdateRequest = {
+      id: project.id,
+      updateKnowledgeSource: [ks]
+    }
+    this.projectService.updateProject(update);
   }
 }
