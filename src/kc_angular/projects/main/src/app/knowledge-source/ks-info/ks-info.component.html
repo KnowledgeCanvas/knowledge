@@ -19,8 +19,8 @@
 </div>
 <div class="row">
   <div class="col s12">
-    <mat-form-field (focusout)="setTitle()" style="width: 100%">
-      <input matInput [(ngModel)]="title" placeholder="Title" required>
+    <mat-form-field (focusout)="ksEmitIfChanged()" style="width: 100%">
+      <input matInput [(ngModel)]="ks.title" placeholder="Title" required>
     </mat-form-field>
   </div>
 </div>
@@ -28,29 +28,25 @@
 <div class="ks-info-container">
   <div class="ks-info-controls">
     <button mat-icon-button (click)="openAll()">
-      <mat-icon>
-        unfold_more
-      </mat-icon>
+      <mat-icon>unfold_more</mat-icon>
     </button>
     <button mat-icon-button (click)="closeAll()">
-      <mat-icon>
-        unfold_less
-      </mat-icon>
+      <mat-icon>unfold_less</mat-icon>
     </button>
   </div>
 
   <div class="ks-details-accordion-container">
     <mat-accordion #accordion="matAccordion" [multi]="true" togglePosition="after" class="ks-details-accordion">
-      <mat-expansion-panel [expanded]="true">
+      <mat-expansion-panel>
         <mat-expansion-panel-header>
           <mat-panel-title>Description</mat-panel-title>
           <mat-panel-description></mat-panel-description>
           <div class="mat-panel-body">
             <ng-template matExpansionPanelContent>
-              <mat-form-field style="width: 100%" (focusout)="setDescription()">
+              <mat-form-field style="width: 100%" (focusout)="ksEmitIfChanged()">
               <textarea placeholder="Enter or Edit Description..."
                         [matTextareaAutosize]="true"
-                        [(ngModel)]="description"
+                        [(ngModel)]="ks.description"
                         cdkAutosizeMinRows="5"
                         matInput></textarea>
               </mat-form-field>
@@ -59,16 +55,16 @@
         </mat-expansion-panel-header>
       </mat-expansion-panel>
 
-      <mat-expansion-panel [expanded]="true">
+      <mat-expansion-panel>
         <mat-expansion-panel-header>
           <mat-panel-title>Notes</mat-panel-title>
           <mat-panel-description></mat-panel-description>
           <div class="mat-panel-body">
             <ng-template matExpansionPanelContent>
               <div class="ks-notes-viewport">
-                <mat-form-field class="ks-notes-textarea" (change)="notesModified()">
+                <mat-form-field class="ks-notes-textarea" (change)="ksEmitIfChanged()">
                   <textarea placeholder="Enter or Edit Notes..."
-                            [(ngModel)]="notes"
+                            [(ngModel)]="ks.notes.text"
                             cdkTextareaAutosize
                             matInput></textarea>
                 </mat-form-field>
@@ -77,21 +73,6 @@
               </div>
             </ng-template>
           </div>
-        </mat-expansion-panel-header>
-      </mat-expansion-panel>
-
-      <mat-expansion-panel *ngIf="authors && authors.length > 0" [expanded]="true">
-        <mat-expansion-panel-header>
-          <mat-panel-title>Authors</mat-panel-title>
-          <ng-template matExpansionPanelContent>
-            <div class="mat-panel-body">
-              <div class="row">
-                <div class="col s3" *ngFor="let author of authors">
-                  {{author.firstName}} {{author.lastName}}
-                </div>
-              </div>
-            </div>
-          </ng-template>
         </mat-expansion-panel-header>
       </mat-expansion-panel>
     </mat-accordion>
