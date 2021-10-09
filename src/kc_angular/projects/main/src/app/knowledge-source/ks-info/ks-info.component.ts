@@ -14,9 +14,8 @@
  limitations under the License.
  */
 
-import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges} from '@angular/core';
 import {KnowledgeSource} from "projects/ks-lib/src/lib/models/knowledge.source.model";
-import {MatAccordion} from "@angular/material/expansion";
 
 @Component({
   selector: 'app-ks-info',
@@ -24,9 +23,6 @@ import {MatAccordion} from "@angular/material/expansion";
   styleUrls: ['./ks-info.component.scss']
 })
 export class KsInfoComponent implements OnInit, OnChanges, OnDestroy {
-  @ViewChild('accordion', {static: true})
-  Accordion?: MatAccordion
-
   @Input()
   ks!: KnowledgeSource;
 
@@ -58,6 +54,11 @@ export class KsInfoComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
+  ksSaveChanges(ks: KnowledgeSource) {
+    this.ksEmitIfChanged(ks);
+    this.ksUnmodified = this.ksDeepCopy(ks);
+  }
+
   ksEmitIfChanged(ks?: KnowledgeSource) {
     if (ks && this.ksHasChanged(ks)) {
       this.ksModified.emit(true);
@@ -70,6 +71,10 @@ export class KsInfoComponent implements OnInit, OnChanges, OnDestroy {
     if (!this.ksUnmodified) {
       return true;
     }
+    if (!ks.title || ks.title.trim() === '') {
+      ks.title = this.ksUnmodified.title;
+      return false;
+    }
     return (this.ksUnmodified.title !== ks.title) || (this.ksUnmodified.description !== ks.description) || (this.ksUnmodified.notes.text !== ks.notes.text);
   }
 
@@ -79,13 +84,5 @@ export class KsInfoComponent implements OnInit, OnChanges, OnDestroy {
     deepKs.dateAccessed = new Date(deepKs.dateAccessed);
     deepKs.dateCreated = new Date(deepKs.dateCreated);
     return deepKs;
-  }
-
-  closeAll() {
-    this.Accordion?.closeAll();
-  }
-
-  openAll() {
-    this.Accordion?.openAll();
   }
 }
