@@ -53,7 +53,7 @@
 </div>
 
 <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
-  <mat-tree-node [ngClass]="{ 'background-highlight': activeId === node.id }"
+  <mat-tree-node [class.background-highlight]="activeId === node.id"
                  (contextmenu)="onContextMenu($event, node.id)"
                  *matTreeNodeDef="let node; when: hasChild"
                  [matTreeNodePaddingIndent]="treePadding"
@@ -101,7 +101,7 @@
   </mat-tree-node>
 
 
-  <mat-tree-node [ngClass]="{ 'background-highlight': activeId === node.id }"
+  <mat-tree-node [class.background-highlight]="activeId === node.id"
                  (contextmenu)="onContextMenu($event, node.id)"
                  [matTreeNodePaddingIndent]="treePadding"
                  (click)="selectProject(node.id)"
