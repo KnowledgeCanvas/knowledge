@@ -237,6 +237,13 @@ export class ProjectService {
 
     projectToUpdate.dateModified = Date();
 
+    if (projectToUpdate.knowledgeSource) {
+      for (let ks of projectToUpdate.knowledgeSource) {
+        ks.associatedProjects = [projectToUpdate.id];
+      }
+    }
+
+
     // Persist project to storage system
     this.storageService.updateProject(projectToUpdate);
 
@@ -258,10 +265,8 @@ export class ProjectService {
       // Update access date any time a project is viewed
       project.dateAccessed = Date();
 
-      // Set current project and notify subscribers (if and only if the project is not already current)
-      if (this.selectedSource.value.id.value !== project.id.value) {
-        this.selectedSource.next(project);
-      }
+      // Set current project and notify subscribers
+      this.selectedSource.next(project);
 
       // Persist project to storage system
       this.storageService.updateProject(project);
@@ -422,8 +427,10 @@ export class ProjectService {
       let ksList: KnowledgeSource[] = [];
       for (let addKs of add) {
         let found = project.knowledgeSource.find(k => k.id.value === addKs.id.value);
-        if (!found)
+        if (!found) {
+          addKs.associatedProjects = [project.id];
           ksList.push(addKs);
+        }
         else
           console.warn('ProjectService: Invalid request to add duplicate knowledge source to project ', project.name);
       }
