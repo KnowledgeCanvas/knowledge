@@ -1,15 +1,15 @@
-import {AfterViewInit, Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
+import {Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
 import {KnowledgeSource} from "../../models/knowledge.source.model";
 import {CdkDragDrop, CdkDragEnter, CdkDragExit, CdkDropList, DropListOrientation} from "@angular/cdk/drag-drop";
 import {KsDropService} from "../../services/ks-drop/ks-drop.service";
 import {KcDialogService} from "../../services/dialog/kc-dialog.service";
 
 @Component({
-  selector: 'ks-lib-knowledge-source-drag-and-drop-list',
-  templateUrl: './knowledge-source-drag-and-drop-list.component.html',
-  styleUrls: ['./knowledge-source-drag-and-drop-list.component.css']
+  selector: 'ks-drag-and-drop',
+  templateUrl: './ks-drag-and-drop.component.html',
+  styleUrls: ['./ks-drag-and-drop.component.css']
 })
-export class KnowledgeSourceDragAndDropListComponent implements OnInit, OnChanges, AfterViewInit {
+export class KsDragAndDropComponent implements OnInit, OnChanges {
   @Input()
   autoScroll: boolean = true;
 
@@ -116,10 +116,6 @@ export class KnowledgeSourceDragAndDropListComponent implements OnInit, OnChange
 
   ngOnInit(): void {
   }
-
-  ngAfterViewInit() {
-  }
-
 
   removeKs(ks: KnowledgeSource) {
     if (this.ksWarnOnDelete) {

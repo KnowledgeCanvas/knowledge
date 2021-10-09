@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { KnowledgeSourceDragAndDropListComponent } from './knowledge-source-drag-and-drop-list.component';
+import { KsDragAndDropComponent } from './ks-drag-and-drop.component';
 
 describe('KnowledgeSourceDragAndDropListComponent', () => {
-  let component: KnowledgeSourceDragAndDropListComponent;
-  let fixture: ComponentFixture<KnowledgeSourceDragAndDropListComponent>;
+  let component: KsDragAndDropComponent;
+  let fixture: ComponentFixture<KsDragAndDropComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ KnowledgeSourceDragAndDropListComponent ]
+      declarations: [ KsDragAndDropComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(KnowledgeSourceDragAndDropListComponent);
+    fixture = TestBed.createComponent(KsDragAndDropComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
