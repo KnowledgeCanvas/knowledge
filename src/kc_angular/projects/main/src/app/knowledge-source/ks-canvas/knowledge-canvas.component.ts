@@ -28,21 +28,32 @@ import {MatSnackBar} from "@angular/material/snack-bar";
 import {Clipboard} from "@angular/cdk/clipboard";
 
 @Component({
-  selector: 'app-canvas',
+  selector: 'app-knowledge-canvas',
   templateUrl: './knowledge-canvas.component.html',
   styleUrls: ['./knowledge-canvas.component.scss']
 })
 export class KnowledgeCanvasComponent implements OnInit, OnDestroy, OnChanges {
-  @Input() kcProject!: ProjectModel;
-  @Input() searchBarVisible: boolean = false;
-  @Output() ksRemoved = new EventEmitter<KnowledgeSource>();
-  @Output() ksAdded = new EventEmitter<KnowledgeSource[]>();
-  @Output() projectChanged = new EventEmitter<ProjectModel>();
-  projectKsList: KnowledgeSource[] = [];
+  @Input()
+  kcProject!: ProjectModel;
+
+  @Input()
+  ksQueueVisible: boolean = false;
+
+  @Output()
+  ksRemoved = new EventEmitter<KnowledgeSource>();
+
+  @Output()
+  ksAdded = new EventEmitter<KnowledgeSource[]>();
+
+  @Output()
+  kcProjectUpdate = new EventEmitter<ProjectModel>();
+
+  @Output()
+  kcSetCurrentProject = new EventEmitter<string>();
+
   projectKsListId = 'projectKsList';
 
   constructor(private ksDropService: KsDropService,
-              private ksInfoDialog: KsInfoDialogService,
               private projectService: ProjectService,
               private ksInfoDialogService: KsInfoDialogService,
               private browserViewDialogService: BrowserViewDialogService,
@@ -62,9 +73,6 @@ export class KnowledgeCanvasComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes.kcProject) {
-      this.projectKsList = changes.kcProject.currentValue.knowledgeSource;
-    }
   }
 
   ngOnDestroy() {
@@ -72,7 +80,7 @@ export class KnowledgeCanvasComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   projectKsSelected($event: KnowledgeSource) {
-    this.ksInfoDialog.open($event, this.kcProject?.id.value).then((ksInfoOutput) => {
+    this.ksInfoDialogService.open($event, this.kcProject?.id.value).then((ksInfoOutput) => {
       if (ksInfoOutput.ksChanged) {
         this.ksModified(ksInfoOutput.ks);
       }
@@ -81,11 +89,11 @@ export class KnowledgeCanvasComponent implements OnInit, OnDestroy, OnChanges {
 
   ksListChanged(ksList: KnowledgeSource[]) {
     if (this.kcProject) {
-      this.projectKsList = ksList;
+      for (let ks of ksList) {
+        ks.associatedProjects = [this.kcProject.id];
+      }
       this.kcProject.knowledgeSource = ksList;
-      this.projectChanged.emit(this.kcProject);
-    } else {
-      this.projectKsList = [];
+      this.kcProjectUpdate.emit(this.kcProject);
     }
   }
 
@@ -108,14 +116,14 @@ export class KnowledgeCanvasComponent implements OnInit, OnDestroy, OnChanges {
     let associatedProject: ProjectModel | undefined;
 
     if (!ks.associatedProjects) {
-      console.error('Attempting to delete knowledge source with no associated project...');
+      console.error('Attempting to delete knowledge source with no associated project...: ', ks);
       return;
     }
 
     associatedProject = this.projectService.getProject(ks.associatedProjects[0].value);
 
     if (!associatedProject) {
-      console.error('Attempting to delete knowledge source with no associated project...');
+      console.error('Attempting to delete knowledge source with no associated project...', ks);
       return;
     }
 
