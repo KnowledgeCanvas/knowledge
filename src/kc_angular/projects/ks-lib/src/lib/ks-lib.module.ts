@@ -42,7 +42,7 @@ import {MatTooltipModule} from "@angular/material/tooltip";
 import {MatSlideToggleModule} from "@angular/material/slide-toggle";
 import {TruncatePipe} from './pipes/truncate.pipe';
 import {ProjectBreadcrumbPipe} from './pipes/project-breadcrumb.pipe';
-import {KnowledgeSourceDragAndDropListComponent} from './components/knowledge-source-drag-and-drop-list/knowledge-source-drag-and-drop-list.component';
+import {KsDragAndDropComponent} from './components/knowledge-source-drag-and-drop-list/ks-drag-and-drop.component';
 import {KsDndVerticalDirective} from './directives/ksDnd/ks-dnd-vertical.directive';
 import {KsDndHorizontalDirective} from './directives/ksDnd/ks-dnd-horizontal.directive';
 import {DragDropModule} from "@angular/cdk/drag-drop";
@@ -74,7 +74,7 @@ declare global {
     ViewportFooterComponent,
     TruncatePipe,
     ProjectBreadcrumbPipe,
-    KnowledgeSourceDragAndDropListComponent,
+    KsDragAndDropComponent,
     KsDndVerticalDirective,
     KsDndHorizontalDirective,
     HoverClassDirective,
@@ -113,7 +113,7 @@ declare global {
     ViewportFooterComponent,
     TruncatePipe,
     ProjectBreadcrumbPipe,
-    KnowledgeSourceDragAndDropListComponent,
+    KsDragAndDropComponent,
     KsIngestFabComponent,
     KsContextMenuComponent
   ],
