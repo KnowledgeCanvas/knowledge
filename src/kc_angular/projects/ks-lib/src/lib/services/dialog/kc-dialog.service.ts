@@ -50,7 +50,7 @@ export class KcDialogService {
         cancelButtonText: "Cancel",
         listToDisplay: [ks],
         message: "Are you sure you want to remove this knowledge source?",
-        title: `Remove ${ks.title}?`
+        title: `Remove Knowledge Source`
 
       }
       let dialogRef = this.dialog.open(ConfirmDialogComponent, {data: options});
