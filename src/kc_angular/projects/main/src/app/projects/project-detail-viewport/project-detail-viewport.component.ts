@@ -21,7 +21,7 @@ import {ProjectModel, ProjectUpdateRequest} from "projects/ks-lib/src/lib/models
 import {ProjectService} from "../../../../../ks-lib/src/lib/services/projects/project.service";
 import {KnowledgeSource} from "../../../../../ks-lib/src/lib/models/knowledge.source.model";
 import {KsQueueService} from "../../knowledge-source/ks-queue-service/ks-queue.service";
-import {KcDialogRequest, KcDialogService} from "../../../../../ks-lib/src/lib/services/dialog/kc-dialog.service";
+import {KcDialogService} from "../../../../../ks-lib/src/lib/services/dialog/kc-dialog.service";
 import {MatDialog, MatDialogConfig} from "@angular/material/dialog";
 import {FileUploadComponent} from "../../ingest/files/file-upload/file-upload.component";
 import {BrowserViewDialogService} from "../../../../../ks-lib/src/lib/services/browser-view-dialog/browser-view-dialog.service";
@@ -49,6 +49,7 @@ export class ProjectDetailViewportComponent implements OnInit, OnDestroy {
   constructor(private browserViewDialogService: BrowserViewDialogService,
               private projectService: ProjectService,
               private ksQueueService: KsQueueService,
+              private ksDialogService: KcDialogService,
               private confirmDialog: KcDialogService,
               private ksFactory: KsFactoryService,
               private snackbar: MatSnackBar,
@@ -117,19 +118,7 @@ export class ProjectDetailViewportComponent implements OnInit, OnDestroy {
   }
 
   ksRemoved(ks: KnowledgeSource) {
-    if (!this.kcProject) {
-      return;
-    }
-    let dialogReq: KcDialogRequest = {
-      actionButtonText: "Remove Source",
-      actionToTake: 'delete',
-      cancelButtonText: "Cancel",
-      listToDisplay: [ks],
-      message: "Are you sure you want to remove this knowledge source?",
-      title: "Delete Source"
-    }
-    this.confirmDialog.open(dialogReq);
-    this.confirmDialog.confirmed().subscribe((confirmed) => {
+    this.ksDialogService.openWarnDeleteKs(ks).then((confirmed) => {
       if (!this.kcProject || !confirmed) {
         return;
       }
@@ -138,7 +127,7 @@ export class ProjectDetailViewportComponent implements OnInit, OnDestroy {
         removeKnowledgeSource: [ks]
       }
       this.projectService.updateProject(update);
-    });
+    })
   }
 
   ksQueueCleared() {

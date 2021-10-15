@@ -20,7 +20,7 @@ import {ProjectModel, ProjectUpdateRequest} from "projects/ks-lib/src/lib/models
 import {KnowledgeSource} from "../../../../../ks-lib/src/lib/models/knowledge.source.model";
 import {KsDropService} from "../../../../../ks-lib/src/lib/services/ks-drop/ks-drop.service";
 import {KsInfoDialogService} from "../../../../../ks-lib/src/lib/services/ks-info-dialog.service";
-import {KcDialogRequest, KcDialogService} from "../../../../../ks-lib/src/lib/services/dialog/kc-dialog.service";
+import {KcDialogService} from "../../../../../ks-lib/src/lib/services/dialog/kc-dialog.service";
 import {ProjectService} from "../../../../../ks-lib/src/lib/services/projects/project.service";
 import {BrowserViewDialogService} from "../../../../../ks-lib/src/lib/services/browser-view-dialog/browser-view-dialog.service";
 import {ElectronIpcService} from "../../../../../ks-lib/src/lib/services/electron-ipc/electron-ipc.service";
@@ -127,25 +127,16 @@ export class KnowledgeCanvasComponent implements OnInit, OnDestroy, OnChanges {
       return;
     }
 
-    let confirmDialogConfig: KcDialogRequest = {
-      actionButtonText: "Delete Permanently",
-      actionToTake: 'delete',
-      cancelButtonText: "Cancel",
-      listToDisplay: [ks],
-      message: `Are you sure you want to delete this Knowledge Source from "${associatedProject.name}"?`,
-      title: `Delete`
-    }
-
-    this.dialogService.open(confirmDialogConfig);
-    this.dialogService.confirmed().subscribe((confirmed) => {
-      if (confirmed && associatedProject) {
-        let update: ProjectUpdateRequest = {
-          id: associatedProject.id,
-          removeKnowledgeSource: [ks]
-        }
-        this.projectService.updateProject(update);
+    this.dialogService.openWarnDeleteKs(ks).then((confirmed) => {
+      if (!this.kcProject || !confirmed) {
+        return;
       }
-    });
+      const update: ProjectUpdateRequest = {
+        id: this.kcProject.id,
+        removeKnowledgeSource: [ks]
+      }
+      this.projectService.updateProject(update);
+    })
   }
 
   ksPreview(ks: KnowledgeSource) {
