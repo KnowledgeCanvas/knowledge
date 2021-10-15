@@ -28,30 +28,34 @@ limitations under the License.
 <div class="project-overview-container" #projectOverview>
   <div class="project-overview-calendar">
     <div class="container">
-      <h2>{{currentProject.name}} / Calendar</h2>
-      <app-project-calendar [calendar]="currentProject.calendar" (start)="calStart($event)" (end)="calEnd($event)"></app-project-calendar>
+      <h2>{{kcProject.name}} / Calendar</h2>
+      <app-project-calendar [calendar]="kcProject.calendar" (start)="calStart($event)" (end)="calEnd($event)"></app-project-calendar>
     </div>
   </div>
 
   <div class="project-ks-list-container">
     <div class="container">
-      <h2>{{currentProject.name}} / Knowledge Sources</h2>
+      <h2>{{kcProject.name}} / Knowledge Sources</h2>
     </div>
-    <ks-table
-      (ksTableShowFileClicked)="ksMenuShowFileClicked.emit($event)"
-      (ksTableCopyLinkClicked)="ksMenuCopyLinkClicked.emit($event)"
-      (ksTableEditClicked)="ksMenuEditClicked.emit($event)"
-      (ksTableOpenClicked)="ksMenuOpenClicked.emit($event)"
-      (ksTablePreviewClicked)="ksMenuPreviewClicked.emit($event)"
-      (ksTableRemoveClicked)="ksMenuRemoveClicked.emit($event)">
-    </app-knowledge-source-table>
+    <ks-table (ksTableShowFileClicked)="ksMenuShowFileClicked.emit($event)"
+              (ksTableCopyLinkClicked)="ksMenuCopyLinkClicked.emit($event)"
+              (ksTableEditClicked)="ksMenuEditClicked.emit($event)"
+              (ksTableOpenClicked)="ksMenuOpenClicked.emit($event)"
+              (ksTablePreviewClicked)="ksMenuPreviewClicked.emit($event)"
+              (ksTableRemoveClicked)="ksMenuRemoveClicked.emit($event)"
+              (kcSetCurrentProject)="kcSetCurrentProject.emit($event)"
+              (ksModified)="ksModified.emit($event)"
+              [ksList]="kcProject.knowledgeSource ? kcProject.knowledgeSource : []"
+              (ksTableShowSubprojects)="ksTableSubprojectsToggled($event)"
+              [ksTableAllowSubprojectExpansion]="true">
+    </ks-table>
   </div>
 
   <div class="project-summary-container">
     <div class="container">
       <div class="row no-pad no-margin flex-row-center-between">
         <div style="width: 50%">
-          <h2>{{currentProject.name}} / Details</h2>
+          <h2>{{kcProject.name}} / Details</h2>
         </div>
         <div class="ks-info-controls">
           <button mat-icon-button (click)="openAll()">
@@ -92,7 +96,7 @@ limitations under the License.
                     <mat-label>Description</mat-label>
                     <textarea placeholder="Enter or Edit Description..."
                               [matTextareaAutosize]="true"
-                              [(ngModel)]="currentProject.description"
+                              [(ngModel)]="kcProject.description"
                               cdkAutosizeMinRows="5"
                               matInput></textarea>
                   </mat-form-field>
@@ -110,7 +114,7 @@ limitations under the License.
                   <mat-form-field style="width: 100%" (focusout)="setNotes()">
               <textarea placeholder="Enter or Edit a Note..."
                         [matTextareaAutosize]="true"
-                        [(ngModel)]="currentProject.notes"
+                        [(ngModel)]="kcProject.notes"
                         cdkAutosizeMinRows="4"
                         matInput></textarea>
                   </mat-form-field>
@@ -127,13 +131,13 @@ limitations under the License.
                 <ng-template matExpansionPanelContent>
                   <div class="row">
                     <div class="col s4 left">
-                      <b>Created:</b>   {{currentProject.dateCreated | date: 'shortDate'}}
+                      <b>Created:</b>   {{kcProject.dateCreated | date: 'shortDate'}}
                     </div>
                     <div class="col s4">
-                      <b>Accessed:</b>  {{currentProject.dateAccessed | date: 'shortDate'}}
+                      <b>Accessed:</b>  {{kcProject.dateAccessed | date: 'shortDate'}}
                     </div>
                     <div class="col s4 right">
-                      <b>Changed:</b>  {{currentProject.dateModified | date: 'shortDate'}}
+                      <b>Changed:</b>  {{kcProject.dateModified | date: 'shortDate'}}
                     </div>
                   </div>
                 </ng-template>
