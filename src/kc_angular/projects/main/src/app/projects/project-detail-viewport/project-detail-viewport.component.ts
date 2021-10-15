@@ -40,9 +40,11 @@ export class ProjectDetailViewportComponent implements OnInit, OnDestroy {
 
   ksQueue: KnowledgeSource[] = [];
 
-  private ksQueueSubscription: Subscription;
+  ksFabActions: { icon: string, label: string, click: () => void }[];
 
-  private kcProjectSubscription: Subscription;
+  private ksQueueSubscription?: Subscription;
+
+  private kcProjectSubscription?: Subscription;
 
   constructor(private browserViewDialogService: BrowserViewDialogService,
               private projectService: ProjectService,
@@ -50,17 +52,27 @@ export class ProjectDetailViewportComponent implements OnInit, OnDestroy {
               private confirmDialog: KcDialogService,
               private ksFactory: KsFactoryService,
               private snackbar: MatSnackBar,
-              private dialog: MatDialog,) {
-    this.ksQueueSubscription = ksQueueService.ksQueue.subscribe((ksQueue) => {
-      this.ksQueue = ksQueue;
-    })
-    this.kcProjectSubscription = this.projectService.currentProject.subscribe(project => {
-      this.kcProject = project.id.value.trim() === '' ? undefined : project;
-    });
+              private dialog: MatDialog) {
+    this.ksFabActions = [
+      {icon: 'description', label: 'Add files', click: this.addFile},
+      {icon: 'web', label: 'Add a link', click: this.addLink},
+      {icon: 'topic', label: 'Topic search', click: this.topicSearch},
+      {icon: 'travel_explore', label: 'Search the web', click: this.search}
+    ];
+    this.subscribe();
+  }
+
+  ngOnInit(): void {
+  }
+
+  ngOnDestroy() {
+    this.unsubscribe();
   }
 
   addFile = () => {
-    this.dialog.open(FileUploadComponent, {width: '50%', minWidth: '512px', maxWidth: '650px', data: this.kcProject});
+    this.dialog.open(FileUploadComponent, {
+      width: '50%', minWidth: '512px', maxWidth: '650px', data: this.kcProject
+    });
   }
 
   addLink = () => {
@@ -86,53 +98,22 @@ export class ProjectDetailViewportComponent implements OnInit, OnDestroy {
     this.browserViewDialogService.open({ks: searchKS});
   }
 
-  ksFabActions: { icon: string, label: string, click: () => void }[] = [
-    {
-      icon: 'description',
-      label: 'Add files',
-      click: this.addFile
-    },
-    {
-      icon: 'web',
-      label: 'Add a link',
-      click: this.addLink
-    },
-    {
-      icon: 'topic',
-      label: 'Topic search',
-      click: this.topicSearch
-    },
-    {
-      icon: 'travel_explore',
-      label: 'Search the web',
-      click: this.search
-    }
-  ]
-
-  ngOnInit(): void {
-  }
-
-  ngOnDestroy() {
-    this.ksQueueSubscription.unsubscribe();
-    this.kcProjectSubscription.unsubscribe();
-  }
-
   ksImported(ksList: KnowledgeSource[]) {
-    // Timeout used to give other components the chance to finish animations (i.e. don't force a bottleneck)
+    if (this.kcProject) {
+      for (let ks of ksList) {
+        ks.associatedProjects = [this.kcProject.id];
+      }
+      this.kcProject.knowledgeSource = this.kcProject.knowledgeSource ? [...this.kcProject.knowledgeSource, ...ksList] : [...ksList];
+    }
     setTimeout(() => {
       if (!this.kcProject) {
         return;
       }
       let update: ProjectUpdateRequest = {
-        addKnowledgeSource: ksList,
         id: this.kcProject.id
       }
       this.projectService.updateProject(update);
-    }, 1000);
-  }
-
-  ksQueueCleared() {
-    this.ksQueueService.clearResults();
+    }, 200);
   }
 
   ksRemoved(ks: KnowledgeSource) {
@@ -160,11 +141,15 @@ export class ProjectDetailViewportComponent implements OnInit, OnDestroy {
     });
   }
 
+  ksQueueCleared() {
+    this.ksQueueService.clearResults();
+  }
+
   ksQueueRemove(ks: KnowledgeSource) {
     this.ksQueueService.remove(ks);
   }
 
-  ksAdded(ks: KnowledgeSource[]) {
+  ksAdded(_: KnowledgeSource[]) {
     if (!this.kcProject) {
       return;
     }
@@ -175,9 +160,47 @@ export class ProjectDetailViewportComponent implements OnInit, OnDestroy {
     this.projectService.updateProject(update);
   }
 
-  projectChanged(project: ProjectModel) {
+  kcProjectUpdate(project: ProjectModel) {
     this.projectService.updateProject({
       id: project.id
     })
+  }
+
+  kcSetCurrentProject($event: string) {
+    this.projectService.setCurrentProject($event);
+  }
+
+  ksQueueStyle() {
+    return {
+      height: this.ksQueue.length > 0 ? '97px' : '0',
+    }
+  }
+
+  kcStyle() {
+    return {
+      height: this.ksQueue.length > 0 ? 'calc(100vh - 170px)' : 'calc(100vh - 73px)',
+      width: '100%',
+      flex: '1',
+      display: 'flex',
+      'flex-direction': 'row',
+      'flex-wrap': 'nowrap',
+      'align-content': 'stretch',
+      'align-items': 'stretch',
+      position: 'absolute'
+    }
+  }
+
+  private subscribe() {
+    this.ksQueueSubscription = this.ksQueueService.ksQueue.subscribe((ksQueue) => {
+      this.ksQueue = ksQueue;
+    });
+    this.kcProjectSubscription = this.projectService.currentProject.subscribe(project => {
+      this.kcProject = project.id.value.trim() === '' ? undefined : project;
+    });
+  }
+
+  private unsubscribe() {
+    this.ksQueueSubscription?.unsubscribe();
+    this.kcProjectSubscription?.unsubscribe();
   }
 }
