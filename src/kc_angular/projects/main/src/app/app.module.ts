@@ -94,6 +94,7 @@ import {MatTableModule} from "@angular/material/table";
 import {MatSortModule} from "@angular/material/sort";
 import {MatPaginatorModule} from "@angular/material/paginator";
 import {A11yModule} from "@angular/cdk/a11y";
+import { ProjectInfoComponent } from './projects/project-info/project-info.component';
 
 @NgModule({
   declarations: [
@@ -131,6 +132,7 @@ import {A11yModule} from "@angular/cdk/a11y";
     IngestSettingsComponent,
     GeneralSettingsComponent,
     KsPreviewComponent,
+    ProjectInfoComponent,
   ],
   imports: [
     AppRoutingModule,
