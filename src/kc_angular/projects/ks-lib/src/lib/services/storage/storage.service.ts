@@ -16,7 +16,6 @@
 
 import {Injectable} from '@angular/core';
 import {ProjectModel} from "projects/ks-lib/src/lib/models/project.model";
-import {UuidModel} from "projects/ks-lib/src/lib/models/uuid.model";
 import {KnowledgeSource} from "projects/ks-lib/src/lib/models/knowledge.source.model";
 
 @Injectable({
@@ -24,7 +23,6 @@ import {KnowledgeSource} from "projects/ks-lib/src/lib/models/knowledge.source.m
 })
 export class StorageService {
   readonly KC_CURRENT_PROJECT = 'current-project';
-  readonly KS_CUSTOM_SORT_INDEX = 'ks-custom-sort-index';
   readonly KS_LIST_SORT_INDEX = 'ks-sort-index';
   private KC_ALL_PROJECT_IDS = 'kc-projects';
   private db = window.localStorage;
@@ -85,6 +83,7 @@ export class StorageService {
           ks.dateModified = new Date(ks.dateModified);
           ks.dateAccessed = new Date(ks.dateAccessed);
           ks.dateCreated = new Date(ks.dateCreated);
+          ks.icon = undefined;
           this.knowledgeSources.push(ks);
         }
       }
@@ -167,46 +166,39 @@ export class StorageService {
     return ksList;
   }
 
-  get sortByCustom(): UuidModel[] | undefined {
-    let lookup = `${this.KS_CUSTOM_SORT_INDEX}-${this.kcCurrentProject}`
-    let customStr = window.localStorage.getItem(lookup);
-    if (customStr) {
-      let custom: UuidModel[] = JSON.parse(customStr);
-      if (custom)
-        return custom;
-    }
-    return undefined;
+  async getProjects() {
+    if (this.projectList)
+      return this.projectList;
+    return this.projects;
   }
 
-  set sortByCustom(idx: UuidModel[] | undefined) {
-    if (idx === undefined)
-      return;
-
-    let lookup = `${this.KS_CUSTOM_SORT_INDEX}-${this.kcCurrentProject}`
-    let idxStr = JSON.stringify(idx);
-    window.localStorage.setItem(lookup, idxStr);
-  }
-
-  saveProject(project: ProjectModel) {
-    // Update initial project
+  async saveProject(project: ProjectModel) {
+    // Update project in local storage
     this.updateProject(project);
 
-    // Get list of all projects
+    // Update project in local cache
+    let cachedProject = this.projectList?.find(p => p.id.value === project.id.value);
+    if (cachedProject) {
+      cachedProject = project;
+    }
+
+    // Get list of all project IDs from local storage
     let projectListString = window.localStorage.getItem(this.KC_ALL_PROJECT_IDS);
     let projectList: string[] = [];
     if (projectListString) {
       projectList = JSON.parse(projectListString);
     }
 
-    // Update list of projects to include
-    if (projectList?.length > 0) {
+    if (projectList.length > 0) {
       let id = projectList.find(item => item === project.id.value);
+      // Check if project ID is in the list. If it's not, add it, otherwise continue
       if (!id) {
         projectList.push(project.id.value);
         projectListString = JSON.stringify(projectList);
         window.localStorage.setItem(this.KC_ALL_PROJECT_IDS, projectListString);
       }
     } else {
+      // If there is no project list, create one and add project to it
       projectList.push(project.id.value);
       projectListString = JSON.stringify(projectList);
       window.localStorage.setItem(this.KC_ALL_PROJECT_IDS, projectListString);
@@ -219,7 +211,7 @@ export class StorageService {
     }
   }
 
-  updateProject(project: ProjectModel) {
+  async updateProject(project: ProjectModel) {
     let projectString = JSON.stringify(project);
     window.localStorage.setItem(project.id.value, projectString);
   }
