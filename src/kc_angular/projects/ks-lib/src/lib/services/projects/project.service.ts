@@ -108,10 +108,9 @@ export class ProjectService {
     this.refreshTree();
   }
 
-  getAllProjects(): Promise<ProjectModel[]> {
+  async getAllProjects(): Promise<ProjectModel[]> {
     return new Promise((resolve) => {
-      let projectList = this.storageService.projects;
-      resolve(projectList);
+      resolve(this.storageService.getProjects());
     });
   }
 
