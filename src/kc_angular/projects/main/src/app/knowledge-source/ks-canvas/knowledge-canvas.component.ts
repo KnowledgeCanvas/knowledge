@@ -92,7 +92,7 @@ export class KnowledgeCanvasComponent implements OnInit, OnDestroy, OnChanges {
       for (let ks of ksList) {
         ks.associatedProjects = [this.kcProject.id];
       }
-      this.kcProject.knowledgeSource = ksList;
+      this.kcProject.knowledgeSource = [...ksList];
       this.kcProjectUpdate.emit(this.kcProject);
     }
   }
