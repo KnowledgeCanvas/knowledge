@@ -187,8 +187,13 @@ export class KnowledgeSourceTableComponent implements OnInit, OnChanges {
       return '';
   }
 
-  setActiveProject(id: string) {
-    this.kcSetCurrentProject.emit(id);
+  setActiveProject(id: string | KnowledgeSource) {
+    if (typeof id === 'string')
+      this.kcSetCurrentProject.emit(id);
+    else
+      if (id.associatedProjects && id.associatedProjects[0]) {
+        this.kcSetCurrentProject.emit(id.associatedProjects[0].value);
+      }
   }
 
   show(element: KnowledgeSource) {

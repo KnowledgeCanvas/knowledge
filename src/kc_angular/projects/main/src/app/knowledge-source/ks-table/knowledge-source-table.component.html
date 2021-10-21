@@ -79,25 +79,25 @@ limitations under the License.
       <td mat-cell *matCellDef="let element">{{element.dateModified | date: 'shortDate'}}</td>
     </ng-container>
 
-    <ng-container matColumnDef="expandedDetail">
-      <td mat-cell *matCellDef="let element" [attr.colspan]="columnsToDisplay.length">
-        <div class="ks-table-expanded-detail" [@detailExpand]="element.id.value == expandedElement ? 'expanded' : 'collapsed'">
-          <app-ks-info [ks]="element" (ksModified)="ksModified.emit(element)">
-          </app-ks-info>
-        </div>
-      </td>
-    </ng-container>
+<!--    <ng-container matColumnDef="expandedDetail">-->
+<!--      <td mat-cell *matCellDef="let element" [attr.colspan]="columnsToDisplay.length">-->
+<!--        <div class="ks-table-expanded-detail" [@detailExpand]="element.id.value == expandedElement ? 'expanded' : 'collapsed'">-->
+<!--          <ks-lib-ks-notes [ks]="element"></ks-lib-ks-notes>-->
+<!--        </div>-->
+<!--      </td>-->
+<!--    </ng-container>-->
 
     <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
 
     <tr [class.ks-table-expanded-row]="expandedElement === element.id.value"
-        (contextmenu)="openContextMenu($event, element); false"
+        (contextmenu)="openContextMenu($event, element)"
         *matRowDef="let element; columns: columnsToDisplay;"
         (click)="ksRowClicked(element)"
         class="ks-table-element-row"
-        mat-row></tr>
+        mat-row>
+    </tr>
 
-    <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="ks-table-detail-row"></tr>
+<!--    <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="ks-table-detail-row"></tr>-->
   </table>
   <mat-paginator aria-label="Select page of Knowledge Sources"
                  [pageSizeOptions]="[5, 10, 25, 50]"
@@ -108,6 +108,7 @@ limitations under the License.
                         (ksMenuShowFileClicked)="ksTableShowFileClicked.emit($event)"
                         (ksMenuPreviewClicked)="ksTablePreviewClicked.emit($event)"
                         (ksMenuRemoveClicked)="ksTableRemoveClicked.emit($event)"
+                        (ksMenuViewProjectClicked)="setActiveProject($event)"
                         (ksMenuEditClicked)="ksTableEditClicked.emit($event)"
                         (ksMenuOpenClicked)="ksTableOpenClicked.emit($event)"
                         [ngStyle]="getRightClickMenuStyle()"
