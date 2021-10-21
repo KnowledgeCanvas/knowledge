@@ -25,7 +25,7 @@ import {ElectronIpcService} from "../electron-ipc/electron-ipc.service";
   providedIn: 'root'
 })
 export class FaviconExtractorService {
-  private googleFaviconSize = '64'
+  private googleFaviconSize = '32'
   private googleFaviconServicePrefix = `https://s2.googleusercontent.com/s2/favicons?domain_url=`;
   private googleFaviconServiceSuffix = `&sz=${this.googleFaviconSize}`;
   private defaultIcon = 'assets/img/kc-icon-greyscale.png';
