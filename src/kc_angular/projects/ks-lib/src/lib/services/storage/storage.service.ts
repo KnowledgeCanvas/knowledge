@@ -110,7 +110,7 @@ export class StorageService {
   }
 
   get sortByIndex(): number | undefined {
-    let idxStr = window.localStorage.getItem(this.KS_LIST_SORT_INDEX);
+    let idxStr = this.db.getItem(this.KS_LIST_SORT_INDEX);
     if (idxStr) {
       let idx: number = +idxStr;
       if (idx && idx > 0)
@@ -122,11 +122,11 @@ export class StorageService {
   set sortByIndex(index: number | undefined) {
     if (index === undefined)
       return;
-    window.localStorage.setItem(this.KS_LIST_SORT_INDEX, `${index}`);
+    this.db.setItem(this.KS_LIST_SORT_INDEX, `${index}`);
   }
 
   get kcCurrentProject(): string | null {
-    return window.localStorage.getItem(this.KC_CURRENT_PROJECT);
+    return this.db.getItem(this.KC_CURRENT_PROJECT);
   }
 
   set kcCurrentProject(id: string | null) {
@@ -134,11 +134,11 @@ export class StorageService {
       this.db.setItem(this.KC_CURRENT_PROJECT, '');
       return;
     }
-    window.localStorage.setItem(this.KC_CURRENT_PROJECT, id);
+    this.db.setItem(this.KC_CURRENT_PROJECT, id);
   }
 
   get ksList(): KnowledgeSource[] {
-    let projectIdsStr: string | null = window.localStorage.getItem(this.KC_ALL_PROJECT_IDS);
+    let projectIdsStr: string | null = this.db.getItem(this.KC_ALL_PROJECT_IDS);
 
     if (projectIdsStr === null) {
       console.warn('Attempted to retrieve project ID list but failed.');
@@ -154,7 +154,7 @@ export class StorageService {
     let ksList: KnowledgeSource[] = [];
     for (let projectId of projectIds) {
       let project: ProjectModel;
-      let projectStr = window.localStorage.getItem(projectId);
+      let projectStr = this.db.getItem(projectId);
       if (!projectStr)
         break;
       project = JSON.parse(projectStr);
@@ -167,24 +167,38 @@ export class StorageService {
   }
 
   async getProjects() {
+    console.debug('GetProjects: returning project list: ', this.projectList);
     if (this.projectList)
       return this.projectList;
     return this.projects;
   }
 
   async saveProject(project: ProjectModel) {
-    // Update project in local storage
-    this.updateProject(project);
+    console.debug('Save project: ', project);
 
     // Update project in local cache
-    let cachedProject = this.projectList?.find(p => p.id.value === project.id.value);
-    if (cachedProject) {
-      cachedProject = project;
+    let idx = this.projectList?.findIndex(p => p.id.value === project.id.value);
+    console.log('Index of project: ', idx);
+
+    if (idx === -1) { // If project does not exist in memory, add it
+      if (this.projectList)
+        this.projectList.push(project);
+      else
+        this.projectList = [project];
+
+    } else { // Otherwise update the project in-place
+      if (this.projectList && idx && idx ) {
+        console.log('Changing project to: ', project);
+        this.projectList[idx] = project;
+      }
     }
 
+    // Update the project in database
+    this.updateProject(project);
+
     // Get list of all project IDs from local storage
-    let projectListString = window.localStorage.getItem(this.KC_ALL_PROJECT_IDS);
     let projectList: string[] = [];
+    let projectListString = this.db.getItem(this.KC_ALL_PROJECT_IDS);
     if (projectListString) {
       projectList = JSON.parse(projectListString);
     }
@@ -195,13 +209,13 @@ export class StorageService {
       if (!id) {
         projectList.push(project.id.value);
         projectListString = JSON.stringify(projectList);
-        window.localStorage.setItem(this.KC_ALL_PROJECT_IDS, projectListString);
+        this.db.setItem(this.KC_ALL_PROJECT_IDS, projectListString);
       }
     } else {
       // If there is no project list, create one and add project to it
       projectList.push(project.id.value);
       projectListString = JSON.stringify(projectList);
-      window.localStorage.setItem(this.KC_ALL_PROJECT_IDS, projectListString);
+      this.db.setItem(this.KC_ALL_PROJECT_IDS, projectListString);
     }
   }
 
@@ -213,29 +227,33 @@ export class StorageService {
 
   async updateProject(project: ProjectModel) {
     let projectString = JSON.stringify(project);
-    window.localStorage.setItem(project.id.value, projectString);
+    this.db.setItem(project.id.value, projectString);
   }
 
   deleteProject(id: string) {
-    let projectList: string[] = JSON.parse(<string>window.localStorage.getItem(this.KC_ALL_PROJECT_IDS));
-    if (projectList) {
-      // Remove ID from project list
-      projectList = projectList.filter(p => p !== id);
-
-      // Convert new list to string
-      let projectListStr = JSON.stringify(projectList);
-
-      // Save in local storage
-      window.localStorage.setItem(this.KC_ALL_PROJECT_IDS, projectListStr);
-
-      // Remove project saved under this string.
-      window.localStorage.removeItem(id);
+    if (!this.projectList) {
+      console.warn('StorageService: attempting to delete a project that does not exist in memory.');
+      return;
     }
+
+    // Remove project from list
+    this.projectList = this.projectList.filter(p => p.id.value !== id);
+
+    // Remove project saved under this string.
+    this.db.removeItem(id);
+
+    // Persist changes
+    let projectIds: string[] = [];
+    for (let project of this.projectList) {
+      projectIds.push(project.id.value);
+    }
+    let projectListStr = JSON.stringify(projectIds);
+    this.db.setItem(this.KC_ALL_PROJECT_IDS, projectListStr);
   }
 
   factoryReset(confirmed: boolean) {
     if (confirmed) {
-      window.localStorage.clear();
+      this.db.clear();
     } else {
       console.warn('Factory reset was called with a false flag.');
     }
