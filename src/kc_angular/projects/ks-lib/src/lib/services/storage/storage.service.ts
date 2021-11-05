@@ -167,18 +167,14 @@ export class StorageService {
   }
 
   async getProjects() {
-    console.debug('GetProjects: returning project list: ', this.projectList);
     if (this.projectList)
       return this.projectList;
     return this.projects;
   }
 
   async saveProject(project: ProjectModel) {
-    console.debug('Save project: ', project);
-
     // Update project in local cache
     let idx = this.projectList?.findIndex(p => p.id.value === project.id.value);
-    console.log('Index of project: ', idx);
 
     if (idx === -1) { // If project does not exist in memory, add it
       if (this.projectList)
@@ -188,7 +184,6 @@ export class StorageService {
 
     } else { // Otherwise update the project in-place
       if (this.projectList && idx && idx ) {
-        console.log('Changing project to: ', project);
         this.projectList[idx] = project;
       }
     }
