@@ -37,17 +37,24 @@ limitations under the License.
     <div class="container">
       <h2>{{kcProject.name}} / Knowledge Sources</h2>
     </div>
+    <div class="container">
+      <mat-slide-toggle [disabled]="!kcProject || !kcProject.subprojects || kcProject.subprojects.length === 0"
+                        (change)="onShowSubProjectsClicked($event)"
+                        [(ngModel)]="showSubProjects">
+        Show Subproject Sources
+      </mat-slide-toggle>
+    </div>
     <ks-table (ksTableShowFileClicked)="ksMenuShowFileClicked.emit($event)"
               (ksTableCopyLinkClicked)="ksMenuCopyLinkClicked.emit($event)"
               (ksTableEditClicked)="ksMenuEditClicked.emit($event)"
               (ksTableOpenClicked)="ksMenuOpenClicked.emit($event)"
               (ksTablePreviewClicked)="ksMenuPreviewClicked.emit($event)"
-              (ksTableRemoveClicked)="ksMenuRemoveClicked.emit($event)"
+              (ksTableRemoveClicked)="removeClicked($event)"
               (kcSetCurrentProject)="kcSetCurrentProject.emit($event)"
               (ksModified)="ksModified.emit($event)"
-              [ksList]="kcProject.knowledgeSource ? kcProject.knowledgeSource : []"
+              [ksList]="ksList"
               (ksTableShowSubprojects)="ksTableSubprojectsToggled($event)"
-              [ksTableAllowSubprojectExpansion]="true">
+              [ksTableAllowSubprojectExpansion]="showSubProjects">
     </ks-table>
   </div>
 

@@ -93,17 +93,17 @@ export class KnowledgeSourceTableComponent implements OnInit, OnChanges {
 
   setTableColumnsByScreenWidth(width: number) {
     if (width > 1000) {
-      this.columnsToDisplay = this.showSubProjects
+      this.columnsToDisplay = this.ksTableAllowSubprojectExpansion
         ? this.initialDisplayedColumnsWithInheritance : this.initialDisplayedColumns;
       this.truncateLength = 50;
     } else if (width > 900) {
-      this.columnsToDisplay = this.showSubProjects
+      this.columnsToDisplay = this.ksTableAllowSubprojectExpansion
         ? this.initialDisplayedColumnsWithInheritance.filter(c => c !== 'dateCreated' && c !== 'dateAccessed')
         : this.initialDisplayedColumns.filter(c => c !== 'dateCreated' && c !== 'dateAccessed');
       this.truncateLength = 40;
     } else {
       this.truncateLength = 30;
-      this.columnsToDisplay = this.showSubProjects
+      this.columnsToDisplay = this.ksTableAllowSubprojectExpansion
         ? this.initialDisplayedColumnsWithInheritance.filter(c => c !== 'dateCreated' && c !== 'dateModified' && c !== 'dateAccessed')
         : this.initialDisplayedColumns.filter(c => c !== 'dateCreated' && c !== 'dateModified' && c !== 'dateAccessed');
     }
@@ -177,6 +177,7 @@ export class KnowledgeSourceTableComponent implements OnInit, OnChanges {
 
   onShowSubProjectsClicked(toggle: MatSlideToggleChange) {
     this.showSubProjects = toggle.checked;
+    this.ksTableShowSubprojects.emit(toggle.checked);
   }
 
   projectNameFromId(id: string): string {

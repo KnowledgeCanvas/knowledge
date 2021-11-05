@@ -22,6 +22,7 @@ import {KcCalendar} from "../../../../../ks-lib/src/lib/models/calendar.model";
 import {ProjectTopicListComponent} from "../project-topic-list/project-topic-list.component";
 import {KnowledgeSource} from "../../../../../ks-lib/src/lib/models/knowledge.source.model";
 import {FaviconExtractorService} from "../../../../../ks-lib/src/lib/services/favicon/favicon-extractor.service";
+import {MatSlideToggleChange} from "@angular/material/slide-toggle";
 
 @Component({
   selector: 'kc-project-overview',
@@ -65,6 +66,10 @@ export class ProjectDetailsOverviewComponent implements OnInit, OnChanges {
   @Output()
   ksModified = new EventEmitter<KnowledgeSource>();
 
+  showSubProjects: boolean = false;
+
+  ksList: KnowledgeSource[] = [];
+
   ancestors: ProjectIdentifiers[] = [];
 
   tooManyAncestorsToDisplay: boolean = false;
@@ -79,6 +84,7 @@ export class ProjectDetailsOverviewComponent implements OnInit, OnChanges {
     if (changes.kcProject.currentValue) {
       let project = changes.kcProject.currentValue;
       this.changeKsList(this.kcProject.knowledgeSource ? this.kcProject.knowledgeSource : []);
+      this.showSubProjects = false;
 
       if (!project.calendar)
         project.calendar = new KcCalendar();
@@ -140,23 +146,18 @@ export class ProjectDetailsOverviewComponent implements OnInit, OnChanges {
 
   async changeKsList(ksList: KnowledgeSource[]) {
     await this.faviconService.extractFromKsList(ksList).then((list) => {
-      this.kcProject.knowledgeSource = list;
+      this.ksList = list;
     })
   }
 
   async ksTableSubprojectsToggled(show: boolean) {
     if (show) {
       let ksList: KnowledgeSource[] = [];
-      if (this.kcProject.knowledgeSource) {
-        for (let ks of this.kcProject.knowledgeSource) {
-          ks.icon = this.faviconService.loading();
-          ks.associatedProjects = ks.associatedProjects ? ks.associatedProjects : [this.kcProject.id];
-          ksList.push(ks);
-        }
-      }
+
+      if (this.kcProject.knowledgeSource)
+        ksList = [...ksList, ...this.kcProject.knowledgeSource];
 
       const subTrees = this.projectService.getSubTree(this.kcProject.id.value);
-
       for (let subTree of subTrees) {
         // Ignore current project...
         if (subTree.id === this.kcProject.id.value)
@@ -164,20 +165,23 @@ export class ProjectDetailsOverviewComponent implements OnInit, OnChanges {
 
         let subProject = this.projectService.getProject(subTree.id);
 
-        if (!subProject || !subProject.knowledgeSource || subProject.knowledgeSource.length === 0)
-          continue;
-
-        for (let ks of subProject.knowledgeSource) {
-          ks.icon = this.faviconService.loading();
-          ks.associatedProjects = ks.associatedProjects ? ks.associatedProjects : [subProject.id];
-          ksList.push(ks);
-        }
+        if (subProject && subProject.knowledgeSource)
+          ksList = [...ksList, ...subProject.knowledgeSource];
       }
 
+      this.showSubProjects = true;
       this.changeKsList(ksList);
-
     } else {
       this.changeKsList(this.kcProject.knowledgeSource ? this.kcProject.knowledgeSource : []);
+      this.showSubProjects = false;
     }
+  }
+
+  onShowSubProjectsClicked(toggle: MatSlideToggleChange) {
+    this.ksTableSubprojectsToggled(toggle.checked);
+  }
+
+  removeClicked($event: KnowledgeSource) {
+    this.ksMenuRemoveClicked.emit($event);
   }
 }

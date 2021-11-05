@@ -67,7 +67,7 @@ export class KsFactoryService {
       ingestType: "website", dateAccessed: new Date(), dateModified: new Date(), dateCreated: new Date(),
       accessLink: "",
       iconUrl: "",
-      notes: {text: '', dateAccessed: new Date(), dateCreated: new Date(), dateModified: new Date()},
+      notes: [],
       icon: ''
     }
 

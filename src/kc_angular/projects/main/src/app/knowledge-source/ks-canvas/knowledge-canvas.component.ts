@@ -128,11 +128,11 @@ export class KnowledgeCanvasComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     this.dialogService.openWarnDeleteKs(ks).then((confirmed) => {
-      if (!this.kcProject || !confirmed) {
+      if (!this.kcProject || !confirmed || !associatedProject) {
         return;
       }
       const update: ProjectUpdateRequest = {
-        id: this.kcProject.id,
+        id: associatedProject.id,
         removeKnowledgeSource: [ks]
       }
       this.projectService.updateProject(update);

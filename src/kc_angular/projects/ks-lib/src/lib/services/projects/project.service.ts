@@ -429,8 +429,7 @@ export class ProjectService {
         if (!found) {
           addKs.associatedProjects = [project.id];
           ksList.push(addKs);
-        }
-        else
+        } else
           console.warn('ProjectService: Invalid request to add duplicate knowledge source to project ', project.name);
       }
       project.knowledgeSource = [...project.knowledgeSource, ...ksList];

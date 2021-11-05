@@ -75,7 +75,20 @@ export class KsInfoComponent implements OnInit, OnChanges, OnDestroy {
       ks.title = this.ksUnmodified.title;
       return false;
     }
-    return (this.ksUnmodified.title !== ks.title) || (this.ksUnmodified.description !== ks.description) || (this.ksUnmodified.notes.text !== ks.notes.text);
+
+    let notes = '';
+    this.ksUnmodified.notes.forEach((ks) => {
+      notes += ks.text;
+    });
+
+    let newNotes = '';
+    ks.notes.forEach((ks) => {
+      newNotes += ks.text;
+    });
+
+    return (this.ksUnmodified.title !== ks.title)
+      || (this.ksUnmodified.description !== ks.description)
+      || (notes !== newNotes);
   }
 
   ksDeepCopy(ks: KnowledgeSource): KnowledgeSource {

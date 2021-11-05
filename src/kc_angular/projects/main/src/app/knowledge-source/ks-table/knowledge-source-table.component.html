@@ -15,13 +15,13 @@ limitations under the License.
 -->
 
 
-<div class="container">
-  <mat-slide-toggle [disabled]="ksTableAllowSubprojectExpansion"
-                    (change)="onShowSubProjectsClicked($event)"
-                    [(ngModel)]="showSubProjects">
-    Show Subproject Sources
-  </mat-slide-toggle>
-</div>
+<!--<div class="container">-->
+<!--  <mat-slide-toggle [disabled]="!ksTableAllowSubprojectExpansion"-->
+<!--                    (change)="onShowSubProjectsClicked($event)"-->
+<!--                    [(ngModel)]="showSubProjects">-->
+<!--    Show Subproject Sources-->
+<!--  </mat-slide-toggle>-->
+<!--</div>-->
 <div [hidden]="hideTable" class="container">
   <mat-form-field appearance="fill" style="width: 100%">
     <mat-label>Filter</mat-label>
@@ -79,13 +79,13 @@ limitations under the License.
       <td mat-cell *matCellDef="let element">{{element.dateModified | date: 'shortDate'}}</td>
     </ng-container>
 
-<!--    <ng-container matColumnDef="expandedDetail">-->
-<!--      <td mat-cell *matCellDef="let element" [attr.colspan]="columnsToDisplay.length">-->
-<!--        <div class="ks-table-expanded-detail" [@detailExpand]="element.id.value == expandedElement ? 'expanded' : 'collapsed'">-->
-<!--          <ks-lib-ks-notes [ks]="element"></ks-lib-ks-notes>-->
-<!--        </div>-->
-<!--      </td>-->
-<!--    </ng-container>-->
+    <ng-container matColumnDef="expandedDetail">
+      <td mat-cell *matCellDef="let element" [attr.colspan]="columnsToDisplay.length">
+        <div class="ks-table-expanded-detail" [@detailExpand]="element.id.value == expandedElement ? 'expanded' : 'collapsed'">
+          <ks-lib-ks-notes *ngIf="element.id.value === expandedElement" [ks]="element"></ks-lib-ks-notes>
+        </div>
+      </td>
+    </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
 
@@ -97,7 +97,7 @@ limitations under the License.
         mat-row>
     </tr>
 
-<!--    <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="ks-table-detail-row"></tr>-->
+    <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="ks-table-detail-row"></tr>
   </table>
   <mat-paginator aria-label="Select page of Knowledge Sources"
                  [pageSizeOptions]="[5, 10, 25, 50]"

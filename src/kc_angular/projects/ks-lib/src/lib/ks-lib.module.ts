@@ -50,6 +50,7 @@ import { HoverClassDirective } from './directives/hover/hover-class.directive';
 import { KsIngestFabComponent } from './components/ks-ingest-fab/ks-ingest-fab.component';
 import { KsContextMenuComponent } from './components/ks-context-menu/ks-context-menu.component';
 import {MatMenuModule} from "@angular/material/menu";
+import { KsNotesComponent } from './components/ks-notes/ks-notes.component';
 
 declare global {
   interface Window {
@@ -79,7 +80,8 @@ declare global {
     KsDndHorizontalDirective,
     HoverClassDirective,
     KsIngestFabComponent,
-    KsContextMenuComponent
+    KsContextMenuComponent,
+    KsNotesComponent
   ],
   imports: [
     MatIconModule,
@@ -115,7 +117,8 @@ declare global {
     ProjectBreadcrumbPipe,
     KsDragAndDropComponent,
     KsIngestFabComponent,
-    KsContextMenuComponent
+    KsContextMenuComponent,
+    KsNotesComponent
   ],
   providers: []
 })
