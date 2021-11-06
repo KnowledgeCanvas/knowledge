@@ -1,6 +1,6 @@
 {
   "name": "knowledge-canvas",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "author": "Rob Royce <robertris2@gmail.com> (https://robroyce.dev)",
   "description": "Knowledge Canvas is an application for students, researchers, and life-long learners who need help managing their digital ecosystem through use of search, knowledge graphs, and more.",
   "private": true,
