@@ -22,7 +22,7 @@ limitations under the License.
   <div class="row">
     <div class="col s12">
       <mat-form-field style="width: 100%">
-        <input matInput [(ngModel)]="ks.title" placeholder="Title" required>
+        <input matInput [(ngModel)]="project.name" placeholder="Title" required>
       </mat-form-field>
     </div>
   </div>
@@ -31,21 +31,19 @@ limitations under the License.
       <mat-form-field style="width: 100%">
               <textarea placeholder="Enter or Edit Description..."
                         [matTextareaAutosize]="true"
-                        [(ngModel)]="ks.description"
+                        [(ngModel)]="project.description"
                         cdkAutosizeMinRows="5"
                         matInput></textarea>
       </mat-form-field>
     </div>
   </div>
-  <div class="row">
-    <div class="col s12">
-      <ks-lib-ks-notes [ks]="ks"></ks-lib-ks-notes>
-    </div>
-  </div>
-  <div class="row" *ngIf="ksHasChanged(ks)">
+  <div class="row" >
     <div class="col right">
-      <button mat-button color="primary" (click)="ksSaveChanges(ks)">
+      <button mat-button color="primary" (click)="save()" *ngIf="projectHasChanged(data.project)">
         Save
+      </button>
+      <button mat-button color="warn" (click)="cancel()">
+        Cancel
       </button>
     </div>
   </div>

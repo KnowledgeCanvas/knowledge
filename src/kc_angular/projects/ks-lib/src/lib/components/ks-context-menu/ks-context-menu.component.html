@@ -15,15 +15,18 @@ limitations under the License.
 -->
 
 
-<mat-drawer-container autosize class="projects-container">
-  <mat-drawer class="projects-container-sidebar" mode="side" opened disableClose>
-    <div class="projects-container-overflow">
-      <app-projects-navigation></app-projects-navigation>
-    </div>
-  </mat-drawer>
-  <mat-drawer-content>
-    <div class="projects-container-content">
-      <app-project-detail-viewport></app-project-detail-viewport>
-    </div>
-  </mat-drawer-content>
-</mat-drawer-container>
+<ng-container>
+  <!--  Empty element required to trigger menu programmatically-->
+  <div [matMenuTriggerFor]="menu"></div>
+
+  <mat-menu #menu='matMenu'>
+    <ng-template ngFor let-item [ngForOf]="contextMenuItems">
+      <button onclick="this.blur()"
+              (click)="item.menuAction.emit(ks)"
+              mat-menu-item>
+        <mat-icon>{{item.menuIcon}}</mat-icon>
+        {{item.menuText}}
+      </button>
+    </ng-template>
+  </mat-menu>
+</ng-container>

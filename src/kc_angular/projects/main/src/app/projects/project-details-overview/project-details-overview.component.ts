@@ -14,37 +14,76 @@
  limitations under the License.
  */
 
-import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, EventEmitter, OnChanges, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
 import {ProjectIdentifiers, ProjectService} from "../../../../../ks-lib/src/lib/services/projects/project.service";
 import {ProjectModel} from "projects/ks-lib/src/lib/models/project.model";
 import {MatAccordion} from "@angular/material/expansion";
 import {KcCalendar} from "../../../../../ks-lib/src/lib/models/calendar.model";
-import {Subscription} from "rxjs";
 import {ProjectTopicListComponent} from "../project-topic-list/project-topic-list.component";
+import {KnowledgeSource} from "../../../../../ks-lib/src/lib/models/knowledge.source.model";
+import {FaviconExtractorService} from "../../../../../ks-lib/src/lib/services/favicon/favicon-extractor.service";
+import {MatSlideToggleChange} from "@angular/material/slide-toggle";
 
 @Component({
-  selector: 'app-canvas-details-overview',
+  selector: 'kc-project-overview',
   templateUrl: './project-details-overview.component.html',
   styleUrls: ['./project-details-overview.component.scss']
 })
-export class ProjectDetailsOverviewComponent implements OnInit, OnDestroy {
-  @ViewChild('projectOverview', {static: true}) container!: ElementRef;
-  @ViewChild('accordion', {static: true}) Accordion!: MatAccordion
-  @ViewChild('topics', {static: true}) topics!: ProjectTopicListComponent;
-  currentProject: ProjectModel = new ProjectModel('', {value: ''});
-  notes: string[] = [];
-  ancestors: ProjectIdentifiers[] = [];
-  tooManyAncestorsToDisplay: boolean = false;
-  private subscription: Subscription;
+export class ProjectDetailsOverviewComponent implements OnInit, OnChanges {
+  @ViewChild('projectOverview', {static: true})
+  container!: ElementRef;
 
-  constructor(private projectService: ProjectService) {
-    this.subscription = projectService.currentProject.subscribe((project: ProjectModel) => {
+  @ViewChild('accordion', {static: true})
+  Accordion!: MatAccordion
+
+  @ViewChild('topics', {static: true})
+  topics!: ProjectTopicListComponent;
+
+  kcProject!: ProjectModel;
+
+  @Output()
+  ksMenuCopyLinkClicked = new EventEmitter<KnowledgeSource>();
+
+  @Output()
+  ksMenuEditClicked = new EventEmitter<KnowledgeSource>();
+
+  @Output()
+  ksMenuOpenClicked = new EventEmitter<KnowledgeSource>();
+
+  @Output()
+  ksMenuPreviewClicked = new EventEmitter<KnowledgeSource>();
+
+  @Output()
+  ksMenuRemoveClicked = new EventEmitter<KnowledgeSource>();
+
+  @Output()
+  ksMenuShowFileClicked = new EventEmitter<KnowledgeSource>();
+
+  @Output()
+  kcSetCurrentProject = new EventEmitter<string>();
+
+  @Output()
+  ksModified = new EventEmitter<KnowledgeSource>();
+
+  showSubProjects: boolean = false;
+
+  ksList: KnowledgeSource[] = [];
+
+  ancestors: ProjectIdentifiers[] = [];
+
+  tooManyAncestorsToDisplay: boolean = false;
+
+  constructor(private projectService: ProjectService, private faviconService: FaviconExtractorService) {
+    projectService.currentProject.subscribe((project) => {
+      this.kcProject = project;
+
+      this.ksTableSubprojectsToggled(this.showSubProjects);
+
       if (!project.calendar)
         project.calendar = new KcCalendar();
-      this.currentProject = project;
 
       // Show up to 3 breadcrumbs (including current project)
-      let ancestors = projectService.getAncestors(project.id.value);
+      let ancestors = this.projectService.getAncestors(project.id.value);
 
       if (ancestors.length > 3) {
         this.ancestors = ancestors.slice(ancestors.length - 3);
@@ -59,12 +98,11 @@ export class ProjectDetailsOverviewComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
   }
 
-  ngOnDestroy() {
-    this.subscription.unsubscribe();
+  ngOnChanges(changes: SimpleChanges) {
   }
 
   setDescription() {
-    this.projectService.updateProject({id: this.currentProject.id});
+    this.projectService.updateProject({id: this.kcProject.id});
   }
 
   openAll() {
@@ -76,32 +114,73 @@ export class ProjectDetailsOverviewComponent implements OnInit, OnDestroy {
   }
 
   setNotes() {
-    this.projectService.updateProject({id: this.currentProject.id});
+    this.projectService.updateProject({id: this.kcProject.id});
   }
 
   calStart($event: any) {
-    if (this.currentProject.calendar) {
-      this.currentProject.calendar.start = $event;
+    if (this.kcProject.calendar) {
+      this.kcProject.calendar.start = $event;
     } else {
-      this.currentProject.calendar = new KcCalendar();
-      this.currentProject.calendar.start = $event;
+      this.kcProject.calendar = new KcCalendar();
+      this.kcProject.calendar.start = $event;
     }
 
-    this.projectService.updateProject({id: this.currentProject.id});
+    this.projectService.updateProject({id: this.kcProject.id});
   }
 
   calEnd($event: any) {
-    if (this.currentProject.calendar) {
-      this.currentProject.calendar.end = $event;
+    if (this.kcProject.calendar) {
+      this.kcProject.calendar.end = $event;
     } else {
-      this.currentProject.calendar = new KcCalendar();
-      this.currentProject.calendar.end = $event;
+      this.kcProject.calendar = new KcCalendar();
+      this.kcProject.calendar.end = $event;
     }
-    this.projectService.updateProject({id: this.currentProject.id});
+    this.projectService.updateProject({id: this.kcProject.id});
   }
 
   navigate(id: string) {
-    if (id !== this.currentProject.id.value)
+    if (id !== this.kcProject.id.value)
       this.projectService.setCurrentProject(id);
+  }
+
+  async changeKsList(ksList: KnowledgeSource[]) {
+    await this.faviconService.extractFromKsList(ksList).then((list) => {
+      this.ksList = [...list];
+    })
+  }
+
+  async ksTableSubprojectsToggled(show: boolean) {
+    if (show) {
+      let ksList: KnowledgeSource[] = [];
+
+      if (this.kcProject.knowledgeSource)
+        ksList = [...ksList, ...this.kcProject.knowledgeSource];
+
+      const subTrees = this.projectService.getSubTree(this.kcProject.id.value);
+      for (let subTree of subTrees) {
+        // Ignore current project...
+        if (subTree.id === this.kcProject.id.value)
+          continue;
+
+        let subProject = this.projectService.getProject(subTree.id);
+
+        if (subProject && subProject.knowledgeSource)
+          ksList = [...ksList, ...subProject.knowledgeSource];
+      }
+
+      this.showSubProjects = true;
+      this.changeKsList(ksList);
+    } else {
+      this.changeKsList(this.kcProject.knowledgeSource ? this.kcProject.knowledgeSource : []);
+      this.showSubProjects = false;
+    }
+  }
+
+  onShowSubProjectsClicked(toggle: MatSlideToggleChange) {
+    this.ksTableSubprojectsToggled(toggle.checked);
+  }
+
+  removeClicked($event: KnowledgeSource) {
+    this.ksMenuRemoveClicked.emit($event);
   }
 }

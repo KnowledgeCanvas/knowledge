@@ -82,7 +82,9 @@ export class ElectronIpcService {
     promptForDirectory: 'app-prompt-for-directory',
     promptForDirectoryResults: 'app-prompt-for-directory-results',
     saveSettings: 'app-save-settings',
-    saveSettingsResults: 'app-save-settings-results'
+    saveSettingsResults: 'app-save-settings-results',
+    showItemInFolder: 'app-show-item-in-folder',
+    showItemInFolderResults: 'app-show-item-in-folder-results'
   }
 
   // Subscribers will be alerted when the browser view navigates to a new URL
@@ -381,6 +383,10 @@ export class ElectronIpcService {
         });
       });
     });
+  }
+
+  showItemInFolder(accessLink: string) {
+    this.send(this.channels.showItemInFolder, accessLink);
   }
 
   /**

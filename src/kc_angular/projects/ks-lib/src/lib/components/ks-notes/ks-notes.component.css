@@ -1,0 +1,11 @@
+.ks-notes-viewport {
+  justify-content: flex-start;
+  flex-direction: column;
+  align-items: center;
+  flex-wrap: nowrap;
+  padding-top: 8px;
+  min-height: 50vh;
+  max-height: 50vh;
+  display: flex;
+  width: 100%;
+}

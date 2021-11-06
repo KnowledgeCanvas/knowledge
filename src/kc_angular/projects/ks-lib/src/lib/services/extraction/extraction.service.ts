@@ -63,4 +63,31 @@ export class ExtractionService {
       });
     });
   }
+
+  async textFromFile(file: File): Promise<any> {
+    return new Promise<string>((resolve, reject) => {
+      let headers = new Headers();
+      headers.append("Content-Type", file.type);
+      headers.append('Accept', 'text/html');
+      headers.append('X-Tika-OCRLanguage', 'eng');
+
+      let requestOptions: RequestInit = {
+        method: 'PUT',
+        headers: headers,
+        body: file,
+        redirect: 'follow'
+      };
+
+      fetch("http://localhost:9998/tika", requestOptions)
+        .then(response => {
+          response.text().then((raw) => {
+            let parser = new DOMParser();
+            let doc = parser.parseFromString(raw, 'text/html');
+            console.log('Got HTML Doc: ', doc);
+            resolve(raw);
+          })
+        })
+        .catch(error => reject(error));
+    })
+  }
 }

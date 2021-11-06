@@ -42,12 +42,15 @@ import {MatTooltipModule} from "@angular/material/tooltip";
 import {MatSlideToggleModule} from "@angular/material/slide-toggle";
 import {TruncatePipe} from './pipes/truncate.pipe';
 import {ProjectBreadcrumbPipe} from './pipes/project-breadcrumb.pipe';
-import {KnowledgeSourceDragAndDropListComponent} from './components/knowledge-source-drag-and-drop-list/knowledge-source-drag-and-drop-list.component';
+import {KsDragAndDropComponent} from './components/knowledge-source-drag-and-drop-list/ks-drag-and-drop.component';
 import {KsDndVerticalDirective} from './directives/ksDnd/ks-dnd-vertical.directive';
 import {KsDndHorizontalDirective} from './directives/ksDnd/ks-dnd-horizontal.directive';
 import {DragDropModule} from "@angular/cdk/drag-drop";
 import { HoverClassDirective } from './directives/hover/hover-class.directive';
 import { KsIngestFabComponent } from './components/ks-ingest-fab/ks-ingest-fab.component';
+import { KsContextMenuComponent } from './components/ks-context-menu/ks-context-menu.component';
+import {MatMenuModule} from "@angular/material/menu";
+import { KsNotesComponent } from './components/ks-notes/ks-notes.component';
 
 declare global {
   interface Window {
@@ -72,11 +75,13 @@ declare global {
     ViewportFooterComponent,
     TruncatePipe,
     ProjectBreadcrumbPipe,
-    KnowledgeSourceDragAndDropListComponent,
+    KsDragAndDropComponent,
     KsDndVerticalDirective,
     KsDndHorizontalDirective,
     HoverClassDirective,
-    KsIngestFabComponent
+    KsIngestFabComponent,
+    KsContextMenuComponent,
+    KsNotesComponent
   ],
   imports: [
     MatIconModule,
@@ -92,7 +97,8 @@ declare global {
     MatProgressBarModule,
     MatTooltipModule,
     MatSlideToggleModule,
-    DragDropModule
+    DragDropModule,
+    MatMenuModule
   ],
   exports: [
     PageHeaderLargeComponent,
@@ -109,8 +115,10 @@ declare global {
     ViewportFooterComponent,
     TruncatePipe,
     ProjectBreadcrumbPipe,
-    KnowledgeSourceDragAndDropListComponent,
-    KsIngestFabComponent
+    KsDragAndDropComponent,
+    KsIngestFabComponent,
+    KsContextMenuComponent,
+    KsNotesComponent
   ],
   providers: []
 })

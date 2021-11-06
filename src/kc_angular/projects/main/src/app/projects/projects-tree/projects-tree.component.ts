@@ -19,12 +19,13 @@ import {MatTreeFlatDataSource, MatTreeFlattener} from '@angular/material/tree';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {ProjectTreeFlatNode, ProjectTreeNode} from "projects/ks-lib/src/lib/models/project.tree.model";
 import {ProjectIdentifiers, ProjectService} from "../../../../../ks-lib/src/lib/services/projects/project.service";
-import {ProjectModel} from "projects/ks-lib/src/lib/models/project.model";
+import {ProjectModel, ProjectUpdateRequest} from "projects/ks-lib/src/lib/models/project.model";
 import {MatDialog} from '@angular/material/dialog';
 import {KcDialogRequest, KcDialogService} from "../../../../../ks-lib/src/lib/services/dialog/kc-dialog.service";
 import {ProjectCreationDialogComponent} from "../project-creation-dialog/project-creation-dialog.component";
 import {MatMenuTrigger} from "@angular/material/menu";
 import {Subscription} from "rxjs";
+import {ProjectInfoComponent} from "../project-info/project-info.component";
 
 @Component({
   selector: 'app-projects-tree',
@@ -212,7 +213,28 @@ export class ProjectsTreeComponent implements OnInit, OnDestroy {
     this.contextTriggerId = id;
   }
 
-  moveProject() {
-
+  editProject() {
+    if (!this.contextTriggerId) {
+      return;
+    }
+    let id = this.contextTriggerId;
+    this.contextTriggerId = undefined;
+    const project = this.projectService.getProject(id);
+    if (!project) {
+      console.error('Error attempting to find project with ID: ', id);
+      return;
+    }
+    const dialogRef = this.matDialog.open(ProjectInfoComponent, {
+      width: '50%',
+      data: {project: project}
+    });
+    dialogRef.afterClosed().subscribe((projectChanged) => {
+      if (projectChanged) {
+        let update: ProjectUpdateRequest = {
+          id: project.id
+        }
+        this.projectService.updateProject(update);
+      }
+    })
   }
 }

@@ -14,82 +14,88 @@
  limitations under the License.
  */
 
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
-import {KnowledgeSource, KnowledgeSourceReference} from "projects/ks-lib/src/lib/models/knowledge.source.model";
-import {MatAccordion} from "@angular/material/expansion";
-import {AuthorModel} from "projects/ks-lib/src/lib/models/author.model";
+import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges} from '@angular/core';
+import {KnowledgeSource} from "projects/ks-lib/src/lib/models/knowledge.source.model";
 
 @Component({
   selector: 'app-ks-info',
   templateUrl: './ks-info.component.html',
   styleUrls: ['./ks-info.component.scss']
 })
-export class KsInfoComponent implements OnInit, OnChanges {
-  @ViewChild('accordion', {static: true}) Accordion?: MatAccordion
-  @Input() ks: KnowledgeSource | undefined;
-  @Output() ksModified = new EventEmitter<boolean>();
-  title: string = '';
-  reference?: KnowledgeSourceReference;
-  authors: AuthorModel[] = [];
-  description: string = '';
-  ingestType: string = '';
-  info: any[] = [];
-  notes: string = '';
-  dateAccessed?: string;
-  dateCreated?: string;
-  dateModified?: string;
+export class KsInfoComponent implements OnInit, OnChanges, OnDestroy {
+  @Input()
+  ks!: KnowledgeSource;
+
+  @Output()
+  ksModified = new EventEmitter<boolean>();
+
+  private ksUnmodified?: KnowledgeSource;
 
   constructor() {
-
   }
 
   ngOnInit(): void {
   }
 
+  ngOnDestroy() {
+    // If ks has been changed, notify subscribers
+    if (this.ksUnmodified && this.ksHasChanged(this.ks))
+      this.ksModified.emit(true);
+  }
+
   ngOnChanges(changes: SimpleChanges) {
     let ks: KnowledgeSource = changes.ks.currentValue;
     if (ks) {
-      this.title = ks.title;
-      this.ingestType = ks.ingestType;
-      this.reference = ks.reference;
-      this.notes = ks.notes.text;
-      this.description = ks.description ? ks.description : '';
-      this.authors = ks.authors ? ks.authors : [];
-      this.dateAccessed = ks.dateAccessed.toLocaleString();
-      this.dateCreated = ks.dateCreated.toLocaleString();
-      this.dateModified = ks.dateModified.toLocaleString();
+      // If ks changes (reuse of component), check if previous ks changed before updating
+      if (this.ksUnmodified && ks.id.value !== this.ksUnmodified.id.value) {
+        this.ksEmitIfChanged(changes.ks.previousValue);
+      }
+      this.ksUnmodified = this.ksDeepCopy(ks);
     }
   }
 
-  openAll() {
-    this.Accordion?.openAll();
+  ksSaveChanges(ks: KnowledgeSource) {
+    this.ksEmitIfChanged(ks);
+    this.ksUnmodified = this.ksDeepCopy(ks);
   }
 
-  closeAll() {
-    this.Accordion?.closeAll();
-  }
-
-  setDescription() {
-    if (this.ks) {
-      this.ks.description = this.description;
+  ksEmitIfChanged(ks?: KnowledgeSource) {
+    if (ks && this.ksHasChanged(ks)) {
+      this.ksModified.emit(true);
+    } else if (this.ksHasChanged(this.ks)) {
       this.ksModified.emit(true);
     }
   }
 
-  setTitle() {
-    if (this.ks) {
-      this.ks.title = this.title;
-      this.ksModified.emit(true);
+  ksHasChanged(ks: KnowledgeSource): boolean {
+    if (!this.ksUnmodified) {
+      return true;
     }
+    if (!ks.title || ks.title.trim() === '') {
+      ks.title = this.ksUnmodified.title;
+      return false;
+    }
+
+    let notes = '';
+    this.ksUnmodified.notes.forEach((ks) => {
+      notes += ks.text;
+    });
+
+    let newNotes = '';
+    ks.notes.forEach((ks) => {
+      newNotes += ks.text;
+    });
+
+    return (this.ksUnmodified.title !== ks.title)
+      || (this.ksUnmodified.description !== ks.description)
+      || (notes !== newNotes);
   }
 
-  notesModified() {
-    if (!this.ks || this.ks.notes.text === this.notes)
-      return;
-
-    this.ks.notes.text = this.notes;
-    this.ks.notes.dateModified = new Date();
-    this.ks.dateModified = new Date();
-    this.ksModified.emit(true);
+  ksDeepCopy(ks: KnowledgeSource): KnowledgeSource {
+    let deepKs: KnowledgeSource = JSON.parse(JSON.stringify(ks));
+    deepKs.dateModified = new Date(deepKs.dateModified);
+    deepKs.dateAccessed = new Date(deepKs.dateAccessed);
+    deepKs.dateCreated = new Date(deepKs.dateCreated);
+    return deepKs;
   }
 }

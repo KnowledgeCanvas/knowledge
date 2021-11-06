@@ -1,32 +1,46 @@
-<!--Copyright 2021 Rob Royce-->
+<!--
+Copyright 2021 Rob Royce
 
-<!--Licensed under the Apache License, Version 2.0 (the "License");-->
-<!--you may not use this file except in compliance with the License.-->
-<!--You may obtain a copy of the License at-->
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-<!--http://www.apache.org/licenses/LICENSE-2.0-->
+http://www.apache.org/licenses/LICENSE-2.0
 
-<!--Unless required by applicable law or agreed to in writing, software-->
-<!--distributed under the License is distributed on an "AS IS" BASIS,-->
-<!--WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.-->
-<!--See the License for the specific language governing permissions and-->
-<!--limitations under the License.-->
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
 
 
-<div class="knowledge-canvas-container" [style.height]="searchBarVisible ? 'calc(100vh - 170px)' : 'calc(100vh - 73px)'">
-  <ks-lib-knowledge-source-drag-and-drop-list
-    #projectList
-    class="project-ks-list"
-    [ksList]="projectKsList"
-    [ksListId]="projectKsListId"
-    [ksListOrientation]="'vertical'"
-    [ksListManualSortingDisabled]="false"
-    [ksListSortBy]="'Z-a'"
-    [ksToolTips]="true"
-    (ksListChanged)="ksListChanged($event)"
-    (ksRemoved)="ksRemovedFromProject($event)"
-    (ksListSorted)="ksListSorted($event)"
-    (ksSelected)="projectKsSelected($event)">
-  </ks-lib-knowledge-source-drag-and-drop-list>
-  <app-canvas-details-overview></app-canvas-details-overview>
-</div>
+<ks-drag-and-drop #projectList
+                  [ksList]="kcProject.knowledgeSource ? kcProject.knowledgeSource : []"
+                  class="project-ks-list"
+                  [ksListId]="projectKsListId"
+                  [ksListOrientation]="'vertical'"
+                  [ksListManualSortingDisabled]="false"
+                  [ksListSortBy]="'Z-a'"
+                  [ksToolTips]="true"
+                  (ksListChanged)="ksListChanged($event)"
+                  (ksRemoved)="ksRemovedFromProject($event)"
+                  (ksListSorted)="ksListSorted($event)"
+                  (ksSelected)="projectKsSelected($event)"
+                  [ksEnableContextMenu]="true"
+                  (ksMenuShowFileClicked)="ksShow($event)"
+                  (ksMenuRemoveClicked)="ksRemove($event)"
+                  (ksMenuPreviewClicked)="ksPreview($event)"
+                  (ksMenuOpenClicked)="ksOpen($event)"
+                  (ksMenuEditClicked)="ksEdit($event)"
+                  (ksMenuCopyLinkClicked)="ksCopy($event)">
+</ks-drag-and-drop>
+<kc-project-overview (kcSetCurrentProject)="kcSetCurrentProject.emit($event)"
+                     (ksMenuShowFileClicked)="ksShow($event)"
+                     (ksMenuRemoveClicked)="ksRemove($event)"
+                     (ksMenuPreviewClicked)="ksPreview($event)"
+                     (ksMenuOpenClicked)="ksOpen($event)"
+                     (ksMenuEditClicked)="ksEdit($event)"
+                     (ksMenuCopyLinkClicked)="ksCopy($event)"
+                     (ksModified)="ksModified($event)">
+</kc-project-overview>

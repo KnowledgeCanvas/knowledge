@@ -1,0 +1,16 @@
+.ks-context-menu {
+  background-color: #828282;
+  min-height: 30px;
+  min-width: 60px;
+}
+.menu-link {
+  padding: 5px 0;
+  cursor: pointer;
+}
+
+.menu-link hr {
+  border: 0;
+  height: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}

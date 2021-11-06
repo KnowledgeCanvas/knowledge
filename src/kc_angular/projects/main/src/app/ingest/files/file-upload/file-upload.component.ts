@@ -25,6 +25,7 @@ import {UuidModel} from "projects/ks-lib/src/lib/models/uuid.model";
 import {KnowledgeSource, KnowledgeSourceReference, SourceModel} from "projects/ks-lib/src/lib/models/knowledge.source.model";
 import {ProjectModel, ProjectUpdateRequest} from "projects/ks-lib/src/lib/models/project.model";
 import {ElectronIpcService} from "../../../../../../ks-lib/src/lib/services/electron-ipc/electron-ipc.service";
+import {ExtractionService} from "../../../../../../ks-lib/src/lib/services/extraction/extraction.service";
 
 
 @Component({
@@ -44,6 +45,7 @@ export class FileUploadComponent implements OnInit, OnChanges {
   constructor(private projectService: ProjectService,
               private dialogRef: MatDialogRef<any>,
               private uuidService: UuidService,
+              private extractionService: ExtractionService,
               @Inject(MAT_DIALOG_DATA) public data: ProjectModel,
               private faviconService: FaviconExtractorService,
               private ksQueueService: KsQueueService,
@@ -100,13 +102,19 @@ export class FileUploadComponent implements OnInit, OnChanges {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
   }
 
-  submit() {
+  async submit() {
     let uuids: UuidModel[] = this.uuidService.generate(this.files.length);
     let ksList: KnowledgeSource[] = [];
     let paths: any[] = [];
+    // let fileText: string[] = [];
 
     for (let file of this.files) {
       paths.push((file as any).path)
+      // await this.extractionService.textFromFile(file).then((text: any) => {
+      //   fileText.push(text);
+      // }).catch((reason) => {
+      //   console.warn('ExtractionService: Could not get text from file.', reason);
+      // });
     }
 
     this.ipcService.getFileIcon(paths).then((result) => {
@@ -118,6 +126,8 @@ export class FileUploadComponent implements OnInit, OnChanges {
         let ks = new KnowledgeSource(file.filename, uuids[i], 'file', ref);
         ks.iconUrl = this.faviconService.file();
         ks.icon = result[i];
+        // if (fileText[i])
+        //   ks.rawText = fileText[i];
         ksList.push(ks);
       }
 
@@ -131,7 +141,6 @@ export class FileUploadComponent implements OnInit, OnChanges {
         this.projectService.updateProject(projectUpdate);
       }
       this.dialogRef.close();
-
     });
 
 

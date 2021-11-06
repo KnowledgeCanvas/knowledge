@@ -25,7 +25,17 @@ const path: any = share.path;
 const nativeImage: any = share.nativeImage;
 const app: any = share.app;
 
-let promptForDirectory, openLocalFile, getFileThumbnail, getFileIcon;
+let promptForDirectory, openLocalFile, getFileThumbnail, getFileIcon, showItemInFolder;
+
+/**
+ * @param path: [string] the path to file selected by user
+ * @return none
+ * @callback none
+ * @description shows the file located at <path> in native file explorer
+ */
+showItemInFolder = ipcMain.on('app-show-item-in-folder', (_: any, path: string) => {
+    shell.showItemInFolder(path);
+});
 
 /**
  * promptForDirectory

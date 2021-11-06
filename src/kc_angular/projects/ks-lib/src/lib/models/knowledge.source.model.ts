@@ -69,9 +69,10 @@ export class KnowledgeSource {
   ingestType: IngestType;
   snippet?: string;
   sourceRef?: SourceReference;
+  rawText?: string;
   title: string;
   topics?: string[];
-  notes: KnowledgeSourceNotes;
+  notes: KnowledgeSourceNote[] = [];
   accessLink: URL | string;
   readonly reference: KnowledgeSourceReference;
 
@@ -82,20 +83,46 @@ export class KnowledgeSource {
     this.ingestType = ingestType;
     this.dateCreated = this.dateModified = this.dateAccessed = new Date();
     this.accessLink = reference.link;
-    this.notes = new KnowledgeSourceNotes();
   }
 }
 
-export class KnowledgeSourceNotes {
-  text: string = '';
-  dateCreated: Date;
-  dateModified: Date;
-  dateAccessed: Date;
+export class KnowledgeSourceNote {
+  text: string;
+  dateCreated: string;
+  dateModified: string;
+  dateAccessed: string;
 
-  constructor() {
-    this.dateCreated = new Date();
-    this.dateAccessed = new Date();
-    this.dateModified = new Date();
+  constructor(text?: string) {
+    this.text = text ? text : '';
+    this.dateCreated = Date();
+    this.dateAccessed = Date();
+    this.dateModified = Date();
   }
 
+  static blank() {
+    return new KnowledgeSourceNote('test');
+  }
 }
+
+// export class KnowledgeSourceNotes {
+//   notes: string[] = [];
+//   dateCreated: Date;
+//   dateModified: Date;
+//   dateAccessed: Date;
+//
+//   constructor(notes?: string[]) {
+//     this.notes = notes ? notes : [];
+//     this.dateCreated = new Date();
+//     this.dateAccessed = new Date();
+//     this.dateModified = new Date();
+//   }
+//
+//   get text() {
+//     return this.notes;
+//   }
+//
+//   set text(arr: string[]) {
+//     this.notes = arr;
+//   }
+//
+// }
