@@ -126,8 +126,8 @@ export class FileUploadComponent implements OnInit, OnChanges {
         let ks = new KnowledgeSource(file.filename, uuids[i], 'file', ref);
         ks.iconUrl = this.faviconService.file();
         ks.icon = result[i];
-        if (fileText[i])
-          ks.rawText = fileText[i];
+        // if (fileText[i])
+        //   ks.rawText = fileText[i];
         ksList.push(ks);
       }
 
