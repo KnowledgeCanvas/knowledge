@@ -35,8 +35,7 @@ limitations under the License.
                   (ksMenuEditClicked)="ksEdit($event)"
                   (ksMenuCopyLinkClicked)="ksCopy($event)">
 </ks-drag-and-drop>
-<kc-project-overview [kcProject]="kcProject"
-                     (kcSetCurrentProject)="kcSetCurrentProject.emit($event)"
+<kc-project-overview (kcSetCurrentProject)="kcSetCurrentProject.emit($event)"
                      (ksMenuShowFileClicked)="ksShow($event)"
                      (ksMenuRemoveClicked)="ksRemove($event)"
                      (ksMenuPreviewClicked)="ksPreview($event)"

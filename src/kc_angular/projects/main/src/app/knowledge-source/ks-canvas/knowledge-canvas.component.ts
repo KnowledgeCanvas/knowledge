@@ -15,7 +15,7 @@
  */
 
 
-import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {ProjectModel, ProjectUpdateRequest} from "projects/ks-lib/src/lib/models/project.model";
 import {KnowledgeSource} from "../../../../../ks-lib/src/lib/models/knowledge.source.model";
 import {KsDropService} from "../../../../../ks-lib/src/lib/services/ks-drop/ks-drop.service";
@@ -32,8 +32,7 @@ import {Clipboard} from "@angular/cdk/clipboard";
   templateUrl: './knowledge-canvas.component.html',
   styleUrls: ['./knowledge-canvas.component.scss']
 })
-export class KnowledgeCanvasComponent implements OnInit, OnDestroy, OnChanges {
-  @Input()
+export class KnowledgeCanvasComponent implements OnInit, OnDestroy {
   kcProject!: ProjectModel;
 
   @Input()
@@ -61,6 +60,9 @@ export class KnowledgeCanvasComponent implements OnInit, OnDestroy, OnChanges {
               private ipcService: ElectronIpcService,
               private snackbar: MatSnackBar,
               private clipboard: Clipboard) {
+    projectService.currentProject.subscribe((project) => {
+      this.kcProject = project;
+    })
     ksDropService.register({
       containerId: this.projectKsListId,
       receiveFrom: ['ksQueue'],
@@ -70,9 +72,6 @@ export class KnowledgeCanvasComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   ngOnInit(): void {
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
   }
 
   ngOnDestroy() {

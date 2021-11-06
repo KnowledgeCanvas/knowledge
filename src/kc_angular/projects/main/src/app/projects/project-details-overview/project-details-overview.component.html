@@ -26,24 +26,44 @@ limitations under the License.
   </div>
 </div>
 <div class="project-overview-container" #projectOverview>
-  <div class="project-overview-calendar">
-    <div class="container">
-      <h2>{{kcProject.name}} / Calendar</h2>
-      <app-project-calendar [calendar]="kcProject.calendar" (start)="calStart($event)" (end)="calEnd($event)"></app-project-calendar>
-    </div>
-  </div>
+
+  <app-project-topic-list [kcComponentType]="'project'" #topics></app-project-topic-list>
 
   <div class="project-ks-list-container">
-    <div class="container">
+    <div class="container flex-row-center-between">
       <h2>{{kcProject.name}} / Knowledge Sources</h2>
+
+      <mat-menu #appMenu="matMenu" xPosition="before">
+        <div class="ks-subproject-toggle">
+          <mat-slide-toggle [disabled]="!kcProject || !kcProject.subprojects || kcProject.subprojects.length === 0"
+                            (change)="onShowSubProjectsClicked($event)"
+                            [(ngModel)]="showSubProjects">
+            Show Subproject Sources
+          </mat-slide-toggle>
+        </div>
+      </mat-menu>
+
+      <button mat-icon-button [matMenuTriggerFor]="appMenu">
+        <mat-icon>settings</mat-icon>
+      </button>
     </div>
-    <div class="container">
-      <mat-slide-toggle [disabled]="!kcProject || !kcProject.subprojects || kcProject.subprojects.length === 0"
-                        (change)="onShowSubProjectsClicked($event)"
-                        [(ngModel)]="showSubProjects">
-        Show Subproject Sources
-      </mat-slide-toggle>
+
+    <div *ngIf="!kcProject.knowledgeSource || kcProject.knowledgeSource.length === 0" class="container ks-instructions">
+      <hr>
+      <b>To add a new Knowledge Source...</b>
+      <ol>
+        <li><div class="flex-row-center-start">Click on the <mat-icon>add</mat-icon> button below</div></li>
+        <li>Select any of the following options:
+          <ul>
+            <li>Import files</li>
+            <li>Extract websites</li>
+            <li>Search the web</li>
+          </ul>
+        </li>
+      </ol>
+      <hr>
     </div>
+
     <ks-table (ksTableShowFileClicked)="ksMenuShowFileClicked.emit($event)"
               (ksTableCopyLinkClicked)="ksMenuCopyLinkClicked.emit($event)"
               (ksTableEditClicked)="ksMenuEditClicked.emit($event)"
@@ -82,16 +102,16 @@ limitations under the License.
         <mat-accordion #accordion="matAccordion" [multi]="true" togglePosition="after" class="ks-details-accordion">
           <!--        TODO: implement notes features (add a note, delete a note, etc)-->
 
-          <mat-expansion-panel expanded>
-            <mat-expansion-panel-header>
-              <mat-panel-title>Topics</mat-panel-title>
-              <div class="mat-panel-body">
-                <ng-template matExpansionPanelContent>
-                  <app-project-topic-list [kcComponentType]="'project'" #topics></app-project-topic-list>
-                </ng-template>
-              </div>
-            </mat-expansion-panel-header>
-          </mat-expansion-panel>
+          <!--          <mat-expansion-panel expanded>-->
+          <!--            <mat-expansion-panel-header>-->
+          <!--              <mat-panel-title>Topics</mat-panel-title>-->
+          <!--              <div class="mat-panel-body">-->
+          <!--                <ng-template matExpansionPanelContent>-->
+          <!--                  <app-project-topic-list [kcComponentType]="'project'" #topics></app-project-topic-list>-->
+          <!--                </ng-template>-->
+          <!--              </div>-->
+          <!--            </mat-expansion-panel-header>-->
+          <!--          </mat-expansion-panel>-->
 
           <mat-expansion-panel>
             <mat-expansion-panel-header>
@@ -153,6 +173,13 @@ limitations under the License.
           </mat-expansion-panel>
         </mat-accordion>
       </div>
+    </div>
+  </div>
+
+  <div class="project-overview-calendar">
+    <div class="container">
+      <h2>{{kcProject.name}} / Calendar</h2>
+      <app-project-calendar [calendar]="kcProject.calendar" (start)="calStart($event)" (end)="calEnd($event)"></app-project-calendar>
     </div>
   </div>
 

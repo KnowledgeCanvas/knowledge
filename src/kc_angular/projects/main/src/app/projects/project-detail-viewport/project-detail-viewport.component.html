@@ -27,7 +27,7 @@ limitations under the License.
   <div cdkDropListGroup>
     <app-search-results (ksQueueCleared)="ksQueueCleared()"
                         (ksRemoved)="ksQueueRemove($event)"
-                        [kcProjectId]="kcProject.id.value"
+                        [kcProjectId]="kcProject?.id?.value"
                         (ksImported)="ksImported($event)"
                         [ksQueue]="ksQueue"
                         [ngStyle]="ksQueueStyle()">
@@ -38,7 +38,6 @@ limitations under the License.
                           [ksQueueVisible]="ksQueue.length > 0"
                           (ksRemoved)="ksRemoved($event)"
                           (ksAdded)="ksAdded($event)"
-                          [kcProject]="kcProject"
                           [ngStyle]="kcStyle()">
     </app-knowledge-canvas>
 

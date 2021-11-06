@@ -14,7 +14,7 @@
  limitations under the License.
  */
 
-import {Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
+import {Component, ElementRef, EventEmitter, OnChanges, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
 import {ProjectIdentifiers, ProjectService} from "../../../../../ks-lib/src/lib/services/projects/project.service";
 import {ProjectModel} from "projects/ks-lib/src/lib/models/project.model";
 import {MatAccordion} from "@angular/material/expansion";
@@ -39,7 +39,6 @@ export class ProjectDetailsOverviewComponent implements OnInit, OnChanges {
   @ViewChild('topics', {static: true})
   topics!: ProjectTopicListComponent;
 
-  @Input()
   kcProject!: ProjectModel;
 
   @Output()
@@ -75,16 +74,10 @@ export class ProjectDetailsOverviewComponent implements OnInit, OnChanges {
   tooManyAncestorsToDisplay: boolean = false;
 
   constructor(private projectService: ProjectService, private faviconService: FaviconExtractorService) {
-  }
+    projectService.currentProject.subscribe((project) => {
+      this.kcProject = project;
 
-  ngOnInit(): void {
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes.kcProject.currentValue) {
-      let project = changes.kcProject.currentValue;
-      this.changeKsList(this.kcProject.knowledgeSource ? this.kcProject.knowledgeSource : []);
-      this.showSubProjects = false;
+      this.ksTableSubprojectsToggled(this.showSubProjects);
 
       if (!project.calendar)
         project.calendar = new KcCalendar();
@@ -99,7 +92,13 @@ export class ProjectDetailsOverviewComponent implements OnInit, OnChanges {
         this.ancestors = ancestors;
         this.tooManyAncestorsToDisplay = false;
       }
-    }
+    });
+  }
+
+  ngOnInit(): void {
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
   }
 
   setDescription() {
@@ -146,7 +145,7 @@ export class ProjectDetailsOverviewComponent implements OnInit, OnChanges {
 
   async changeKsList(ksList: KnowledgeSource[]) {
     await this.faviconService.extractFromKsList(ksList).then((list) => {
-      this.ksList = list;
+      this.ksList = [...list];
     })
   }
 

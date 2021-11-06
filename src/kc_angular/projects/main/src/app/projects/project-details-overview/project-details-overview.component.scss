@@ -112,4 +112,25 @@ app-project-topic-list {
   margin: 5px;
 }
 
+.ks-instructions {
+  margin-top: 20px;
+}
 
+.ks-subproject-toggle {
+  user-select: none;
+  cursor: pointer;
+  outline: none;
+  border: none;
+  -webkit-tap-highlight-color: transparent;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  line-height: 48px;
+  height: 48px;
+  padding: 0 16px;
+  text-align: left;
+  text-decoration: none;
+  max-width: 100%;
+  position: relative;
+}

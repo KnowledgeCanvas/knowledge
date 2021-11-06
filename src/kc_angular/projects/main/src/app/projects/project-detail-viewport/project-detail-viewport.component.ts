@@ -183,8 +183,13 @@ export class ProjectDetailViewportComponent implements OnInit, OnDestroy {
     this.ksQueueSubscription = this.ksQueueService.ksQueue.subscribe((ksQueue) => {
       this.ksQueue = ksQueue;
     });
+
     this.kcProjectSubscription = this.projectService.currentProject.subscribe(project => {
-      this.kcProject = project.id.value.trim() === '' ? undefined : project;
+      if (project.id.value.trim() === '') {
+        this.kcProject = undefined;
+      } else {
+        this.kcProject = project;
+      }
     });
   }
 
