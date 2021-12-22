@@ -1,0 +1,39 @@
+{
+  "name": "kc_knowledge",
+  "version": "0.0.0",
+  "description": "A collection of knowledge applications for use with Knowledge Canvas.",
+  "main": "dist/index.js",
+  "author": "Rob Royce <robertris2@gmail.com> (https://robroyce.dev)",
+  "license": "Apache-2.0",
+  "private": true,
+  "scripts": {
+    "build": "node_modules/.bin/webpack --config webpack.prod.js",
+    "build-dev": "node_modules/.bin/webpack --config webpack.dev.js",
+    "clean": "rm -rf dist",
+    "purge": "rm -rf node_modules",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch-knowledge": "node_modules/.bin/webpack --config webpack.prod.js --watch",
+    "watch-knowledge-dev": "node_modules/.bin/webpack --config webpack.dev.js --watch"
+  },
+  "dependencies": {
+    "cytoscape": "^3.20.0",
+    "cytoscape-cxtmenu": "^3.4.0",
+    "cytoscape-dagre": "^2.3.2",
+    "cytoscape-expand-collapse": "^4.1.0",
+    "cytoscape-navigator": "^2.0.1",
+    "cytoscape-popper": "^2.0.0",
+    "electron": "^16.0.4",
+    "lodash": "^4.17.21",
+    "ts-loader": "^9.2.6",
+    "typescript": "^4.5.4",
+    "webpack": "^5.65.0",
+    "webpack-cli": "^4.9.1",
+    "webpack-merge": "^5.8.0"
+  },
+  "devDependencies": {
+    "@types/cytoscape": "^3.19.2",
+    "@types/cytoscape-cxtmenu": "^3.4.0",
+    "@types/cytoscape-dagre": "^2.3.0",
+    "@types/cytoscape-edgehandles": "^4.0.0"
+  }
+}
