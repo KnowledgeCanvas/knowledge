@@ -17,6 +17,7 @@ limitations under the License.
 
 <ks-drag-and-drop #projectList
                   [ksList]="kcProject.knowledgeSource ? kcProject.knowledgeSource : []"
+                  [hidden]="!ksQueueVisible"
                   class="project-ks-list"
                   [ksListId]="projectKsListId"
                   [ksListOrientation]="'vertical'"
