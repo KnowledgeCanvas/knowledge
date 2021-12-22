@@ -92,20 +92,26 @@ export class KnowledgeSourceTableComponent implements OnInit, OnChanges {
   }
 
   setTableColumnsByScreenWidth(width: number) {
-    if (width > 1000) {
+    if (width > 1230) {
       this.columnsToDisplay = this.ksTableAllowSubprojectExpansion
-        ? this.initialDisplayedColumnsWithInheritance : this.initialDisplayedColumns;
+        ? this.initialDisplayedColumnsWithInheritance
+        : this.initialDisplayedColumns
+      this.truncateLength = 60;
+    } else if (width > 1050) {
+      this.columnsToDisplay = this.ksTableAllowSubprojectExpansion
+        ? this.initialDisplayedColumnsWithInheritance.filter(c => c !== 'dateCreated' && c !== 'dateModified')
+        : this.initialDisplayedColumns.filter(c => c !== 'dateCreated' && c !== 'dateModified')
       this.truncateLength = 50;
     } else if (width > 900) {
       this.columnsToDisplay = this.ksTableAllowSubprojectExpansion
-        ? this.initialDisplayedColumnsWithInheritance.filter(c => c !== 'dateCreated' && c !== 'dateAccessed')
-        : this.initialDisplayedColumns.filter(c => c !== 'dateCreated' && c !== 'dateAccessed');
+        ? this.initialDisplayedColumnsWithInheritance.filter(c => c !== 'dateCreated' && c !== 'dateModified' && c !== 'ingestType')
+        : this.initialDisplayedColumns.filter(c => c !== 'dateCreated' && c !== 'dateModified' && c !== 'ingestType');
       this.truncateLength = 40;
     } else {
       this.truncateLength = 30;
       this.columnsToDisplay = this.ksTableAllowSubprojectExpansion
-        ? this.initialDisplayedColumnsWithInheritance.filter(c => c !== 'dateCreated' && c !== 'dateModified' && c !== 'dateAccessed')
-        : this.initialDisplayedColumns.filter(c => c !== 'dateCreated' && c !== 'dateModified' && c !== 'dateAccessed');
+        ? this.initialDisplayedColumnsWithInheritance.filter(c => c !== 'dateCreated' && c !== 'dateModified' && c !== 'dateAccessed' && c !== 'ingestType')
+        : this.initialDisplayedColumns.filter(c => c !== 'dateCreated' && c !== 'dateModified' && c !== 'ingestType');
     }
   }
 
