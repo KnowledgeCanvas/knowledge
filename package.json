@@ -34,7 +34,6 @@
     "watch-electron": "cd src/kc_electron && yarn run watch-electron",
     "watch-electron-dev": "cd src/kc_electron && yarn run watch-electron-dev"
   },
-  "dependencies": {},
   "devDependencies": {
     "standard-version": "^9.3.1"
   },
