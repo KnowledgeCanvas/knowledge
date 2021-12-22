@@ -27,7 +27,7 @@ export class KsIngestFabComponent implements OnInit {
   @Input() kcProjectId?: string;
   @Input() ksFabAnimate: boolean = true;
   @Input() ksFabActions: { icon: string, label: string, click: () => void }[] = [];
-  @Input() ksFabExpandOnHover: boolean = true;
+  @Input() ksFabExpandOnHover: boolean = false;
   @Output() ksFabExpanded = new EventEmitter<boolean>();
   @Output() ksFabHovering = new EventEmitter<boolean>();
   @ViewChild('ksFabHover') private ksFabHover!: ElementRef;
@@ -58,9 +58,12 @@ export class KsIngestFabComponent implements OnInit {
   }
 
   fabClicked() {
-    if (!this.ksFabExpandOnHover) {
+    if (!this.ksFabExpandOnHover && !this.expanded) {
       this.expanded = true;
       this.ksFabExpanded.emit(true);
+    } else if (!this.ksFabExpandOnHover && this.expanded) {
+      this.expanded = false;
+      this.ksFabExpanded.emit(false);
     }
   }
 }

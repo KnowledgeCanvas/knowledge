@@ -1,5 +1,4 @@
-<!--
-Copyright 2021 Rob Royce
+<!--Copyright 2021 Rob Royce
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -11,8 +10,7 @@ Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
-limitations under the License.
--->
+limitations under the License.-->
 
 
 <div class="project-overview-header">
@@ -38,21 +36,36 @@ limitations under the License.
           <mat-slide-toggle [disabled]="!kcProject || !kcProject.subprojects || kcProject.subprojects.length === 0"
                             (change)="onShowSubProjectsClicked($event)"
                             [(ngModel)]="showSubProjects">
+            <!--            TODO: this shows up in black text even when dark mode is enabled-->
             Show Subproject Sources
           </mat-slide-toggle>
         </div>
+        <button mat-menu-item [disabled]="ksList.length === 0" (click)="onExportClicked($event)">
+          <mat-icon>save_alt</mat-icon>
+          Export
+        </button>
       </mat-menu>
 
-      <button mat-icon-button [matMenuTriggerFor]="appMenu">
-        <mat-icon>settings</mat-icon>
-      </button>
+      <div>
+        <button mat-icon-button (click)="displayKnowledgeGraph()" matTooltip="Open Knowledge Graph">
+          <img src="assets/img/kc-icon-transparent.png" style="width: 18px; height: 18px;">
+        </button>
+        <button mat-icon-button [matMenuTriggerFor]="appMenu">
+          <mat-icon>settings</mat-icon>
+        </button>
+      </div>
     </div>
 
     <div *ngIf="!kcProject.knowledgeSource || kcProject.knowledgeSource.length === 0" class="container ks-instructions">
       <hr>
       <b>To add a new Knowledge Source...</b>
       <ol>
-        <li><div class="flex-row-center-start">Click on the <mat-icon>add</mat-icon> button below</div></li>
+        <li>
+          <div class="flex-row-center-start">Click on the
+            <mat-icon>add</mat-icon>
+            button below
+          </div>
+        </li>
         <li>Select any of the following options:
           <ul>
             <li>Import files</li>

@@ -42,6 +42,13 @@ limitations under the License.
       <ks-lib-ks-notes [ks]="ks"></ks-lib-ks-notes>
     </div>
   </div>
+
+  <div *ngIf="ks.rawText">
+    <button mat-button (click)="viewExtractedText()">View Extracted Text</button>
+    <h2>Extracted Text</h2>
+    <div class="ks-extraction" #ksextraction></div>
+  </div>
+
   <div class="row" *ngIf="ksHasChanged(ks)">
     <div class="col right">
       <button mat-button color="primary" (click)="ksSaveChanges(ks)">

@@ -23,6 +23,7 @@ const validSendChannels = [
     "app-get-settings",
     "app-prompt-for-directory",
     "app-save-settings",
+    "app-open-kc-dialog",
     "electron-check-for-update",
     "app-get-current-version",
     "app-show-item-in-folder",
@@ -38,6 +39,8 @@ const validSendChannels = [
     'electron-get-file-icon',
     'electron-get-file-thumbnail',
     'electron-open-local-file',
+    'kc-get-knowledge-source-list',
+    'kc-close-modal'
 ];
 const validReceiveOnceChannels = [
     "app-extract-website-results",
@@ -51,6 +54,8 @@ const validReceiveOnceChannels = [
     'electron-get-file-icon-results',
     'electron-get-file-thumbnail-results',
     'electron-open-local-file-results',
+    'kc-get-knowledge-source-list-response',
+    'app-open-kc-dialog-results'
 ];
 const validReceiveChannels = [
     "app-chrome-extension-results",

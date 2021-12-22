@@ -23,6 +23,9 @@ import {ProjectTopicListComponent} from "../project-topic-list/project-topic-lis
 import {KnowledgeSource} from "../../../../../ks-lib/src/lib/models/knowledge.source.model";
 import {FaviconExtractorService} from "../../../../../ks-lib/src/lib/services/favicon/favicon-extractor.service";
 import {MatSlideToggleChange} from "@angular/material/slide-toggle";
+import {StorageService} from "../../../../../ks-lib/src/lib/services/storage/storage.service";
+import {ElectronIpcService} from "../../../../../ks-lib/src/lib/services/electron-ipc/electron-ipc.service";
+import {KcDialogRequest} from "kc_electron/src/app/models/electron.ipc.model";
 
 @Component({
   selector: 'kc-project-overview',
@@ -73,7 +76,11 @@ export class ProjectDetailsOverviewComponent implements OnInit, OnChanges {
 
   tooManyAncestorsToDisplay: boolean = false;
 
-  constructor(private projectService: ProjectService, private faviconService: FaviconExtractorService) {
+  constructor(private projectService: ProjectService,
+              private faviconService: FaviconExtractorService,
+              private storageService: StorageService,
+              private ipcService: ElectronIpcService
+  ) {
     projectService.currentProject.subscribe((project) => {
       this.kcProject = project;
 
@@ -182,5 +189,21 @@ export class ProjectDetailsOverviewComponent implements OnInit, OnChanges {
 
   removeClicked($event: KnowledgeSource) {
     this.ksMenuRemoveClicked.emit($event);
+  }
+
+  onExportClicked($event: MouseEvent) {
+    this.storageService.export();
+  }
+
+  displayKnowledgeGraph() {
+    console.log('Knowledge graph for project: ', this.kcProject);
+    if (!this.kcProject.knowledgeSource)
+      return;
+    const request: KcDialogRequest = {
+      ksList: this.kcProject.knowledgeSource
+    }
+    this.ipcService.openKcDialog(request).then(() => {
+      console.log('Kc Dialog opened...');
+    })
   }
 }

@@ -46,11 +46,14 @@ import {KsDragAndDropComponent} from './components/knowledge-source-drag-and-dro
 import {KsDndVerticalDirective} from './directives/ksDnd/ks-dnd-vertical.directive';
 import {KsDndHorizontalDirective} from './directives/ksDnd/ks-dnd-horizontal.directive';
 import {DragDropModule} from "@angular/cdk/drag-drop";
-import { HoverClassDirective } from './directives/hover/hover-class.directive';
-import { KsIngestFabComponent } from './components/ks-ingest-fab/ks-ingest-fab.component';
-import { KsContextMenuComponent } from './components/ks-context-menu/ks-context-menu.component';
+import {HoverClassDirective} from './directives/hover/hover-class.directive';
+import {KsIngestFabComponent} from './components/ks-ingest-fab/ks-ingest-fab.component';
+import {KsContextMenuComponent} from './components/ks-context-menu/ks-context-menu.component';
 import {MatMenuModule} from "@angular/material/menu";
-import { KsNotesComponent } from './components/ks-notes/ks-notes.component';
+import {KsNotesComponent} from './components/ks-notes/ks-notes.component';
+import {CountdownPipe} from './pipes/countdown.pipe';
+import {DashboardComponent} from './components/dashboard/dashboard.component';
+import {MatGridListModule} from "@angular/material/grid-list";
 
 declare global {
   interface Window {
@@ -81,7 +84,9 @@ declare global {
     HoverClassDirective,
     KsIngestFabComponent,
     KsContextMenuComponent,
-    KsNotesComponent
+    KsNotesComponent,
+    CountdownPipe,
+    DashboardComponent
   ],
   imports: [
     MatIconModule,
@@ -98,7 +103,8 @@ declare global {
     MatTooltipModule,
     MatSlideToggleModule,
     DragDropModule,
-    MatMenuModule
+    MatMenuModule,
+    MatGridListModule
   ],
   exports: [
     PageHeaderLargeComponent,
@@ -118,7 +124,9 @@ declare global {
     KsDragAndDropComponent,
     KsIngestFabComponent,
     KsContextMenuComponent,
-    KsNotesComponent
+    KsNotesComponent,
+    CountdownPipe,
+    DashboardComponent
   ],
   providers: []
 })

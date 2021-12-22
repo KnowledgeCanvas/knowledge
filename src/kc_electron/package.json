@@ -1,9 +1,11 @@
 {
   "name": "kc_electron",
   "version": "0.2.1",
-  "description": "",
-  "private": true,
+  "description": "This package contains the Electron portion of the Knowledge Canvas desktop application.",
   "main": "dist/electron.js",
+  "author": "Rob Royce <robertris2@gmail.com> (https://robroyce.dev)",
+  "license": "Apache-2.0",
+  "private": true,
   "scripts": {
     "build": "node_modules/.bin/webpack --config webpack.prod.js",
     "build-dev": "node_modules/.bin/webpack --config webpack.dev.js",
@@ -13,8 +15,6 @@
     "watch-electron": "node_modules/.bin/webpack --config webpack.prod.js --watch",
     "watch-electron-dev": "node_modules/.bin/webpack --config webpack.dev.js --watch"
   },
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "chokidar": "^3.5.2",
     "dotenv": "^10.0.0",

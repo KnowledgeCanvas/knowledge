@@ -41,7 +41,7 @@ export class ExternalIngestService {
               private sanitizer: DomSanitizer) {
 
     /**
-     * Subscribe to browser watcher, which communicates with Electron IPC, which in turn listens to browser extensions
+     * Subscribe to browser watcher, which communicates with Electron IPC, which in turn listens to browser kc_extensions
      * Once an extension event occurs, create a new Knowledge Source and notify listeners that a new KS is available
      */
     this.ipcService.browserWatcher().subscribe((link) => {

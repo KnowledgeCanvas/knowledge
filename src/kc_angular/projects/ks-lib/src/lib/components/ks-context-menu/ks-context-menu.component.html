@@ -22,11 +22,14 @@ limitations under the License.
   <mat-menu #menu='matMenu'>
     <ng-template ngFor let-item [ngForOf]="contextMenuItems">
       <button onclick="this.blur()"
+              *ngIf="!item.isDivider"
               (click)="item.menuAction.emit(ks)"
+              [disabled]="item.menuDisabled"
               mat-menu-item>
-        <mat-icon>{{item.menuIcon}}</mat-icon>
+        <mat-icon color="{{item.menuIcon === 'delete' ? 'warn' : ''}}">{{item.menuIcon}}</mat-icon>
         {{item.menuText}}
       </button>
+      <mat-divider *ngIf="item.isDivider"></mat-divider>
     </ng-template>
   </mat-menu>
 </ng-container>

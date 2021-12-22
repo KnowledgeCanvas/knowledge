@@ -14,7 +14,7 @@
  limitations under the License.
  */
 
-import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
 import {KnowledgeSource} from "projects/ks-lib/src/lib/models/knowledge.source.model";
 
 @Component({
@@ -28,6 +28,8 @@ export class KsInfoComponent implements OnInit, OnChanges, OnDestroy {
 
   @Output()
   ksModified = new EventEmitter<boolean>();
+
+  @ViewChild('ksextraction') ksextraction!: ElementRef;
 
   private ksUnmodified?: KnowledgeSource;
 
@@ -51,6 +53,12 @@ export class KsInfoComponent implements OnInit, OnChanges, OnDestroy {
         this.ksEmitIfChanged(changes.ks.previousValue);
       }
       this.ksUnmodified = this.ksDeepCopy(ks);
+
+      if (ks.rawText) {
+        setTimeout(() => {
+          this.ksextraction.nativeElement.innerHTML = ks.rawText;
+        })
+      }
     }
   }
 
@@ -97,5 +105,9 @@ export class KsInfoComponent implements OnInit, OnChanges, OnDestroy {
     deepKs.dateAccessed = new Date(deepKs.dateAccessed);
     deepKs.dateCreated = new Date(deepKs.dateCreated);
     return deepKs;
+  }
+
+  viewExtractedText() {
+
   }
 }

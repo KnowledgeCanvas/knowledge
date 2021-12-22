@@ -5,7 +5,9 @@ import {MatMenu, MatMenuTrigger} from "@angular/material/menu";
 export interface ContextMenuModel {
   menuText: string;
   menuAction: EventEmitter<KnowledgeSource>;
-  menuIcon: string
+  menuIcon: string;
+  menuDisabled: boolean;
+  isDivider: boolean;
 }
 
 @Component({
@@ -43,32 +45,58 @@ export class KsContextMenuComponent implements OnInit {
     {
       menuText: 'Preview',
       menuAction: this.ksMenuPreviewClicked,
-      menuIcon: 'preview'
+      menuIcon: 'preview',
+      menuDisabled: false,
+      isDivider: false
     },
     {
       menuText: 'Open in...',
       menuAction: this.ksMenuOpenClicked,
-      menuIcon: 'open_in_browser'
+      menuIcon: 'open_in_browser',
+      menuDisabled: false,
+      isDivider: false
     },
     {
       menuText: 'Copy link',
       menuAction: this.ksMenuCopyLinkClicked,
-      menuIcon: 'content_copy'
+      menuIcon: 'content_copy',
+      menuDisabled: false,
+      isDivider: false
+    },
+    {
+      menuText: '',
+      menuAction: new EventEmitter<KnowledgeSource>(),
+      menuIcon: '',
+      menuDisabled: true,
+      isDivider: true
     },
     {
       menuText: 'Edit',
       menuAction: this.ksMenuEditClicked,
-      menuIcon: 'edit'
+      menuIcon: 'edit',
+      menuDisabled: false,
+      isDivider: false
     },
     {
-      menuText: 'Remove',
+      menuText: 'Delete',
       menuAction: this.ksMenuRemoveClicked,
-      menuIcon: 'remove_circle'
+      menuIcon: 'delete',
+      menuDisabled: false,
+      isDivider: false
+    },
+    {
+      menuText: '',
+      menuAction: new EventEmitter<KnowledgeSource>(),
+      menuIcon: '',
+      menuDisabled: true,
+      isDivider: true
     },
     {
       menuText: 'View Project',
       menuAction: this.ksMenuViewProjectClicked,
-      menuIcon: 'assistant_direction'
+      menuIcon: 'assistant_direction',
+      menuDisabled: false,
+      isDivider: false
     },
   ];
 
@@ -87,7 +115,9 @@ export class KsContextMenuComponent implements OnInit {
       this.contextMenuItems.push({
         menuText: 'Show in folder',
         menuAction: this.ksMenuShowFileClicked,
-        menuIcon: 'folder_open'
+        menuIcon: 'folder_open',
+        menuDisabled: false,
+        isDivider: false
       })
     }
 

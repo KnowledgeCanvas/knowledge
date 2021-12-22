@@ -12,9 +12,11 @@ export class KsNotesComponent implements OnInit {
   ks!: KnowledgeSource;
 
   constructor() {
+
   }
 
   ngOnInit(): void {
+    console.log('Notes component constructed with KS: ', this.ks);
   }
 
   addNote() {

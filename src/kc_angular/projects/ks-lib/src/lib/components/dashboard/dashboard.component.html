@@ -1,0 +1,17 @@
+<mat-grid-list *ngIf="tiles.length > 0" cols="2" rowHeight="300px" gutterSize="5px">
+  <div *ngFor="let tile of tiles">
+    <mat-grid-tile *ngIf="!tile.hidden"
+                   [colspan]="tile.cols"
+                   [rowspan]="tile.rows"
+                   [style.background]="tile.color">
+      <div class="mat-grid-body">
+        <div class="mat-grid-title">
+          <h4>{{tile.title}}</h4>
+        </div>
+        <div *ngIf="tile.title === 'Notes'">
+          <ks-lib-ks-notes [ks]="this.ks"></ks-lib-ks-notes>
+        </div>
+      </div>
+    </mat-grid-tile>
+  </div>
+</mat-grid-list>

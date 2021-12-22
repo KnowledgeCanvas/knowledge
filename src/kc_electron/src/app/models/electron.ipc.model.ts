@@ -13,6 +13,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
+import {KnowledgeSource} from "kc_knowledge/src/knowledge/knowledge-canvas";
 
 export interface IpcSuccess {
     message?: string;
@@ -46,6 +47,14 @@ export interface KsBrowserViewRequest {
 export interface KsBrowserViewResponse {
     html: string,
     backgroundColor: string
+}
+
+export interface KcDialogRequest {
+    ksList: KnowledgeSource[]
+}
+
+export interface KsDialogResponse {
+
 }
 
 export interface KsThumbnailRequest {

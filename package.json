@@ -1,14 +1,16 @@
 {
   "name": "knowledge-canvas",
   "version": "0.3.4",
+  "description": "Knowledge Canvas is an application for students, researchers, and life-long learners to manage their digital lives.",
   "author": "Rob Royce <robertris2@gmail.com> (https://robroyce.dev)",
-  "description": "Knowledge Canvas is an application for students, researchers, and life-long learners who need help managing their digital ecosystem through use of search, knowledge graphs, and more.",
-  "private": true,
   "license": "Apache-2.0",
+  "private": true,
   "postinstall": "electron-builder install-app-deps",
   "workspaces": [
     "src/kc_electron",
-    "src/kc_angular"
+    "src/kc_angular",
+    "src/kc_knowledge",
+    "src/kc_extensions"
   ],
   "repository": {
     "type": "git",
@@ -32,7 +34,9 @@
     "watch-main": "cd src/kc_angular && yarn run watch-main",
     "watch-main-dev": "cd src/kc_angular && yarn run watch-main-dev",
     "watch-electron": "cd src/kc_electron && yarn run watch-electron",
-    "watch-electron-dev": "cd src/kc_electron && yarn run watch-electron-dev"
+    "watch-electron-dev": "cd src/kc_electron && yarn run watch-electron-dev",
+    "watch-knowledge": "cd src/kc_knowledge && yarn run watch-knowledge",
+    "watch-knowledge-dev": "cd src/kc_knowledge && yarn run watch-knowledge-dev"
   },
   "dependencies": {},
   "devDependencies": {

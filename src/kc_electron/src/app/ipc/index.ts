@@ -18,9 +18,11 @@ const fileIpc = require('./ipc-files');
 const browserIpc = require('./ipc-browser');
 require('./ipc-misc');
 const autoUpdateIpc = require('./ipc-auto-update');
+const kcIpc = require('./ipc-knowledge');
 
 module.exports = {
     autoUpdateIpc,
     fileIpc,
-    browserIpc
+    browserIpc,
+    kcIpc
 }

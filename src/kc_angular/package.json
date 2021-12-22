@@ -1,6 +1,10 @@
 {
   "name": "kc_angular",
   "version": "0.2.0",
+  "description": "This package contains the (core) Angular portion of the Knowledge Canvas web-app.",
+  "author": "Rob Royce <robertris2@gmail.com> (https://robroyce.dev)",
+  "license": "Apache-2.0",
+  "private": true,
   "scripts": {
     "ng": "ng",
     "build": "ng build main --configuration production --base-href ./",
@@ -16,7 +20,6 @@
     "watch-main-dev": "ng build main --configuration development --base-href ./ --watch",
     "lint": "ng lint"
   },
-  "private": true,
   "dependencies": {
     "@angular/animations": "~12.1.2",
     "@angular/cdk": "12.1.2",

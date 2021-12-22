@@ -183,7 +183,7 @@ export class StorageService {
         this.projectList = [project];
 
     } else { // Otherwise update the project in-place
-      if (this.projectList && idx && idx ) {
+      if (this.projectList && idx && idx) {
         this.projectList[idx] = project;
       }
     }
@@ -259,6 +259,21 @@ export class StorageService {
       console.warn('Deleting all files and associated sources...');
     } else {
       console.error('File deletion not implemented yet...');
+    }
+  }
+
+  export() {
+    console.log('Export button clicked...');
+  }
+
+  private allStorage() {
+    let values = [],
+      keys = Object.keys(localStorage),
+      i = keys.length;
+
+    while (i--) {
+      console.log(keys[i], localStorage.getItem(keys[i]));
+      values.push(localStorage.getItem(keys[i]));
     }
   }
 }

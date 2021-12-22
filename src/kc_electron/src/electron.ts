@@ -72,6 +72,9 @@ let appEnv = settingsService.getSettings();
 // Declare main window for later use
 let kcMainWindow: typeof BrowserWindow;
 
+// Declare window used to display knowledge graphs, etc
+let kcKnowledgeWindow: typeof BrowserWindow;
+
 /**
  *
  *
@@ -118,6 +121,43 @@ function createMainWindow() {
     kcMainWindow = new BrowserWindow(config);
 
     setMainWindowListeners();
+}
+
+function createKnowledgeWindow() {
+    let WIDTH: number = parseInt(appEnv.DEFAULT_WINDOW_WIDTH);
+    let HEIGHT: number = parseInt(appEnv.DEFAULT_WINDOW_HEIGHT);
+    let darkMode = appEnv.display.theme === 'app-theme-dark';
+    let backgroundColor = darkMode ? '#2e2c29' : '#F9F9F9';
+
+    const config = {
+        show: false,
+        minWidth: 800,
+        width: WIDTH ? WIDTH : 1280,
+        minHeight: 800,
+        height: HEIGHT ? HEIGHT : 1000,
+        backgroundColor: backgroundColor,
+        title: 'Knowledge Canvas',
+        webPreferences: {
+            nodeIntegration: false, // is default value after Electron v5
+            contextIsolation: true, // protect against prototype pollution
+            enableRemoteModule: false, // turn off remote
+            preload: path.join(app.getAppPath(), 'src', 'kc_electron', 'dist', 'preload.js')
+        }
+    };
+
+    kcKnowledgeWindow = new BrowserWindow(config);
+    setKnowledgeWindowListeners();
+}
+
+function setKnowledgeWindowListeners() {
+    // Destroy window on close
+    kcKnowledgeWindow.on('closed', function () {
+        kcKnowledgeWindow = null;
+    });
+
+    kcKnowledgeWindow.once('ready-to-show', () => {
+        kcKnowledgeWindow.show();
+    });
 }
 
 function setMainWindowListeners() {

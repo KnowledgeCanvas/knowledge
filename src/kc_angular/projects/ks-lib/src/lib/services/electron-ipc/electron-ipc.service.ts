@@ -18,7 +18,7 @@ import {Injectable, NgZone} from '@angular/core';
 import {UuidModel} from "projects/ks-lib/src/lib/models/uuid.model";
 import {BehaviorSubject, Observable} from 'rxjs';
 import {SettingsModel} from "projects/ks-lib/src/lib/models/settings.model";
-import {IpcMessage, KsBrowserViewRequest, KsThumbnailRequest} from "kc_electron/src/app/models/electron.ipc.model";
+import {IpcMessage, KsBrowserViewRequest, KsThumbnailRequest, KcDialogRequest} from "kc_electron/src/app/models/electron.ipc.model";
 import {FileModel} from "../../models/file.model";
 
 export interface ElectronNavEvent {
@@ -79,6 +79,8 @@ export class ElectronIpcService {
     ingestWatcherResults: 'app-ingest-watcher-results',
     openLocalFile: 'electron-open-local-file',
     openLocalFileResults: 'electron-open-local-file-results',
+    openKcDialog: 'app-open-kc-dialog',
+    openKcDialogResults: 'app-open-kc-dialog-results',
     promptForDirectory: 'app-prompt-for-directory',
     promptForDirectoryResults: 'app-prompt-for-directory-results',
     saveSettings: 'app-save-settings',
@@ -300,6 +302,16 @@ export class ElectronIpcService {
         });
       });
       this.send(this.channels.openLocalFile, path);
+    });
+  }
+
+  openKcDialog(request: KcDialogRequest): Promise<any> {
+    return new Promise<any>((resolve) => {
+      this.receiveOnce(this.channels.openKcDialogResults, (response: IpcMessage) => {
+        console.log('Got response from kc dialog: ', response);
+      });
+
+      this.send(this.channels.openKcDialog, request);
     });
   }
 
