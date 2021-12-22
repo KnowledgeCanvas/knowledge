@@ -16,3 +16,4 @@ src/kc_knowledge/node_modules/
 src/kc_extensions/node_modules/
 /.yarnrc
 /.yarn/
+./venv
