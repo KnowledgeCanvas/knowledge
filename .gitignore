@@ -7,9 +7,12 @@ auth.json
 dist/
 documents/
 sample.json
-serc/kc_angular/node_modules
+src/kc_angular/node_modules
 src/kc_angular/dist/
 src/kc_electron/dist/
 src/kc_electron/node_modules/
+src/kc_knowledge/dist/
+src/kc_knowledge/node_modules/
+src/kc_extensions/node_modules/
 /.yarnrc
 /.yarn/
