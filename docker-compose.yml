@@ -1,0 +1,6 @@
+version: "3.9"
+services:
+  tika:
+    image: "apache/tika:latest-full"
+    ports:
+      - "9998:9998"
