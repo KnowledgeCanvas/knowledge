@@ -19,6 +19,7 @@
     "cytoscape": "^3.20.0",
     "cytoscape-cxtmenu": "^3.4.0",
     "cytoscape-dagre": "^2.3.2",
+    "cytoscape-edgehandles": "^4.0.1",
     "cytoscape-expand-collapse": "^4.1.0",
     "cytoscape-navigator": "^2.0.1",
     "cytoscape-popper": "^2.0.0",
