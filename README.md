@@ -1,6 +1,10 @@
 # Getting Started
 
-1. Make sure you have Node (>=14.17.3), NPM, and Yarn installed.
+1. Make sure you have Node, NPM, and Yarn installed. The following versions were used at the time of this writing:
+
+- Node: 16.13.1
+- Yarn: 3.1.1 (v2)
+- NPM: 8.1.2
 
 2. Install node modules using the following command:
 
@@ -21,6 +25,12 @@ yarn start
 yarn clean
 ```
 
+5. (OPTIONAL) purge dependencies and clear caches:
+
+```shell
+yarn purge
+```
+
 # Using Watchers for Real-Time Development
 
 This will allow you to refresh the application and see changes in real-time, without having to recompile Electron and Angular code (the watchers auto-compile as files are
@@ -36,7 +46,7 @@ yarn start &
 ```
 
 3. **Note:** changes made to Electron require you to restart the app
-   
+
 You can also choose to run `yarn watch-main` and `yarn watch-electron` (without the `-dev`), but they will take longer to transpile and build, and no source map will be produced.
 
 # Create distributable binaries for MacOS, Windows and Linux
@@ -72,6 +82,7 @@ It is best to use `yarn watch-main-dev` and `yarn watch-electron-dev` while debu
 in non-`dev` targets.
 
 ## Debugging in WebStorm
+
 We can do the same as above, but in WebStorm
 
 1. Add a new build configuration
@@ -84,6 +95,7 @@ We can do the same as above, but in WebStorm
 ## Viewing main process output after app has been packaged
 
 ### MacOS
+
 1. Run the appropriate commands (i.e. `yarn build` > `yarn dist`)
 2. From the project root directory: `cd dist/mac/Knowledge\ Canvas.app/Contents`
 3. Run `./MacOS/Knowledge\ Canvas`
@@ -91,5 +103,5 @@ We can do the same as above, but in WebStorm
 Note that this *must* be run from the `Contents` folder
 
 ## Viewing main process output after app has been installed
-The only different between this and the above is where the `Contents` folder is located.
-In most cases, you must run the command from `/Applications/Knowledge Canvas.app/Contents`
+
+The only difference between this and the above is where the `Contents` folder is located. In most cases, you must run the command from `/Applications/Knowledge Canvas.app/Contents`
