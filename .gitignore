@@ -1,20 +1,35 @@
+# MacOS files
 .DS_Store
+
+# Angular files
+**/.angular
+
+# IDE files
 .idea/
+
+# Jupyter notebook checkpoints
 /kc_nlp/src/.ipynb_checkpoints/
+
+# Node modules
 /node_modules/
-__pycache__
-auth.json
+src/kc_electron/node_modules/
+serc/kc_angular/node_modules
+
+# Build artifacts
 dist/
-documents/
-sample.json
-src/kc_angular/dist
-src/kc_electron/dist
-src/kc_knowledge/dist
-src/kc_extensions/dist
-src/kc_angular/node_modules
-src/kc_electron/node_modules
-src/kc_knowledge/node_modules
-src/kc_extensions/node_modules
-.yarnrc
-.yarn
-venv
+src/kc_angular/dist/
+src/kc_electron/dist/
+
+# Python stuff
+__pycache__
+
+# Secret stuff
+auth.json
+
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions

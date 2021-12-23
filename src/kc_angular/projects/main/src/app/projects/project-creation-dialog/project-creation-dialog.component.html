@@ -63,8 +63,8 @@
       <mat-form-field appearance="standard">
         <mat-label>Description</mat-label>
         <textarea formControlName="description"
-                  [matTextareaAutosize]="true"
-                  [matAutosizeMinRows]="1"
+                  cdkTextareaAutosize
+                  cdkAutosizeMinRows="1"
                   class="form-control"
                   id="description"
                   matInput></textarea>

@@ -18,15 +18,19 @@
   },
   "main": "src/kc_electron/dist/electron.js",
   "scripts": {
-    "build": "yarn workspaces run build",
-    "build-dev": "yarn workspaces run build-dev",
-    "clean": "rm -rf ./dist && yarn workspaces run clean",
+    "build": "yarn build-electron && yarn build-angular",
+    "build-angular": "yarn workspace kc_angular run build",
+    "build-electron": "yarn workspace kc_electron run build",
+    "build-angular-dev": "yarn workspace kc_angular run build-dev",
+    "build-electron-dev": "yarn workspace kc_electron run build-dev",
+    "build-dev": "yarn build-angular-dev && yarn build-electron-dev",
+    "clean": "rm -rf ./dist && yarn workspace kc_angular run clean && yarn workspace kc_electron run clean",
     "pack": "electron-builder --dir",
     "dist": "electron-builder --publish never",
     "dist-all": "electron-builder -mwl --publish never",
     "publish": "electron-builder --publish always",
     "publish-all": "electron-builder -mwl --publish always",
-    "purge": "rm -rf node_modules && yarn workspaces run purge",
+    "purge": "rm -rf node_modules && yarn cache clean && rm -rf ./src/kc_angular/node_modules && rm -rf ./src/kc_electron/node_modules",
     "release": "standard-version",
     "start": "electron .",
     "start-debug": "electron . --inspect=5858",
@@ -38,8 +42,12 @@
     "watch-knowledge": "cd src/kc_knowledge && yarn run watch-knowledge",
     "watch-knowledge-dev": "cd src/kc_knowledge && yarn run watch-knowledge-dev"
   },
-  "dependencies": {},
+  "packageManager": "yarn@3.1.1",
+  "dependencies": {
+    "@types/node": "^17.0.2"
+  },
   "devDependencies": {
+    "@angular/cli": "^13.1.2",
     "standard-version": "^9.3.1"
   },
   "build": {

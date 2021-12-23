@@ -36,6 +36,12 @@
               "../../node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
               "projects/main/src/styles.scss"
             ],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "../node_modules",
+                "./node_modules"
+              ]
+            },
             "scripts": []
           },
           "configurations": {

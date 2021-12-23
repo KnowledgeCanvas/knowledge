@@ -17,9 +17,9 @@
 /* You can add global styles to this file, and also import other style files */
 
 //Note: DARK THEME - https://zoaibkhan.com/blog/angular-material-dark-mode-in-3-steps/
-@use '~@angular/material' as mat;
+@use '@angular/material' as mat;
 
-@import "~@angular/material/theming";
+@import "@angular/material/theming";
 
 @include mat.core();
 
