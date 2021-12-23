@@ -1804,7 +1804,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@electron/get@npm:^1.0.1":
+"@electron/get@npm:^1.0.1, @electron/get@npm:^1.13.0":
   version: 1.13.1
   resolution: "@electron/get@npm:1.13.1"
   dependencies:
@@ -5140,7 +5140,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-builder@npm:^22.11.7":
+"electron-builder@npm:^22.11.7, electron-builder@npm:^22.14.5":
   version: 22.14.11
   resolution: "electron-builder@npm:22.14.11"
   dependencies:
@@ -5228,6 +5228,19 @@ __metadata:
   bin:
     electron: cli.js
   checksum: 5b59ee21076773c3f0417a522338fc0db70af30672f72152df100268c71536defa0af257b69421cf17daf34b1c8a1280c78f0f5e82feee5d4e27e68e48b42f30
+  languageName: node
+  linkType: hard
+
+"electron@npm:^16.0.5":
+  version: 16.0.5
+  resolution: "electron@npm:16.0.5"
+  dependencies:
+    "@electron/get": ^1.13.0
+    "@types/node": ^14.6.2
+    extract-zip: ^1.0.3
+  bin:
+    electron: cli.js
+  checksum: 5b24d00e165d74d8039ac85646fb5953e3755bd503e0ffb27fe3a72c7f8acf8449fc661f51a1a8b42387e311aa44f161105796e13ed45ace4a3d8e0e586ece38
   languageName: node
   linkType: hard
 
@@ -7945,6 +7958,8 @@ __metadata:
   dependencies:
     "@angular/cli": ^13.1.2
     "@types/node": ^17.0.2
+    electron: ^16.0.5
+    electron-builder: ^22.14.5
     standard-version: ^9.3.1
   languageName: unknown
   linkType: soft
