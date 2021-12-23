@@ -12,8 +12,10 @@
 
 # Node modules
 /node_modules/
-src/kc_electron/node_modules/
-serc/kc_angular/node_modules
+src/kc_electron/node_modules
+src/kc_angular/node_modules
+src/kc_extensions/node_modules
+src/kc_knowledge/node_modules
 
 # Build artifacts
 dist/
