@@ -28,7 +28,7 @@
     "dist-all": "electron-builder -mwl --publish never",
     "publish": "electron-builder --publish always",
     "publish-all": "electron-builder -mwl --publish always",
-    "purge": "rm -rf node_modules && yarn workspace kc_angular run purge && yarn workspace kc_electron run purge",
+    "purge": "rm -rf node_modules && rm -rf ./src/kc_angular/node_modules && rm -rf ./src/kc_electron/node_modules",
     "release": "standard-version",
     "start": "electron .",
     "start-debug": "electron . --inspect=5858",
@@ -38,7 +38,12 @@
     "watch-electron": "cd src/kc_electron && yarn run watch-electron",
     "watch-electron-dev": "cd src/kc_electron && yarn run watch-electron-dev"
   },
+  "packageManager": "yarn@3.1.1",
+  "dependencies": {
+    "@types/node": "^17.0.2"
+  },
   "devDependencies": {
+    "@angular/cli": "^13.1.2",
     "standard-version": "^9.3.1"
   },
   "build": {

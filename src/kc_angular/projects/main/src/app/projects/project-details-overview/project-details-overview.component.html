@@ -122,7 +122,7 @@ limitations under the License.
                   <mat-form-field style="width: 100%" (focusout)="setDescription()">
                     <mat-label>Description</mat-label>
                     <textarea placeholder="Enter or Edit Description..."
-                              [matTextareaAutosize]="true"
+                              cdkTextareaAutosize
                               [(ngModel)]="kcProject.description"
                               cdkAutosizeMinRows="5"
                               matInput></textarea>
@@ -140,7 +140,7 @@ limitations under the License.
                 <ng-template matExpansionPanelContent>
                   <mat-form-field style="width: 100%" (focusout)="setNotes()">
               <textarea placeholder="Enter or Edit a Note..."
-                        [matTextareaAutosize]="true"
+                        cdkTextareaAutosize
                         [(ngModel)]="kcProject.notes"
                         cdkAutosizeMinRows="4"
                         matInput></textarea>

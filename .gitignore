@@ -1,6 +1,9 @@
 # MacOS files
 .DS_Store
 
+# Angular files
+**/.angular
+
 # IDE files
 .idea/
 
@@ -23,8 +26,8 @@ __pycache__
 # Secret stuff
 auth.json
 
+.pnp.*
 .yarn/*
-!.yarn/cache
 !.yarn/patches
 !.yarn/plugins
 !.yarn/releases
