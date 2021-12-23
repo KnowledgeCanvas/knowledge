@@ -48,6 +48,8 @@
   },
   "devDependencies": {
     "@angular/cli": "^13.1.2",
+    "electron": "^16.0.5",
+    "electron-builder": "^22.14.5",
     "standard-version": "^9.3.1"
   },
   "build": {

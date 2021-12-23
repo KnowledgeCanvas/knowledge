@@ -11,7 +11,7 @@
     "build-dev": "ng build main --configuration development --base-href ./",
     "build-main": "ng build main --configuration production --base-href ./",
     "clean": "rm -rf dist",
-    "purge": "rm -rf node_modules",
+    "purge": "rm -rf node_modules && rm -rf .angular",
     "start": "echo 'Run this command from the top level directory to start Electron and load the Angular modules.'",
     "test": "ng test",
     "watch": "ng build --configuration production --base-href ./ --watch",
