@@ -2124,6 +2124,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@popperjs/core@npm:^2.0.0":
+  version: 2.11.0
+  resolution: "@popperjs/core@npm:2.11.0"
+  checksum: 84d6f197d3ddfd8a5b05c7276c3692d8404c96128a946ab0a800b25567d8fc231928319c1f97a67e0817e76ce2a1b735589ef0f38f8e8835692408660a2395a1
+  languageName: node
+  linkType: hard
+
 "@rollup/plugin-json@npm:^4.1.0":
   version: 4.1.0
   resolution: "@rollup/plugin-json@npm:4.1.0"
@@ -2223,6 +2230,40 @@ __metadata:
   version: 2.8.12
   resolution: "@types/cors@npm:2.8.12"
   checksum: 8c45f112c7d1d2d831b4b266f2e6ed33a1887a35dcbfe2a18b28370751fababb7cd045e745ef84a523c33a25932678097bf79afaa367c6cb3fa0daa7a6438257
+  languageName: node
+  linkType: hard
+
+"@types/cytoscape-cxtmenu@npm:^3.4.0":
+  version: 3.4.0
+  resolution: "@types/cytoscape-cxtmenu@npm:3.4.0"
+  dependencies:
+    "@types/cytoscape": "*"
+  checksum: f4870d6ed0c145f8f5173014c80a966935154e6de55131c259c17fc0fc4dffe5ea7088ed4e7fe785199869529a81cbaee3c953f14d10aa32cd15e33b6a63ed75
+  languageName: node
+  linkType: hard
+
+"@types/cytoscape-dagre@npm:^2.3.0":
+  version: 2.3.0
+  resolution: "@types/cytoscape-dagre@npm:2.3.0"
+  dependencies:
+    "@types/cytoscape": "*"
+  checksum: c7efab5f01dd8d8ee6a97c17462e663b007ce0b67ae8a32945a8c92189378430c4af0e2e8188761c2d0552f5cd6918a36ddea76e9e2593c6e20636bfa7731216
+  languageName: node
+  linkType: hard
+
+"@types/cytoscape-edgehandles@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "@types/cytoscape-edgehandles@npm:4.0.0"
+  dependencies:
+    "@types/cytoscape": "*"
+  checksum: 5f41495e38b38be44ceffc6edf6b096873e968c00227a30b31430919de5a43826e79a36409d0992f0ee178ad057f00c117a77b30acc9d7b13327275df3b560da
+  languageName: node
+  linkType: hard
+
+"@types/cytoscape@npm:*, @types/cytoscape@npm:^3.19.2":
+  version: 3.19.2
+  resolution: "@types/cytoscape@npm:3.19.2"
+  checksum: 75ff6fcf43fb8031181f67e6a639fcdaf483bca4d4384a0b6008ceb1316b5584ba4f76adca8fee5303f7ec8b3a6a681325b5ff714e03dec10796886957a819d4
   languageName: node
   linkType: hard
 
@@ -4676,6 +4717,87 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cytoscape-cxtmenu@npm:^3.4.0":
+  version: 3.4.0
+  resolution: "cytoscape-cxtmenu@npm:3.4.0"
+  peerDependencies:
+    cytoscape: ^3.2.0
+  checksum: a79709cee8baa3c1936d71d0849fcec22b29e6b32516823a1a4e42c5a7320a83f72489f5d37d23c1a647a85b5245b7dab521558878c69c6122cce3c82ac7ae32
+  languageName: node
+  linkType: hard
+
+"cytoscape-dagre@npm:^2.3.2":
+  version: 2.3.2
+  resolution: "cytoscape-dagre@npm:2.3.2"
+  dependencies:
+    dagre: ^0.8.5
+  peerDependencies:
+    cytoscape: ^3.2.22
+  checksum: ec17d697548b125aa19f9a6175f3fab6b916b1deca3619c69d91bcc6fad911ab70a686325cb4c744d4198f9b9a51b8ad91bec3c5beaa5e7068223b5334a6b8c9
+  languageName: node
+  linkType: hard
+
+"cytoscape-edgehandles@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "cytoscape-edgehandles@npm:4.0.1"
+  dependencies:
+    lodash.memoize: ^4.1.2
+    lodash.throttle: ^4.1.1
+  peerDependencies:
+    cytoscape: ^3.2.0
+  checksum: 758851cc2e2fcc375fd28106b82d4f540f64121edde6381dff07beac17bb49b9ecc6950f428c086cabadb48996d164f6deee662fbfc467a670d15db7220bd339
+  languageName: node
+  linkType: hard
+
+"cytoscape-expand-collapse@npm:^4.1.0":
+  version: 4.1.0
+  resolution: "cytoscape-expand-collapse@npm:4.1.0"
+  peerDependencies:
+    cytoscape: ^3.3.0
+  checksum: 9340e190f5f5b8cb6e7c3c1414456dbda323a6bb1b79a8efb8df9ff271d6dd44c7974cc28833a3b922560245c8deedd95cd57e2161f9fabeea40d3d6b4f44974
+  languageName: node
+  linkType: hard
+
+"cytoscape-navigator@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "cytoscape-navigator@npm:2.0.1"
+  peerDependencies:
+    cytoscape: ^2.6.0 || ^3.0.0
+  checksum: 325afa5ca4f82b7c4b87b0ebfbcf7cbb6cb4e34f53c6410b387e8a2ec5d8c850c16b4daeb337eb15b3019acfd0206eecd07462ffdcf073f8449cd9fa6c241946
+  languageName: node
+  linkType: hard
+
+"cytoscape-popper@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "cytoscape-popper@npm:2.0.0"
+  dependencies:
+    "@popperjs/core": ^2.0.0
+  peerDependencies:
+    cytoscape: ^3.2.0
+  checksum: 857ea88e4d32e359c255785696fb68b993a1122db8ff492fe6977ea6908e82b1c63a4c73f8c04f2bdc3cbcf562f91f71a615d09e4985054dd709ba34b2739b04
+  languageName: node
+  linkType: hard
+
+"cytoscape@npm:^3.20.0":
+  version: 3.20.0
+  resolution: "cytoscape@npm:3.20.0"
+  dependencies:
+    heap: ^0.2.6
+    lodash.debounce: ^4.0.8
+  checksum: 2994c5e281a1a212589dc371f3f31f51de1e85d1137db090279e6af3775278dc1038d560cbeed8a59d88c0f56929f20fb833387c22184c7d437e301cf606ac30
+  languageName: node
+  linkType: hard
+
+"dagre@npm:^0.8.5":
+  version: 0.8.5
+  resolution: "dagre@npm:0.8.5"
+  dependencies:
+    graphlib: ^2.1.8
+    lodash: ^4.17.15
+  checksum: b9fabd425466d7b662381c2e457b1adda996bc4169aa60121d4de50250d83a6bb4b77d559e2f887c9c564caea781c2a377fd4de2a76c15f8f04ec3d086ca95f9
+  languageName: node
+  linkType: hard
+
 "dargs@npm:^7.0.0":
   version: 7.0.0
   resolution: "dargs@npm:7.0.0"
@@ -5231,7 +5353,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron@npm:^16.0.5":
+"electron@npm:^16.0.4, electron@npm:^16.0.5":
   version: 16.0.5
   resolution: "electron@npm:16.0.5"
   dependencies:
@@ -6724,6 +6846,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"graphlib@npm:^2.1.8":
+  version: 2.1.8
+  resolution: "graphlib@npm:2.1.8"
+  dependencies:
+    lodash: ^4.17.15
+  checksum: 1e0db4dea1c8187d59103d5582ecf32008845ebe2103959a51d22cb6dae495e81fb9263e22c922bca3aaecb56064a45cd53424e15a4626cfb5a0c52d0aff61a8
+  languageName: node
+  linkType: hard
+
 "handle-thing@npm:^2.0.0":
   version: 2.0.1
   resolution: "handle-thing@npm:2.0.1"
@@ -6824,6 +6955,13 @@ __metadata:
   version: 3.0.0
   resolution: "hdr-histogram-percentiles-obj@npm:3.0.0"
   checksum: ab238edcb38d9b60d23ca53da0ecd9a6b1c8ee9a49e30a6146bd3f8f70f26244652f28b79974157c00504e7ddf3129e0ddb217baf71d32330e3fae0105bf30ed
+  languageName: node
+  linkType: hard
+
+"heap@npm:^0.2.6":
+  version: 0.2.7
+  resolution: "heap@npm:0.2.7"
+  checksum: b0f3963a799e02173f994c452921a777f2b895b710119df999736bfed7477235c2860c423d9aea18a9f3b3d065cb1114d605c208cfcb8d0ac550f97ec5d28cb0
   languageName: node
   linkType: hard
 
@@ -7929,6 +8067,43 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"kc_extensions@workspace:src/kc_extensions":
+  version: 0.0.0-use.local
+  resolution: "kc_extensions@workspace:src/kc_extensions"
+  dependencies:
+    ts-loader: ^9.2.6
+    typescript: ^4.5.4
+    webpack: ^5.65.0
+    webpack-cli: ^4.9.1
+    webpack-merge: ^5.8.0
+  languageName: unknown
+  linkType: soft
+
+"kc_knowledge@workspace:src/kc_knowledge":
+  version: 0.0.0-use.local
+  resolution: "kc_knowledge@workspace:src/kc_knowledge"
+  dependencies:
+    "@types/cytoscape": ^3.19.2
+    "@types/cytoscape-cxtmenu": ^3.4.0
+    "@types/cytoscape-dagre": ^2.3.0
+    "@types/cytoscape-edgehandles": ^4.0.0
+    cytoscape: ^3.20.0
+    cytoscape-cxtmenu: ^3.4.0
+    cytoscape-dagre: ^2.3.2
+    cytoscape-edgehandles: ^4.0.1
+    cytoscape-expand-collapse: ^4.1.0
+    cytoscape-navigator: ^2.0.1
+    cytoscape-popper: ^2.0.0
+    electron: ^16.0.4
+    lodash: ^4.17.21
+    ts-loader: ^9.2.6
+    typescript: ^4.5.4
+    webpack: ^5.65.0
+    webpack-cli: ^4.9.1
+    webpack-merge: ^5.8.0
+  languageName: unknown
+  linkType: soft
+
 "keyv@npm:^3.0.0":
   version: 3.1.0
   resolution: "keyv@npm:3.1.0"
@@ -8172,10 +8347,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lodash.memoize@npm:^4.1.2":
+  version: 4.1.2
+  resolution: "lodash.memoize@npm:4.1.2"
+  checksum: 9ff3942feeccffa4f1fafa88d32f0d24fdc62fd15ded5a74a5f950ff5f0c6f61916157246744c620173dddf38d37095a92327d5fd3861e2063e736a5c207d089
+  languageName: node
+  linkType: hard
+
 "lodash.merge@npm:^4.6.2":
   version: 4.6.2
   resolution: "lodash.merge@npm:4.6.2"
   checksum: ad580b4bdbb7ca1f7abf7e1bce63a9a0b98e370cf40194b03380a46b4ed799c9573029599caebc1b14e3f24b111aef72b96674a56cfa105e0f5ac70546cdc005
+  languageName: node
+  linkType: hard
+
+"lodash.throttle@npm:^4.1.1":
+  version: 4.1.1
+  resolution: "lodash.throttle@npm:4.1.1"
+  checksum: 129c0a28cee48b348aef146f638ef8a8b197944d4e9ec26c1890c19d9bf5a5690fe11b655c77a4551268819b32d27f4206343e30c78961f60b561b8608c8c805
   languageName: node
   linkType: hard
 
@@ -11706,7 +11895,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-loader@npm:^9.2.3":
+"ts-loader@npm:^9.2.3, ts-loader@npm:^9.2.6":
   version: 9.2.6
   resolution: "ts-loader@npm:9.2.6"
   dependencies:
@@ -12125,7 +12314,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webpack-cli@npm:^4.7.2":
+"webpack-cli@npm:^4.7.2, webpack-cli@npm:^4.9.1":
   version: 4.9.1
   resolution: "webpack-cli@npm:4.9.1"
   dependencies:
@@ -12260,7 +12449,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webpack@npm:5.65.0, webpack@npm:^5.44.0":
+"webpack@npm:5.65.0, webpack@npm:^5.44.0, webpack@npm:^5.65.0":
   version: 5.65.0
   resolution: "webpack@npm:5.65.0"
   dependencies:

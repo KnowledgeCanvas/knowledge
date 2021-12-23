@@ -7,13 +7,13 @@
   "license": "Apache-2.0",
   "private": true,
   "scripts": {
-    "build": "node_modules/.bin/webpack --config webpack.prod.js",
-    "build-dev": "node_modules/.bin/webpack --config webpack.dev.js",
+    "build": "webpack --config webpack.prod.js",
+    "build-dev": "webpack --config webpack.dev.js",
     "clean": "rm -rf dist",
     "purge": "rm -rf node_modules",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "watch-knowledge": "node_modules/.bin/webpack --config webpack.prod.js --watch",
-    "watch-knowledge-dev": "node_modules/.bin/webpack --config webpack.dev.js --watch"
+    "watch-knowledge": "webpack --config webpack.prod.js --watch",
+    "watch-knowledge-dev": "webpack --config webpack.dev.js --watch"
   },
   "dependencies": {
     "cytoscape": "^3.20.0",
