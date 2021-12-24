@@ -133,12 +133,13 @@ export class StorageService {
 
   set projects(projectModels: ProjectModel[]) {
     let pStr: string;
+    let pids = [];
     for (let project of projectModels) {
       pStr = JSON.stringify(project);
       this.db.setItem(project.id.value, pStr);
+      pids.push(project.id.value);
     }
-    pStr = JSON.stringify(projectModels);
-    this.db.setItem(this.KC_ALL_PROJECT_IDS, pStr);
+    this.db.setItem(this.KC_ALL_PROJECT_IDS, JSON.stringify(pids));
   }
 
   get sortByIndex(): number | undefined {
@@ -295,7 +296,7 @@ export class StorageService {
   }
 
   export() {
-    console.log('Export button clicked...');
+    console.warn('Export functionality not implemented...');
   }
 
   private allStorage() {
@@ -307,5 +308,23 @@ export class StorageService {
       console.log(keys[i], localStorage.getItem(keys[i]));
       values.push(localStorage.getItem(keys[i]));
     }
+  }
+
+  private recoverProjects() {
+    console.debug('Reinstating lost projects...');
+    let pids = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (!key) {
+        continue;
+      }
+      if (key.includes('kc-') || key.includes('icon-') || key.includes('file') || key.includes('ks-') || key.includes('current')) {
+
+      } else {
+        pids.push(key);
+      }
+    }
+    this.db.setItem(this.KC_ALL_PROJECT_IDS, JSON.stringify(pids));
+    console.debug('Lost projects reinstated: ', pids);
   }
 }
