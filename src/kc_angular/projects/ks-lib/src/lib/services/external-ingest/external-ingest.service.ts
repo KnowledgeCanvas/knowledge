@@ -77,8 +77,8 @@ export class ExternalIngestService {
           let source = new SourceModel(fileModel, undefined, undefined);
           let ref = new KnowledgeSourceReference('file', source, sourceLink);
           let ks = new KnowledgeSource(fileModel.filename, fileModel.id, 'file', ref);
-          ks.dateAccessed = new Date(fileModel.accessTime);
-          ks.dateModified = new Date(fileModel.modificationTime);
+          ks.dateAccessed = [new Date(fileModel.accessTime)];
+          ks.dateModified = [new Date(fileModel.modificationTime)];
           ks.dateCreated = new Date(fileModel.creationTime);
           ks.iconUrl = this.faviconService.file();
           ks.icon = icons[i];

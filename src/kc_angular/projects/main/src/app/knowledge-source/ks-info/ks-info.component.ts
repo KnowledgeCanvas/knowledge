@@ -100,9 +100,20 @@ export class KsInfoComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ksDeepCopy(ks: KnowledgeSource): KnowledgeSource {
+    // A simple, naive, and probably inefficient method for deep-copying an object in JavaScript
     let deepKs: KnowledgeSource = JSON.parse(JSON.stringify(ks));
-    deepKs.dateModified = new Date(deepKs.dateModified);
-    deepKs.dateAccessed = new Date(deepKs.dateAccessed);
+
+    // After performing a "deep copy", the dates will be in an incorrect format, so we must reconstruct them
+    let modified = [];
+    let accessed = [];
+    for (let d of deepKs.dateModified) {
+      modified.push(new Date(d));
+    }
+    for (let d of deepKs.dateAccessed) {
+      accessed.push(new Date(d));
+    }
+    deepKs.dateModified = modified;
+    deepKs.dateAccessed = accessed;
     deepKs.dateCreated = new Date(deepKs.dateCreated);
     return deepKs;
   }

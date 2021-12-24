@@ -97,7 +97,7 @@ export class KsInfoDialogComponent implements OnInit, OnDestroy {
       url = this.ks.accessLink.href;
 
     window.open(url);
-    this.ks.dateAccessed = new Date();
+    this.ks.dateAccessed.push(new Date());
     this.ksChanged = true;
   }
 
@@ -171,7 +171,7 @@ export class KsInfoDialogComponent implements OnInit, OnDestroy {
 
     // Only update the KS if it's in ks-drop-list... otherwise we're in ks-queue and shouldn't update project
     if (this.projectId && this.sourceRef == 'ks-drop-list') {
-      this.ks.dateModified = new Date();
+      this.ks.dateModified.push(new Date());
       let update: ProjectUpdateRequest = {
         id: new UuidModel(this.projectId),
         updateKnowledgeSource: [this.ks]

@@ -35,6 +35,8 @@ export class StorageService {
   get projects(): ProjectModel[] {
     let projects: ProjectModel[] = [];
 
+    // this.recoverProjects();
+
     // Get and parse Project list from local storage
     let projectsStr: string | null = this.db.getItem(this.KC_ALL_PROJECT_IDS);
 
@@ -52,6 +54,7 @@ export class StorageService {
     }
 
     if (projectIds.length === 0) {
+      console.warn('No projects available...');
       return projects;
     }
 
@@ -79,9 +82,38 @@ export class StorageService {
       // Pre-populate list of Knowledge Sources for later consumption
       if (project.knowledgeSource && project.knowledgeSource.length > 0) {
         for (let ks of project.knowledgeSource) {
-          // Fix for invalid serialize/deserialize formatting
-          ks.dateModified = new Date(ks.dateModified);
-          ks.dateAccessed = new Date(ks.dateAccessed);
+
+          if (!ks.dateAccessed) {
+            ks.dateAccessed = [new Date()];
+          }
+          if (!ks.dateModified) {
+            ks.dateModified = [new Date()];
+          }
+          if (!ks.dateCreated) {
+            ks.dateCreated = new Date();
+          }
+
+          // // Fix for invalid serialize/deserialize formatting
+          // if (typeof ks.dateAccessed === 'string') {
+          //   ks.dateAccessed = [new Date(ks.dateAccessed)];
+          // }
+          //
+          // if (typeof ks.dateModified === 'string') {
+          //   ks.dateAccessed = [new Date(ks.dateModified)];
+          // }
+
+          let accessed = [];
+          for (let d of ks.dateAccessed) {
+            accessed.push(new Date(d));
+          }
+          ks.dateAccessed = accessed;
+
+          let modified = [];
+          for (let d of ks.dateModified) {
+            modified.push(new Date(d));
+          }
+          ks.dateModified = modified;
+
           ks.dateCreated = new Date(ks.dateCreated);
           ks.icon = undefined;
           this.knowledgeSources.push(ks);

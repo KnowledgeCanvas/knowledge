@@ -60,8 +60,8 @@ export class KnowledgeSource {
   associatedProjects?: UuidModel[];
   authors: AuthorModel[] = [];
   dateCreated: Date;
-  dateAccessed: Date;
-  dateModified: Date;
+  dateAccessed: Date[];
+  dateModified: Date[];
   description: string = '';
   icon?: any;
   iconUrl?: string;
@@ -81,7 +81,9 @@ export class KnowledgeSource {
     this.id = id;
     this.reference = reference;
     this.ingestType = ingestType;
-    this.dateCreated = this.dateModified = this.dateAccessed = new Date();
+    this.dateCreated = new Date();
+    this.dateModified = [new Date()];
+    this.dateAccessed = [new Date()]
     this.accessLink = reference.link;
   }
 }
@@ -103,26 +105,3 @@ export class KnowledgeSourceNote {
     return new KnowledgeSourceNote('test');
   }
 }
-
-// export class KnowledgeSourceNotes {
-//   notes: string[] = [];
-//   dateCreated: Date;
-//   dateModified: Date;
-//   dateAccessed: Date;
-//
-//   constructor(notes?: string[]) {
-//     this.notes = notes ? notes : [];
-//     this.dateCreated = new Date();
-//     this.dateAccessed = new Date();
-//     this.dateModified = new Date();
-//   }
-//
-//   get text() {
-//     return this.notes;
-//   }
-//
-//   set text(arr: string[]) {
-//     this.notes = arr;
-//   }
-//
-// }

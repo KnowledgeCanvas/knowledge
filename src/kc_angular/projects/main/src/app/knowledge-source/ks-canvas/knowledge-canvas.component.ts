@@ -149,12 +149,11 @@ export class KnowledgeCanvasComponent implements OnInit, OnDestroy {
 
   ksOpen(ks: KnowledgeSource) {
     window.open(typeof ks.accessLink === 'string' ? ks.accessLink : ks.accessLink.href);
+    ks.dateAccessed.push(new Date());
     this.ksAccessed(ks);
   }
 
   ksAccessed(ks: KnowledgeSource) {
-    ks.dateAccessed = new Date();
-
     if (!ks.associatedProjects) {
       return;
     }
@@ -210,7 +209,7 @@ export class KnowledgeCanvasComponent implements OnInit, OnDestroy {
       return;
     }
 
-    ks.dateModified = new Date();
+    ks.dateModified.push(new Date());
 
     let update: ProjectUpdateRequest = {
       id: project.id,

@@ -63,12 +63,12 @@ limitations under the License.-->
 
     <ng-container matColumnDef="dateAccessed">
       <th mat-header-cell *matHeaderCellDef mat-sort-header class="ks-table-header">Reviewed</th>
-      <td mat-cell *matCellDef="let element">{{element.dateAccessed | countdown}}</td>
+      <td mat-cell *matCellDef="let element">{{element.dateAccessed[element.dateAccessed.length - 1] | countdown}}</td>
     </ng-container>
 
     <ng-container matColumnDef="dateModified">
       <th mat-header-cell *matHeaderCellDef mat-sort-header class="ks-table-header">Modified</th>
-      <td mat-cell *matCellDef="let element">{{element.dateModified | countdown}}</td>
+      <td mat-cell *matCellDef="let element">{{element.dateModified[element.dateModified.length - 1] | countdown}}</td>
     </ng-container>
 
     <ng-container matColumnDef="expandedDetail">

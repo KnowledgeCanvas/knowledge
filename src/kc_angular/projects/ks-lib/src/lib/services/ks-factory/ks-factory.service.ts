@@ -64,7 +64,7 @@ export class KsFactoryService {
         source: {search: undefined, file: undefined, website: {url: "", metadata: {title: "Knowledge Canvas Search", icon: ''}}},
         link: ""
       },
-      ingestType: "website", dateAccessed: new Date(), dateModified: new Date(), dateCreated: new Date(),
+      ingestType: "website", dateAccessed: [new Date()], dateModified: [new Date()], dateCreated: new Date(),
       accessLink: "",
       iconUrl: "",
       notes: [],
@@ -129,8 +129,4 @@ export class KsFactoryService {
       });
     });
   }
-
-  // private extractFileResource(path: string): Promise<KnowledgeSource> {
-  //
-  // }
 }

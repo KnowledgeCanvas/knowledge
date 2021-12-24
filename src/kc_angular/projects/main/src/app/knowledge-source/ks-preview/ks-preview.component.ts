@@ -103,6 +103,8 @@ export class KsPreviewComponent implements OnInit, OnDestroy {
       default:
         this.previewWebsite();
     }
+    this.ks.dateAccessed.push(new Date());
+    this.ksChanged = true;
   }
 
   ngOnDestroy() {
