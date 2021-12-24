@@ -1,4 +1,4 @@
-import cytoscape, {CytoscapeOptions, LayoutOptions} from "cytoscape";
+import cytoscape, {CytoscapeOptions, LayoutOptions, SingularData} from "cytoscape";
 import {EdgeHandlesInstance, EdgeHandlesOptions} from "cytoscape-edgehandles";
 import cxtmenu from 'cytoscape-cxtmenu';
 import dagre from "cytoscape-dagre";
@@ -234,7 +234,7 @@ export class KnowledgeCanvas {
 
     setupContextMenu(): cxtmenu.Options {
         return {
-            menuRadius: function (ele) {
+            menuRadius: function (ele: SingularData) {
                 return 80;
             },
             selector: 'node',
@@ -243,7 +243,7 @@ export class KnowledgeCanvas {
                     fillColor: 'rgba(200, 200, 200, 0.75)', // optional: custom background color for item
                     content: 'View Text', // html/text content to be displayed in the menu
                     contentStyle: {}, // css key:value pairs to set the command's css in js if you want
-                    select: function (ele) { // a function to execute when the command is selected
+                    select: function (ele: SingularData) { // a function to execute when the command is selected
                         console.log(ele.id()) // `ele` holds the reference to the active element
                     },
                     enabled: true
@@ -252,7 +252,7 @@ export class KnowledgeCanvas {
                     fillColor: 'rgba(200, 200, 200, 0.75)',
                     content: 'Connect',
                     contentStyle: {},
-                    select: (ele) => {
+                    select: (ele: SingularData) => {
                         console.log(ele.id())
                         // @ts-ignore
                         this.cy.edgehandles().start(this.cy.$(ele));
@@ -263,7 +263,7 @@ export class KnowledgeCanvas {
                     fillColor: 'rgba(200, 200, 200, 0.75)',
                     content: 'Remove',
                     contentStyle: {},
-                    select: function (ele) {
+                    select: function (ele: SingularData) {
                         console.log(ele.id())
                     },
                     enabled: true
