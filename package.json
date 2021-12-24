@@ -32,7 +32,7 @@
     "dist-all": "electron-builder -mwl --publish never",
     "publish": "electron-builder --publish always",
     "publish-all": "electron-builder -mwl --publish always",
-    "purge": "rm -rf node_modules && yarn cache clean && rm -rf ./src/kc_angular/node_modules && rm -rf ./src/kc_electron/node_modules && rm -rf ./src/kc_knowledge/node_modules",
+    "purge": "rm -rf node_modules && yarn cache clean && rm -rf ./src/kc_angular/node_modules && rm -rf ./src/kc_angular/.angular && rm -rf ./src/kc_electron/node_modules && rm -rf ./src/kc_knowledge/node_modules",
     "release": "standard-version",
     "start": "electron .",
     "start-debug": "electron . --inspect=5858",
