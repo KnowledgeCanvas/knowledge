@@ -33,11 +33,18 @@ limitations under the License.-->
 
       <mat-menu #appMenu="matMenu" xPosition="before">
         <div class="ks-subproject-toggle">
+          <mat-slide-toggle (change)="onExpandRowsClicked($event)"
+                            [(ngModel)]="clickExpandRows">
+            <!--            TODO: this shows up in black text even when dark mode is enabled-->
+            Click To Expand Rows
+          </mat-slide-toggle>
+        </div>
+        <div class="ks-subproject-toggle">
           <mat-slide-toggle [disabled]="!kcProject || !kcProject.subprojects || kcProject.subprojects.length === 0"
                             (change)="onShowSubProjectsClicked($event)"
                             [(ngModel)]="showSubProjects">
             <!--            TODO: this shows up in black text even when dark mode is enabled-->
-            Show Subproject Sources
+            Subproject Sources
           </mat-slide-toggle>
         </div>
         <button mat-menu-item [disabled]="ksList.length === 0" (click)="onExportClicked($event)">
@@ -47,9 +54,9 @@ limitations under the License.-->
       </mat-menu>
 
       <div>
-        <button mat-icon-button (click)="displayKnowledgeGraph()" matTooltip="Open Knowledge Graph">
-          <img src="assets/img/kc-icon-transparent.png" style="width: 18px; height: 18px;">
-        </button>
+<!--        <button mat-icon-button (click)="displayKnowledgeGraph()" matTooltip="Open Knowledge Graph">-->
+<!--          <img src="assets/img/kc-icon-transparent.png" style="width: 18px; height: 18px;">-->
+<!--        </button>-->
         <button mat-icon-button [matMenuTriggerFor]="appMenu">
           <mat-icon>settings</mat-icon>
         </button>
@@ -83,6 +90,7 @@ limitations under the License.-->
               (ksTableOpenClicked)="ksMenuOpenClicked.emit($event)"
               (ksTablePreviewClicked)="ksMenuPreviewClicked.emit($event)"
               (ksTableRemoveClicked)="removeClicked($event)"
+              [ksTableExpandRowOnClick]="clickExpandRows"
               (kcSetCurrentProject)="kcSetCurrentProject.emit($event)"
               (ksModified)="ksModified.emit($event)"
               [ksList]="ksList"
@@ -113,19 +121,6 @@ limitations under the License.-->
 
       <div class="project-accordion-container">
         <mat-accordion #accordion="matAccordion" [multi]="true" togglePosition="after" class="ks-details-accordion">
-          <!--        TODO: implement notes features (add a note, delete a note, etc)-->
-
-          <!--          <mat-expansion-panel expanded>-->
-          <!--            <mat-expansion-panel-header>-->
-          <!--              <mat-panel-title>Topics</mat-panel-title>-->
-          <!--              <div class="mat-panel-body">-->
-          <!--                <ng-template matExpansionPanelContent>-->
-          <!--                  <app-project-topic-list [kcComponentType]="'project'" #topics></app-project-topic-list>-->
-          <!--                </ng-template>-->
-          <!--              </div>-->
-          <!--            </mat-expansion-panel-header>-->
-          <!--          </mat-expansion-panel>-->
-
           <mat-expansion-panel>
             <mat-expansion-panel-header>
               <mat-panel-title>Description</mat-panel-title>

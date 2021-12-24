@@ -225,8 +225,6 @@ export class KsPreviewComponent implements OnInit, OnDestroy {
     switch (type) {
       case 'pdf':
         this.previewPdf();
-        this.ks.dateAccessed = new Date();
-        this.ksChanged = true;
         break;
     }
   }

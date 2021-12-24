@@ -73,9 +73,9 @@ limitations under the License.-->
 
     <ng-container matColumnDef="expandedDetail">
       <td mat-cell *matCellDef="let element" [attr.colspan]="columnsToDisplay.length">
-        <div class="ks-table-expanded-detail" [@detailExpand]="element.id.value == expandedElement ? 'expanded' : 'collapsed'">
-<!--          <ks-lib-ks-notes *ngIf="element.id.value === expandedElement" [ks]="element"></ks-lib-ks-notes>-->
-            <ks-lib-dashboard [ks]="element" *ngIf="element.id.value === expandedElement"></ks-lib-dashboard>
+        <div class="ks-table-expanded-detail" [@detailExpand]="(ksTableExpandRowOnClick && element.id.value == expandedElement) ? 'expanded' :
+        'collapsed'">
+            <ks-lib-dashboard [ks]="element" *ngIf="ksTableExpandRowOnClick && (element.id.value === expandedElement)"></ks-lib-dashboard>
         </div>
       </td>
     </ng-container>

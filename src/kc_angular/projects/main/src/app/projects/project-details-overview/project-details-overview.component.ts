@@ -26,6 +26,7 @@ import {MatSlideToggleChange} from "@angular/material/slide-toggle";
 import {StorageService} from "../../../../../ks-lib/src/lib/services/storage/storage.service";
 import {ElectronIpcService} from "../../../../../ks-lib/src/lib/services/electron-ipc/electron-ipc.service";
 import {KcDialogRequest} from "kc_electron/src/app/models/electron.ipc.model";
+import {SettingsService} from "../../../../../ks-lib/src/lib/services/settings/settings.service";
 
 @Component({
   selector: 'kc-project-overview',
@@ -75,12 +76,13 @@ export class ProjectDetailsOverviewComponent implements OnInit, OnChanges {
   ancestors: ProjectIdentifiers[] = [];
 
   tooManyAncestorsToDisplay: boolean = false;
+  clickExpandRows: boolean = true;
 
   constructor(private projectService: ProjectService,
               private faviconService: FaviconExtractorService,
+              private settingsService: SettingsService,
               private storageService: StorageService,
-              private ipcService: ElectronIpcService
-  ) {
+              private ipcService: ElectronIpcService) {
     projectService.currentProject.subscribe((project) => {
       this.kcProject = project;
 
@@ -99,6 +101,13 @@ export class ProjectDetailsOverviewComponent implements OnInit, OnChanges {
         this.ancestors = ancestors;
         this.tooManyAncestorsToDisplay = false;
       }
+    });
+
+    settingsService.appSettings.subscribe((settings) => {
+      this.clickExpandRows = settings.ks?.table?.expandRows ?? true;
+      this.showSubProjects = settings.ks?.table?.showSubProjects ?? false;
+      console.log('Received settings for showSubProjects: ', settings);
+      this.ksTableSubprojectsToggled(this.showSubProjects);
     });
   }
 
@@ -185,6 +194,7 @@ export class ProjectDetailsOverviewComponent implements OnInit, OnChanges {
 
   onShowSubProjectsClicked(toggle: MatSlideToggleChange) {
     this.ksTableSubprojectsToggled(toggle.checked);
+    this.settingsService.saveSettings({app: {ks: {table: {showSubProjects: toggle.checked, expandRows: this.clickExpandRows}}}});
   }
 
   removeClicked($event: KnowledgeSource) {
@@ -205,5 +215,9 @@ export class ProjectDetailsOverviewComponent implements OnInit, OnChanges {
     this.ipcService.openKcDialog(request).then(() => {
       console.log('Kc Dialog opened...');
     })
+  }
+
+  onExpandRowsClicked($event: MatSlideToggleChange) {
+    this.settingsService.saveSettings({app: {ks: {table: {expandRows: $event.checked, showSubProjects: this.showSubProjects}}}});
   }
 }

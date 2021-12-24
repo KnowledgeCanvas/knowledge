@@ -16,7 +16,7 @@
 
 import {Injectable} from '@angular/core';
 import {BehaviorSubject} from 'rxjs';
-import {SearchSettingsModel, SettingsModel} from 'projects/ks-lib/src/lib/models/settings.model';
+import {ApplicationSettingsModel, SearchSettingsModel, SettingsModel} from 'projects/ks-lib/src/lib/models/settings.model';
 import {ElectronIpcService} from "../electron-ipc/electron-ipc.service";
 
 @Injectable({
@@ -27,12 +27,16 @@ export class SettingsService {
   settings = this.settingsSubject.asObservable();
   private searchSettingsSubject = new BehaviorSubject<SearchSettingsModel>({})
   searchSettings = this.searchSettingsSubject.asObservable();
+  private appSettingsSubject = new BehaviorSubject<ApplicationSettingsModel>({});
+  appSettings = this.appSettingsSubject.asObservable();
 
   constructor(private ipcService: ElectronIpcService) {
     this.ipcService.getSettingsFile().subscribe((settings) => {
       this.settingsSubject.next(settings);
       if (settings.search)
         this.searchSettingsSubject.next(settings.search);
+      if (settings.app)
+        this.appSettingsSubject.next(settings.app);
     });
   }
 

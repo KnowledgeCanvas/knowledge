@@ -40,6 +40,7 @@ import {KsInfoDialogService} from "../../../../../ks-lib/src/lib/services/ks-inf
 export class KnowledgeSourceTableComponent implements OnInit, OnChanges {
   @Input() ksList: KnowledgeSource[] = [];
   @Input() ksTableAllowSubprojectExpansion: boolean = true;
+  @Input() ksTableExpandRowOnClick: boolean = true;
   @Output() ksTableShowSubprojects = new EventEmitter<boolean>();
   @Output() ksTablePreviewClicked = new EventEmitter<KnowledgeSource>();
   @Output() ksTableOpenClicked = new EventEmitter<KnowledgeSource>();
@@ -117,13 +118,15 @@ export class KnowledgeSourceTableComponent implements OnInit, OnChanges {
 
   async update() {
     this.hideTable = true;
-    this.filter = '';
     this.dataSource = new MatTableDataSource<KnowledgeSource>(this.ksList);
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
     this.setSortingAccessor();
     this.setTableColumnsByScreenWidth(window.innerWidth);
     this.hideTable = this.dataSource.data.length === 0;
+    if (this.filter.length > 0) {
+      this.applyFilter(this.filter);
+    }
   }
 
   setSortingAccessor() {

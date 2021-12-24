@@ -59,6 +59,15 @@ const wellnessSettings = {
     allowOverride: true
 }
 
+const applicationSettings = {
+    ks: {
+        table: {
+            showSubProjects: false,
+            expandRows: true
+        }
+    }
+}
+
 // ApplicationEnvironment is a singleton class that serves as the ground-truth environment settings
 export class ApplicationEnvironment {
     private static appEnv: EnvironmentModel;
@@ -102,7 +111,8 @@ export class ApplicationEnvironment {
             settingsFilePath: '',
             settingsFilename: 'knowledge-canvas.settings.json',
             settingsPath: '',
-            wellness: wellnessSettings
+            wellness: wellnessSettings,
+            app: applicationSettings
         };
     }
 

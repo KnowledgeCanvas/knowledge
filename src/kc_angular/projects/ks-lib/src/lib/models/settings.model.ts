@@ -22,11 +22,19 @@ export interface SettingsModel {
   projectsPath?: string;
   googleApiKey?: string;
   userName?: string;
-  search?: SearchSettingsModel
-  ingest?: IngestSettingsModel,
-  wellness?: WellnessSettingsModel
+  search?: SearchSettingsModel;
+  ingest?: IngestSettingsModel;
+  wellness?: WellnessSettingsModel;
+  app?: ApplicationSettingsModel;
 }
-
+export interface ApplicationSettingsModel {
+  ks?: {
+    table?: {
+      expandRows?: boolean;
+      showSubProjects?: boolean;
+    }
+  }
+}
 export interface SearchSettingsModel {
   numResults?: number,
   provider?: string

@@ -23,4 +23,5 @@ export interface EnvironmentModel {
     settingsFilename: string;
     settingsPath: string;
     wellness?: any;
+    app?: any;
 }
