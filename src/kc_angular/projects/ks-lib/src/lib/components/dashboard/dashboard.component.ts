@@ -1,6 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {KnowledgeSource} from "../../models/knowledge.source.model";
-import {join} from "@angular/compiler-cli/src/ngtsc/file_system";
 
 interface Tile {
   color: string;
@@ -22,30 +21,20 @@ export class DashboardComponent implements OnInit {
 
   tiles: Tile[] = [
     {hidden: false, disabled: false, text: '', title: 'Statistics', cols: 1, rows: 1, color: 'lightblue'},
-    {hidden: false, disabled: false, text: '', title: 'Topics', cols: 1, rows: 1, color: 'lightgreen'},
-    {hidden: false, disabled: false, text: '', title: 'Related', cols: 1, rows: 1, color: 'lightpink'},
+    {hidden: false, disabled: false, text: '', title: 'Notes', cols: 1, rows: 1, color: '#DDBDF1'}
   ];
-  constructor() { }
+
+  constructor() {
+  }
 
   ngOnInit(): void {
     if (this.ks.notes.length > 0) {
       let text = ''
       this.ks.notes.forEach((note) => {
         text += note.text + ' ';
-      })
+      });
+      this.tiles.pop();
       this.tiles.push({hidden: false, disabled: false, text: text, title: 'Notes', cols: 1, rows: 1, color: '#DDBDF1'});
     }
-
-    setTimeout(() => {
-      console.log('Setting tiles with KS: ', this.ks);
-      if (this.ks.notes.length === 0) {
-        this.tiles.forEach((tile) => {
-          if (tile.title === 'Notes') {
-            tile.hidden = true;
-          }
-        })
-      }
-    }, 50);
   }
-
 }
