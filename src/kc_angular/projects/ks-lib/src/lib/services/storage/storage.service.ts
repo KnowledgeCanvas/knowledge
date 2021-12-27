@@ -83,24 +83,18 @@ export class StorageService {
       if (project.knowledgeSource && project.knowledgeSource.length > 0) {
         for (let ks of project.knowledgeSource) {
 
+          // TODO : this is a temporary fix after refactoring ks timelines, should be removed eventually...
           if (!ks.dateAccessed) {
-            ks.dateAccessed = [new Date()];
+            ks.dateAccessed = [];
           }
           if (!ks.dateModified) {
-            ks.dateModified = [new Date()];
+            ks.dateModified = [];
           }
           if (!ks.dateCreated) {
             ks.dateCreated = new Date();
           }
 
-          // // Fix for invalid serialize/deserialize formatting
-          // if (typeof ks.dateAccessed === 'string') {
-          //   ks.dateAccessed = [new Date(ks.dateAccessed)];
-          // }
-          //
-          // if (typeof ks.dateModified === 'string') {
-          //   ks.dateAccessed = [new Date(ks.dateModified)];
-          // }
+          ks.dateCreated = new Date(ks.dateCreated);
 
           let accessed = [];
           for (let d of ks.dateAccessed) {
@@ -114,7 +108,6 @@ export class StorageService {
           }
           ks.dateModified = modified;
 
-          ks.dateCreated = new Date(ks.dateCreated);
           ks.icon = undefined;
           this.knowledgeSources.push(ks);
         }
