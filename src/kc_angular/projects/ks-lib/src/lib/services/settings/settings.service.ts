@@ -25,18 +25,16 @@ import {ElectronIpcService} from "../electron-ipc/electron-ipc.service";
 export class SettingsService {
   private settingsSubject = new BehaviorSubject<SettingsModel>({});
   settings = this.settingsSubject.asObservable();
+
   private searchSettingsSubject = new BehaviorSubject<SearchSettingsModel>({})
   searchSettings = this.searchSettingsSubject.asObservable();
+
   private appSettingsSubject = new BehaviorSubject<ApplicationSettingsModel>({});
   appSettings = this.appSettingsSubject.asObservable();
 
   constructor(private ipcService: ElectronIpcService) {
     this.ipcService.getSettingsFile().subscribe((settings) => {
-      this.settingsSubject.next(settings);
-      if (settings.search)
-        this.searchSettingsSubject.next(settings.search);
-      if (settings.app)
-        this.appSettingsSubject.next(settings.app);
+      this.updateSettings(settings);
     });
   }
 
@@ -44,12 +42,26 @@ export class SettingsService {
     return this.settingsSubject.value;
   }
 
+  updateSettings(settings: SettingsModel) {
+    this.settingsSubject.next(settings);
+
+    if (settings.search) {
+      this.searchSettingsSubject.next(settings.search);
+    }
+
+    if (settings.app) {
+      this.appSettingsSubject.next(settings.app);
+    }
+
+    if (settings.display) {
+      localStorage.setItem('theme', settings.display.theme);
+    }
+  }
+
   saveSettings(data: SettingsModel) {
     let newSettings = {...this.settingsSubject.value, ...data};
     return this.ipcService.saveSettingsFile(newSettings).subscribe((settings) => {
-      this.settingsSubject.next(settings);
-      if (settings.search)
-        this.searchSettingsSubject.next(settings.search);
+      this.updateSettings(settings);
     });
   }
 }
