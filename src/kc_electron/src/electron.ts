@@ -287,7 +287,6 @@ let autoScanInterval: any = undefined;
 // TODO: move this elsewhere.... IPC perhaps?
 settingsService.ingest.subscribe((ingest: any) => {
     if (!ingest || !ingest.autoscan || !ingest.autoscanLocation) {
-        console.log('Autoscan has been disabled... closing ingestWatcher')
         if (ingestWatcher)
             ingestWatcher.close();
         clearInterval(autoScanInterval);

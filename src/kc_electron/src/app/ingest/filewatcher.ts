@@ -36,8 +36,6 @@ class IngestFileWatcher {
         this.ingestSubscription = settingsService.ingest.subscribe((ingest: IngestSettingsModel) => {
             // Disable file watcher if autoscan is false
             if (!ingest.autoscan) {
-                console.log('Autoscan has been disabled... closing ingestWatcher');
-
                 if (this.ingestWatcher) {
                     this.ingestWatcher.close().then((_: any) => {
                         console.log('Closing ingest file watcher...');
