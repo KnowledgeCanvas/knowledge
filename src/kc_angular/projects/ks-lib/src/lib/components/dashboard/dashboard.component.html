@@ -1,4 +1,4 @@
-<mat-grid-list *ngIf="tiles.length > 0" cols="2" rowHeight="300px" gutterSize="5px">
+<mat-grid-list *ngIf="tiles.length > 0" cols="1" rowHeight="300px" gutterSize="5px">
   <div *ngFor="let tile of tiles">
     <mat-grid-tile *ngIf="!tile.hidden"
                    [colspan]="tile.cols"
@@ -9,9 +9,9 @@
           <hr>
         </div>
 
-        <div *ngIf="tile.title === 'Notes'">
-          <ks-lib-ks-notes [ks]="this.ks"></ks-lib-ks-notes>
-        </div>
+<!--        <div *ngIf="tile.title === 'Notes'">-->
+<!--          <ks-lib-ks-notes [ks]="this.ks"></ks-lib-ks-notes>-->
+<!--        </div>-->
 
         <div *ngIf="tile.title === 'Statistics'">
           <div class="row">

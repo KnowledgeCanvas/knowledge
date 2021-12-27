@@ -21,20 +21,20 @@ export class DashboardComponent implements OnInit {
 
   tiles: Tile[] = [
     {hidden: false, disabled: false, text: '', title: 'Statistics', cols: 1, rows: 1, color: 'lightblue'},
-    {hidden: false, disabled: false, text: '', title: 'Notes', cols: 1, rows: 1, color: '#DDBDF1'}
+    // {hidden: false, disabled: false, text: '', title: 'Notes', cols: 1, rows: 1, color: '#DDBDF1'}
   ];
 
   constructor() {
   }
 
   ngOnInit(): void {
-    if (this.ks.notes.length > 0) {
-      let text = ''
-      this.ks.notes.forEach((note) => {
-        text += note.text + ' ';
-      });
-      this.tiles.pop();
-      this.tiles.push({hidden: false, disabled: false, text: text, title: 'Notes', cols: 1, rows: 1, color: '#DDBDF1'});
-    }
+    // if (this.ks.notes.length > 0) {
+    //   let text = ''
+    //   this.ks.notes.forEach((note) => {
+    //     text += note.text + ' ';
+    //   });
+    //   this.tiles.pop();
+    //   this.tiles.push({hidden: false, disabled: false, text: text, title: 'Notes', cols: 1, rows: 1, color: '#DDBDF1'});
+    // }
   }
 }
