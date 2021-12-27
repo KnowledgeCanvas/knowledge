@@ -77,6 +77,7 @@ export class ProjectDetailsOverviewComponent implements OnInit, OnChanges {
 
   tooManyAncestorsToDisplay: boolean = false;
   clickExpandRows: boolean = true;
+  projectEvents: any[] = [];
 
   constructor(private projectService: ProjectService,
               private faviconService: FaviconExtractorService,
@@ -101,6 +102,11 @@ export class ProjectDetailsOverviewComponent implements OnInit, OnChanges {
         this.ancestors = ancestors;
         this.tooManyAncestorsToDisplay = false;
       }
+
+      this.projectEvents = [];
+      this.projectEvents.push({status: 'Created', date: this.kcProject.dateCreated});
+      this.projectEvents.push({status: 'Accessed', date: this.kcProject.dateAccessed});
+      this.projectEvents.push({status: 'Modified', date: this.kcProject.dateModified});
     });
 
     settingsService.appSettings.subscribe((settings) => {
@@ -201,7 +207,7 @@ export class ProjectDetailsOverviewComponent implements OnInit, OnChanges {
     this.ksMenuRemoveClicked.emit($event);
   }
 
-  onExportClicked($event: MouseEvent) {
+  onExportClicked() {
     this.storageService.export();
   }
 

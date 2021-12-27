@@ -16,7 +16,7 @@
 
 import {Injectable} from '@angular/core';
 import {UuidService} from "../uuid/uuid.service";
-import {IngestType, KnowledgeSource, KnowledgeSourceReference, SourceModel} from "../../models/knowledge.source.model";
+import {IngestType, KnowledgeSource, KnowledgeSourceNote, KnowledgeSourceReference, SourceModel} from "../../models/knowledge.source.model";
 import {ElectronIpcService} from "../electron-ipc/electron-ipc.service";
 import {ExtractionService} from "../extraction/extraction.service";
 import {FaviconExtractorService} from "../favicon/favicon-extractor.service";
@@ -67,7 +67,7 @@ export class KsFactoryService {
       ingestType: "website", dateAccessed: [new Date()], dateModified: [new Date()], dateCreated: new Date(),
       accessLink: "",
       iconUrl: "",
-      notes: [],
+      note: new KnowledgeSourceNote(),
       icon: ''
     }
 

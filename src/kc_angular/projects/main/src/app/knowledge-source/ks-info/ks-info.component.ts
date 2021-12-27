@@ -16,6 +16,7 @@
 
 import {Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
 import {KnowledgeSource} from "projects/ks-lib/src/lib/models/knowledge.source.model";
+import {MatDialog} from "@angular/material/dialog";
 
 @Component({
   selector: 'app-ks-info',
@@ -23,13 +24,15 @@ import {KnowledgeSource} from "projects/ks-lib/src/lib/models/knowledge.source.m
   styleUrls: ['./ks-info.component.scss']
 })
 export class KsInfoComponent implements OnInit, OnChanges, OnDestroy {
-  @Input()
-  ks!: KnowledgeSource;
+  @Input() ks!: KnowledgeSource;
 
-  @Output()
-  ksModified = new EventEmitter<boolean>();
+  @Output() ksModified = new EventEmitter<boolean>();
 
-  @ViewChild('ksextraction') ksextraction!: ElementRef;
+  @ViewChild('ksExtraction') ksExtraction!: ElementRef;
+
+  @ViewChild('ksNotes') ksNotes!: ElementRef;
+
+  events: any[] = [];
 
   private ksUnmodified?: KnowledgeSource;
 
@@ -54,9 +57,39 @@ export class KsInfoComponent implements OnInit, OnChanges, OnDestroy {
       }
       this.ksUnmodified = this.ksDeepCopy(ks);
 
+
+      this.events.push({
+        status: 'Created/Imported',
+        date: this.ks.dateCreated
+      });
+
+      for (let mod of this.ks.dateModified) {
+        this.events.push({
+          status: 'Modified',
+          date: mod
+        });
+      }
+
+      for (let access of this.ks.dateAccessed) {
+        this.events.push({
+          status: 'Accessed',
+          date: access
+        });
+      }
+
+      this.events.sort((a, b) => {
+        a = new Date(a.date);
+        b = new Date(b.date);
+        if (a < b)
+          return -1;
+        if (a > b)
+          return 1;
+        return 0;
+      });
+
       if (ks.rawText) {
         setTimeout(() => {
-          this.ksextraction.nativeElement.innerHTML = ks.rawText;
+          this.ksExtraction.nativeElement.innerHTML = ks.rawText;
         })
       }
     }
@@ -84,19 +117,9 @@ export class KsInfoComponent implements OnInit, OnChanges, OnDestroy {
       return false;
     }
 
-    let notes = '';
-    this.ksUnmodified.notes.forEach((ks) => {
-      notes += ks.text;
-    });
-
-    let newNotes = '';
-    ks.notes.forEach((ks) => {
-      newNotes += ks.text;
-    });
-
     return (this.ksUnmodified.title !== ks.title)
       || (this.ksUnmodified.description !== ks.description)
-      || (notes !== newNotes);
+      || (this.ksUnmodified.note && ks.note && this.ksUnmodified.note.text !== ks.note.text);
   }
 
   ksDeepCopy(ks: KnowledgeSource): KnowledgeSource {

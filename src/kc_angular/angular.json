@@ -33,8 +33,11 @@
               "projects/main/src/assets/img"
             ],
             "styles": [
+              "projects/main/src/styles.scss",
               "../../node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
-              "projects/main/src/styles.scss"
+              "../../node_modules/primeflex/primeflex.css",
+              "../../node_modules/quill/dist/quill.core.css",
+              "../../node_modules/quill/dist/quill.snow.css"
             ],
             "stylePreprocessorOptions": {
               "includePaths": [
@@ -42,7 +45,7 @@
                 "./node_modules"
               ]
             },
-            "scripts": []
+            "scripts": ["../../node_modules/quill/dist/quill.js"]
           },
           "configurations": {
             "production": {
@@ -128,10 +131,13 @@
               "projects/main/src/assets/img"
             ],
             "styles": [
+              "projects/main/src/styles.scss",
               "../../node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
-              "projects/main/src/styles.scss"
+              "../../node_modules/primeflex/primeflex.css",
+              "../../node_modules/quill/dist/quill.core.css",
+              "../../node_modules/quill/dist/quill.snow.css"
             ],
-            "scripts": []
+            "scripts": ["../../node_modules/quill/dist/quill.js"]
           }
         }
       }
@@ -145,7 +151,15 @@
         "build": {
           "builder": "@angular-devkit/build-angular:ng-packagr",
           "options": {
-            "project": "projects/ks-lib/ng-package.json"
+            "project": "projects/ks-lib/ng-package.json",
+            "styles": [
+              "projects/main/src/styles.scss",
+              "../../node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
+              "../../node_modules/primeflex/primeflex.css",
+              "../../node_modules/quill/dist/quill.core.css",
+              "../../node_modules/quill/dist/quill.snow.css"
+            ],
+            "scripts": ["../../node_modules/quill/dist/quill.js"]
           },
           "configurations": {
             "production": {
@@ -162,7 +176,15 @@
           "options": {
             "main": "projects/ks-lib/src/test.ts",
             "tsConfig": "projects/ks-lib/tsconfig.spec.json",
-            "karmaConfig": "projects/ks-lib/karma.conf.js"
+            "karmaConfig": "projects/ks-lib/karma.conf.js",
+            "styles": [
+              "projects/main/src/styles.scss",
+              "../../node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
+              "../../node_modules/primeflex/primeflex.css",
+              "../../node_modules/quill/dist/quill.core.css",
+              "../../node_modules/quill/dist/quill.snow.css"
+            ],
+            "scripts": ["../../node_modules/quill/dist/quill.js"]
           }
         }
       }

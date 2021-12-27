@@ -54,6 +54,9 @@ import {KsNotesComponent} from './components/ks-notes/ks-notes.component';
 import {CountdownPipe} from './pipes/countdown.pipe';
 import {DashboardComponent} from './components/dashboard/dashboard.component';
 import {MatGridListModule} from "@angular/material/grid-list";
+import {TimelineModule} from "primeng/timeline";
+import {CardModule} from "primeng/card";
+import {EditorModule} from "primeng/editor";
 
 declare global {
   interface Window {
@@ -88,24 +91,27 @@ declare global {
     CountdownPipe,
     DashboardComponent
   ],
-  imports: [
-    MatIconModule,
-    MatButtonModule,
-    MatBottomSheetModule,
-    CommonModule,
-    MatRadioModule,
-    FormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    ReactiveFormsModule,
-    MatDividerModule,
-    MatProgressBarModule,
-    MatTooltipModule,
-    MatSlideToggleModule,
-    DragDropModule,
-    MatMenuModule,
-    MatGridListModule
-  ],
+    imports: [
+        MatIconModule,
+        MatButtonModule,
+        MatBottomSheetModule,
+        CommonModule,
+        MatRadioModule,
+        FormsModule,
+        MatFormFieldModule,
+        MatInputModule,
+        ReactiveFormsModule,
+        MatDividerModule,
+        MatProgressBarModule,
+        MatTooltipModule,
+        MatSlideToggleModule,
+        DragDropModule,
+        MatMenuModule,
+        MatGridListModule,
+        TimelineModule,
+        CardModule,
+        EditorModule
+    ],
   exports: [
     PageHeaderLargeComponent,
     FileUploadDialogComponent,

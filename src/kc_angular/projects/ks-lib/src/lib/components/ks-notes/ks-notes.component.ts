@@ -1,5 +1,6 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Inject, Input, OnInit} from '@angular/core';
 import {KnowledgeSource, KnowledgeSourceNote} from "../../models/knowledge.source.model";
+import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 
 @Component({
   selector: 'ks-lib-ks-notes',
@@ -7,27 +8,26 @@ import {KnowledgeSource, KnowledgeSourceNote} from "../../models/knowledge.sourc
   styleUrls: ['./ks-notes.component.css']
 })
 export class KsNotesComponent implements OnInit {
+  @Input() ks!: KnowledgeSource;
 
-  @Input()
-  ks!: KnowledgeSource;
+  ksNote: string = '';
 
-  constructor() {
-
+  constructor(private dialogRef: MatDialogRef<any>,
+              @Inject(MAT_DIALOG_DATA) public data: { ksNote: KnowledgeSourceNote }) {
   }
 
   ngOnInit(): void {
-    console.log('Notes component constructed with KS: ', this.ks);
+    this.ksNote = this.data.ksNote.text ?? '';
   }
 
-  addNote() {
-    if (!this.ks.notes || this.ks.notes.length === 0) {
-      this.ks.notes = [KnowledgeSourceNote.blank()];
-    } else {
-      this.ks.notes.push(KnowledgeSourceNote.blank());
-    }
+  save() {
+    let ksNote = this.data.ksNote;
+    ksNote.dateModified = Date();
+    ksNote.text = this.ksNote;
+    this.dialogRef.close(ksNote);
   }
 
-  ready() {
-    return this.ks.notes.length > 0;
+  cancel() {
+    this.dialogRef.close();
   }
 }

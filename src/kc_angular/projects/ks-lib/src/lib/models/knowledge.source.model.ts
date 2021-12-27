@@ -72,7 +72,7 @@ export class KnowledgeSource {
   rawText?: string;
   title: string;
   topics?: string[];
-  notes: KnowledgeSourceNote[] = [];
+  note: KnowledgeSourceNote;
   accessLink: URL | string;
   readonly reference: KnowledgeSourceReference;
 
@@ -82,9 +82,10 @@ export class KnowledgeSource {
     this.reference = reference;
     this.ingestType = ingestType;
     this.dateCreated = new Date();
-    this.dateModified = [new Date()];
-    this.dateAccessed = [new Date()]
+    this.dateModified = [];
+    this.dateAccessed = []
     this.accessLink = reference.link;
+    this.note = new KnowledgeSourceNote();
   }
 }
 
