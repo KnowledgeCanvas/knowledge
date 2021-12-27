@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.4.0](https://github.com/KnowledgeCanvas/knowledge-canvas/compare/v0.3.4...v0.4.0) (2021-12-27)
+
+
+### ⚠ BREAKING CHANGES
+
+* Upgrade node from 12.x to 16.13.1. Upgrade yarn from 1.2x to 3.1.1. Upgrade Angular from 12.1.x to 13.1.2.
+
+### Features
+
+* add option to disable/enable row expansion in KS table ([bf9d0ee](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/bf9d0ee84487c9bedbeca99c6cbf6b2ed4d57310))
+* **AI/ML:** reinstate text extraction using Tika ([140b249](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/140b249b09dfa458c8c3cc660c207a99e7beb0a0))
+* **Knowledge Graph:** Snapshot - add new knowledge graph project separate from Angular implementation ([4b9a3b5](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/4b9a3b52d0322047808e3ce74317592e08bf799f))
+* **Knowledge Graph:** Snapshot - add new knowledge graph project separate from Angular implementation ([246de9b](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/246de9bea5d8fac024179cf8384fc8cc6e9ea6ac))
+* **KS:** update KS dashboard to display time series information and ks-notes component ([8dc0944](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/8dc09440a84a8fca0b7a60e4bb2d132b69f966ff))
+* **NLP:** added a summarization script/notebook for initial testing ([7ff09dd](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/7ff09dda3861e4a48b20b53911d738eb68e93225))
+
+
+### Bug Fixes
+
+* storage service persisting entire project structures instead of just UUID ([6b3b786](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/6b3b7862bb5d64d217c673508a71d7dc82d6f504))
+
+
+### build
+
+* Upgrade Node.js, Yarn, and Angular ([3262bf9](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/3262bf9ea43707505d2440a5f4158ff97134679e))
+
 ### [0.3.4](https://github.com/KnowledgeCanvas/knowledge-canvas/compare/v0.3.3...v0.3.4) (2021-11-06)
 
 
