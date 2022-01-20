@@ -16,21 +16,21 @@
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { FilesComponent } from './files.component';
+import { KsImportConfirmComponent } from './ks-import-confirm.component';
 
-describe('FilesComponent', () => {
-  let component: FilesComponent;
-  let fixture: ComponentFixture<FilesComponent>;
+describe('KsImportConfirmComponent', () => {
+  let component: KsImportConfirmComponent;
+  let fixture: ComponentFixture<KsImportConfirmComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ FilesComponent ]
+      declarations: [ KsImportConfirmComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(FilesComponent);
+    fixture = TestBed.createComponent(KsImportConfirmComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
