@@ -35,9 +35,218 @@
             "styles": [
               "projects/main/src/styles.scss",
               "../../node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
-              "../../node_modules/primeflex/primeflex.css",
               "../../node_modules/quill/dist/quill.core.css",
-              "../../node_modules/quill/dist/quill.snow.css"
+              "../../node_modules/quill/dist/quill.snow.css",
+              {
+                "input": "projects/main/src/styles/themes/arya-blue.scss",
+                "bundleName": "arya-blue",
+                "inject": false
+              },
+              {
+                "input": "projects/main/src/styles/themes/arya-green.scss",
+                "bundleName": "arya-green",
+                "inject": false
+              },
+              {
+                "input": "projects/main/src/styles/themes/arya-orange.scss",
+                "bundleName": "arya-orange",
+                "inject": false
+              },
+              {
+                "input": "projects/main/src/styles/themes/arya-purple.scss",
+                "bundleName": "arya-purple",
+                "inject": false
+              },
+              {
+                "input": "projects/main/src/styles/themes/bootstrap4-light-blue.scss",
+                "bundleName": "bootstrap4-light-blue",
+                "inject": false
+              },
+              {
+                "input": "projects/main/src/styles/themes/bootstrap4-dark-blue.scss",
+                "bundleName": "bootstrap4-dark-blue",
+                "inject": false
+              },
+              {
+                "input": "projects/main/src/styles/themes/bootstrap4-light-purple.scss",
+                "bundleName": "bootstrap4-light-purple",
+                "inject": false
+              },
+              {
+                "input": "projects/main/src/styles/themes/bootstrap4-dark-purple.scss",
+                "bundleName": "bootstrap4-dark-purple",
+                "inject": false
+              },
+              {
+                "input": "projects/main/src/styles/themes/fluent-light.scss",
+                "bundleName": "fluent-light",
+                "inject": false
+              },
+              {
+                "input": "projects/main/src/styles/themes/lara-light-blue.scss",
+                "bundleName": "lara-light-blue",
+                "inject": false
+              },
+              {
+                "input": "projects/main/src/styles/themes/lara-dark-blue.scss",
+                "bundleName": "lara-dark-blue",
+                "inject": false
+              },
+              {
+                "input": "projects/main/src/styles/themes/lara-light-indigo.scss",
+                "bundleName": "lara-light-indigo",
+                "inject": false
+              },
+              {
+                "input": "projects/main/src/styles/themes/lara-dark-indigo.scss",
+                "bundleName": "lara-dark-indigo",
+                "inject": false
+              },
+              {
+                "input": "projects/main/src/styles/themes/lara-light-purple.scss",
+                "bundleName": "lara-light-purple",
+                "inject": false
+              },
+              {
+                "input": "projects/main/src/styles/themes/lara-dark-purple.scss",
+                "bundleName": "lara-dark-purple",
+                "inject": false
+              },
+              {
+                "input": "projects/main/src/styles/themes/lara-light-teal.scss",
+                "bundleName": "lara-light-teal",
+                "inject": false
+              },
+              {
+                "input": "projects/main/src/styles/themes/lara-dark-teal.scss",
+                "bundleName": "lara-dark-teal",
+                "inject": false
+              },
+              {
+                "input": "projects/main/src/styles/themes/luna-amber.scss",
+                "bundleName": "luna-amber",
+                "inject": false
+              },
+              {
+                "input": "projects/main/src/styles/themes/luna-blue.scss",
+                "bundleName": "luna-blue",
+                "inject": false
+              },
+              {
+                "input": "projects/main/src/styles/themes/luna-green.scss",
+                "bundleName": "luna-green",
+                "inject": false
+              },
+              {
+                "input": "projects/main/src/styles/themes/luna-pink.scss",
+                "bundleName": "luna-pink",
+                "inject": false
+              },
+              {
+                "input": "projects/main/src/styles/themes/saga-blue.scss",
+                "bundleName": "saga-blue",
+                "inject": false
+              },
+              {
+                "input": "projects/main/src/styles/themes/saga-green.scss",
+                "bundleName": "saga-green",
+                "inject": false
+              },
+              {
+                "input": "projects/main/src/styles/themes/saga-orange.scss",
+                "bundleName": "saga-orange",
+                "inject": false
+              },
+              {
+                "input": "projects/main/src/styles/themes/saga-purple.scss",
+                "bundleName": "saga-purple",
+                "inject": false
+              },
+              {
+                "input": "projects/main/src/styles/themes/md-light-indigo.scss",
+                "bundleName": "md-light-indigo",
+                "inject": false
+              },
+              {
+                "input": "projects/main/src/styles/themes/md-dark-indigo.scss",
+                "bundleName": "md-dark-indigo",
+                "inject": false
+              },
+              {
+                "input": "projects/main/src/styles/themes/md-light-deeppurple.scss",
+                "bundleName": "md-light-deeppurple",
+                "inject": false
+              },
+              {
+                "input": "projects/main/src/styles/themes/md-dark-deeppurple.scss",
+                "bundleName": "md-dark-deeppurple",
+                "inject": false
+              },
+              {
+                "input": "projects/main/src/styles/themes/mdc-light-indigo.scss",
+                "bundleName": "mdc-light-indigo",
+                "inject": false
+              },
+              {
+                "input": "projects/main/src/styles/themes/mdc-dark-indigo.scss",
+                "bundleName": "mdc-dark-indigo",
+                "inject": false
+              },
+              {
+                "input": "projects/main/src/styles/themes/mdc-light-deeppurple.scss",
+                "bundleName": "mdc-light-deeppurple",
+                "inject": false
+              },
+              {
+                "input": "projects/main/src/styles/themes/mdc-dark-deeppurple.scss",
+                "bundleName": "mdc-dark-deeppurple",
+                "inject": false
+              },
+              {
+                "input": "projects/main/src/styles/themes/nova.scss",
+                "bundleName": "nova",
+                "inject": false
+              },
+              {
+                "input": "projects/main/src/styles/themes/nova-accent.scss",
+                "bundleName": "nova-accent",
+                "inject": false
+              },
+              {
+                "input": "projects/main/src/styles/themes/nova-alt.scss",
+                "bundleName": "nova-alt",
+                "inject": false
+              },
+              {
+                "input": "projects/main/src/styles/themes/rhea.scss",
+                "bundleName": "rhea",
+                "inject": false
+              },
+              {
+                "input": "projects/main/src/styles/themes/tailwind-light.scss",
+                "bundleName": "tailwind-light",
+                "inject": false
+              },
+              {
+                "input": "projects/main/src/styles/themes/vela-blue.scss",
+                "bundleName": "vela-blue",
+                "inject": false
+              },
+              {
+                "input": "projects/main/src/styles/themes/vela-green.scss",
+                "bundleName": "vela-green",
+                "inject": false
+              },
+              {
+                "input": "projects/main/src/styles/themes/vela-orange.scss",
+                "bundleName": "vela-orange",
+                "inject": false
+              },
+              {
+                "input": "projects/main/src/styles/themes/vela-purple.scss",
+                "bundleName": "vela-purple",
+                "inject": false
+              }
             ],
             "stylePreprocessorOptions": {
               "includePaths": [
@@ -64,7 +273,7 @@
                 {
                   "type": "initial",
                   "maximumWarning": "500kb",
-                  "maximumError": "2mb"
+                  "maximumError": "3mb"
                 },
                 {
                   "type": "anyComponentStyle",
@@ -133,7 +342,6 @@
             "styles": [
               "projects/main/src/styles.scss",
               "../../node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
-              "../../node_modules/primeflex/primeflex.css",
               "../../node_modules/quill/dist/quill.core.css",
               "../../node_modules/quill/dist/quill.snow.css"
             ],
@@ -153,11 +361,10 @@
           "options": {
             "project": "projects/ks-lib/ng-package.json",
             "styles": [
-              "projects/main/src/styles.scss",
               "../../node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
-              "../../node_modules/primeflex/primeflex.css",
               "../../node_modules/quill/dist/quill.core.css",
-              "../../node_modules/quill/dist/quill.snow.css"
+              "../../node_modules/quill/dist/quill.snow.css",
+              "projects/main/src/styles.scss"
             ],
             "scripts": ["../../node_modules/quill/dist/quill.js"]
           },
@@ -180,7 +387,6 @@
             "styles": [
               "projects/main/src/styles.scss",
               "../../node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
-              "../../node_modules/primeflex/primeflex.css",
               "../../node_modules/quill/dist/quill.core.css",
               "../../node_modules/quill/dist/quill.snow.css"
             ],

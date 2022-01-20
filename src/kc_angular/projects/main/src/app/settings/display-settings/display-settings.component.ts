@@ -14,65 +14,64 @@
  limitations under the License.
  */
 
-import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+import {DynamicDialogConfig, DynamicDialogRef} from "primeng/dynamicdialog";
 import {DisplaySettingsModel} from "../../../../../ks-lib/src/lib/models/settings.model";
-import {MatSlideToggleChange} from "@angular/material/slide-toggle";
-import {ElectronIpcService} from "../../../../../ks-lib/src/lib/services/electron-ipc/electron-ipc.service";
-import {Subscription} from "rxjs";
+import {KcTheme, ThemeService} from "../../services/theme/theme.service";
+import {SettingsService} from "../../../../../ks-lib/src/lib/services/settings/settings.service";
+import {Message, MessageService} from "primeng/api";
 
 @Component({
   selector: 'app-display-settings',
   templateUrl: './display-settings.component.html',
   styleUrls: ['./display-settings.component.scss']
 })
-export class DisplaySettingsComponent implements OnInit, OnChanges, OnDestroy {
-  fontSize = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24];
-  @Input() displaySettings: DisplaySettingsModel = {theme: 'app-theme-dark'};
-  @Output() settingsModified = new EventEmitter<DisplaySettingsModel>();
-  darkMode: boolean = true;
-  currentVersion: string = '';
-  versionSubscriber: Subscription;
-  checkingForUpdate: boolean = false;
-  updateButtonMessage: string = 'Check for Updates';
+export class DisplaySettingsComponent implements OnInit {
+  displaySettings?: DisplaySettingsModel;
+  themes: KcTheme[];
+  selectedTheme?: KcTheme;
 
-  constructor(private ipcService: ElectronIpcService) {
-    this.versionSubscriber = ipcService.version.subscribe((version) => {
-      this.currentVersion = version;
-    })
-
+  constructor(private ref: DynamicDialogRef, private config: DynamicDialogConfig,
+              private themeService: ThemeService, private settingsService: SettingsService,
+              private messageService: MessageService) {
+    this.displaySettings = settingsService.getSettings().display;
+    this.themes = themeService.groupedThemes;
+    this.selectedTheme = themeService.currentTheme;
   }
 
   ngOnInit(): void {
+
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes.displaySettings.currentValue || changes.displaySettings.firstChange) {
-      this.darkMode = changes.displaySettings.currentValue.theme === 'app-theme-dark';
+  onThemeChange($event: any) {
+    if (!$event.value) {
+      return;
     }
+
+    const theme: KcTheme = $event.value;
+
+    const prev = this.themeService.currentTheme;
+
+    this.themeService.switchTheme(theme.code).then((res) => {
+      if (!res) {
+        this.selectedTheme = prev;
+        this.themeService.switchTheme(prev.code);
+
+        let msg: Message = {
+          key: 'app-toasts',
+          severity: 'warn',
+          summary: 'Oops!',
+          detail: `Sorry, but it seems like the theme "${theme.name}" is unavailable.`,
+          life: 5000
+        }
+        this.messageService.add(msg);
+      } else {
+        this.settingsService.saveSettings({display: {theme: this.themeService.currentTheme}});
+      }
+    })
   }
 
-  ngOnDestroy() {
-    this.versionSubscriber.unsubscribe();
-  }
-
-  setFontSize(size: number) {
-    let all = document.querySelectorAll('.kc-font-changeable');
-    all.forEach((value) => {
-      value.setAttribute('style', `font-size:${size}px;`);
-    });
-  }
-
-  themeChanged($event: MatSlideToggleChange) {
-    this.displaySettings.theme = $event.checked ? 'app-theme-dark' : 'app-theme-light';
-    this.settingsModified.emit(this.displaySettings);
-  }
-
-  checkForUpdates() {
-    this.ipcService.checkForUpdates();
-    this.checkingForUpdate = true;
-    this.updateButtonMessage = "Checking..."
-    setTimeout(() => {
-      this.updateButtonMessage = "Already up to date!"
-    }, 3000);
+  restoreDefaultTheme() {
+    this.selectedTheme = this.themeService.restoreDefault();
   }
 }

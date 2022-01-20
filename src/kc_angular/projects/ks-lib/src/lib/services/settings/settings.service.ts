@@ -52,10 +52,6 @@ export class SettingsService {
     if (settings.app) {
       this.appSettingsSubject.next(settings.app);
     }
-
-    if (settings.display) {
-      localStorage.setItem('theme', settings.display.theme);
-    }
   }
 
   saveSettings(data: SettingsModel) {

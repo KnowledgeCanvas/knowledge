@@ -1,43 +1,44 @@
-<!--Copyright 2021 Rob Royce-->
+<!--Copyright 2021 Rob Royce
 
-<!--Licensed under the Apache License, Version 2.0 (the "License");-->
-<!--you may not use this file except in compliance with the License.-->
-<!--You may obtain a copy of the License at-->
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-<!--http://www.apache.org/licenses/LICENSE-2.0-->
+http://www.apache.org/licenses/LICENSE-2.0
 
-<!--Unless required by applicable law or agreed to in writing, software-->
-<!--distributed under the License is distributed on an "AS IS" BASIS,-->
-<!--WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.-->
-<!--See the License for the specific language governing permissions and-->
-<!--limitations under the License.-->
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.-->
 
 
-<app-settings-common-header header="General"></app-settings-common-header>
+<div class="p-fluid grid">
+  <div class="col-12">
+    <p-panel header="Theme">
+      <ng-template pTemplate="content">
+        <label for="theme-dropdown">Select a theme</label>
+        <div class="p-inputgroup">
+          <button pButton icon="pi pi-replay" pTooltip="Restore default" (click)="restoreDefaultTheme()"></button>
+          <p-dropdown [(ngModel)]="selectedTheme"
+                      [options]="themes"
+                      optionLabel="name"
+                      [filter]="true"
+                      [group]="true"
+                      id="theme-dropdown"
+                      [style]="{'width': '100%'}"
+                      appendTo="body"
+                      (onChange)="onThemeChange($event)">
+            <ng-template pTemplate="group" let-group>
+              <p-divider></p-divider>
+              <b>{{group.name}}</b>
+              <b *ngIf="group.isDark"> (Dark)</b>
+              <b *ngIf="!group.isDark"> (Light)</b>
+            </ng-template>
+          </p-dropdown>
+        </div>
 
-<div class="container">
-  <div class="row">
-    <div class="col">
-      <h2>Theme</h2>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col">
-      <mat-slide-toggle [(ngModel)]="darkMode" (change)="themeChanged($event)">
-        Dark Mode
-      </mat-slide-toggle>
-    </div>
-  </div>
-  <mat-divider></mat-divider>
-  <div class="row">
-    <div class="col">
-      <h2>Updates</h2>
-      <mat-hint *ngIf="currentVersion">Current Version: {{currentVersion}}</mat-hint>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col center">
-      <button style="width: 150px" mat-raised-button (click)="checkForUpdates()" [disabled]="checkingForUpdate">{{updateButtonMessage}}</button>
-    </div>
+      </ng-template>
+    </p-panel>
   </div>
 </div>
