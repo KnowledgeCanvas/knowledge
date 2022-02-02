@@ -1,0 +1,59 @@
+<p-panel>
+  <ng-template pTemplate="header">
+    <span>
+      <button pButton label="File" icon="pi pi-plus" class="mr-2"
+              (click)="onAddFile()"></button>
+      <button pButton label="Link" icon="pi pi-plus" class="mr-2"
+              (click)="overlayPanel.toggle($event)"></button>
+      <button pButton label="Import" icon="pi pi-download" class="mr-2"
+              (click)="import()"
+              [disabled]="!ksList.length"></button>
+      <button pButton label="Cancel" icon="pi pi-times" class="mr-2"
+              (click)="close()"
+              [disabled]="!pending.length && !ksList.length"></button>
+    </span>
+  </ng-template>
+  <ng-template pTemplate="content">
+    <app-dropzone [shouldShorten]="ksList.length > 0 || pending.length> 0"
+                  [supportedTypes]="supportedTypes"></app-dropzone>
+
+    <p-panel *ngIf="pending.length" header="Pending" class="m-4">
+      <div class="grid">
+        <p-card *ngFor="let link of pending" class="col-3">
+          {{link.link | truncate: [16]}}
+          <p-progressBar [style]="{height: '6px'}" mode="indeterminate"></p-progressBar>
+        </p-card>
+      </div>
+    </p-panel>
+
+    <div class="grid" style="max-height: 50vh; overflow: scroll">
+      <app-ks-card *ngFor="let ks of ksList"
+                   [ks]="ks"
+                   (onRemove)="onKsRemoved($event)"
+                   (onOpen)="onKsOpened($event)"
+                   (onPreview)="onKsPreview($event)"
+                   class="sm:col-12 md:col-6 lg:col-4">
+      </app-ks-card>
+    </div>
+  </ng-template>
+</p-panel>
+
+<p-overlayPanel #overlayPanel appendTo="body">
+  <ng-template pTemplate>
+    <div class="p-inputgroup">
+      <input pInputText
+             #linkInput
+             [autofocus]="true"
+             type="url"
+             (keyup.enter)="overlayPanel.hide(); extract(linkInput.value)"
+             style="min-width: 300px;"
+             placeholder="Enter a URL and press enter/return">
+      <span class="p-inputgroup-addon"
+            [class.cursor-pointer]="linkInput.value.length"
+            (click)="overlayPanel.hide(); extract(linkInput.value)">
+        <i class="pi pi-arrow-circle-right"></i>
+      </span>
+    </div>
+
+  </ng-template>
+</p-overlayPanel>
