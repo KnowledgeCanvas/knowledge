@@ -17,9 +17,9 @@
 
 @import "styles/theme";
 @import "styles/kc-styles";
-@import '~primeflex/primeflex.min.css';
-@import '~primeicons/primeicons.css';
-@import '~primeng/resources/primeng.min.css';
+@import '../../../node_modules/primeflex/primeflex.min.css';
+@import '../../../node_modules/primeicons/primeicons.css';
+@import '../../../node_modules/primeng/resources/primeng.min.css';
 
 
 * {
@@ -41,6 +41,10 @@ body {
   color: var(--text-color);
 }
 
+
+/*********************************************/
+/********************** Convenience Classes */
+/*******************************************/
 .flex-row-center-between {
   display: flex;
   flex-direction: row;
@@ -130,4 +134,20 @@ input[type=range] + .thumb {
 
 .no-margin {
   margin: 0 !important;
+}
+
+
+/*********************************************/
+/******************* Prime NG Customization */
+/*******************************************/
+.p-tooltip-sm .p-tooltip-text {
+  min-width: 16rem !important;
+}
+
+.p-tooltip-md .p-tooltip-text {
+  min-width: 24rem !important;
+}
+
+.p-tooltip-lg .p-tooltip-text {
+  min-width: 32rem !important;
 }
