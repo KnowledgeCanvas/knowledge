@@ -34,8 +34,6 @@
             ],
             "styles": [
               "src/styles.scss",
-              "../../node_modules/quill/dist/quill.core.css",
-              "../../node_modules/quill/dist/quill.snow.css",
               {
                 "input": "src/styles/themes/arya-blue.scss",
                 "bundleName": "arya-blue",
@@ -143,7 +141,7 @@
                 "./node_modules"
               ]
             },
-            "scripts": ["../../node_modules/quill/dist/quill.js"]
+            "scripts": []
           },
           "configurations": {
             "production": {
@@ -229,11 +227,9 @@
               "src/assets/img"
             ],
             "styles": [
-              "src/styles.scss",
-              "../../node_modules/quill/dist/quill.core.css",
-              "../../node_modules/quill/dist/quill.snow.css"
+              "src/styles.scss"
             ],
-            "scripts": ["../../node_modules/quill/dist/quill.js"]
+            "scripts": []
           }
         }
       }

@@ -39,7 +39,6 @@ import {DisplaySettingsComponent} from './components/settings-components/display
 import {DividerModule} from "primeng/divider";
 import {DragDropModule} from "@angular/cdk/drag-drop";
 import {DropdownModule} from "primeng/dropdown";
-import {EditorModule} from "primeng/editor";
 import {FileUploadModule} from "primeng/fileupload";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {GeneralSettingsComponent} from './components/settings-components/general-settings/general-settings.component';
@@ -101,11 +100,11 @@ import {FileViewComponent} from "./components/knowledge-source-components/ks-vie
 import {BrowserViewComponent} from "./components/knowledge-source-components/ks-viewport-components/browser-viewport/browser-view.component";
 import {CountdownPipe} from "./pipes/date-pipes/countdown-pipe/countdown.pipe";
 import {TruncatePipe} from "./pipes/text-pipes/truncate-pipe/truncate.pipe";
-import { KsCardComponent } from './components/knowledge-source-components/ks-card/ks-card.component';
-import { KsIconComponent } from './components/knowledge-source-components/ks-icon/ks-icon.component';
-import { KsIngestComponent } from './components/knowledge-source-components/ks-ingest/ks-ingest.component';
+import {KsCardComponent} from './components/knowledge-source-components/ks-card/ks-card.component';
+import {KsIconComponent} from './components/knowledge-source-components/ks-icon/ks-icon.component';
+import {KsIngestComponent} from './components/knowledge-source-components/ks-ingest/ks-ingest.component';
 import {SliderModule} from "primeng/slider";
-import { DropzoneComponent } from './components/knowledge-source-components/ks-ingest/dropzone/dropzone.component';
+import {DropzoneComponent} from './components/knowledge-source-components/ks-ingest/dropzone/dropzone.component';
 import {InputSwitchModule} from "primeng/inputswitch";
 
 @NgModule({
@@ -154,7 +153,6 @@ import {InputSwitchModule} from "primeng/inputswitch";
     A11yModule,
     TimelineModule,
     InputTextModule,
-    EditorModule,
     StyleClassModule,
     CardModule,
     ButtonModule,
