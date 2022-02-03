@@ -2,7 +2,7 @@
 
 This software is not a finished product and provides no warranty of any kind. You are welcome to open an issue or a pull request. Contributors are welcome.
 
-As of Feb 2022, there is a good chance that _something_ in the app is not working properly, simply because it has not been fully implemented yet.
+As of Feb 2022, there is a good chance that _something_ in the app is not working properly, simply because it has not been fully implemented yet. No extensive testing has been conducted on Windows or Linux. It is very likely that something is broken on one or both of those platforms. Testing and verification on either platform is welcome.
 
 # Getting Started
 
