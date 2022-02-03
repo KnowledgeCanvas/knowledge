@@ -1,3 +1,9 @@
+# A Quick Note
+
+This software is not a finished product and provides no warranty of any kind. You are welcome to open an issue or a pull request. Contributors are welcome.
+
+As of Feb 2022, there is a good chance that _something_ in the app is not working properly, simply because it has not been fully implemented yet.
+
 # Getting Started
 
 1. Make sure you have Node, NPM, and Yarn installed. The following versions were used at the time of this writing:
