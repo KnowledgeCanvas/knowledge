@@ -36,6 +36,7 @@ export interface KsThumbnailRequest {
     path: string;
     width?: number;
     height?: number;
+    id?: string;
 }
 export interface PromptForDirectoryRequest {
     title?: string;

@@ -1,0 +1,287 @@
+<!--Copyright 2021 Rob Royce
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.-->
+
+<p-tabView>
+  <p-tabPanel header="Details" style="overflow:scroll;">
+    <div class="ks-info-details">
+      <ng-container>
+        <p-panel header="Details">
+          <div class="p-fluid grid">
+            <br>
+            <div class="field p-float-label col-12 ">
+              <input id="_ksTitle"
+                     type="text"
+                     pInputText
+                     required
+                     [(ngModel)]="ks.title">
+              <label for="_ksTitle">Title</label>
+            </div>
+            <br>
+            <div class="field p-float-label col-12 ">
+              <textarea pInputTextarea id="_ksDescription"
+                        [autoResize]="true"
+                        [rows]="3"
+                        [cols]="30"
+                        [(ngModel)]="ks.description">
+              </textarea>
+              <label for="_ksDescription">Description</label>
+            </div>
+          </div>
+        </p-panel>
+        <br>
+        <p-editor [(ngModel)]="ks.note.text"
+                  placeholder="Add or Edit Notes..."
+                  [style]="{'height': '10rem', 'overflow':'scroll'}">
+        </p-editor>
+        <br>
+        <p-panel header="Topics">
+          <p-chips [(ngModel)]="ks.topics"
+                   class="p-fluid"
+                   [max]="5"
+                   [allowDuplicate]="false"
+                   [addOnBlur]="true"
+                   [addOnTab]="true"
+                   (onChipClick)="onTopicClick($event)"
+                   placeholder="Start typing to add a topic...">
+          </p-chips>
+        </p-panel>
+      </ng-container>
+    </div>
+  </p-tabPanel>
+
+  <p-tabPanel header="Calendar">
+    <ng-template pTemplate="content">
+      <div class="p-fluid grid h-full">
+        <div class="p-fluid grid col-12">
+          <p-panel header="Timeline" class="p-fluid col-12">
+            <ng-template pTemplate="content">
+              <div style="overflow: scroll">
+                <p-timeline [value]="events" layout="horizontal">
+                  <ng-template pTemplate="content" let-event>
+                    <div style="width: 10rem">
+                      <small class="p-text-secondary">
+                        {{event.date | date: 'short'}}
+                      </small>
+                    </div>
+                  </ng-template>
+                  <ng-template pTemplate="opposite" let-event>
+                    <div style="width: 10rem" class="left-0">
+                      <small class="p-text-secondary">
+                        {{event.status}}
+                      </small>
+                    </div>
+                  </ng-template>
+                </p-timeline>
+              </div>
+            </ng-template>
+          </p-panel>
+        </div>
+        <div class="p-fluid grid col-12">
+          <p-panel header="Events" class="col-12">
+            <div class="p-fluid grid">
+              <div class="col-12">
+                <div class="p-inputgroup">
+                  <button pButton icon="pi pi-calendar-plus" (click)="dueDateCal.toggle()"
+                          pTooltip="Select a date and time when {{ks.title}} is due.">
+                  </button>
+                  <p-calendar [(ngModel)]="ks.dateDue"
+                              #dueDateCal
+                              appendTo="body"
+                              placeholder="Due Date"
+                              [showOtherMonths]="true"
+                              [numberOfMonths]="2"
+                              [monthNavigator]="true"
+                              [showIcon]="false"
+                              [showTime]="true"
+                              [showButtonBar]="true"
+                              [hideOnDateTimeSelect]="false"
+                              hourFormat="12">
+                  </p-calendar>
+                  <button pButton icon="pi pi-times" [disabled]="!ks.dateDue" (click)="ks.dateDue = undefined"></button>
+                </div>
+              </div>
+              <div class="col-12">
+                <div class="p-inputgroup">
+                  <button pButton icon="pi pi-clock"
+                          (click)="reminderCal.toggle()"
+                          pTooltip="Select a date and time to be reminded about {{ks.title}}.">
+                  </button>
+                  <p-calendar #reminderCal
+                              appendTo="body"
+                              placeholder="Remind Me!"
+                              [showOtherMonths]="true"
+                              [numberOfMonths]="2"
+                              [showIcon]="false"
+                              [showTime]="true"
+                              [showButtonBar]="true"
+                              [hideOnDateTimeSelect]="false"
+                              hourFormat="12">
+                  </p-calendar>
+                  <button pButton icon="pi pi-check" [disabled]="true"></button>
+                </div>
+              </div>
+              <div class="col-12">
+                <div class="p-inputgroup">
+                  <button pButton icon="pi pi-clock"
+                          (click)="archiveCal.toggle()"
+                          pTooltip="Select a date and time for automatic archival.">
+                  </button>
+                  <p-calendar #archiveCal
+                              appendTo="body"
+                              placeholder="Auto-Archive"
+                              [showOtherMonths]="true"
+                              [numberOfMonths]="2"
+                              [showIcon]="false"
+                              [showTime]="true"
+                              [showButtonBar]="true"
+                              [hideOnDateTimeSelect]="false"
+                              hourFormat="12">
+                  </p-calendar>
+                  <button pButton icon="pi pi-check" [disabled]="true"></button>
+                </div>
+              </div>
+              <div class="col-12">
+                <div class="p-inputgroup">
+                  <button pButton icon="pi pi-comment" (click)="checkpointMsg.focus()"
+                          pTooltip="Enter a message describing changes, updates, etc.">
+                  </button>
+                  <input pInputText #checkpointMsg placeholder="Checkpoint">
+                  <button pButton icon="pi pi-check" [disabled]="!checkpointMsg.value.length"></button>
+                </div>
+              </div>
+            </div>
+          </p-panel>
+        </div>
+      </div>
+    </ng-template>
+  </p-tabPanel>
+
+  <p-tabPanel header="Preview" *ngIf="ksHasPreview">
+    <ng-template pTemplate>
+      <p-panel header="{{ksPreviewHeader}}" *ngIf="!this.ksIsYoutubeVideo">
+        <ng-template pTemplate="content">
+          <div *ngIf="this.ksIsPdf" class="flex-col-center-start">
+            <embed *ngIf="safeUrl"
+                   [src]="safeUrl"
+                   (click)="onPdfClick($event)"
+                   [class.ks-pdf-preview]="!maximized"
+                   [class.ks-pdf-preview-max]="maximized">
+          </div>
+          <div *ngIf="this.ksIsYoutubeVideo" class="p-fluid w-full">
+            <div class="grid p-fluid">
+              <p-slider [(ngModel)]="ksYoutubeWidth"
+                        [min]="640" [max]="1280"
+                        class="col-3">
+              </p-slider>
+              <p-slider [(ngModel)]="ksYoutubeHeight"
+                        [min]="480" [max]="1080"
+                        class="col-3">
+              </p-slider>
+            </div>
+            <youtube-player [hidden]="ksYoutubeHidden"
+                            [width]="ksYoutubeWidth"
+                            [height]="ksYoutubeHeight"
+                            [videoId]="ksYoutubeVideoId"
+                            (stateChange)="ksYoutubeStateChange($event)">
+            </youtube-player>
+          </div>
+        </ng-template>
+      </p-panel>
+      <p-panel *ngIf="this.ksIsYoutubeVideo"
+               [style]="{width: '{{ksYoutubeWidth}}px'}">
+        <ng-template pTemplate="content">
+          <div class="grid p-fluid">
+            <p-slider [(ngModel)]="ksYoutubeWidth"
+                      [min]="640" [max]="1280"
+                      class="col-3">
+            </p-slider>
+            <p-slider [(ngModel)]="ksYoutubeHeight"
+                      [min]="480" [max]="1080"
+                      class="col-3">
+            </p-slider>
+          </div>
+          <p-divider></p-divider>
+          <youtube-player [hidden]="ksYoutubeHidden"
+                          [width]="ksYoutubeWidth"
+                          [height]="ksYoutubeHeight"
+                          [videoId]="ksYoutubeVideoId"
+                          (stateChange)="ksYoutubeStateChange($event)">
+          </youtube-player>
+        </ng-template>
+      </p-panel>
+    </ng-template>
+  </p-tabPanel>
+
+  <p-tabPanel header="Advanced">
+    <ng-template pTemplate>
+      <p-panel header="Knowledge Source Metadata">
+        <ng-template pTemplate="content">
+          <br>
+          <div class="p-fluid grid">
+            <div class="field p-float-label sm:col-12 md:col-12 lg:col-6">
+              <input id="ksId" type="text" pInputText disabled [value]="ks.id.value">
+              <label for="ksId">Knowledge Source ID</label>
+            </div>
+
+            <div class="field p-float-label sm:col-12 md:col-12 lg:col-6">
+              <input id="ingestType" type="text" pInputText disabled [value]="ks.ingestType">
+              <label for="ingestType">Ingest Type</label>
+            </div>
+
+            <div class="field p-float-label sm:col-12 md:col-12 lg:col-6">
+              <input id="ksProject" type="text" pInputText disabled [value]="ksAssociatedProjectId">
+              <label for="ksProject">Associated Project ID</label>
+            </div>
+
+            <div class="field p-float-label sm:col-12 md:col-12 lg:col-6">
+              <input id="ksTitle" type="text" pInputText disabled [value]="ks.icon">
+              <label for="ksTitle">Icon Encoding</label>
+            </div>
+
+            <div class="field p-float-label sm:col-12 md:col-12 lg:col-6">
+              <input id="iconUrl" type="text" pInputText disabled [value]="ks.iconUrl">
+              <label for="iconUrl">Icon URL</label>
+            </div>
+
+            <div class="field p-float-label sm:col-12 md:col-12 lg:col-6">
+              <input id="accessLink" type="text" pInputText disabled [value]="ks.accessLink">
+              <label for="accessLink">Access Link</label>
+            </div>
+
+            <div class="field p-float-label sm:col-12 md:col-12 lg:col-6">
+              <input id="authors" type="text" pInputText disabled [value]="ks.authors">
+              <label for="authors">Authors</label>
+            </div>
+
+            <div class="field p-float-label sm:col-12 md:col-12 lg:col-6" *ngIf="ks.ingestType === 'website'">
+              <input id="metadata" type="text" pInputText disabled [value]="ksMetadata">
+              <label for="metadata">Metadata</label>
+            </div>
+
+            <div class="field p-float-label col-12 " *ngIf="ks.rawText">
+              <textarea pInputTextarea id="_ksRawText"
+                        [autoResize]="true"
+                        [rows]="6"
+                        [cols]="30"
+                        disabled
+                        [(ngModel)]="ks.rawText"></textarea>
+              <label for="_ksRawText">Raw Text</label>
+            </div>
+
+          </div>
+        </ng-template>
+      </p-panel>
+    </ng-template>
+  </p-tabPanel>
+</p-tabView>

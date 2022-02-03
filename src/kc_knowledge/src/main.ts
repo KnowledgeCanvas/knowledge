@@ -14,11 +14,12 @@
  limitations under the License.
  */
 
-import cytoscape, {CytoscapeOptions, LayoutOptions} from 'cytoscape';
-import edgehandles, {EdgeHandlesInstance, EdgeHandlesOptions} from 'cytoscape-edgehandles';
-cytoscape.use(edgehandles);
-import {KnowledgeCanvas, KnowledgeSource} from "./knowledge/knowledge-canvas";
+import cytoscape from 'cytoscape';
+import edgehandles from 'cytoscape-edgehandles';
+import {KnowledgeCanvas} from "./knowledge/knowledge-canvas";
 import {KcIpc} from "./ipc/ipc";
+
+cytoscape.use(edgehandles);
 
 function main() {
     let ipc = new KcIpc();
@@ -36,36 +37,18 @@ function main() {
             kc.layout('dagre');
         });
 
+    const layoutBtnCose = document.getElementById('layout-btn-cose');
+    if (layoutBtnCose)
+        layoutBtnCose.addEventListener('click', () => {
+            kc.layout('cose');
+        });
+
     const closeBtn = document.getElementById('close-btn');
     if (closeBtn)
         closeBtn.addEventListener('click', () => {
             console.log('Got click to close modal...');
             ipc.closeModal();
         });
-
-    setTimeout(() => {
-        ipc.getKs().then((ksList: {ksList: KnowledgeSource[]}) => {
-            console.log('Got KS List: ', ksList);
-            let data: any[] = [];
-
-            for (let ks of ksList.ksList) {
-                console.log('Ks icon: ', ks.icon);
-                let icon = ks.icon.changingThisBreaksApplicationSecurity ? ks.icon.changingThisBreaksApplicationSecurity : ks.icon;
-                let label = ks.title;
-                let node = {
-                    data: {id: ks.id.value, label: label},
-                    style: {'background-image': `url(${ks.icon.changingThisBreaksApplicationSecurity})`}
-                }
-                data.push(node);
-            }
-
-            kc.reset(data);
-
-            console.log('Reset cytoscape with data: ', data);
-
-            kc.layout();
-        });
-    }, 1000);
 }
 
 main();

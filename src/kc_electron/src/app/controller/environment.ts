@@ -48,8 +48,9 @@ const searchSettings = {
     provider: 'google'
 }
 const display = {
-    theme: 'app-theme-dark'
+    theme: {code: 'lara-light-indigo', label: 'Lara Light Indigo', isDark: false}
 }
+
 const wellnessSettings = {
     timerMinutes: 25,
     timerSeconds: 0,

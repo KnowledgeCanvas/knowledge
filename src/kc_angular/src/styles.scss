@@ -1,0 +1,153 @@
+/**
+ Copyright 2021 Rob Royce
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
+
+
+@import "styles/theme";
+@import "styles/kc-styles";
+@import '../../../node_modules/primeflex/primeflex.min.css';
+@import '../../../node_modules/primeicons/primeicons.css';
+@import '../../../node_modules/primeng/resources/primeng.min.css';
+
+
+* {
+  font-size: 12px;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+
+  //Use PrimeNG theme for body background, font, and color
+  background-color: var(--surface-a);
+  font-family: var(--font-family);
+  color: var(--text-color);
+}
+
+
+/*********************************************/
+/********************** Convenience Classes */
+/*******************************************/
+.flex-row-center-between {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-content: center;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.flex-row-center-start {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-content: center;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.flex-row-center-end {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-content: center;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.flex-col-center-between {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-content: center;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.flex-col-center-center {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+}
+
+.flex-col-center-start {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-content: center;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.fill-space {
+  flex: 1 1 auto;
+}
+
+.no-select, input[type=range],
+input[type=range] + .thumb {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.circle {
+  border-radius: 50%;
+}
+
+.center-block {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.truncate {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.no-padding {
+  padding: 0 !important;
+}
+
+.no-margin {
+  margin: 0 !important;
+}
+
+
+/*********************************************/
+/******************* Prime NG Customization */
+/*******************************************/
+.p-tooltip-sm .p-tooltip-text {
+  min-width: 16rem !important;
+}
+
+.p-tooltip-md .p-tooltip-text {
+  min-width: 24rem !important;
+}
+
+.p-tooltip-lg .p-tooltip-text {
+  min-width: 32rem !important;
+}
