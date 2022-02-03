@@ -70,10 +70,10 @@ browserExtensionServer.createServer();
 let appEnv = settingsService.getSettings();
 
 // Declare main window for later use
-let kcMainWindow: typeof BrowserWindow;
+let kcMainWindow: any;
 
 // Declare window used to display knowledge graphs, etc
-let kcKnowledgeWindow: typeof BrowserWindow;
+let kcKnowledgeWindow: any;
 
 /**
  *
@@ -99,17 +99,20 @@ let kcKnowledgeWindow: typeof BrowserWindow;
 function createMainWindow() {
     let WIDTH: number = parseInt(appEnv.DEFAULT_WINDOW_WIDTH);
     let HEIGHT: number = parseInt(appEnv.DEFAULT_WINDOW_HEIGHT);
-    let darkMode = appEnv.display.theme === 'app-theme-dark';
-    let backgroundColor = darkMode ? '#2e2c29' : '#F9F9F9';
+    let darkMode = appEnv.display.theme.isDark;
+    let backgroundColor = darkMode ? '#1E1E1E' : '#F9F9F9';
+
+    console.log('Dark mode: ', appEnv.display.theme);
 
     const config = {
-        show: false,
-        minWidth: 800,
-        width: WIDTH ? WIDTH : 1280,
-        minHeight: 800,
-        height: HEIGHT ? HEIGHT : 1000,
-        backgroundColor: backgroundColor,
         title: 'Knowledge Canvas',
+        backgroundColor: backgroundColor,
+        width: WIDTH ? WIDTH : 1280,
+        height: HEIGHT ? HEIGHT : 1600,
+        minWidth: 800,
+        minHeight: 800,
+        center: true,
+        show: false,
         webPreferences: {
             nodeIntegration: false, // is default value after Electron v5
             contextIsolation: true, // protect against prototype pollution
@@ -171,6 +174,7 @@ function setMainWindowListeners() {
     // Destroy window on close
     kcMainWindow.on('closed', function () {
         kcMainWindow = null;
+        app.quit();
     });
 
     // Handle event in which a new window is created (i.e. when a user clicks on a link that is meant to open in new tab, etc)

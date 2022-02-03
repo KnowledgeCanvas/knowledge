@@ -14,7 +14,6 @@
  limitations under the License.
  */
 
-import {IpcMessage} from "../models/electron.ipc.model";
 const share: any = (global as any).share;
 const ipcMain = share.ipcMain;
 const app = share.app;
@@ -29,7 +28,7 @@ let ipcHandshake = (ksList: []): Promise<any> => {
     console.log('Starting IPC Handshake with modal window...');
     let kcMainWindow: typeof BrowserWindow = BrowserWindow.getAllWindows()[0];
     return new Promise<any>((resolve) => {
-        ipcMain.once('kc-get-knowledge-source-list', (_: any, args: any) => {
+        ipcMain.once('kc-get-knowledge-source-list', (_: any) => {
             console.log('Sending back ksList to Knowledge Canvas modal...');
             kcMainWindow.webContents.send('kc-get-knowledge-source-list-response', ksList);
             resolve(ksList);
@@ -41,14 +40,14 @@ let getKnowledgeSourceList = ipcMain.on('app-open-kc-dialog', (_: any, args: any
     console.debug('Getting knowledge source list for KC...');
 
     let kcMainWindow: typeof BrowserWindow = BrowserWindow.getAllWindows()[0];
-
+    let size = kcMainWindow.getSize();
+    const width = size[0];
+    const height = size[1];
     const config = {
         show: false,
-        minWidth: 800,
-        width: 1280,
-        minHeight: 800,
+        width: width,
+        height: height,
         modal: true,
-        height: 1000,
         backgroundColor: '#FFF',
         title: 'Knowledge Canvas',
         parent: kcMainWindow,

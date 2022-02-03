@@ -60,7 +60,8 @@ export interface KsDialogResponse {
 export interface KsThumbnailRequest {
     path: string,
     width?: number,
-    height?: number
+    height?: number,
+    id?: string
 }
 
 export interface PromptForDirectoryRequest {

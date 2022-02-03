@@ -10,6 +10,10 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "paths": {
+      "kc-d3": [
+        "dist/kc-d3/kc-d3",
+        "dist/kc-d3"
+      ],
       "ks-lib": [
         "dist/ks-lib/ks-lib",
         "dist/ks-lib"

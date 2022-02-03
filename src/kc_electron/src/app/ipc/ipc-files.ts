@@ -25,7 +25,12 @@ const path: any = share.path;
 const nativeImage: any = share.nativeImage;
 const app: any = share.app;
 
-let promptForDirectory, openLocalFile, getFileThumbnail, getFileIcon, showItemInFolder;
+let promptForDirectory,
+    openLocalFile,
+    getFileThumbnail,
+    getFileIcon,
+    showItemInFolder,
+    dragFileFromApp;
 
 /**
  * @param path: [string] the path to file selected by user
@@ -181,4 +186,36 @@ getFileIcon = ipcMain.on('electron-get-file-icon', (event: any, filePaths: strin
     });
 });
 
-module.exports = {promptForDirectory, openLocalFile, getFileThumbnail, getFileIcon}
+
+/**
+ * @param args: [KnowledgeSource] the KS (file) to be exported
+ * @return none
+ * @callback none
+ * @description creates a new drag-and-drop event using the actual file pointed to be the KS
+ */
+dragFileFromApp = ipcMain.on('ondragstart', (event: any, args: any) => {
+    let ks = args;
+    if (!ks) {
+        console.error('Invalid or no Knowledge Source passed to electron IPC ondragstart handler.');
+        return;
+    }
+
+    if (ks.ingestType !== 'file') {
+        console.error('Cannot drag and drop non-file sources just yet...');
+        return;
+    }
+
+    let options = {size: 'normal'}
+
+    app.getFileIcon(ks.accessLink, options).then((icon: any) => {
+        event.sender.startDrag({
+            file: path.resolve(ks.accessLink),
+            icon: icon
+        })
+    }).catch((reason: any) => {
+        console.error('Error in main proccess, dragging file from app', reason);
+    });
+});
+
+
+module.exports = {promptForDirectory, openLocalFile, getFileThumbnail: getFileThumbnail, getFileIcon, dragFileFromApp}

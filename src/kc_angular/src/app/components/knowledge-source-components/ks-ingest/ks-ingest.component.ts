@@ -10,7 +10,7 @@ import {UuidModel} from "../../../models/uuid.model";
 import {FileModel} from "../../../models/file.model";
 import {UuidService} from "../../../services/ipc-services/uuid-service/uuid.service";
 import {FaviconExtractorService} from "../../../services/ingest-services/favicon-extraction-service/favicon-extractor.service";
-import {DragAndDropService} from "../../../services/drag-and-drop.service";
+import {DragAndDropService} from "../../../services/ingest-services/external-drag-and-drop/drag-and-drop.service";
 
 interface PendingExtraction {
   link: string
@@ -203,11 +203,11 @@ export class KsIngestComponent implements OnInit {
     this.ksList = this.ksList.filter(ks => ks.id.value !== $event.id.value);
   }
 
-  onKsOpened($event: KnowledgeSource) {
+  onKsOpened(_: KnowledgeSource) {
     console.warn('KsOpen not implemented...');
   }
 
-  onKsPreview($event: KnowledgeSource) {
+  onKsPreview(_: KnowledgeSource) {
     console.warn('KsPreview not implemented...');
   }
 }

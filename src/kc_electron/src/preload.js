@@ -42,6 +42,9 @@ const validSendChannels = [
     'kc-get-knowledge-source-list',
     'kc-close-modal'
 ];
+const validInvokeChannels = [
+    'app.local.file.thumbnail',
+];
 const validReceiveOnceChannels = [
     "app-extract-website-results",
     "app-generate-uuid-results",
@@ -70,6 +73,14 @@ const validReceiveChannels = [
 
 contextBridge.exposeInMainWorld(
     'api', {
+        invoke: (channel, data) => {
+            console.log(`Invoke on channel: ${channel} with data: ${data}`);
+            if (validInvokeChannels.includes(channel)) {
+                ipcRenderer.invoke(channel, data);
+            } else {
+                console.error('IPC.invoke invalid channel: ', channel);
+            }
+        },
         send: (channel, data) => {
             if (validSendChannels.includes(channel)) {
                 ipcRenderer.send(channel, data);
@@ -95,8 +106,11 @@ contextBridge.exposeInMainWorld(
             ipcRenderer.removeAllListeners(channel);
         }
     }
+
 )
 
-window.addEventListener('DOMContentLoaded', () => {
-
-});
+contextBridge.exposeInMainWorld('electron', {
+    startDrag: (ks) => {
+        ipcRenderer.send('ondragstart', ks);
+    }
+})

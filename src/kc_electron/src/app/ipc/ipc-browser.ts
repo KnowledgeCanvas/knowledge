@@ -15,6 +15,8 @@
  */
 
 import {IpcMessage, KsBrowserViewRequest, KsBrowserViewResponse} from "../models/electron.ipc.model";
+import {Menu, MenuItem} from "electron";
+import {escape} from "querystring";
 
 const share: any = (global as any).share;
 const BrowserWindow: any = share.BrowserWindow;
@@ -261,6 +263,53 @@ openBrowserView = ipcMain.on('electron-browser-view', (event: any, args: KsBrows
         }
         kcMainWindow.webContents.send('electron-browser-view-nav-events', navEventsResponse);
     });
+
+
+    let rightClickPosition: any = null
+    let selectedText: string = '';
+    const menu = new Menu()
+    const menuItem = new MenuItem({
+        label: 'Highlight',
+        click: (_: any) => {
+            if (selectedText.length) {
+                // See https://github.com/GoogleChromeLabs/link-to-text-fragment#background for info on text fragments
+
+                let words = selectedText.split(' ');
+
+                if (words.length > 128) {
+                    console.warn('Arbitrary character limit on text selection...');
+                    return;
+                } else if (words.length > 3) {
+                    let prefix = escape(words.slice(0, 2).join(' '));
+                    let suffix = escape(words.slice(words.length - 2).join(' '));
+                    selectedText = `#:~:text=${prefix},${suffix}`;
+                } else {
+                    selectedText = `#:~:text=${escape(selectedText)}`;
+                }
+                let location = kcBrowserView.webContents.getURL();
+                kcBrowserView.webContents.loadURL(location + selectedText);
+            } else {
+                console.warn('No text to extract...');
+            }
+        }
+    })
+    menu.append(menuItem)
+
+    kcBrowserView.webContents.on('context-menu', (e: any, params: any) => {
+        e.preventDefault()
+        console.log('Context menu event: ', e.session);
+        rightClickPosition = {x: params.x, y: params.y}
+        selectedText = params.selectionText;
+        console.log('BrowserView Title: ', kcBrowserView.webContents.getTitle());
+        console.log('Link URL: ', params.linkURL);
+        console.log('Source URL: ', params.srcURL);
+        console.log('Page URL: ', params.pageURL);
+        console.log('Link text: ', params.linkText);
+        console.log('Title text: ', params.titleText);
+        console.log('Selected text: ', params.selectionText);
+        console.log('Selection rectangle: ', params.selectionRect);
+        menu.popup(kcBrowserView)
+    }, false)
 
 
     /**

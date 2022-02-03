@@ -11,7 +11,7 @@
     "build-dev": "ng build main --configuration development --base-href ./",
     "build-main": "ng build main --configuration production --base-href ./",
     "clean": "rm -rf dist",
-    "purge": "rm -rf node_modules && rm -rf .angular/",
+    "purge": "rm -rf node_modules .angular",
     "start": "echo 'Run this command from the top level directory to start Electron and load the Angular modules.'",
     "test": "ng test",
     "watch": "ng build --configuration production --base-href ./ --watch",
@@ -27,11 +27,12 @@
     "@angular/compiler": "~13.1.1",
     "@angular/core": "~13.1.1",
     "@angular/forms": "^13.1.1",
-    "@angular/material": "^13.1.1",
     "@angular/platform-browser": "^13.1.1",
     "@angular/platform-browser-dynamic": "^13.1.1",
     "@angular/router": "~13.1.1",
+    "@angular/youtube-player": "^13.1.1",
     "chokidar": "^3.5.2",
+    "d3": "^7.2.1",
     "eslint": "^8.5.0",
     "primeflex": "^3.1.2",
     "primeicons": "^5.0.0",
@@ -51,6 +52,7 @@
     "@angular-eslint/template-parser": "13.0.1",
     "@angular/cli": "^13.1.2",
     "@angular/compiler-cli": "^13.1.1",
+    "@types/d3": "^7.1.0",
     "@types/jasmine": "~3.8.0",
     "@types/node": "^16.7.2",
     "@types/quill": "^1",
@@ -62,6 +64,7 @@
     "karma-coverage": "^2.1.0",
     "karma-jasmine": "^4.0.1",
     "karma-jasmine-html-reporter": "^1.7.0",
-    "ng-packagr": "^13.1.2"
+    "ng-packagr": "^13.1.2",
+    "typescript": "~4.5.2"
   }
 }

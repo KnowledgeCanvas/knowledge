@@ -21,7 +21,7 @@ let http: any = share.http;
 let url: any = share.url;
 
 let createServer = () => {
-    http.createServer((req: any, res: any) => {
+    const server = http.createServer((req: any, res: any) => {
         // TODO: try to figure out which browsers the user has available for later use
 
         console.log('--------------------------------------------------------------------------------');
@@ -46,7 +46,9 @@ let createServer = () => {
             console.error('Received invalid link from Chrome extension...');
             res.end('Failed');
         }
-    }).listen(9000)
+    });
+
+    server.listen(9000);
 }
 
 module.exports = {
