@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.5.0](https://github.com/KnowledgeCanvas/knowledge-canvas/compare/v0.4.0...v0.5.0) (2022-02-03)
+
+
+### ⚠ BREAKING CHANGES
+
+* Angular material has been removed and will not be used moving further
+
+* refactor: fix a few errors in SVG files
+
+* feat: first cytoscape implementation
+
+* Feat primeng (#14) ([ee0392e](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/ee0392e87efddabeb4d627dbde995dbcd4cf0386)), closes [#14](https://github.com/KnowledgeCanvas/knowledge-canvas/issues/14)
+
 ## [0.4.0](https://github.com/KnowledgeCanvas/knowledge-canvas/compare/v0.3.4...v0.4.0) (2021-12-27)
 
 
