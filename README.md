@@ -118,6 +118,7 @@ The only difference between this and the above is where the `Contents` folder is
 # Screenshots
 
 <img width="1203" alt="image" src="https://user-images.githubusercontent.com/19367848/152470358-64ac12de-e811-42b4-996f-67c3725a2ba7.png">
+<img width="1203" alt="image" src="https://user-images.githubusercontent.com/19367848/152474550-9432e28e-2511-4632-a327-15561b1f79cb.png">
 <img width="1203" alt="image" src="https://user-images.githubusercontent.com/19367848/152473853-1575bec7-2035-4b62-9783-8328097dcbde.png">
 <img width="1203" alt="image" src="https://user-images.githubusercontent.com/19367848/152473925-2e89c095-a24d-491d-a56a-4f3687d21b3b.png">
 <img width="1203" alt="image" src="https://user-images.githubusercontent.com/19367848/152470548-939b9af2-3afb-4b5d-a1ff-894d18ed1daf.png">
