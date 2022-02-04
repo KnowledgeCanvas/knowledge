@@ -1,4 +1,4 @@
-[Jump to the Screenshots!](#-screenshots)
+[Jump to the Screenshots!](#screenshots)
 
 # A Quick Note
 
