@@ -121,9 +121,3 @@ The only difference between this and the above is where the `Contents` folder is
 <img width="1203" alt="image" src="https://user-images.githubusercontent.com/19367848/152470548-939b9af2-3afb-4b5d-a1ff-894d18ed1daf.png">
 <img width="1203" alt="image" src="https://user-images.githubusercontent.com/19367848/152470617-9bbc04a8-f692-43b9-9627-46951587e41c.png">
 <img width="1203" alt="image" src="https://user-images.githubusercontent.com/19367848/152470661-4d096b91-ba75-4f6e-aeea-7b3a57672b2f.png">
-
-
-
-
-
-## Viewing main process output after app has been installed
