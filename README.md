@@ -7,9 +7,6 @@ This software is not a finished product and provides no warranty of any kind. Yo
 
 As of Feb 2022, there is a good chance that _something_ in the app is not working properly, simply because it has not been fully implemented yet. No extensive testing has been conducted on Windows or Linux. It is very likely that something is broken on one or both of those platforms. Testing and verification on either platform is welcome.
 
-## Background
-Knowledge Canvas won 1st place at UCLA BruinLabs Summer 2021 Product Development Contest, as judged by a senior product manager at Google, the CEO of NuLeap, and a senior investment analyst at a private VC firm. At this point, I am less interested in monetizing than I am in garnering support and contributions for the project. The tool is not finished yet, as I have been building it alone while trying to finish my degree at UCLA and keeping up with my work at JPL.
-
 ## What
 Knowledge Canvas is a meta-productivity tool meant to make learning and research easier and more organized. **With Knowledge Canvas, you can import almost any digital resource and treat it as a knowledge-producing entity.** This is accomplished by abstracting any/every digital resource into what I call a Knowledge Source, which is a polymorphic structure that may contain things like metadata, raw text, events (like due dates), and more. Knowledge sources are grouped into Projects, which are organized hierarchically (effectively, a tree where nodes can have a single parent and 0+ children) and can be extended in any configuration the user prefers.
 
