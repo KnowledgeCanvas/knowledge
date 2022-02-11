@@ -1,10 +1,40 @@
 [Jump to the Screenshots!](#screenshots)
 
-# A Quick Note
+# Quick Notes
 
+## Disclaimer
 This software is not a finished product and provides no warranty of any kind. You are welcome to open an issue or a pull request. Contributors are welcome.
 
 As of Feb 2022, there is a good chance that _something_ in the app is not working properly, simply because it has not been fully implemented yet. No extensive testing has been conducted on Windows or Linux. It is very likely that something is broken on one or both of those platforms. Testing and verification on either platform is welcome.
+
+## Background
+Knowledge Canvas won 1st place at UCLA BruinLabs Summer 2021 Product Development Contest, as judged by a senior product manager at Google, the CEO of NuLeap, and a senior investment analyst at a private VC firm. At this point, I am less interested in monetizing than I am in garnering support and contributions for the project. The tool is not finished yet, as I have been building it alone while trying to finish my degree at UCLA and keeping up with my work at JPL.
+
+## What
+Knowledge Canvas is a meta-productivity tool meant to make learning and research easier and more organized. **With Knowledge Canvas, you can import almost any digital resource and treat it as a knowledge-producing entity.** This is accomplished by abstracting any/every digital resource into what I call a Knowledge Source, which is a polymorphic structure that may contain things like metadata, raw text, events (like due dates), and more. Knowledge sources are grouped into Projects, which are organized hierarchically (effectively, a tree where nodes can have a single parent and 0+ children) and can be extended in any configuration the user prefers.
+
+Knowledge Canvas is built on Electron and Angular and is primarily written in TypeScript. It is intended to be Web3 capable and utilizes Open Graph standards.
+
+## Why
+Two things led me to the development of KC:
+1. While working at JPL as an intern (back in 2019), one of my projects involved summarizing articles from IDC and Gartner to support efforts that required rapid research and iteration. Being perpetually lazy, I figured it would be easier to make a computer summarize things for me. While the idea was well received, there wasn’t enough funding/enthusiasm to support it as a standalone project.
+
+2. When UCLA went online back in March of 2020, I struggled… hard. There were far too many digital resources to keep track of and the amount of required reading seemed to increase exponentially. I had various systems for organizing my files, and other systems for organizing web resources, but I felt like there should be a better, more unified, way of doing things.
+
+## How
+A knowledge source can be a link to a web page, a path to a local file, a URI to a calendar entry, etc. **If you can drag-and-drop something in to the app, it can be a knowledge source.** So far I have hooks for local files, web links, raw text, raw HTML, calendar entries (macOS), emails (macOS), and OmniFocus tasks (macOS). This list is limited to the things I have had time and interest to implement, but the possibilities are quite literally endless.
+
+Once a knowledge source is imported, we can pass it to Tika to extract text content, which can then be used to generate extractive/abstractive summaries (a-la BERT, DistilBERT, …), perform topic modeling, document clustering, etc. One of the more exciting possibilities is what I’m calling the PRDAG, short for “pre-requisite directed acyclic graph”. The PRDAG, once implemented, will take in a selection of knowledge sources and generate a graph that answers the question “which of these N articles/documents should I read first, second, etc.“.
+
+Finally, the app is built on Electron, so it has most of the capabilities you would expect from a normal browser. This means you can view/use full-blown web apps like Trello, Notion, and Google Docs directly, without ever leaving the application. As of now, you can also preview PDFs directly from the app using the default PDF viewer that comes with Chromium. I plan to integrate PDF.js at some point and support for markup/annotation will be paramount.
+
+
+## Note
+The app relies exclusively on local storage and local processes. There are no servers involved (except a local Docker instance of Tika Server) and local documents never leave your computer.
+
+Cheers,
+Rob Royce
+
 
 # Getting Started
 
