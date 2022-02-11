@@ -1,6 +1,6 @@
 [Jump to the Screenshots!](#screenshots)
 
-# Quick Notes
+# Description
 
 ## Disclaimer
 This software is not a finished product and provides no warranty of any kind. You are welcome to open an issue or a pull request. Contributors are welcome.
