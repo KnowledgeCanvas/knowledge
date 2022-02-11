@@ -121,6 +121,6 @@ The only difference between this and the above is where the `Contents` folder is
 <img width="1203" alt="image" src="https://user-images.githubusercontent.com/19367848/152474550-9432e28e-2511-4632-a327-15561b1f79cb.png">
 <img width="1203" alt="image" src="https://user-images.githubusercontent.com/19367848/152473853-1575bec7-2035-4b62-9783-8328097dcbde.png">
 <img width="1203" alt="image" src="https://user-images.githubusercontent.com/19367848/152473925-2e89c095-a24d-491d-a56a-4f3687d21b3b.png">
-<img width="1203" alt="image" src="https://user-images.githubusercontent.com/19367848/152470548-939b9af2-3afb-4b5d-a1ff-894d18ed1daf.png">
+<img width="1601" alt="image" src="https://user-images.githubusercontent.com/19367848/153652641-3231b658-c933-4904-b0ea-6572fa0806f8.png">
 <img width="1203" alt="image" src="https://user-images.githubusercontent.com/19367848/152470617-9bbc04a8-f692-43b9-9627-46951587e41c.png">
 <img width="1203" alt="image" src="https://user-images.githubusercontent.com/19367848/152470661-4d096b91-ba75-4f6e-aeea-7b3a57672b2f.png">
