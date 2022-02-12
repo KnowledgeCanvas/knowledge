@@ -8,7 +8,7 @@ This software is not a finished product and provides no warranty of any kind. Yo
 As of Feb 2022, there is a good chance that _something_ in the app is not working properly, simply because it has not been fully implemented yet. No extensive testing has been conducted on Windows or Linux. It is very likely that something is broken on one or both of those platforms. Testing and verification on either platform is welcome.
 
 ## What
-Knowledge Canvas is a meta-productivity tool meant to make learning and research easier and more organized. **With Knowledge Canvas, you can import almost any digital resource and treat it as a knowledge-producing entity.** This is accomplished by abstracting any/every digital resource into what I call a Knowledge Source, which is a polymorphic structure that may contain things like metadata, raw text, events (like due dates), and more. Knowledge sources are grouped into Projects, which are organized hierarchically (effectively, a tree where nodes can have a single parent and 0+ children) and can be extended in any configuration the user prefers.
+Knowledge Canvas is a meta-productivity tool meant to make learning and research easier and more organized. **With Knowledge Canvas, you can import almost any digital resource and treat it as a knowledge-producing entity.** This is accomplished by abstracting any/every digital resource into what we call a Knowledge Source, which is a polymorphic structure that may contain things like metadata, raw text, events (like due dates), and more. Knowledge sources are grouped into Projects, which are organized hierarchically (effectively, a tree where nodes can have a single parent and 0+ children) and can be extended in any configuration the user prefers.
 
 Knowledge Canvas is built on Electron and Angular and is primarily written in TypeScript. It is intended to be Web3 capable and utilizes Open Graph standards.
 
@@ -30,6 +30,7 @@ Finally, the app is built on Electron, so it has most of the capabilities you wo
 The app relies exclusively on local storage and local processes. There are no servers involved (except a local Docker instance of Tika Server) and local documents never leave your computer.
 
 Cheers,
+
 Rob Royce
 
 
