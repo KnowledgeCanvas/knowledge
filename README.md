@@ -36,6 +36,8 @@ Rob Royce
 
 # Getting Started
 
+Note: the **two main entry points are src/kc_electron and src/kc_angular**. Browser extensions can be found in src/kc_extension but are experimental.
+
 1. Make sure you have Node, NPM, and Yarn installed. The following versions were used at the time of this writing:
 
 - Node: 16.13.1
