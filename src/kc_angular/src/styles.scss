@@ -63,6 +63,15 @@ body {
   align-items: center;
 }
 
+.flex-row-center-center {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+}
+
 .flex-row-center-end {
   display: flex;
   flex-direction: row;
