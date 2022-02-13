@@ -242,6 +242,7 @@ export class StorageService {
   }
 
   async updateProject(project: ProjectModel) {
+    console.debug(`StorageService: Updating Project: ${project.name} - ${project.id.value}`);
     let projectString = JSON.stringify(project);
     this.db.setItem(project.id.value, projectString);
   }
