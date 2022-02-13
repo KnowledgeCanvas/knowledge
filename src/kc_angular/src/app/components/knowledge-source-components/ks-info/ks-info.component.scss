@@ -15,19 +15,9 @@
  */
 
 
-
-
 .ks-info-details {
   width: 100%;
   padding: 10px;
   max-height: 100%;
   overflow: scroll;
-}
-
-
-//TODO: check why this is here.... come on man
-::ng-deep {
-  .p-panel-content {
-    height: 100%;
-  }
 }

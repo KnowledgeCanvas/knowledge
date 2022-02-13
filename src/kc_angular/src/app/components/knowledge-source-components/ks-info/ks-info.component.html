@@ -220,7 +220,7 @@ limitations under the License.-->
 
   <p-tabPanel header="Advanced">
     <ng-template pTemplate="content">
-      <p-panel header="Knowledge Source Metadata">
+      <p-panel header="Knowledge Source Model">
         <ng-template pTemplate="content">
           <br>
           <div class="p-fluid grid">
@@ -276,12 +276,20 @@ limitations under the License.-->
       <p-panel *ngIf="ksMetadata.length > 0" header="Metadata Key/Value Pairs">
         <ng-template pTemplate="content">
           <p-table [value]="ksMetadata"
-                   [autoLayout]="true">
+                   [autoLayout]="true"
+                   [paginator]="true"
+                   [rows]="10">
             <ng-template pTemplate="header">
               <tr>
-                <th>Key</th>
-                <th>Value</th>
-                <th>Property</th>
+                <th pSortableColumn="key">Key
+                  <p-sortIcon field="key"></p-sortIcon>
+                </th>
+                <th pSortableColumn="value">Value
+                  <p-sortIcon field="value"></p-sortIcon>
+                </th>
+                <th pSortableColumn="property">Property
+                  <p-sortIcon field="property"></p-sortIcon>
+                </th>
               </tr>
             </ng-template>
             <ng-template pTemplate="body" let-meta>
