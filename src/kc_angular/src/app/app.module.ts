@@ -54,7 +54,7 @@ import {KsImportConfirmComponent} from './components/knowledge-source-components
 import {KsInfoComponent} from './components/knowledge-source-components/ks-info/ks-info.component';
 import {KsIngestTypeIconPipe} from './pipes/image-pipes/ks-ingest-type-icon/ks-ingest-type-icon.pipe';
 import {KsPreviewComponent} from './components/knowledge-source-components/ks-preview/ks-preview.component';
-import {KsQueueComponent} from './components/knowledge-source-components/ks-queue/ks-queue.component';
+import {KsUpNextComponent} from './components/knowledge-source-components/ks-queue/ks-up-next.component';
 import {KsQueueService} from "./components/knowledge-source-components/ks-queue-service/ks-queue.service";
 import {MenuModule} from "primeng/menu";
 import {MenubarModule} from "primeng/menubar";
@@ -120,7 +120,7 @@ import { KsDataviewComponent } from './components/knowledge-source-components/ks
     KnowledgeGraphComponent,
     KnowledgeSourceTableComponent,
     KsInfoComponent,
-    KsQueueComponent,
+    KsUpNextComponent,
     ProjectCreationDialogComponent,
     ProjectDetailViewportComponent,
     ProjectDetailsOverviewComponent,

@@ -49,12 +49,12 @@ import {SearchSettingsComponent} from "./components/settings-components/search-s
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild('ksQueueDialog') ksQueueDialog!: Dialog;
+  @ViewChild('ksUpNext') ksQueueDialog!: Dialog;
   @ViewChild('ksQueueOverlay') ksQueueOverlay!: OverlayPanel;
   @ViewChild('searchBar') searchBar!: ElementRef;
   currentProject: ProjectModel | null = null;
   menuBarItems: MenuItem[] = [];
-  ksQueueVisible: boolean = false;
+  ksUpNextVisible: boolean = false;
   showProjectTree: boolean = false;
   readyToShow: boolean = false;
   treeNodes: TreeNode[] = [];
@@ -296,7 +296,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   closeKsQueue() {
-    this.ksQueueVisible = false;
+    this.ksUpNextVisible = false;
   }
 
   ksQueueUpdate(mappings: { projectId: string; ksList: KnowledgeSource[] }[]) {
@@ -319,7 +319,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   openKsQueue($event?: any) {
     if (this.ksQueue.length)
-      this.ksQueueVisible = true;
+      this.ksUpNextVisible = true;
     else {
       this.ksQueueOverlay.toggle($event);
     }

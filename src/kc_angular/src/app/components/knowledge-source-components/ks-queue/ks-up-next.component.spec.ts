@@ -16,21 +16,21 @@
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { KsQueueComponent } from './ks-queue.component';
+import { KsUpNextComponent } from './ks-up-next.component';
 
 describe('KsQueueComponent', () => {
-  let component: KsQueueComponent;
-  let fixture: ComponentFixture<KsQueueComponent>;
+  let component: KsUpNextComponent;
+  let fixture: ComponentFixture<KsUpNextComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ KsQueueComponent ]
+      declarations: [ KsUpNextComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(KsQueueComponent);
+    fixture = TestBed.createComponent(KsUpNextComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
