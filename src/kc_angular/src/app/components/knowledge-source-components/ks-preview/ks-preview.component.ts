@@ -70,13 +70,6 @@ export class KsPreviewComponent implements OnInit, OnDestroy {
               private ksQueue: KsQueueService,
               private clipboard: Clipboard,
               private notificationsService: NotificationsService) {
-
-    /**
-     * This intercepts all calls to close the current dialog. Therefore, methods
-     * that want to do something after the dialog has been closed must do so by
-     * setting class parameters, which will be included in the output
-     */
-
     this.ks = config.data.ks;
   }
 
