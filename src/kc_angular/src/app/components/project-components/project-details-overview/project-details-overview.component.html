@@ -23,7 +23,7 @@ limitations under the License.-->
 </div>
 
 <p-overlayPanel #projectInfoOverlay [style]="{'width': '500px'}" *ngIf="kcProject">
-  <ng-template pTemplate>
+  <ng-template pTemplate="content">
     <p-panel>
       <ng-template pTemplate="header">
         {{projectContext.name}}
@@ -92,46 +92,49 @@ limitations under the License.-->
   </ng-template>
 </p-overlayPanel>
 
-<div class="project-overview-container" #projectOverview>
-  <div style="height: 128px; max-width: 100%"
+<div class="project-overview-container h-full" #projectOverview>
+  <div style="max-width: 100%"
        class="flex-col-center-between center" *ngIf="kcProject">
     <p-chips
       (onRemove)="topicsOnChange($event)"
       (onAdd)="topicsOnChange($event)"
       (onChipClick)="topicsOnClick($event)"
+      placeholder="Add a topic..."
       [(ngModel)]="kcProject.topics"
       [allowDuplicate]="false" [addOnTab]="true" [addOnBlur]="true"
       class="p-fluid w-full"></p-chips>
   </div>
-  <div class="project-ks-list-container">
 
-    <!--    TODO: describe new methods for importing (paste link, drag and drop)-->
-    <div *ngIf="!ksList.length" class="ks-instructions">
-      <hr>
-      <b>To add a new Knowledge Source...</b>
-      <ol>
-        <li>
-          <div class="flex-row-center-start">Click on the
-            +
-            button below
-          </div>
-        </li>
-        <li>Select any of the following options:
-          <ul>
-            <li>Import files</li>
-            <li>Extract websites</li>
-            <li>Search the web</li>
-          </ul>
-        </li>
-      </ol>
-      <hr>
-    </div>
+  <div *ngIf="!ksList.length" class="flex-col-center-center h-full grid">
+    <p-panel header="Add a Knowledge Source to get started...">
+      <ng-template pTemplate="content">
+        <div class="w-full h-full grid p-fluid">
+          <p-card class="col-12" subheader="Method 1">
+            <div class="flex-row-center-start">
+              Press the <button pButton icon="pi pi-plus" class="p-button-sm p-button-text"></button> button below
+            </div>
+          </p-card>
+          <p-card class="col-12" subheader="Method 2">
+            <div class="flex-row-center-start">
+              Drag-and-drop files or links directly into this view
+            </div>
+          </p-card>
+        </div>
+      </ng-template>
+    </p-panel>
+  </div>
 
-    <ks-table [ksTableExpandRowOnClick]="clickExpandRows"
-              (kcSetCurrentProject)="kcSetCurrentProject.emit($event)"
-              [ksList]="ksList"
-              (ksTableShowSubprojects)="ksTableShowSubprojectSources($event)"
-              [ksTableAllowSubprojectExpansion]="showSubProjects">
-    </ks-table>
+  <div class="project-ks-list-container" *ngIf="ksList.length">
+        <ks-table [ksTableExpandRowOnClick]="clickExpandRows"
+                  (kcSetCurrentProject)="kcSetCurrentProject.emit($event)"
+                  [ksList]="ksList"
+                  (ksTableShowSubprojects)="ksTableShowSubprojectSources($event)"
+                  [ksTableAllowSubprojectExpansion]="showSubProjects">
+        </ks-table>
+
+
+<!--    <div class="flex-col-center-center p-fluid" style="margin: 20px">-->
+<!--      <app-ks-dataview [ksList]="ksList"></app-ks-dataview>-->
+<!--    </div>-->
   </div>
 </div>

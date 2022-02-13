@@ -84,7 +84,7 @@ export class ProjectDetailViewportComponent implements OnInit {
 
   get kcStyle() {
     return {
-      height: 'calc(100vh - 170px)',
+      height: 'calc(100vh - 55px)',
       width: '100%',
       flex: '1',
       display: 'flex',
