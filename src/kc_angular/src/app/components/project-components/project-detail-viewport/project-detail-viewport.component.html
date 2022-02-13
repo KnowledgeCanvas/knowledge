@@ -47,7 +47,7 @@ limitations under the License.-->
 </div>
 
 <div *ngIf="kcProject">
-  <div cdkDropListGroup>
+  <div>
     <app-knowledge-canvas (kcSetCurrentProject)="kcSetCurrentProject($event)"
                           (kcEditProject)="kcEditProject($event)"
                           (kcProjectUpdate)="kcProjectUpdate($event)"
