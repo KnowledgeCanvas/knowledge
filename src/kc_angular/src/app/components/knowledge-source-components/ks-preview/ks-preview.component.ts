@@ -22,7 +22,7 @@ import {ExtractionService} from "../../../services/ingest-services/web-extractio
 import {KcFileViewClickEvent, KcFileViewConfig} from "../ks-viewport-components/file-viewport/file-view.component";
 import {KcBrowserViewClickEvent, KcBrowserViewConfig, KcBrowserViewNavEvent} from "../ks-viewport-components/browser-viewport/browser-view.component";
 import {KsFactoryService} from "../../../services/factory-services/ks-factory-service/ks-factory.service";
-import {KsQueueService} from "../ks-queue-service/ks-queue.service";
+import {KsQueueService} from "../../../services/command-services/ks-queue-service/ks-queue.service";
 import {DynamicDialogConfig, DynamicDialogRef} from "primeng/dynamicdialog";
 import {NotificationsService} from "../../../services/user-services/notification-service/notifications.service";
 import {KsCommandService} from "../../../services/command-services/ks-command/ks-command.service";

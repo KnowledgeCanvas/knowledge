@@ -40,6 +40,8 @@ export class ProjectDetailsOverviewComponent implements OnInit, OnChanges {
 
   @Output() onProjectCreation = new EventEmitter<UuidModel | undefined>();
 
+  @Output() onProjectRemove = new EventEmitter<UuidModel>();
+
   @Output() onTopicSearch = new EventEmitter<string>();
 
   showSubProjects: boolean = false;
@@ -151,10 +153,15 @@ export class ProjectDetailsOverviewComponent implements OnInit, OnChanges {
     }
   }
 
-  navigate(id: string) {
-    if (id !== this.kcProject?.id.value) {
-      this.projectService.projectCommandNavigate(id);
+  navigate(id: UuidModel) {
+    if (id.value !== this.kcProject?.id.value) {
+      this.projectService.projectCommandNavigate(id.value);
     }
+    this.projectInfoOverlay.hide();
+  }
+
+  addSubproject(id: UuidModel) {
+    this.onProjectCreation.emit(id);
     this.projectInfoOverlay.hide();
   }
 
@@ -174,10 +181,6 @@ export class ProjectDetailsOverviewComponent implements OnInit, OnChanges {
     this.projectService.projectCommandGoForward();
   }
 
-  addSubproject(id: string) {
-    this.onProjectCreation.emit(new UuidModel(id));
-  }
-
   topicsOnChange($event: any) {
     if (!this.kcProject) {
       console.warn('A topic was changed but no current project exists.')
@@ -195,5 +198,13 @@ export class ProjectDetailsOverviewComponent implements OnInit, OnChanges {
     if ($event.value && typeof $event.value === 'string') {
       this.onTopicSearch.emit($event.value);
     }
+  }
+
+  onArchiveProject(_: UuidModel) {
+    // TODO: develop archival process (long-term storage and ability to retrieve later must be supported)
+  }
+
+  onRemoveProject($event: UuidModel) {
+    this.onProjectRemove.emit($event);
   }
 }

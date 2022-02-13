@@ -30,7 +30,6 @@ limitations under the License.-->
 
 
 <div *ngIf="!kcProject" class="h-full">
-
   <div class="flex-col-center-center h-full">
     <p-card header="Let's get started..."
             [style]="{width: '420px'}"
@@ -48,11 +47,13 @@ limitations under the License.-->
 
 <div *ngIf="kcProject">
   <div>
-    <app-knowledge-canvas (kcSetCurrentProject)="kcSetCurrentProject($event)"
+    <app-knowledge-canvas [projectTreeNodes]="treeNodes"
+      (kcSetCurrentProject)="kcSetCurrentProject($event)"
                           (kcEditProject)="kcEditProject($event)"
                           (kcProjectUpdate)="kcProjectUpdate($event)"
                           (ksAdded)="ksAdded($event)"
                           (onProjectCreation)="onProjectCreation.emit($event)"
+                          (onProjectRemove)="onProjectDeletion.emit($event)"
                           (onTopicSearch)="onTopicSearch.emit($event)"
                           [ngStyle]="kcStyle">
     </app-knowledge-canvas>

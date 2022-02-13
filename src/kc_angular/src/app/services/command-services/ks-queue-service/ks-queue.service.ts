@@ -17,11 +17,11 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject} from "rxjs";
 import {SearchModel} from "src/app/models/google.search.results.model";
-import {FaviconExtractorService} from "../../../services/ingest-services/favicon-extraction-service/favicon-extractor.service";
+import {FaviconExtractorService} from "../../ingest-services/favicon-extraction-service/favicon-extractor.service";
 import {KnowledgeSource} from "src/app/models/knowledge.source.model";
-import {SettingsService} from "../../../services/ipc-services/settings-service/settings.service";
-import {ExternalIngestService} from "../../../services/ingest-services/external-ingest/external-ingest.service";
-import {NotificationsService} from "../../../services/user-services/notification-service/notifications.service";
+import {SettingsService} from "../../ipc-services/settings-service/settings.service";
+import {ExternalIngestService} from "../../ingest-services/external-ingest/external-ingest.service";
+import {NotificationsService} from "../../user-services/notification-service/notifications.service";
 
 
 @Injectable({

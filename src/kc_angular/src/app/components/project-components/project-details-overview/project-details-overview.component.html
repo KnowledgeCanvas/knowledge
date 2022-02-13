@@ -12,106 +12,49 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.-->
 
-<div class="flex-row-center-start">
-  <span class="p-buttonset" style="margin-right: 0.5rem; padding-left: 0.5rem">
-    <button pButton type="button" icon="pi pi-arrow-left" [disabled]="!canGoBack" (click)="goBack($event)"></button>
-    <button pButton type="button" icon="pi pi-arrow-right" [disabled]="!canGoForward" (click)="goForward($event)"></button>
-  </span>
-  <p-breadcrumb [model]="breadcrumbs" (onItemClick)="onBreadcrumbClick($event)"
-                #breadcrumb [style]="{'width': 'calc(100vw - 100px)'}">
-  </p-breadcrumb>
+
+<div class="grid p-fluid">
+  <div class="col-12">
+    <p-breadcrumb [model]="breadcrumbs"
+                  (onItemClick)="onBreadcrumbClick($event)">
+    </p-breadcrumb>
+    <div *ngIf="kcProject">
+      <p-chips (onRemove)="topicsOnChange($event)"
+               (onAdd)="topicsOnChange($event)"
+               (onChipClick)="topicsOnClick($event)"
+               placeholder="Add topics to '{{kcProject.name}}'..."
+               [(ngModel)]="kcProject.topics"
+               [allowDuplicate]="false"
+               [addOnTab]="true"
+               [addOnBlur]="true"
+               class="p-fluid w-full">
+      </p-chips>
+    </div>
+  </div>
 </div>
 
 <p-overlayPanel #projectInfoOverlay [style]="{'width': '500px'}" *ngIf="kcProject">
   <ng-template pTemplate="content">
-    <p-panel>
-      <ng-template pTemplate="header">
-        {{projectContext.name}}
-      </ng-template>
-
-      <ng-template pTemplate="icons">
-        <button pButton class="p-panel-header-icon p-link" icon="pi pi-pencil"
-                pTooltip="Edit {{projectContext.name}}"
-                (click)="kcEditProject.emit(projectContext.id)">
-        </button>
-        <button pButton class="p-panel-header-icon p-link" icon="pi pi-plus-circle"
-                pTooltip="Add a subproject"
-                (click)="addSubproject(projectContext.id.value)">
-        </button>
-        <button pButton class="p-panel-header-icon p-link" icon="pi pi-arrow-circle-right"
-                pTooltip="Goto {{projectContext.name}}" [disabled]="projectContext.id.value === kcProject.id.value"
-                (click)="navigate(projectContext.id.value)">
-        </button>
-      </ng-template>
-
-      <ng-template pTemplate="content">
-        <div>
-          <b>Project Type:</b> {{projectContext.type || 'Default' | titlecase}}<br>
-          <b>Date Created:</b> {{projectContext.dateCreated | date:'medium'}}<br>
-          <b>Last Modified:</b> {{projectContext.dateModified | date:'medium'}}<br>
-          <b>Last Accessed:</b> {{projectContext.dateAccessed | date:'medium'}}<br>
-        </div>
-        <div *ngIf="projectContext.topics.length">
-          <b>Topics:</b>
-          <ul style="max-height: 128px; overflow: scroll">
-            <li *ngFor="let topic of projectContext.topics">
-              {{topic}}
-            </li>
-          </ul>
-        </div>
-        <div *ngIf="!projectContext.topics.length">
-          <b>Topics:</b> None
-        </div>
-        <div>
-          <b>Knowledge Sources:</b> {{projectContext.knowledgeSource.length ?? 0}}<br>
-          <b>Subprojects: </b> {{projectContext.subprojects.length}}
-        </div>
-        <b>Description:</b>
-        <div style="max-height: 200px; overflow: scroll">
-          {{projectContext.description || 'None'}}<br>
-        </div>
-      </ng-template>
-
-      <ng-template pTemplate="footer">
-        <h4>Subprojects</h4>
-        <div style="max-height: 180px; overflow: scroll">
-          <span *ngFor="let subproject of projectContext.subprojects" class="flex-row-center-between">
-            {{subproject | projectName}}
-            <button pButton icon="pi pi-arrow-circle-right"
-                    class="p-button-rounded p-button-text"
-                    pTooltip="Goto {{subproject | projectName}}"
-                    (click)="navigate(subproject)">
-            </button>
-          </span>
-          <span *ngIf="!projectContext.subprojects.length">
-            None
-          </span>
-        </div>
-      </ng-template>
-    </p-panel>
+    <app-project-card [kcProject]="projectContext"
+                      (onEditProject)="kcEditProject.emit($event)"
+                      (onAddSubproject)="addSubproject($event)"
+                      (onArchiveProject)="onArchiveProject($event)"
+                      (onRemoveProject)="onRemoveProject($event)"
+                      (onNavigateToProject)="navigate($event)">
+    </app-project-card>
   </ng-template>
 </p-overlayPanel>
 
-<div class="project-overview-container h-full" #projectOverview>
-  <div style="max-width: 100%"
-       class="flex-col-center-between center" *ngIf="kcProject">
-    <p-chips
-      (onRemove)="topicsOnChange($event)"
-      (onAdd)="topicsOnChange($event)"
-      (onChipClick)="topicsOnClick($event)"
-      placeholder="Add a topic..."
-      [(ngModel)]="kcProject.topics"
-      [allowDuplicate]="false" [addOnTab]="true" [addOnBlur]="true"
-      class="p-fluid w-full"></p-chips>
-  </div>
-
+<div class="flex-col-center-start project-overview-container h-full" #projectOverview>
   <div *ngIf="!ksList.length" class="flex-col-center-center h-full grid">
     <p-panel header="Add a Knowledge Source to get started...">
       <ng-template pTemplate="content">
         <div class="w-full h-full grid p-fluid">
           <p-card class="col-12" subheader="Method 1">
             <div class="flex-row-center-start">
-              Press the <button pButton icon="pi pi-plus" class="p-button-sm p-button-text"></button> button below
+              Press the
+              <button pButton icon="pi pi-plus" class="p-button-sm p-button-text"></button>
+              button below
             </div>
           </p-card>
           <p-card class="col-12" subheader="Method 2">
@@ -125,16 +68,14 @@ limitations under the License.-->
   </div>
 
   <div class="project-ks-list-container" *ngIf="ksList.length">
-        <ks-table [ksTableExpandRowOnClick]="clickExpandRows"
-                  (kcSetCurrentProject)="kcSetCurrentProject.emit($event)"
-                  [ksList]="ksList"
-                  (ksTableShowSubprojects)="ksTableShowSubprojectSources($event)"
-                  [ksTableAllowSubprojectExpansion]="showSubProjects">
-        </ks-table>
-
-
-<!--    <div class="flex-col-center-center p-fluid" style="margin: 20px">-->
-<!--      <app-ks-dataview [ksList]="ksList"></app-ks-dataview>-->
-<!--    </div>-->
+    <ks-table [ksTableExpandRowOnClick]="clickExpandRows"
+              (kcSetCurrentProject)="kcSetCurrentProject.emit($event)"
+              [ksList]="ksList"
+              (ksTableShowSubprojects)="ksTableShowSubprojectSources($event)"
+              [ksTableAllowSubprojectExpansion]="showSubProjects">
+    </ks-table>
+    <!--    <div class="flex-col-center-center p-fluid" style="margin: 20px">-->
+    <!--      <app-ks-dataview [ksList]="ksList"></app-ks-dataview>-->
+    <!--    </div>-->
   </div>
 </div>

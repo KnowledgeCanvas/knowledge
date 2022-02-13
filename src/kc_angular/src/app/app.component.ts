@@ -20,7 +20,7 @@ import {SettingsService} from "./services/ipc-services/settings-service/settings
 import {ConfirmationService, MenuItem, PrimeIcons, PrimeNGConfig, TreeNode} from "primeng/api";
 import {DialogService} from "primeng/dynamicdialog";
 import {ProjectService} from "./services/factory-services/project-service/project.service";
-import {KsQueueService} from "./components/knowledge-source-components/ks-queue-service/ks-queue.service";
+import {KsQueueService} from "./services/command-services/ks-queue-service/ks-queue.service";
 import {KnowledgeSource} from "./models/knowledge.source.model";
 import {OverlayPanel} from "primeng/overlaypanel";
 import {ProjectTreeNode} from "./models/project.tree.model";
@@ -41,6 +41,7 @@ import {KsIngestComponent} from "./components/knowledge-source-components/ks-ing
 import {IngestSettingsComponent} from "./components/settings-components/ingest-settings/ingest-settings.component";
 import {KcDialogRequest} from "kc_electron/src/app/models/electron.ipc.model";
 import {SearchSettingsComponent} from "./components/settings-components/search-settings/search-settings.component";
+import {ProjectTreeFactoryService} from "./services/factory-services/project-tree-factory/project-tree-factory.service";
 
 
 @Component({
@@ -70,12 +71,13 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
               private ksQueueService: KsQueueService, private ksFactory: KsFactoryService,
               private projectService: ProjectService, private ksCommandService: KsCommandService,
               private ipcService: ElectronIpcService, private clipboard: Clipboard,
-              private browserViewDialogService: BrowserViewDialogService, private themeService: ThemeService) {
+              private browserViewDialogService: BrowserViewDialogService, private themeService: ThemeService,
+              private projectTreeFactory: ProjectTreeFactoryService) {
     // Subscribe to changes in project tree
     this._subProjectTree = this.projectService.projectTree.subscribe((projectNodes: ProjectTreeNode[]) => {
       this._projectNodes = projectNodes;
-      this.treeNodes = this.constructTreeNodes(projectNodes, false);
-      this.ksQueueTreeNodes = this.constructTreeNodes(projectNodes, true);
+      this.treeNodes = this.projectTreeFactory.constructTreeNodes(projectNodes, false);
+      this.ksQueueTreeNodes = this.projectTreeFactory.constructTreeNodes(projectNodes, true);
     });
 
     // Subscribe to active project
@@ -99,11 +101,11 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   get ksQueueSelectedNode() {
-    return this.findTreeNode(this.treeNodes, this.currentProject?.id.value ?? '') ?? {};
+    return this.projectTreeFactory.findTreeNode(this.treeNodes, this.currentProject?.id.value ?? '') ?? {};
   }
 
   get selectedNode() {
-    return this.findTreeNode(this.treeNodes, this.currentProject?.id.value ?? '') ?? {};
+    return this.projectTreeFactory.findTreeNode(this.treeNodes, this.currentProject?.id.value ?? '') ?? {};
   }
 
   @HostListener("dragover", ["$event"]) onDragOver(evt: any) {
@@ -403,49 +405,5 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.dialogService.open(KsIngestComponent, {
       width: '95%'
     });
-  }
-
-  private constructTreeNodes(projectNodes: ProjectTreeNode[], collapsed: boolean): TreeNode[] {
-    let treeNodes: TreeNode[] = [];
-
-    for (let node of projectNodes) {
-      let proj = this.projectService.getProject(node.id);
-
-      // The collapsed flag means we do not want to use the ACTUAL project nodes, so make a deep copy
-      if (collapsed) {
-        proj = JSON.parse(JSON.stringify(proj));
-      }
-
-      let treeNode: TreeNode = {
-        label: node.name,
-        data: JSON.stringify(proj?.knowledgeSource),
-        expanded: collapsed ? false : node.expanded,
-        leaf: node.subprojects.length === 0,
-        selectable: true,
-        draggable: true,
-        droppable: true,
-        children: node.subprojects.length > 0 ? this.constructTreeNodes(node.subprojects, collapsed) : [],
-        key: node.id
-      };
-      treeNodes.push(treeNode);
-    }
-
-    return treeNodes;
-  }
-
-  private findTreeNode(treenodes: TreeNode[], id: string): TreeNode | undefined {
-    let found = treenodes.find(n => n.key === id);
-    if (found) {
-      return found;
-    }
-    for (let node of treenodes) {
-      if (node.children && node.children.length > 0) {
-        found = this.findTreeNode(node.children, id);
-        if (found) {
-          return found;
-        }
-      }
-    }
-    return undefined;
   }
 }

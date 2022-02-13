@@ -19,6 +19,9 @@ export class KsCommandService {
   private _ksRemoveEvent = new BehaviorSubject<KnowledgeSource[]>([]);
   ksRemoveEvent = this._ksRemoveEvent.asObservable();
 
+  private _ksMoveEvent = new BehaviorSubject<KnowledgeSource[]>([]);
+  ksMoveEvent = this._ksMoveEvent.asObservable();
+
   private _ksShareEvent = new BehaviorSubject<KnowledgeSource[]>([]);
   ksShareEvent = this._ksShareEvent.asObservable();
 
@@ -43,6 +46,10 @@ export class KsCommandService {
 
   remove(ksList: KnowledgeSource[]) {
     this._ksRemoveEvent.next(ksList);
+  }
+
+  move(ksList: KnowledgeSource[]) {
+    this._ksMoveEvent.next(ksList);
   }
 
   preview(ks: KnowledgeSource) {

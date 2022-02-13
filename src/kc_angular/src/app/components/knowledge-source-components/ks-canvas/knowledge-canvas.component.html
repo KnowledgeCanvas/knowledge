@@ -15,6 +15,7 @@ limitations under the License.-->
 <kc-project-overview (kcSetCurrentProject)="kcSetCurrentProject.emit($event)"
                      (kcEditProject)="kcEditProject.emit($event)"
                      (onProjectCreation)="onProjectCreation.emit($event)"
+                     (onProjectRemove)="onProjectRemove.emit($event)"
                      (onTopicSearch)="onTopicSearch.emit($event)">
 </kc-project-overview>
 
@@ -34,5 +35,36 @@ limitations under the License.-->
                  [maximized]="ksInfoMaximized"
                  (shouldClose)="ksDetailsVisible = false">
     </app-ks-info>
+  </ng-template>
+</p-dialog>
+
+<p-dialog [(visible)]="ksMoveVisible"
+          *ngIf="ksMoveTarget && ksMoveTarget.length > 0"
+          [modal]="true"
+          [maximizable]="true"
+          appendTo="body"
+          (onHide)="onKsMoveHide(ksMoveTarget)"
+          header="Move Knowledge Source">
+  <ng-template pTemplate="body">
+    <div class="grid p-fluid" style="width: 70vw;">
+      <app-ks-card *ngFor="let ks of ksMoveTarget"
+                   class="sm:col-12 md:col-6 lg:col-4"
+                   [ks]="ks"
+                   [currentProject]="kcProject?.id"
+                   [projectTreeNodes]="projectTreeNodes"
+                   (onPreview)="onKsPreview($event)"
+                   (onOpen)="onKsOpen($event)"
+                   (onRemove)="onKsRemoveFromMoveList($event)"
+                   (onProjectChange)="onKsProjectChange($event)"
+                   [showThumbnail]="false"
+                   [showRemove]="false"
+                   [showDescription]="false">
+      </app-ks-card>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="footer">
+    <div class="w-full text-center mt-3">
+      <small>Note: changes will be saved automatically when a new project is selected</small>
+    </div>
   </ng-template>
 </p-dialog>

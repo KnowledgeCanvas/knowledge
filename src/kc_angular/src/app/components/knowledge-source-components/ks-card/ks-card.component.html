@@ -1,16 +1,18 @@
 <p-card class="ks-card">
   <ng-template pTemplate="header">
-    <p-skeleton width="100%" height="200px" *ngIf="!thumbnail && !thumbnailUnavailable"></p-skeleton>
-    <div class="w-full p-fluid flex-col-center-center bg-auto">
-      <p-image *ngIf="thumbnail" [src]="thumbnail"
-               class="align-self-center"
-               height="200px"
-               [preview]="true">
-      </p-image>
-      <div *ngIf="!thumbnail && thumbnailUnavailable"
-         class="align-self-center flex-col-center-center"
-         style="height: 200px; width: 100%; background-color: var(--surface-400); border-radius: 10px">
-        Thumbnail Unavailable
+    <div *ngIf="showThumbnail">
+      <p-skeleton width="100%" height="200px" *ngIf="!thumbnail && !thumbnailUnavailable"></p-skeleton>
+      <div class="w-full p-fluid flex-col-center-center bg-auto">
+        <p-image *ngIf="thumbnail" [src]="thumbnail"
+                 class="align-self-center"
+                 height="200px"
+                 [preview]="true">
+        </p-image>
+        <div *ngIf="!thumbnail && thumbnailUnavailable"
+             class="align-self-center flex-col-center-center"
+             style="height: 200px; width: 100%; background-color: var(--surface-400); border-radius: 10px">
+          Thumbnail Unavailable
+        </div>
       </div>
     </div>
   </ng-template>
@@ -21,29 +23,57 @@
 
   <ng-template pTemplate="subtitle">
     <h2 *ngIf="showContentType">Content Type: {{contentType | titlecase}}</h2>
+    <h2 *ngIf="showTags && keywords && keywords.length"
+        class="underline"
+        pTooltip="{{keywords | topicList}}"
+        tooltipPosition="bottom">
+      Topics
+    </h2>
+    <h2 *ngIf="showTags && (!keywords || !keywords.length)"
+        class="underline"
+        pTooltip="No topics found"
+        tooltipPosition="bottom">
+      Topics
+    </h2>
   </ng-template>
 
   <ng-template pTemplate="content">
-    <div class="grid">
-      <div class="col-3">
+    <div class="grid p-fluid">
+      <div class="col-4">
         <app-ks-icon [ks]="ks"></app-ks-icon>
       </div>
-      <div class="col-12" *ngIf="description">
+      <div class="col-12" *ngIf="showDescription && description">
         {{description}}
       </div>
-      <div class="col-12" *ngIf="keywords && keywords.length">
-        <p-chip *ngFor="let kwd of keywords">
-          {{kwd | titlecase}}
-        </p-chip>
+
+      <div class="col-12" *ngIf="showProjectSelection">
+        <p-treeSelect [(ngModel)]="selectedProject"
+                      [options]="projectTreeNodes"
+                      (onNodeSelect)="onProjectSelected($event)"
+                      appendTo="body"
+                      placeholder="Choose a Project">
+        </p-treeSelect>
       </div>
+
     </div>
   </ng-template>
-
   <ng-template pTemplate="footer">
     <div class="col text-right">
-      <button pButton class="p-button-text" icon="pi pi-trash" (click)="onRemove.emit(this.ks)"></button>
-      <button pButton class="p-button-text" icon="pi pi-external-link" (click)="onOpen.emit(this.ks)"></button>
-      <button pButton class="p-button-text" icon="pi pi-eye" (click)="onPreview.emit(this.ks)"></button>
+      <button pButton *ngIf="showRemove"
+              class="p-button-text"
+              icon="pi pi-trash"
+              (click)="onRemove.emit(this.ks)">
+      </button>
+      <button pButton *ngIf="showOpen"
+              class="p-button-text"
+              icon="pi pi-external-link"
+              (click)="onOpen.emit(this.ks)">
+      </button>
+      <button pButton *ngIf="showPreview"
+              class="p-button-text"
+              icon="pi pi-eye"
+              (click)="onPreview.emit(this.ks)">
+      </button>
     </div>
   </ng-template>
 </p-card>

@@ -52,6 +52,15 @@ export class KnowledgeSourceReference {
   }
 }
 
+export type KnowledgeSourceEvent = {
+  date: Date,
+  label: string,
+  hash?: string,
+  primeIcon?: string
+  imageIcon?: string
+  iconText?: string
+}
+
 export class KnowledgeSource {
   associatedProject: UuidModel;
   authors: AuthorModel[];
@@ -61,6 +70,7 @@ export class KnowledgeSource {
   dateAccessed: Date[];
   dateModified: Date[];
   description: string = '';
+  events?: KnowledgeSourceEvent[] = [];
   icon?: any;
   iconUrl?: string;
   id: UuidModel;
@@ -89,6 +99,16 @@ export class KnowledgeSource {
     this.note = new KnowledgeSourceNote();
     this.flagged = false;
     this.topics = [];
+
+    if (!this.events) {
+      this.events = [];
+    }
+
+    this.events.push({
+      date: new Date(),
+      label: 'Created',
+      hash: ''
+    });
   }
 }
 

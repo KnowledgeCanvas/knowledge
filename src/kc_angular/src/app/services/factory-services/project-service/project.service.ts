@@ -250,7 +250,7 @@ export class ProjectService {
 
   /**
    *
-   * @param projectUpdates: ProjectUpdateRequest[]
+   * @param projectUpdates: ProjectUpdateRequest list that contains one or more project updates
    *
    * To update a project that was already modified, submit an update with only the ID.
    *
@@ -300,6 +300,11 @@ export class ProjectService {
         projectToUpdate = this.removeKnowledgeSource(projectToUpdate, projectUpdate.removeKnowledgeSource);
       }
 
+      // Handle moving knowledge source from project to project
+      if (projectUpdate.moveKnowledgeSource) {
+        projectToUpdate = this.moveKnowledgeSource(projectToUpdate, projectUpdate.moveKnowledgeSource);
+      }
+
       // Handle knowledge source insertion
       if (projectUpdate.addKnowledgeSource && projectUpdate.addKnowledgeSource.length) {
         projectToUpdate = this.addKnowledgeSource(projectToUpdate, projectUpdate.addKnowledgeSource);
@@ -344,7 +349,6 @@ export class ProjectService {
       // Persist project to storage system
       await this.storageService.updateProject(projectToUpdate);
 
-      // Update project source
       this.projectSource = this.projectSource.filter(p => p.id.value !== projectUpdate.id.value);
       this.projectSource.push(projectToUpdate);
     }
@@ -576,6 +580,27 @@ export class ProjectService {
     } else {
       console.error(`Attempting to remove ${remove.length} knowledge source(s) from project with no knowledge sources...`);
     }
+    return project;
+  }
+
+  private moveKnowledgeSource(project: ProjectModel, move: { ks: KnowledgeSource, new: UuidModel }): ProjectModel {
+    const newProject = this.projectSource.find(p => p.id.value === move.new.value);
+    if (!newProject) {
+      return project;
+    }
+    move.ks.associatedProject = newProject.id;
+    if (!move.ks.events) {
+      move.ks.events = [];
+    }
+    move.ks.events.push({
+      date: new Date(),
+      label: `Moved`
+    });
+    newProject.knowledgeSource.push(move.ks);
+    this.storageService.updateProject(newProject);
+
+    // Remove ks from old project and return
+    project.knowledgeSource = project.knowledgeSource.filter(k => k.id.value !== move.ks.id.value);
     return project;
   }
 

@@ -265,6 +265,8 @@ export class KnowledgeSourceTableComponent implements OnInit, OnChanges {
     }, {
       label: 'Copy', icon: PrimeIcons.COPY
     }, {label: '', separator: true,}, {
+      label: 'Move', icon: PrimeIcons.REPLY
+    }, {
       label: 'Remove', icon: PrimeIcons.TRASH
     }
     ];
@@ -289,6 +291,22 @@ export class KnowledgeSourceTableComponent implements OnInit, OnChanges {
         remove.items.push({
           label: `Selected (${this.ksTableSelectedKsList.length})`, command: () => {
             this.ksCommandService.remove(this.ksTableSelectedKsList);
+          }
+        })
+      }
+    }
+
+    let move = this.ksTableContextMenuItems.find(m => m.label === 'Move');
+    if (move) {
+      move.items = [{
+        label: ksLabel, command: () => {
+          this.ksCommandService.move([this.ksTableContextMenuSelectedKs]);
+        }
+      }];
+      if (this.ksTableSelectedKsList.length) {
+        move.items.push({
+          label: `Selected (${this.ksTableSelectedKsList.length})`, command: () => {
+            this.ksCommandService.move(this.ksTableSelectedKsList);
           }
         })
       }

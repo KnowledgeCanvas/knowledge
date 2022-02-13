@@ -45,7 +45,7 @@ export class ProjectModel {
     this.dateCreated = new Date();
     this.dateModified = new Date();
     this.dateAccessed = new Date();
-    this.calendar ={events: [], start: null, end: null};
+    this.calendar = {events: [], start: null, end: null};
   }
 }
 
@@ -79,6 +79,7 @@ export interface ProjectUpdateRequest {
   addKnowledgeSource?: KnowledgeSource[];
   removeKnowledgeSource?: KnowledgeSource[];
   updateKnowledgeSource?: KnowledgeSource[];
+  moveKnowledgeSource?: { ks: KnowledgeSource, new: UuidModel }
 }
 
 export interface ProjectEntity {

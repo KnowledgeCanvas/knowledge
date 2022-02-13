@@ -18,12 +18,6 @@
   // 36px is the height of the breadcrum and action toolbar that floats above the project overview
   max-height: calc(100% - 36px);
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  align-content: center;
-  align-items: stretch;
-  justify-content: flex-start;
   user-select: none;
 }
 

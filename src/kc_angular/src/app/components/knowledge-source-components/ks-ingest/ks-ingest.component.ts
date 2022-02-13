@@ -5,12 +5,13 @@ import {NotificationsService} from "../../../services/user-services/notification
 import {ExtractionService} from "../../../services/ingest-services/web-extraction-service/extraction.service";
 import {DynamicDialogRef} from "primeng/dynamicdialog";
 import {ElectronIpcService, PromptForDirectoryRequest} from "../../../services/ipc-services/electron-ipc/electron-ipc.service";
-import {KsQueueService} from "../ks-queue-service/ks-queue.service";
+import {KsQueueService} from "../../../services/command-services/ks-queue-service/ks-queue.service";
 import {UuidModel} from "../../../models/uuid.model";
 import {FileModel} from "../../../models/file.model";
 import {UuidService} from "../../../services/ipc-services/uuid-service/uuid.service";
 import {FaviconExtractorService} from "../../../services/ingest-services/favicon-extraction-service/favicon-extractor.service";
 import {DragAndDropService} from "../../../services/ingest-services/external-drag-and-drop/drag-and-drop.service";
+import {KsCommandService} from "../../../services/command-services/ks-command/ks-command.service";
 
 interface PendingExtraction {
   link: string
@@ -40,6 +41,7 @@ export class KsIngestComponent implements OnInit {
               private dragAndDropService: DragAndDropService,
               private faviconService: FaviconExtractorService,
               private upNextService: KsQueueService,
+              private ksCommandService: KsCommandService,
               private ipcService: ElectronIpcService,
               private ksFactory: KsFactoryService) {
     this.supportedTypes = dragAndDropService.supportedTypes;
@@ -199,15 +201,14 @@ export class KsIngestComponent implements OnInit {
   }
 
   onKsRemoved($event: KnowledgeSource) {
-    console.log('Removing KS: ', $event);
     this.ksList = this.ksList.filter(ks => ks.id.value !== $event.id.value);
   }
 
-  onKsOpened(_: KnowledgeSource) {
-    console.warn('KsOpen not implemented...');
+  onKsOpened(ks: KnowledgeSource) {
+    this.ksCommandService.open(ks);
   }
 
-  onKsPreview(_: KnowledgeSource) {
-    console.warn('KsPreview not implemented...');
+  onKsPreview(ks: KnowledgeSource) {
+    this.ksCommandService.preview(ks);
   }
 }

@@ -26,12 +26,12 @@
 :host ::ng-deep {
   .kc-speeddial {
     .p-speeddial-direction-up {
-      right: 32px;
-      bottom: 32px;
+      right: 1rem;
+      bottom: 1rem;
     }
   }
 }
 
-app-ks-queue {
+app-ks-up-next {
   min-width: 600px;
 }

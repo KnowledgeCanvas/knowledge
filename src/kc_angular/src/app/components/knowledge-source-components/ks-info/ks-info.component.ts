@@ -112,6 +112,17 @@ export class KsInfoComponent implements OnInit, OnChanges {
           });
         }
 
+        if (!this.ks.events) {
+          this.ks.events = [];
+        }
+
+        for (let event of this.ks.events) {
+          this.events.push({
+            status: event.label,
+            date: event.date
+          })
+        }
+
         this.events.sort((a, b) => {
           a = new Date(a.date);
           b = new Date(b.date);

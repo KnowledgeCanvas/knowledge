@@ -1,18 +1,50 @@
+<!--Copyright 2021 Rob Royce
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.-->
+
 <p-panel>
   <ng-template pTemplate="header">
     {{kcProject.name}}
   </ng-template>
 
   <ng-template pTemplate="icons">
-    <button pButton class="p-panel-header-icon p-link" icon="pi pi-pencil"
+    <button pButton *ngIf="showEdit"
+            class="p-panel-header-icon p-link"
+            icon="pi pi-pencil"
             pTooltip="Edit {{kcProject.name}}"
             (click)="onEditProject.emit(kcProject.id)">
     </button>
-    <button pButton class="p-panel-header-icon p-link" icon="pi pi-plus-circle"
+    <button pButton *ngIf="showAddSubproject"
+            class="p-panel-header-icon p-link"
+            icon="pi pi-plus-circle"
             pTooltip="Add a subproject"
             (click)="onAddSubproject.emit(kcProject.id)">
     </button>
-    <button pButton class="p-panel-header-icon p-link" icon="pi pi-arrow-circle-right"
+    <button pButton *ngIf="showRemove"
+            class="p-panel-header-icon p-link"
+            icon="pi pi-trash"
+            pTooltip="Remove {{kcProject.name}}"
+            (click)="onRemoveProject.emit(kcProject.id)">
+    </button>
+    <button pButton *ngIf="showArchive"
+            class="p-panel-header-icon p-link"
+            icon="pi pi-folder"
+            pTooltip="Archive {{kcProject.name}}"
+            (click)="onArchiveProject.emit(kcProject.id)">
+    </button>
+    <button pButton *ngIf="showNavigate"
+            class="p-panel-header-icon p-link"
+            icon="pi pi-arrow-circle-right"
             pTooltip="Goto {{kcProject.name}}"
             (click)="onNavigateToProject.emit(kcProject.id)">
     </button>

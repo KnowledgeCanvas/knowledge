@@ -101,8 +101,7 @@ function createMainWindow() {
     let HEIGHT: number = parseInt(appEnv.DEFAULT_WINDOW_HEIGHT);
     let darkMode = appEnv.display.theme.isDark;
     let backgroundColor = darkMode ? '#1E1E1E' : '#F9F9F9';
-
-    console.log('Dark mode: ', appEnv.display.theme);
+    console.log('Theme: ', appEnv.display.theme);
 
     const config = {
         title: 'Knowledge Canvas',
