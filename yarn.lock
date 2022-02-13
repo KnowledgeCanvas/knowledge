@@ -4314,7 +4314,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"colors@npm:^1.4.0":
+"colors@npm:1.4.0":
   version: 1.4.0
   resolution: "colors@npm:1.4.0"
   checksum: 98aa2c2418ad87dedf25d781be69dc5fc5908e279d9d30c34d8b702e586a0474605b3a189511482b9d5ed0d20c867515d22749537f7bc546256c6014f3ebdcec
@@ -8546,14 +8546,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"karma@npm:~6.3.0":
-  version: 6.3.9
-  resolution: "karma@npm:6.3.9"
+"karma@npm:~6.3.14":
+  version: 6.3.16
+  resolution: "karma@npm:6.3.16"
   dependencies:
     body-parser: ^1.19.0
     braces: ^3.0.2
     chokidar: ^3.5.1
-    colors: ^1.4.0
+    colors: 1.4.0
     connect: ^3.7.0
     di: ^0.0.1
     dom-serialize: ^2.2.1
@@ -8562,9 +8562,10 @@ __metadata:
     http-proxy: ^1.18.1
     isbinaryfile: ^4.0.8
     lodash: ^4.17.21
-    log4js: ^6.3.0
+    log4js: ^6.4.1
     mime: ^2.5.2
     minimatch: ^3.0.4
+    mkdirp: ^0.5.5
     qjobs: ^1.2.0
     range-parser: ^1.2.1
     rimraf: ^3.0.2
@@ -8575,7 +8576,7 @@ __metadata:
     yargs: ^16.1.1
   bin:
     karma: bin/karma
-  checksum: 2e652c8f4d520593bedf96d21a9ab92b02e93bdb2598c7abee79ccdbd793099c634555e247559801b1226bae3a5544be61a3570f8ed560e96064447fb19206c9
+  checksum: eb1703d4907ac31a47019e2b6b5f69e1ecd7870dabee1ed8f284d9730f665e02ae9ef1a75733b5d4b6a27fe68069536d0845b9e41747c43507128b3ac645c87f
   languageName: node
   linkType: hard
 
@@ -8610,7 +8611,7 @@ __metadata:
     d3: ^7.2.1
     eslint: ^8.5.0
     jasmine-core: ~3.8.0
-    karma: ~6.3.0
+    karma: ~6.3.14
     karma-chrome-launcher: ^3.1.0
     karma-coverage: ^2.1.0
     karma-jasmine: ^4.0.1
@@ -8964,7 +8965,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"log4js@npm:^6.3.0":
+"log4js@npm:^6.4.1":
   version: 6.4.1
   resolution: "log4js@npm:6.4.1"
   dependencies:
