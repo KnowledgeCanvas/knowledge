@@ -7,9 +7,11 @@
                height="200px"
                [preview]="true">
       </p-image>
-      <p *ngIf="!thumbnail && thumbnailUnavailable" class="align-self-center" style="height: 200px">
-        Content Thumbnail Unavailable...
-      </p>
+      <div *ngIf="!thumbnail && thumbnailUnavailable"
+         class="align-self-center flex-col-center-center"
+         style="height: 200px; width: 100%; background-color: var(--surface-400); border-radius: 10px">
+        Thumbnail Unavailable
+      </div>
     </div>
   </ng-template>
 

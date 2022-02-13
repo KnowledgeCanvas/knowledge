@@ -42,13 +42,6 @@ export class KsCardComponent implements OnInit {
     this.getDescription().then((result) => {
       this.description = result;
     })
-
-    setTimeout(() => {
-      if (this.thumbnail === undefined) {
-        this.thumbnailUnavailable = true;
-      }
-    }, 3000);
-
   }
 
   async getThumbnail() {
