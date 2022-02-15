@@ -18,7 +18,7 @@ import {KnowledgeSource} from "./knowledge.source.model";
 import {UuidModel} from "./uuid.model";
 import {KcCalendar} from "./calendar.model";
 
-export type ProjectType = 'school' | 'work' | 'hobby' | 'default';
+export type ProjectType = 'school' | 'work' | 'hobby' | 'default' | 'research';
 
 export class ProjectModel {
   name: string = '';
