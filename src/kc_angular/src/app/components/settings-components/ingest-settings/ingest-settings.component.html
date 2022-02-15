@@ -33,6 +33,7 @@ limitations under the License.-->
             <input pInputText type="text"
                    #filestorage
                    id="filestorage"
+                   disabled
                    style="width: calc(100% - 10rem)"
                    [(ngModel)]="ingestSettings.storageLocation">
             <button pButton label="Show" (click)="show(filestorage.value)"></button>
@@ -65,6 +66,7 @@ limitations under the License.-->
             </button>
             <input pInputText type="text"
                    #autoscanLocation
+                   disabled
                    id="autoscanLocation"
                    style="width: calc(100% - 10rem)"
                    [(ngModel)]="ingestSettings.autoscanLocation">
