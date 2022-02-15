@@ -1,5 +1,5 @@
 /**
- Copyright 2021 Rob Royce
+ Copyright 2022 Rob Royce
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -41,7 +41,8 @@ const ingestSettings = {
     autoscanLocation: path.join(downloadPath, 'KnowledgeCanvasDownloads'),
     managed: false,
     preserveTimestamps: false,
-    interval: 15000
+    interval: 15000,
+    storageLocation: appPath
 }
 const searchSettings = {
     numResults: 10,

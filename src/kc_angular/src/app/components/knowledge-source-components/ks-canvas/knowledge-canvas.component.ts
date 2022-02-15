@@ -1,5 +1,5 @@
 /**
- Copyright 2021 Rob Royce
+ Copyright 2022 Rob Royce
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 
 
-import {Component, EventEmitter, OnDestroy, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {ProjectModel, ProjectUpdateRequest} from "src/app/models/project.model";
 import {KnowledgeSource} from "../../../models/knowledge.source.model";
 import {ProjectService} from "../../../services/factory-services/project-service/project.service";
@@ -25,7 +25,7 @@ import {Clipboard} from "@angular/cdk/clipboard";
 import {UuidModel} from "../../../models/uuid.model";
 import {KsCommandService} from "../../../services/command-services/ks-command/ks-command.service";
 import {Subscription} from "rxjs";
-import {ConfirmationService} from "primeng/api";
+import {ConfirmationService, TreeNode} from "primeng/api";
 import {NotificationsService} from "../../../services/user-services/notification-service/notifications.service";
 
 @Component({
@@ -34,28 +34,34 @@ import {NotificationsService} from "../../../services/user-services/notification
   styleUrls: ['./knowledge-canvas.component.scss']
 })
 export class KnowledgeCanvasComponent implements OnInit, OnDestroy {
+  @Input() projectTreeNodes: TreeNode[] = [];
   @Output() ksAdded = new EventEmitter<KnowledgeSource[]>();
   @Output() kcProjectUpdate = new EventEmitter<ProjectModel>();
   @Output() kcSetCurrentProject = new EventEmitter<string>();
   @Output() kcEditProject = new EventEmitter<UuidModel>();
   @Output() onProjectCreation = new EventEmitter<UuidModel | undefined>();
+  @Output() onProjectRemove = new EventEmitter<UuidModel>();
   @Output() onTopicSearch = new EventEmitter<string>();
   kcProject: ProjectModel | null = null;
   currentKs?: KnowledgeSource;
+  ksMoveTarget?: KnowledgeSource[];
   ksDetailsVisible: boolean = false;
   readonly KS_INFO_DIALOG_WIDTH = '850px';
   readonly KS_INFO_DIALOG_HEIGHT = '700px';
   ksInfoMaximized: boolean = false;
+  ksMoveVisible: boolean = false;
   private currentKsOriginal?: string;
   private _subKsCommandDetail: Subscription;
   private _subKsCommandPreview: Subscription;
   private _subKsCommandRemove: Subscription;
+  private _subKsCommandMove: Subscription;
   private _subKsCommandOpen: Subscription;
   private _subKsCommandShare: Subscription;
   private _subKsCommandCopyPath: Subscription;
   private _subKsCommandCopyJSON: Subscription;
   private _subKsCommandUpdate: Subscription;
   private _subKsCommandShowInFiles: Subscription;
+
 
   constructor(private ksCommandService: KsCommandService,
               private browserViewDialogService: BrowserViewDialogService,
@@ -76,20 +82,10 @@ export class KnowledgeCanvasComponent implements OnInit, OnDestroy {
     });
 
     this._subKsCommandPreview = this.ksCommandService.ksPreviewEvent.subscribe((ks) => {
-      if (ks) {
-        const dialogRef = this.browserViewDialogService.open({ks: ks});
-        if (dialogRef === undefined) {
-          this.notificationService.toast({
-            severity: 'warn',
-            summary: 'Preview',
-            detail: `Oops! It looks like we can't generate a preview for that.`,
-            life: 5000
-          });
-
-          this.ksCommandService.open(ks);
-        }
-        console.warn('Need to do something after preview command is received...');
+      if (!ks) {
+        return;
       }
+      this.onKsPreview(ks);
     });
 
     this._subKsCommandRemove = this.ksCommandService.ksRemoveEvent.subscribe((ksList) => {
@@ -120,13 +116,19 @@ export class KnowledgeCanvasComponent implements OnInit, OnDestroy {
       });
     });
 
+    this._subKsCommandMove = this.ksCommandService.ksMoveEvent.subscribe((ksList) => {
+      if (!ksList || !ksList.length) {
+        return;
+      }
+      this.ksMoveTarget = ksList;
+      this.ksMoveVisible = true;
+    })
+
     this._subKsCommandOpen = this.ksCommandService.ksOpenEvent.subscribe((ks) => {
       if (!ks) {
         return;
       }
-      // TODO IMPORTANT: this fails when a file has weird characters like #, so files should probably be opened using Electron IPC
-      window.open(typeof ks.accessLink === 'string' ? ks.accessLink : ks.accessLink.href);
-      ks.dateAccessed.push(new Date());
+      this.onKsOpen(ks);
     });
 
     this._subKsCommandShare = this.ksCommandService.ksShareEvent.subscribe((_) => {
@@ -177,6 +179,7 @@ export class KnowledgeCanvasComponent implements OnInit, OnDestroy {
     this._subKsCommandCopyJSON.unsubscribe();
     this._subKsCommandUpdate.unsubscribe();
     this._subKsCommandShowInFiles.unsubscribe();
+    this._subKsCommandMove.unsubscribe();
   }
 
   onKsInfoShow(_: any) {
@@ -206,5 +209,42 @@ export class KnowledgeCanvasComponent implements OnInit, OnDestroy {
       return;
     }
     this.ksInfoMaximized = $event.maximized;
+  }
+
+  onKsMoveHide(_?: KnowledgeSource[]) {
+  }
+
+  onKsPreview(ks: KnowledgeSource) {
+    const dialogRef = this.browserViewDialogService.open({ks: ks});
+    if (dialogRef === undefined) {
+      this.notificationService.toast({
+        severity: 'warn',
+        summary: 'Preview',
+        detail: `Oops! It looks like we can't generate a preview for that.`,
+        life: 5000
+      });
+
+      this.ksCommandService.open(ks);
+    }
+    console.warn('Need to do something after preview command is received...');
+  }
+
+  onKsOpen(ks: KnowledgeSource) {
+    // TODO IMPORTANT: this fails when a file has weird characters like #, so files should probably be opened using Electron IPC
+    window.open(typeof ks.accessLink === 'string' ? ks.accessLink : ks.accessLink.href);
+    ks.dateAccessed.push(new Date());
+  }
+
+  onKsRemoveFromMoveList(ks: KnowledgeSource) {
+    this.ksMoveTarget = this.ksMoveTarget?.filter(k => k.id.value !== ks.id.value);
+  }
+
+  onKsProjectChange($event: { ks: KnowledgeSource; old: string; new: string }) {
+    this.projectService.updateProjects([
+      {
+        id: new UuidModel($event.old),
+        moveKnowledgeSource: {ks: $event.ks, new: new UuidModel($event.new)}
+      }
+    ]);
   }
 }

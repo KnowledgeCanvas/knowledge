@@ -1,4 +1,4 @@
-<!--Copyright 2021 Rob Royce
+<!--Copyright 2022 Rob Royce
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -178,17 +178,19 @@ limitations under the License.-->
 
       <!--Declare Table Summary Row-->
       <ng-template pTemplate="summary">
-        <ng-container *ngIf="ksList.length && ksTopics.length">
+        <div *ngIf="ksList.length && ksTopics.length">
           Knowledge Source Topics
           <p-divider></p-divider>
-          <p-chip *ngFor="let topic of ksTopics"
-                  class="cursor-pointer"
-                  [style]="{'margin-top': '5px', 'margin-right': '5px', padding: 0}"
-                  (click)="onChipClick(topic)">
-            <span><button pButton icon="pi pi-search" class="p-button-text p-1"></button></span>
-            <span class="pr-3">{{topic}} ({{ksTableTopicCount(topic)}})</span>
-          </p-chip>
-        </ng-container>
+          <div style="max-height: 10rem; overflow: scroll">
+            <p-chip *ngFor="let topic of ksTopics"
+                    class="cursor-pointer"
+                    [style]="{'margin-top': '5px', 'margin-right': '5px', padding: 0}"
+                    (click)="onChipClick(topic)">
+              <span><button pButton icon="pi pi-search" class="p-button-text p-1"></button></span>
+              <span class="pr-3">{{topic}} ({{ksTableTopicCount(topic)}})</span>
+            </p-chip>
+          </div>
+        </div>
       </ng-template>
       <!--End Declare Table Summary Row-->
 
@@ -204,7 +206,7 @@ limitations under the License.-->
 <p-contextMenu #cm [model]="ksTableContextMenuItems" (onShow)="configureMenu()" appendTo="body"></p-contextMenu>
 
 <p-overlayPanel #op>
-  <ng-template pTemplate>
+  <ng-template pTemplate="content">
     <div>
       <p-toggleButton onLabel="Show Countdown" offLabel="Show Dates"
                       onIcon="pi pi-check" offIcon="pi pi-times"

@@ -1,5 +1,5 @@
 /**
- Copyright 2021 Rob Royce
+ Copyright 2022 Rob Royce
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -17,19 +17,14 @@
 .project-overview-container {
   // 36px is the height of the breadcrum and action toolbar that floats above the project overview
   max-height: calc(100% - 36px);
-  overflow: auto;
-  display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  align-content: center;
-  align-items: stretch;
-  justify-content: flex-start;
+  overflow: hidden;
   user-select: none;
 }
 
 .project-ks-list-container {
-  max-height: 50%;
   margin: 10px;
+  overflow: scroll;
+  width: 100%;
 }
 
 .project-topic-list {

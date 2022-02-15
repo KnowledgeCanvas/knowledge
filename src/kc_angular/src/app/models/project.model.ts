@@ -1,5 +1,5 @@
 /**
- Copyright 2021 Rob Royce
+ Copyright 2022 Rob Royce
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ import {KnowledgeSource} from "./knowledge.source.model";
 import {UuidModel} from "./uuid.model";
 import {KcCalendar} from "./calendar.model";
 
-export type ProjectType = 'school' | 'work' | 'hobby' | 'default';
+export type ProjectType = 'school' | 'work' | 'hobby' | 'default' | 'research';
 
 export class ProjectModel {
   name: string = '';
@@ -45,7 +45,7 @@ export class ProjectModel {
     this.dateCreated = new Date();
     this.dateModified = new Date();
     this.dateAccessed = new Date();
-    this.calendar ={events: [], start: null, end: null};
+    this.calendar = {events: [], start: null, end: null};
   }
 }
 
@@ -79,6 +79,7 @@ export interface ProjectUpdateRequest {
   addKnowledgeSource?: KnowledgeSource[];
   removeKnowledgeSource?: KnowledgeSource[];
   updateKnowledgeSource?: KnowledgeSource[];
+  moveKnowledgeSource?: { ks: KnowledgeSource, new: UuidModel }
 }
 
 export interface ProjectEntity {

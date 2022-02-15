@@ -1,5 +1,5 @@
 /**
- Copyright 2021 Rob Royce
+ Copyright 2022 Rob Royce
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import {DomSanitizer, SafeUrl} from "@angular/platform-browser";
 import {KcFileViewConfig} from "../ks-viewport-components/file-viewport/file-view.component";
 import {BrowserViewDialogService} from "../../../services/ipc-services/browser-service/browser-view-dialog.service";
 import {KsFactoryService} from "../../../services/factory-services/ks-factory-service/ks-factory.service";
+import {WebsiteMetaTagsModel} from "../../../models/website.model";
 
 let apiLoaded = false;
 
@@ -50,6 +51,7 @@ export class KsInfoComponent implements OnInit, OnChanges {
   safeUrl?: SafeUrl;
   ksYoutubeWidth: number = 640;
   ksYoutubeHeight: number = 480;
+  ksMetadata: WebsiteMetaTagsModel[] = [];
 
   constructor(private sanitizer: DomSanitizer,
               private browserService: BrowserViewDialogService,
@@ -83,12 +85,8 @@ export class KsInfoComponent implements OnInit, OnChanges {
     return this.ks.associatedProject?.value ?? '';
   }
 
-  get ksMetadata() {
-    return this.ks.reference.source.website?.metadata?.meta?.join(', ') ?? '';
-  }
-
   ngOnInit(): void {
-
+    this.ksMetadata = this.ks.reference.source.website?.metadata?.meta ?? [];
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -112,6 +110,17 @@ export class KsInfoComponent implements OnInit, OnChanges {
             status: 'Accessed',
             date: access
           });
+        }
+
+        if (!this.ks.events) {
+          this.ks.events = [];
+        }
+
+        for (let event of this.ks.events) {
+          this.events.push({
+            status: event.label,
+            date: event.date
+          })
         }
 
         this.events.sort((a, b) => {

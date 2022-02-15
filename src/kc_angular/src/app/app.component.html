@@ -1,4 +1,4 @@
-<!--Copyright 2021 Rob Royce
+<!--Copyright 2022 Rob Royce
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -12,46 +12,17 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.-->
 
+<!--Begin "Getting Ready" placeholder-->
 <div *ngIf="!readyToShow" class="w-full h-full surface-a flex-col-center-center">
   <p-image src="assets/img/kc-logo-transparent.svg" class="w-5"></p-image>
   <p-progressBar mode="indeterminate" class="w-3"></p-progressBar>
   Getting things ready...
 </div>
+<!--End "Getting Ready" placeholder-->
 
-<div [hidden]="!readyToShow">
-  <p-messages key="app-banner"></p-messages>
 
-  <p-toast key="app-toast"></p-toast>
-
-  <p-overlayPanel #ksQueueOverlay
-                  [appendTo]="'body'"
-                  [dismissable]="true">
-    <ng-template pTemplate>
-      You're all caught up!
-    </ng-template>
-  </p-overlayPanel>
-
-  <p-dialog #ksQueueDialog
-            [(visible)]="ksQueueVisible"
-            *ngIf="ksQueueVisible"
-            [modal]="true"
-            [maximizable]="true"
-            [draggable]="false"
-            (close)="closeKsQueue()">
-    <ng-template pTemplate>
-      <app-ks-queue [ksQueue]="ksQueue"
-                    [projectTreeNodes]="ksQueueTreeNodes"
-                    [selectedProject]="ksQueueSelectedNode"
-                    (onClear)="clearQueue()"
-                    (onClose)="closeKsQueue()"
-                    (onUpdate)="ksQueueUpdate($event)"
-                    (onRemove)="ksQueueRemove($event)">
-      </app-ks-queue>
-    </ng-template>
-
-    <ng-template pTemplate="footer"></ng-template>
-  </p-dialog>
-
+<!--Begin main UI (top menubar and project viewport)-->
+<div [hidden]="!readyToShow" style="height: 100vh; overflow: hidden">
   <p-menubar [model]="menuBarItems">
     <ng-template pTemplate="start">
       <p-button label="Up Next"
@@ -68,13 +39,6 @@ limitations under the License.-->
       <input type="search" #searchBar pInputText placeholder="Search the web" (search)="search(searchBar.value)">
     </div>
   </p-menubar>
-
-  <div style="" class="kc-speeddial">
-    <p-speedDial direction="up" (onClick)="onSpeedDialClick($event)"></p-speedDial>
-  </div>
-
-  <p-confirmDialog appendTo="body"></p-confirmDialog>
-
   <app-project-detail-viewport [showProjectTree]="showProjectTree"
                                [kcProject]="currentProject"
                                [treeNodes]="treeNodes"
@@ -85,4 +49,46 @@ limitations under the License.-->
                                (onHide)="showProjectTree = false">
   </app-project-detail-viewport>
 
+  <!--Begin Notification Placeholders-->
+  <p-confirmDialog appendTo="body"></p-confirmDialog>
+  <p-messages key="app-banner"></p-messages>
+  <p-toast key="app-toast"></p-toast>
+  <!--End Notification Placeholders-->
+
+  <!--Begin UpNext Knowledge Source Queue-->
+  <p-overlayPanel #ksQueueOverlay
+                  [appendTo]="'body'"
+                  [dismissable]="true">
+    <ng-template pTemplate="content">
+      You're all caught up!
+    </ng-template>
+  </p-overlayPanel>
+  <p-dialog #ksUpNext
+            [(visible)]="ksUpNextVisible"
+            *ngIf="ksUpNextVisible"
+            [modal]="true"
+            [maximizable]="true"
+            [draggable]="false"
+            (close)="closeKsQueue()">
+    <ng-template pTemplate="content">
+      <app-ks-up-next [ksQueue]="ksQueue"
+                      [projectTreeNodes]="ksQueueTreeNodes"
+                      [selectedProject]="ksQueueSelectedNode"
+                      (onClear)="clearQueue()"
+                      (onClose)="closeKsQueue()"
+                      (onUpdate)="ksQueueUpdate($event)"
+                      (onRemove)="ksQueueRemove($event)">
+      </app-ks-up-next>
+    </ng-template>
+    <ng-template pTemplate="footer"></ng-template>
+  </p-dialog>
+  <!--End UpNext Knowledge Source Queue-->
+
+  <!--Begin Add Knowledge Source FAB-->
+  <div style="" class="kc-speeddial" *ngIf="readyToShow">
+    <p-speedDial direction="up" (onClick)="onSpeedDialClick($event)"></p-speedDial>
+  </div>
+  <!--End Add Knowledge Source FAB-->
+
 </div>
+<!--End main UI (top menubar and project viewport)-->

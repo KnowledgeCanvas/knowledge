@@ -1,5 +1,5 @@
 /**
- Copyright 2021 Rob Royce
+ Copyright 2022 Rob Royce
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -242,6 +242,7 @@ export class StorageService {
   }
 
   async updateProject(project: ProjectModel) {
+    console.debug(`StorageService: Updating Project: ${project.name} - ${project.id.value}`);
     let projectString = JSON.stringify(project);
     this.db.setItem(project.id.value, projectString);
   }

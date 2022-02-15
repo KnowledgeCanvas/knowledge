@@ -1,5 +1,5 @@
 /**
- Copyright 2021 Rob Royce
+ Copyright 2022 Rob Royce
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -101,8 +101,7 @@ function createMainWindow() {
     let HEIGHT: number = parseInt(appEnv.DEFAULT_WINDOW_HEIGHT);
     let darkMode = appEnv.display.theme.isDark;
     let backgroundColor = darkMode ? '#1E1E1E' : '#F9F9F9';
-
-    console.log('Dark mode: ', appEnv.display.theme);
+    console.log('Theme: ', appEnv.display.theme);
 
     const config = {
         title: 'Knowledge Canvas',

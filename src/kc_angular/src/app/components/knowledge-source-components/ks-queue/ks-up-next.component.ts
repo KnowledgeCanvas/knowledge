@@ -1,5 +1,5 @@
 /**
- Copyright 2021 Rob Royce
+ Copyright 2022 Rob Royce
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -19,11 +19,11 @@ import {KnowledgeSource} from "src/app/models/knowledge.source.model";
 import {MenuItem, PrimeIcons, TreeNode} from "primeng/api";
 
 @Component({
-  selector: 'app-ks-queue',
-  templateUrl: './ks-queue.component.html',
-  styleUrls: ['./ks-queue.component.scss']
+  selector: 'app-ks-up-next',
+  templateUrl: './ks-up-next.component.html',
+  styleUrls: ['./ks-up-next.component.scss']
 })
-export class KsQueueComponent implements OnInit, OnDestroy, OnChanges {
+export class KsUpNextComponent implements OnInit, OnDestroy, OnChanges {
   @Input() ksQueue: KnowledgeSource[] = [];
   @Input() projectTreeNodes: TreeNode[] = [];
   @Input() selectedProject?: TreeNode;
@@ -32,9 +32,6 @@ export class KsQueueComponent implements OnInit, OnDestroy, OnChanges {
   @Output() onUpdate = new EventEmitter<{ projectId: string, ksList: KnowledgeSource[] }[]>();
   @Output() onRemove = new EventEmitter<KnowledgeSource>();
   destinationList: KnowledgeSource[] = [];
-  private _ksToProjectMapping: { projectId: string, ksList: KnowledgeSource[] }[] = [];
-  private _selectedKsId?: string;
-  // Required to enable deleting knowledge sources since the PrimeNG picklist does not propogate clicks
   menu: MenuItem[] = [
     {
       icon: PrimeIcons.TRASH, label: 'Remove', command: (_: any) => {
@@ -47,6 +44,8 @@ export class KsQueueComponent implements OnInit, OnDestroy, OnChanges {
       }
     }
   ];
+  private _ksToProjectMapping: { projectId: string, ksList: KnowledgeSource[] }[] = [];
+  private _selectedKsId?: string;
 
   constructor() {
   }
@@ -84,7 +83,6 @@ export class KsQueueComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    console.log('Changes: ', changes);
     if (changes.selectedProject && changes.selectedProject.firstChange) {
       let mapping = {projectId: changes.selectedProject.currentValue.key, ksList: []}
       this.destinationList = mapping.ksList;

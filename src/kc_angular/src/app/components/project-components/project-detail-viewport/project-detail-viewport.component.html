@@ -1,4 +1,4 @@
-<!--Copyright 2021 Rob Royce
+<!--Copyright 2022 Rob Royce
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -30,7 +30,6 @@ limitations under the License.-->
 
 
 <div *ngIf="!kcProject" class="h-full">
-
   <div class="flex-col-center-center h-full">
     <p-card header="Let's get started..."
             [style]="{width: '420px'}"
@@ -47,12 +46,14 @@ limitations under the License.-->
 </div>
 
 <div *ngIf="kcProject">
-  <div cdkDropListGroup>
-    <app-knowledge-canvas (kcSetCurrentProject)="kcSetCurrentProject($event)"
+  <div>
+    <app-knowledge-canvas [projectTreeNodes]="treeNodes"
+      (kcSetCurrentProject)="kcSetCurrentProject($event)"
                           (kcEditProject)="kcEditProject($event)"
                           (kcProjectUpdate)="kcProjectUpdate($event)"
                           (ksAdded)="ksAdded($event)"
                           (onProjectCreation)="onProjectCreation.emit($event)"
+                          (onProjectRemove)="onProjectDeletion.emit($event)"
                           (onTopicSearch)="onTopicSearch.emit($event)"
                           [ngStyle]="kcStyle">
     </app-knowledge-canvas>

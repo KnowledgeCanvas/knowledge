@@ -1,5 +1,5 @@
 /**
- Copyright 2021 Rob Royce
+ Copyright 2022 Rob Royce
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -16,8 +16,9 @@
 
 export interface IngestSettingsModel {
     autoscan: boolean;
-    interval?: number;
     autoscanLocation?: string;
-    preserveTimestamps?: string;
+    interval?: number;
     managed: boolean;
+    preserveTimestamps?: string;
+    storageLocation?: string;
 }

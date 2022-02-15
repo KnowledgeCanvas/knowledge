@@ -1,5 +1,5 @@
 /**
- Copyright 2021 Rob Royce
+ Copyright 2022 Rob Royce
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import {BrowserViewDialogService} from "../../../services/ipc-services/browser-s
 import {UuidModel} from "../../../models/uuid.model";
 import {DialogService} from "primeng/dynamicdialog";
 import {ProjectInfoComponent} from "../project-info/project-info.component";
+import {TreeNode} from "primeng/api";
 
 
 @Component({
@@ -35,7 +36,7 @@ export class ProjectDetailViewportComponent implements OnInit {
 
   @Input() showProjectTree: boolean = false;
 
-  @Input() treeNodes: any;
+  @Input() treeNodes: TreeNode[] = [];
 
   @Input() selectedNode: any;
 
@@ -56,6 +57,20 @@ export class ProjectDetailViewportComponent implements OnInit {
   constructor(private browserViewDialogService: BrowserViewDialogService,
               private dialogService: DialogService,
               private projectService: ProjectService) {
+  }
+
+  get kcStyle() {
+    return {
+      height: 'calc(100vh - 55px)',
+      width: '100%',
+      flex: '1',
+      display: 'flex',
+      'flex-direction': 'row',
+      'flex-wrap': 'nowrap',
+      'align-content': 'stretch',
+      'align-items': 'stretch',
+      position: 'absolute'
+    }
   }
 
   ngOnInit(): void {
@@ -80,20 +95,6 @@ export class ProjectDetailViewportComponent implements OnInit {
 
   kcSetCurrentProject($event: string) {
     this.projectService.setCurrentProject($event);
-  }
-
-  get kcStyle() {
-    return {
-      height: 'calc(100vh - 170px)',
-      width: '100%',
-      flex: '1',
-      display: 'flex',
-      'flex-direction': 'row',
-      'flex-wrap': 'nowrap',
-      'align-content': 'stretch',
-      'align-items': 'stretch',
-      position: 'absolute'
-    }
   }
 
   kcEditProject(id: UuidModel) {

@@ -1,5 +1,5 @@
 /**
- Copyright 2021 Rob Royce
+ Copyright 2022 Rob Royce
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -14,9 +14,19 @@
  limitations under the License.
  */
 
-::ng-deep {
-  .p-treeselect {
-    width: 100%;
-  }
+import { TestBed } from '@angular/core/testing';
 
-}
+import { KsQueueService } from './ks-queue.service';
+
+describe('KsQueueService', () => {
+  let service: KsQueueService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({});
+    service = TestBed.inject(KsQueueService);
+  });
+
+  it('should be created', () => {
+    expect(service).toBeTruthy();
+  });
+});

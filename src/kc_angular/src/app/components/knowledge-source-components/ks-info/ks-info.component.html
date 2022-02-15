@@ -1,4 +1,4 @@
-<!--Copyright 2021 Rob Royce
+<!--Copyright 2022 Rob Royce
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -163,7 +163,7 @@ limitations under the License.-->
   </p-tabPanel>
 
   <p-tabPanel header="Preview" *ngIf="ksHasPreview">
-    <ng-template pTemplate>
+    <ng-template pTemplate="content">
       <p-panel header="{{ksPreviewHeader}}" *ngIf="!this.ksIsYoutubeVideo">
         <ng-template pTemplate="content">
           <div *ngIf="this.ksIsPdf" class="flex-col-center-start">
@@ -219,8 +219,8 @@ limitations under the License.-->
   </p-tabPanel>
 
   <p-tabPanel header="Advanced">
-    <ng-template pTemplate>
-      <p-panel header="Knowledge Source Metadata">
+    <ng-template pTemplate="content">
+      <p-panel header="Knowledge Source Model">
         <ng-template pTemplate="content">
           <br>
           <div class="p-fluid grid">
@@ -258,23 +258,48 @@ limitations under the License.-->
               <input id="authors" type="text" pInputText disabled [value]="ks.authors">
               <label for="authors">Authors</label>
             </div>
+          </div>
 
-            <div class="field p-float-label sm:col-12 md:col-12 lg:col-6" *ngIf="ks.ingestType === 'website'">
-              <input id="metadata" type="text" pInputText disabled [value]="ksMetadata">
-              <label for="metadata">Metadata</label>
-            </div>
 
-            <div class="field p-float-label col-12 " *ngIf="ks.rawText">
+          <div class="field p-float-label col-12 " *ngIf="ks.rawText">
               <textarea pInputTextarea id="_ksRawText"
                         [autoResize]="true"
                         [rows]="6"
                         [cols]="30"
                         disabled
                         [(ngModel)]="ks.rawText"></textarea>
-              <label for="_ksRawText">Raw Text</label>
-            </div>
-
+            <label for="_ksRawText">Raw Text</label>
           </div>
+        </ng-template>
+      </p-panel>
+      <br>
+      <p-panel *ngIf="ksMetadata.length > 0" header="Metadata Key/Value Pairs">
+        <ng-template pTemplate="content">
+          <p-table [value]="ksMetadata"
+                   [autoLayout]="true"
+                   [paginator]="true"
+                   [rows]="10">
+            <ng-template pTemplate="header">
+              <tr>
+                <th pSortableColumn="key">Key
+                  <p-sortIcon field="key"></p-sortIcon>
+                </th>
+                <th pSortableColumn="value">Value
+                  <p-sortIcon field="value"></p-sortIcon>
+                </th>
+                <th pSortableColumn="property">Property
+                  <p-sortIcon field="property"></p-sortIcon>
+                </th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-meta>
+              <tr *ngIf="meta.key.length > 0 && meta.value.length > 0">
+                <td>{{meta.key}}</td>
+                <td>{{meta.value}}</td>
+                <td>{{meta.property}}</td>
+              </tr>
+            </ng-template>
+          </p-table>
         </ng-template>
       </p-panel>
     </ng-template>

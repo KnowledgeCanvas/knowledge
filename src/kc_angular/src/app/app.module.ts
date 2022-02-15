@@ -1,5 +1,5 @@
 /**
- Copyright 2021 Rob Royce
+ Copyright 2022 Rob Royce
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -54,8 +54,8 @@ import {KsImportConfirmComponent} from './components/knowledge-source-components
 import {KsInfoComponent} from './components/knowledge-source-components/ks-info/ks-info.component';
 import {KsIngestTypeIconPipe} from './pipes/image-pipes/ks-ingest-type-icon/ks-ingest-type-icon.pipe';
 import {KsPreviewComponent} from './components/knowledge-source-components/ks-preview/ks-preview.component';
-import {KsQueueComponent} from './components/knowledge-source-components/ks-queue/ks-queue.component';
-import {KsQueueService} from "./components/knowledge-source-components/ks-queue-service/ks-queue.service";
+import {KsUpNextComponent} from './components/knowledge-source-components/ks-queue/ks-up-next.component';
+import {KsQueueService} from "./services/command-services/ks-queue-service/ks-queue.service";
 import {MenuModule} from "primeng/menu";
 import {MenubarModule} from "primeng/menubar";
 import {MultiSelectModule} from "primeng/multiselect";
@@ -106,6 +106,11 @@ import {KsIngestComponent} from './components/knowledge-source-components/ks-ing
 import {SliderModule} from "primeng/slider";
 import {DropzoneComponent} from './components/knowledge-source-components/ks-ingest/dropzone/dropzone.component';
 import {InputSwitchModule} from "primeng/inputswitch";
+import {DockModule} from "primeng/dock";
+import {KsDataviewComponent} from './components/knowledge-source-components/ks-dataview/ks-dataview.component';
+import {ProjectCardComponent} from './components/project-components/project-card/project-card.component';
+import {TopicListPipe} from './pipes/text-pipes/topic-list-pipe/topic-list.pipe';
+import {AccordionModule} from "primeng/accordion";
 
 @NgModule({
   declarations: [
@@ -118,7 +123,7 @@ import {InputSwitchModule} from "primeng/inputswitch";
     KnowledgeGraphComponent,
     KnowledgeSourceTableComponent,
     KsInfoComponent,
-    KsQueueComponent,
+    KsUpNextComponent,
     ProjectCreationDialogComponent,
     ProjectDetailViewportComponent,
     ProjectDetailsOverviewComponent,
@@ -139,6 +144,9 @@ import {InputSwitchModule} from "primeng/inputswitch";
     KsIconComponent,
     KsIngestComponent,
     DropzoneComponent,
+    KsDataviewComponent,
+    ProjectCardComponent,
+    TopicListPipe,
   ],
   imports: [
     BrowserAnimationsModule,
@@ -196,7 +204,9 @@ import {InputSwitchModule} from "primeng/inputswitch";
     DataViewModule,
     ProgressSpinnerModule,
     SliderModule,
-    InputSwitchModule
+    InputSwitchModule,
+    DockModule,
+    AccordionModule
   ],
   providers: [
     SettingsService,

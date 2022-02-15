@@ -1,4 +1,4 @@
-<!--Copyright 2021 Rob Royce
+<!--Copyright 2022 Rob Royce
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -25,7 +25,23 @@ limitations under the License.-->
 
       <ng-template pTemplate="content">
         <div class="p-fluid grid mt-4">
-          Automatically manage files for me
+          <div class="col-12 p-fluid p-inputgroup p-float-label">
+            <button pButton
+                    icon="pi pi-folder"
+                    (click)="getStoragePath()">
+            </button>
+            <input pInputText type="text"
+                   #filestorage
+                   id="filestorage"
+                   disabled
+                   style="width: calc(100% - 10rem)"
+                   [(ngModel)]="ingestSettings.storageLocation">
+            <button pButton label="Show" (click)="show(filestorage.value)"></button>
+            <label for="filestorage">Local Storage Location</label>
+          </div>
+          <div class="col-12 p-fluid">
+            When enabled, files will be moved from their original location to the directory listed above.
+          </div>
         </div>
       </ng-template>
     </p-panel>
@@ -43,11 +59,21 @@ limitations under the License.-->
 
       <ng-template pTemplate="content" #autoscanPanel>
         <div class="p-fluid grid mt-4">
-          <div class="p-inputgroup col-12 p-float-label">
+          <div class="col-12 p-fluid p-inputgroup p-float-label">
+            <button pButton
+                    icon="pi pi-folder"
+                    (click)="getAutoscanPath()">
+            </button>
             <input pInputText type="text"
+                   #autoscanLocation
+                   disabled
                    id="autoscanLocation"
-                   [(ngModel)]="ingestSettings.autoscanLocation"
-                   class="w-full">
+                   style="width: calc(100% - 10rem)"
+                   [(ngModel)]="ingestSettings.autoscanLocation">
+            <button pButton
+                    label="Show"
+                    (click)="show(autoscanLocation.value)">
+            </button>
             <label for="autoscanLocation">Autoscan Location</label>
           </div>
         </div>

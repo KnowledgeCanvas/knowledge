@@ -1,5 +1,5 @@
 /**
- Copyright 2021 Rob Royce
+ Copyright 2022 Rob Royce
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -14,23 +14,24 @@
  limitations under the License.
  */
 
+
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { KsQueueComponent } from './ks-queue.component';
+import { ProjectCardComponent } from './project-card.component';
 
-describe('KsQueueComponent', () => {
-  let component: KsQueueComponent;
-  let fixture: ComponentFixture<KsQueueComponent>;
+describe('ProjectCardComponent', () => {
+  let component: ProjectCardComponent;
+  let fixture: ComponentFixture<ProjectCardComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ KsQueueComponent ]
+      declarations: [ ProjectCardComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(KsQueueComponent);
+    fixture = TestBed.createComponent(ProjectCardComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

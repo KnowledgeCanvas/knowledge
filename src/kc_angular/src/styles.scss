@@ -1,5 +1,5 @@
 /**
- Copyright 2021 Rob Royce
+ Copyright 2022 Rob Royce
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -60,6 +60,15 @@ body {
   flex-wrap: nowrap;
   align-content: center;
   justify-content: flex-start;
+  align-items: center;
+}
+
+.flex-row-center-center {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-content: center;
+  justify-content: center;
   align-items: center;
 }
 

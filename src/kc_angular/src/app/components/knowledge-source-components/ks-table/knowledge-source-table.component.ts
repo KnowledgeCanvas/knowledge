@@ -1,5 +1,5 @@
 /**
- Copyright 2021 Rob Royce
+ Copyright 2022 Rob Royce
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -265,6 +265,8 @@ export class KnowledgeSourceTableComponent implements OnInit, OnChanges {
     }, {
       label: 'Copy', icon: PrimeIcons.COPY
     }, {label: '', separator: true,}, {
+      label: 'Move', icon: PrimeIcons.REPLY
+    }, {
       label: 'Remove', icon: PrimeIcons.TRASH
     }
     ];
@@ -289,6 +291,22 @@ export class KnowledgeSourceTableComponent implements OnInit, OnChanges {
         remove.items.push({
           label: `Selected (${this.ksTableSelectedKsList.length})`, command: () => {
             this.ksCommandService.remove(this.ksTableSelectedKsList);
+          }
+        })
+      }
+    }
+
+    let move = this.ksTableContextMenuItems.find(m => m.label === 'Move');
+    if (move) {
+      move.items = [{
+        label: ksLabel, command: () => {
+          this.ksCommandService.move([this.ksTableContextMenuSelectedKs]);
+        }
+      }];
+      if (this.ksTableSelectedKsList.length) {
+        move.items.push({
+          label: `Selected (${this.ksTableSelectedKsList.length})`, command: () => {
+            this.ksCommandService.move(this.ksTableSelectedKsList);
           }
         })
       }
