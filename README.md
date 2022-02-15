@@ -7,10 +7,10 @@ Knowledge Canvas is built on Electron and Angular and is primarily written in Ty
 The app relies exclusively on local storage and local processes. There are no servers involved (except a local Docker instance of Tika Server) and local documents never leave your computer.
 
 # Documentation
-- Knowledge Canvas background and inspiration: https://github.com/KnowledgeCanvas/knowledge-canvas/wiki
-- Debugging: https://github.com/KnowledgeCanvas/knowledge-canvas/wiki/Debugging
-- Development and Build Instructions: https://github.com/KnowledgeCanvas/knowledge-canvas/wiki/Development
-- Getting Started with Projects and Knowledge Sources: https://github.com/KnowledgeCanvas/knowledge-canvas/wiki/Getting-Started
+- [Knowledge Canvas - Background and Inspiration](https://github.com/KnowledgeCanvas/knowledge-canvas/wiki) 
+- [Debugging](https://github.com/KnowledgeCanvas/knowledge-canvas/wiki/Debugging)
+- [Development and Build Instructions](https://github.com/KnowledgeCanvas/knowledge-canvas/wiki/Development)
+- [Getting Started](https://github.com/KnowledgeCanvas/knowledge-canvas/wiki/Getting-Started) 
 
 # Screenshots
 <img width="1203" alt="image" src="https://user-images.githubusercontent.com/19367848/152470358-64ac12de-e811-42b4-996f-67c3725a2ba7.png">
