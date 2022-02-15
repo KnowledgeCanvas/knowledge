@@ -16,8 +16,9 @@
 
 export interface IngestSettingsModel {
     autoscan: boolean;
-    interval?: number;
     autoscanLocation?: string;
-    preserveTimestamps?: string;
+    interval?: number;
     managed: boolean;
+    preserveTimestamps?: string;
+    storageLocation?: string;
 }

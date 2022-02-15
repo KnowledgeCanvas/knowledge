@@ -16,17 +16,17 @@
 import {KcTheme} from "../services/user-services/theme-service/theme.service";
 
 export interface SettingsModel {
+  app?: ApplicationSettingsModel;
+  appPath?: string;
   display?: DisplaySettingsModel;
   firstRun?: boolean;
-  pathSep?: string;
-  appPath?: string;
-  projectsPath?: string;
   googleApiKey?: string;
-  userName?: string;
-  search?: SearchSettingsModel;
   ingest?: IngestSettingsModel;
+  pathSep?: string;
+  projectsPath?: string;
+  search?: SearchSettingsModel;
+  userName?: string;
   wellness?: WellnessSettingsModel;
-  app?: ApplicationSettingsModel;
 }
 
 export interface ApplicationSettingsModel {
@@ -50,10 +50,11 @@ export interface DisplaySettingsModel {
 
 export interface IngestSettingsModel {
   autoscan?: boolean;
-  interval?: number;
   autoscanLocation?: string;
-  preserveTimestamps?: string;
+  interval?: number;
   managed?: boolean;
+  preserveTimestamps?: string;
+  storageLocation?: string;
 }
 
 export interface StorageSettingsModel {
@@ -61,10 +62,10 @@ export interface StorageSettingsModel {
 }
 
 export interface WellnessSettingsModel {
-  autostartAfterBreak: boolean;
   allowOverride: boolean;
-  timerMinutes: number;
-  timerSeconds: number;
+  autostartAfterBreak: boolean;
   breakMinutes: number;
   breakSeconds: number;
+  timerMinutes: number;
+  timerSeconds: number;
 }

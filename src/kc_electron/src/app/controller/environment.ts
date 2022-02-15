@@ -41,7 +41,8 @@ const ingestSettings = {
     autoscanLocation: path.join(downloadPath, 'KnowledgeCanvasDownloads'),
     managed: false,
     preserveTimestamps: false,
-    interval: 15000
+    interval: 15000,
+    storageLocation: appPath
 }
 const searchSettings = {
     numResults: 10,
