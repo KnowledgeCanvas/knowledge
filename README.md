@@ -1,5 +1,5 @@
 # Description
-Knowledge Canvas is a meta-productivity tool meant to make learning and research easier and more organized. With Knowledge Canvas, you can import almost any digital resource and treat it as a knowledge-producing entity. This is accomplished by abstracting any/every digital resource into what we call a Knowledge Source, which is a polymorphic structure that may contain things like metadata, raw text, images, video, audio, events, timelines, and more. Knowledge sources are grouped into Projects, which are organized hierarchically and can be extended in any configuration the user prefers. Projects can also have their own timelines, topics, etc.
+Knowledge Canvas is a meta-productivity tool meant to make learning and research easier and more organized ([screenshots](#screenshots)). With Knowledge Canvas, you can import almost any digital resource and treat it as a knowledge-producing entity. This is accomplished by abstracting digital resources into what we call a `Knowledge Source`, which is a [polymorphic](https://en.wikipedia.org/wiki/Polymorphism_(computer_science)) structure that may contain things like metadata, raw text, images, video, audio, events, timelines, and more. Knowledge sources are grouped into Projects, which are organized hierarchically and can be extended in any configuration the user prefers. Projects can also have their own timelines, topics, etc.
 
 Knowledge Canvas is built on Electron and Angular and is primarily written in TypeScript. It is intended to be Web3 capable and utilizes Open Graph standards.
 
@@ -8,9 +8,9 @@ The app relies exclusively on local storage and local processes. There are no se
 
 # Documentation
 - [Knowledge Canvas - Background and Inspiration](https://github.com/KnowledgeCanvas/knowledge-canvas/wiki) 
-- [Debugging](https://github.com/KnowledgeCanvas/knowledge-canvas/wiki/Debugging)
 - [Development and Build Instructions](https://github.com/KnowledgeCanvas/knowledge-canvas/wiki/Development)
-- [Getting Started](https://github.com/KnowledgeCanvas/knowledge-canvas/wiki/Getting-Started) 
+- [Getting Started](https://github.com/KnowledgeCanvas/knowledge-canvas/wiki/Getting-Started)
+- [Debugging](https://github.com/KnowledgeCanvas/knowledge-canvas/wiki/Debugging)
 
 # Screenshots
 <img width="1203" alt="image" src="https://user-images.githubusercontent.com/19367848/152470358-64ac12de-e811-42b4-996f-67c3725a2ba7.png">
