@@ -38,7 +38,6 @@ import {BrowserViewDialogService} from "./services/ipc-services/browser-service/
 import {ThemeService} from "./services/user-services/theme-service/theme.service";
 import {DisplaySettingsComponent} from "./components/settings-components/display-settings/display-settings.component";
 import {KsIngestComponent} from "./components/knowledge-source-components/ks-ingest/ks-ingest.component";
-import {IngestSettingsComponent} from "./components/settings-components/ingest-settings/ingest-settings.component";
 import {KcDialogRequest} from "kc_electron/src/app/models/electron.ipc.model";
 import {SearchSettingsComponent} from "./components/settings-components/search-settings/search-settings.component";
 import {ProjectTreeFactoryService} from "./services/factory-services/project-tree-factory/project-tree-factory.service";
@@ -249,15 +248,15 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
               });
             }
           },
-          {
-            label: 'Ingest', icon: 'pi pi-fw pi-arrow-circle-down', command: () => {
-              this.dialogService.open(IngestSettingsComponent, {
-                header: 'Ingest Settings',
-                dismissableMask: true,
-                modal: true
-              });
-            }
-          },
+          // {
+          //   label: 'Ingest', icon: 'pi pi-fw pi-arrow-circle-down', command: () => {
+          //     this.dialogService.open(IngestSettingsComponent, {
+          //       header: 'Ingest Settings',
+          //       dismissableMask: true,
+          //       modal: true
+          //     });
+          //   }
+          // },
           {
             label: 'Search', icon: 'pi pi-fw pi-search', command: () => {
               this.dialogService.open(SearchSettingsComponent, {
@@ -364,7 +363,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   createProject(parentId?: UuidModel) {
     const dialogref = this.dialogService.open(ProjectCreationDialogComponent, {
       width: '90%',
-      dismissableMask: true,
+      modal: true,
       data: {parentId: parentId ?? undefined}
     });
 

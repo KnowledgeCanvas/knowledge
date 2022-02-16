@@ -1,8 +1,14 @@
 <p-panel>
   <ng-template pTemplate="header">
-    <span>
-      <button pButton label="File" icon="pi pi-plus" class="mr-2"
-              (click)="onAddFile()"></button>
+    <span class="flex-row-center-start">
+      <p-fileUpload #fubauto
+                    class="mr-2"
+                    mode="basic"
+                    name="files[]"
+                    [multiple]="true"
+                    (onSelect)="onAddFile($event); fubauto.clear()"
+                    chooseLabel="Files">
+      </p-fileUpload>
       <button pButton label="Link" icon="pi pi-plus" class="mr-2"
               (click)="overlayPanel.toggle($event)"></button>
       <button pButton label="Import" icon="pi pi-download" class="mr-2"
@@ -15,7 +21,8 @@
   </ng-template>
   <ng-template pTemplate="content">
     <app-dropzone [shouldShorten]="ksList.length > 0 || pending.length> 0"
-                  [supportedTypes]="supportedTypes"></app-dropzone>
+                  [supportedTypes]="supportedTypes">
+    </app-dropzone>
 
     <p-panel *ngIf="pending.length" header="Pending" class="m-4">
       <div class="grid">
@@ -32,6 +39,7 @@
                    (onRemove)="onKsRemoved($event)"
                    (onOpen)="onKsOpened($event)"
                    (onPreview)="onKsPreview($event)"
+                   [showProjectSelection]="false"
                    class="sm:col-12 md:col-6 lg:col-4">
       </app-ks-card>
     </div>
