@@ -364,7 +364,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   createProject(parentId?: UuidModel) {
     const dialogref = this.dialogService.open(ProjectCreationDialogComponent, {
       width: '90%',
-      dismissableMask: true,
+      modal: true,
       data: {parentId: parentId ?? undefined}
     });
 
