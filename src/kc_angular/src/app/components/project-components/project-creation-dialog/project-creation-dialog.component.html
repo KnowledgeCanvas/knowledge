@@ -18,8 +18,14 @@ limitations under the License.-->
     <br>
     <div class="p-fluid grid">
       <div class="field p-float-label sm:col-12 md:col-6 lg:col-6">
-        <input id="title" type="text" pInputText required [autofocus]="true"
-               (invalid)="invalidTitle($event)" [minlength]="3"
+        <input id="title"
+               type="text"
+               pInputText
+               required
+               [autofocus]="true"
+               (keydown.enter)="create()"
+               (invalid)="invalidTitle($event)"
+               [minlength]="3"
                [(ngModel)]="projectCreationRequest.name">
         <label for="title">Title</label>
       </div>
@@ -65,7 +71,7 @@ limitations under the License.-->
 
     </div>
   </ng-template>
+  <ng-template pTemplate="footer">
+    <button pButton (click)="create()" label="Create"></button>
+  </ng-template>
 </p-panel>
-
-
-<button pButton (click)="create()" label="Create"></button>
