@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.1](https://github.com/KnowledgeCanvas/knowledge-canvas/compare/v0.5.0...v0.5.1) (2022-02-16)
+
+
+### Features
+
+* **Ingest:** temporarily disable file watcher and manager until issues are resolved ([#21](https://github.com/KnowledgeCanvas/knowledge-canvas/issues/21)) ([9a8e18b](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/9a8e18b04455ab74bea8f4d2ff5b8656a40385d2))
+
+
+### Bug Fixes
+
+* addresses 5 moderate and 2 high severity vulnerabilities ([47c13cf](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/47c13cf6e7d8d405c06e3bd8e701485e7a1bdabe))
+
 ## [0.5.0](https://github.com/KnowledgeCanvas/knowledge-canvas/compare/v0.4.0...v0.5.0) (2022-02-03)
 
 
