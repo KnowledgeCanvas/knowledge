@@ -35,9 +35,7 @@ type TransferHandler = {
 
   /**
    * Acceptor function returns true if handler can support this event, otherwise false
-   * @param text
-   * @param html
-   * @param uri
+   * @param data
    */
   accepts: (data: DragAndDropPacket) => boolean
 
@@ -103,7 +101,6 @@ export class DragAndDropService {
         }
       },
       callback: (data: DragAndDropPacket) => new Promise<KnowledgeSourceFactoryRequest | undefined>((resolve) => {
-        console.log('Callback web link handler with data: ', data);
         if (!data.text || !data.uri) {
           resolve(undefined);
         }
