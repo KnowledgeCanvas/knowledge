@@ -288,117 +288,118 @@ let autoScanInterval: any = undefined;
  */
 // Subscribes to ingest settings in order to enable/disable file watcher...
 // TODO: move this elsewhere.... IPC perhaps?
-settingsService.ingest.subscribe((ingest: any) => {
-    if (!ingest || !ingest.autoscan || !ingest.autoscanLocation) {
-        if (ingestWatcher)
-            ingestWatcher.close();
-        clearInterval(autoScanInterval);
-        return;
-    }
-
-    // If watcher already exists, close it for now so we can apply new settings
-    if (ingestWatcher) {
-        ingestWatcher.close();
-    }
-    clearInterval(autoScanInterval);
-    ingestWatcher = null;
-    filesToPush = [];
-
-    let watchPath = path.resolve(ingest.autoscanLocation);
-
-    let fileStat: any;
-    try {
-        fileStat = fs.statSync(watchPath);
-    } catch (e) {
-        console.warn('Could not find directory: ', watchPath, '... creating now...');
-        fs.mkdirSync(watchPath, {recursive: true});
-    }
-
-    ingestWatcher = chokidar.watch(watchPath, {
-        // intended behavior: ignore dotfiles
-        ignored: /(^|[\/\\])\../,
-
-        // intended behavior: keep the file watcher running as long as the user has 'Autoscan' enabled
-        persistent: true,
-
-        // intended behavior: if the user doesn't move the files, then we shouldn't touch them and show them next time
-        ignoreInitial: false
-    });
-
-    ingestWatcher.on('add', (filePath: string) => {
-        fileStat = fs.statSync(filePath);
-
-        if (!fileStat) {
-            console.error('Failed to read file: ', filePath);
-            return;
-        }
-
-        console.log('New file found by watcher: ', filePath);
-
-        // Create new file name based on UUID and file type extension, then copy to assigned directory
-        const contentType = mime.lookup(filePath);
-
-        // TODO: this might be set to "false", so we'll have to manually grab the extension if so...
-        let fileExtension = mime.extension(contentType);
-        if (!fileExtension) {
-            console.warn('Could not find file extension for filePath: ', filePath);
-            fileExtension = path.extname(filePath).split('.')[1];
-            console.warn('Using path extname instead: ', fileExtension);
-        }
-
-
-        let newId = uuid.v4();
-        let newFilePath = path.resolve(appEnv.appPath, 'files', newId) + `.${fileExtension}`;
-        copyFileToFolder(filePath, newFilePath);
-
-        // Prepare file model to be sent to ingest watcher service in Angular
-        let fileModel: FileModel = {
-            accessTime: ingest.preserveTimestamps ? fileStat.atime : Date(),
-            creationTime: ingest.preserveTimestamps ? fileStat.ctime : Date(),
-            modificationTime: ingest.preserveTimestamps ? fileStat.mtime : Date(),
-            filename: path.basename(filePath),
-            id: {value: newId},
-            path: newFilePath,
-            size: fileStat.size,
-            type: contentType
-        }
-
-        // Add it to the queue
-        filesToPush.push(fileModel);
-
-
-        // Delete file in watched directory (since it has a new home)
-        console.warn('Deleting file: ', filePath);
-        // TODO: file deletion should only occur after we verify that the new KS has been received in the app...
-        // fs.rmSync(filePath);
-    });
-
-    // Create a new period check for files based on user interval
-    console.log('Setting interval to ', ingest.interval / 1000, ' seconds...');
-    autoScanInterval = setInterval(() => {
-        console.log('Checking filesToPush: ', filesToPush);
-        if (filesToPush.length > 0 && ingest.autoscan) {
-            let responses: any[] = [];
-
-            for (let fileToPush of filesToPush) {
-                let response: IpcMessage = {
-                    error: undefined,
-                    success: {
-                        data: fileToPush
-                    }
-                }
-                responses.push(response)
-            }
-            try {
-                kcMainWindow.webContents.send('app-ingest-watcher-results', responses);
-                filesToPush = [];
-            } catch (e) {
-                console.warn('Unable to push files to main window... trying again later...');
-            }
-        }
-
-    }, appEnv.ingest.interval);
-});
+// settingsService.ingest.subscribe((ingest: any) => {
+//     if (!ingest || !ingest.autoscan || !ingest.autoscanLocation) {
+//         if (ingestWatcher)
+//             ingestWatcher.close();
+//         clearInterval(autoScanInterval);
+//         return;
+//     }
+//
+//     // If watcher already exists, close it for now so we can apply new settings
+//     if (ingestWatcher) {
+//         ingestWatcher.close();
+//     }
+//     clearInterval(autoScanInterval);
+//     ingestWatcher = null;
+//     filesToPush = [];
+//
+//     let watchPath = path.resolve(ingest.autoscanLocation);
+//
+//     let fileStat: any;
+//     try {
+//         fileStat = fs.statSync(watchPath);
+//     } catch (e) {
+//         console.warn('Could not find directory: ', watchPath, '... creating now...');
+//         fs.mkdirSync(watchPath, {recursive: true});
+//     }
+//
+//     ingestWatcher = chokidar.watch(watchPath, {
+//         // intended behavior: ignore dotfiles
+//         ignored: /(^|[\/\\])\../,
+//
+//         // intended behavior: keep the file watcher running as long as the user has 'Autoscan' enabled
+//         persistent: true,
+//
+//         // intended behavior: if the user doesn't move the files, then we shouldn't touch them and show them next time
+//         ignoreInitial: false
+//     });
+//
+//     ingestWatcher.on('add', (filePath: string) => {
+//         fileStat = fs.statSync(filePath);
+//
+//         if (!fileStat) {
+//             console.error('Failed to read file: ', filePath);
+//             return;
+//         }
+//
+//         console.log('New file found by watcher: ', filePath);
+//
+//         // Create new file name based on UUID and file type extension, then copy to assigned directory
+//         const contentType = mime.lookup(filePath);
+//
+//         // TODO: this might be set to "false", so we'll have to manually grab the extension if so...
+//         let fileExtension = mime.extension(contentType);
+//         if (!fileExtension) {
+//             console.warn('Could not find file extension for filePath: ', filePath);
+//             fileExtension = path.extname(filePath).split('.')[1];
+//             console.warn('Using path extname instead: ', fileExtension);
+//         }
+//
+//
+//         let newId = uuid.v4();
+//         let newFilePath = path.resolve(appEnv.appPath, 'files', newId) + `.${fileExtension}`;
+//
+//         // copyFileToFolder(filePath, newFilePath);
+//
+//         // Prepare file model to be sent to ingest watcher service in Angular
+//         let fileModel: FileModel = {
+//             accessTime: ingest.preserveTimestamps ? fileStat.atime : Date(),
+//             creationTime: ingest.preserveTimestamps ? fileStat.ctime : Date(),
+//             modificationTime: ingest.preserveTimestamps ? fileStat.mtime : Date(),
+//             filename: path.basename(filePath),
+//             id: {value: newId},
+//             path: newFilePath,
+//             size: fileStat.size,
+//             type: contentType
+//         }
+//
+//         // Add it to the queue
+//         filesToPush.push(fileModel);
+//
+//
+//         // Delete file in watched directory (since it has a new home)
+//         console.warn('Deleting file: ', filePath);
+//         // TODO: file deletion should only occur after we verify that the new KS has been received in the app...
+//         // fs.rmSync(filePath);
+//     });
+//
+//     // Create a new period check for files based on user interval
+//     console.log('Setting interval to ', ingest.interval / 1000, ' seconds...');
+//     autoScanInterval = setInterval(() => {
+//         console.log('Checking filesToPush: ', filesToPush);
+//         if (filesToPush.length > 0 && ingest.autoscan) {
+//             let responses: any[] = [];
+//
+//             for (let fileToPush of filesToPush) {
+//                 let response: IpcMessage = {
+//                     error: undefined,
+//                     success: {
+//                         data: fileToPush
+//                     }
+//                 }
+//                 responses.push(response)
+//             }
+//             try {
+//                 kcMainWindow.webContents.send('app-ingest-watcher-results', responses);
+//                 filesToPush = [];
+//             } catch (e) {
+//                 console.warn('Unable to push files to main window... trying again later...');
+//             }
+//         }
+//
+//     }, appEnv.ingest.interval);
+// });
 
 function copyFileToFolder(filePath: string, newFilePath: string) {
     fs.copyFileSync(filePath, newFilePath);
