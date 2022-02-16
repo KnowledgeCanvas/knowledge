@@ -4,7 +4,7 @@ import {KnowledgeSourceFactoryRequest, KsFactoryService} from "../../../services
 import {NotificationsService} from "../../../services/user-services/notification-service/notifications.service";
 import {ExtractionService} from "../../../services/ingest-services/web-extraction-service/extraction.service";
 import {DynamicDialogRef} from "primeng/dynamicdialog";
-import {ElectronIpcService, PromptForDirectoryRequest} from "../../../services/ipc-services/electron-ipc/electron-ipc.service";
+import {ElectronIpcService} from "../../../services/ipc-services/electron-ipc/electron-ipc.service";
 import {KsQueueService} from "../../../services/command-services/ks-queue-service/ks-queue.service";
 import {UuidModel} from "../../../models/uuid.model";
 import {FileModel} from "../../../models/file.model";
@@ -144,17 +144,28 @@ export class KsIngestComponent implements OnInit {
     this.ref.close();
   }
 
-  onAddFile() {
-    let req: PromptForDirectoryRequest = {
-      title: 'Knowledge Canvas Import',
-      buttonLabel: 'Select',
-      properties: ['openFile', 'multiSelections'],
-      macOsMessage: 'Select File(s) to Import'
-    }
-    this.ipcService.promptForDirectory(req).then((results) => {
-      console.log('Directory result: ', results);
-    })
 
+  onAddFile($event: any) {
+    const files = $event.currentFiles;
+    if (!files) {
+      return;
+    }
+
+    let req: KnowledgeSourceFactoryRequest = {
+      ingestType: 'file',
+      files: files
+    };
+
+    this.ksFactory.many(req).then((ksList) => {
+      if (!ksList || !ksList.length) {
+        console.warn('Did not receive ks from list...');
+        return;
+      }
+      this.ksList = [...this.ksList, ...ksList];
+
+    }).catch((reason) => {
+      console.warn('Unable to create Knowledge Source from ', files, reason);
+    });
   }
 
 
