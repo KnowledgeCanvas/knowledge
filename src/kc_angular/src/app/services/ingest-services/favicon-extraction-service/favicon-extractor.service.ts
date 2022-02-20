@@ -31,9 +31,7 @@ export class FaviconExtractorService {
   private defaultIcon = 'assets/img/kc-icon-greyscale.png';
   private loadingIcon = 'assets/img/kc-icon-greyscale.png';
 
-  constructor(private httpClient: HttpClient,
-              private sanitizer: DomSanitizer,
-              private ipcService: ElectronIpcService) {
+  constructor(private httpClient: HttpClient, private sanitizer: DomSanitizer, private ipcService: ElectronIpcService) {
   }
 
   loading() {

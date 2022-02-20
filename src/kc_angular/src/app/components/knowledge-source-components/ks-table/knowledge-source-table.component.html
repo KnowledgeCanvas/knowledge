@@ -186,7 +186,9 @@ limitations under the License.-->
                     class="cursor-pointer"
                     [style]="{'margin-top': '5px', 'margin-right': '5px', padding: 0}"
                     (click)="onChipClick(topic)">
-              <span><button pButton icon="pi pi-search" class="p-button-text p-1"></button></span>
+              <span>
+                <button pButton icon="pi pi-search" class="p-button-text p-1"></button>
+              </span>
               <span class="pr-3">{{topic}} ({{ksTableTopicCount(topic)}})</span>
             </p-chip>
           </div>
@@ -203,24 +205,40 @@ limitations under the License.-->
   </div>
 </div>
 
-<p-contextMenu #cm [model]="ksTableContextMenuItems" (onShow)="configureMenu()" appendTo="body"></p-contextMenu>
+<p-contextMenu #cm
+               [model]="ksTableContextMenuItems"
+               (onShow)="configureMenu()"
+               appendTo="body">
+</p-contextMenu>
 
 <p-overlayPanel #op>
   <ng-template pTemplate="content">
     <div>
-      <p-toggleButton onLabel="Show Countdown" offLabel="Show Dates"
-                      onIcon="pi pi-check" offIcon="pi pi-times"
-                      [(ngModel)]="ksTableShowCountdownInsteadOfDates"></p-toggleButton>
+      <p-toggleButton onLabel="Show Countdown"
+                      offLabel="Show Dates"
+                      onIcon="pi pi-check"
+                      offIcon="pi pi-times"
+                      (onChange)="onShowCountdown($event)"
+                      [(ngModel)]="ksTableShowCountdownInsteadOfDates">
+      </p-toggleButton>
     </div>
     <p-divider></p-divider>
     <div>
-      <p-toggleButton onLabel="Show Subproject sources" offLabel="Hide Subproject sources"
-                      onIcon="pi pi-check" offIcon="pi pi-times" (onChange)="ksTableShowSubprojects.emit($event.checked)"
-                      [(ngModel)]="ksTableAllowSubprojectExpansion"></p-toggleButton>
+      <p-toggleButton onLabel="Show Subproject sources"
+                      offLabel="Hide Subproject sources"
+                      onIcon="pi pi-check"
+                      offIcon="pi pi-times"
+                      (onChange)="onShowSubprojects($event)"
+                      [(ngModel)]="ksTableAllowSubprojectExpansion">
+      </p-toggleButton>
     </div>
     <p-divider></p-divider>
     <div>
-      <button pButton icon="pi pi-refresh" label="Reset Table" (click)="resetLayout()"></button>
+      <button pButton
+              icon="pi pi-refresh"
+              label="Reset Table"
+              (click)="resetLayout()">
+      </button>
     </div>
   </ng-template>
 </p-overlayPanel>

@@ -64,8 +64,9 @@ const wellnessSettings = {
 const applicationSettings = {
     ks: {
         table: {
-            showSubProjects: false,
-            expandRows: true
+            showSubProjects: true,
+            expandRows: true,
+            showCountdown: true
         }
     }
 }

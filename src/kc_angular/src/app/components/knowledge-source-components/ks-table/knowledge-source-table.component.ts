@@ -24,6 +24,7 @@ import {ProjectService} from "../../../services/factory-services/project-service
 import {OverlayPanel} from "primeng/overlaypanel";
 import {BrowserViewDialogService} from "../../../services/ipc-services/browser-service/browser-view-dialog.service";
 import {KsFactoryService} from "../../../services/factory-services/ks-factory-service/ks-factory.service";
+import {SettingsService} from "../../../services/ipc-services/settings-service/settings.service";
 
 @Component({
   selector: 'ks-table',
@@ -32,9 +33,6 @@ import {KsFactoryService} from "../../../services/factory-services/ks-factory-se
 })
 export class KnowledgeSourceTableComponent implements OnInit, OnChanges {
   @Input() ksList: KnowledgeSource[] = [];
-  @Input() ksTableAllowSubprojectExpansion: boolean = true;
-  @Input() ksTableExpandRowOnClick: boolean = true;
-  @Output() ksTableShowSubprojects = new EventEmitter<boolean>();
   @Output() kcSetCurrentProject = new EventEmitter<string>();
   @ViewChild('dataTable') dataTable!: any;
   @ViewChild('op') overlayPanel!: OverlayPanel;
@@ -46,6 +44,7 @@ export class KnowledgeSourceTableComponent implements OnInit, OnChanges {
     {field: 'dateModified', header: 'Modified'}, {field: 'ingestType', header: 'Type'},
     {field: 'flagged', header: 'Important'}
   ];
+  ksTableAllowSubprojectExpansion: boolean = true;
   filter: string = '';
   ksTableSelectedKsList: KnowledgeSource[] = [];
   ksTableShouldExist: boolean = true;
@@ -75,7 +74,16 @@ export class KnowledgeSourceTableComponent implements OnInit, OnChanges {
   ];
 
   constructor(private ksCommandService: KsCommandService, private ksFactory: KsFactoryService,
-              private projectService: ProjectService, private browserService: BrowserViewDialogService) {
+              private projectService: ProjectService, private browserService: BrowserViewDialogService,
+              private settingsService: SettingsService) {
+    settingsService.app.subscribe((appSettings) => {
+      if (appSettings.ks?.table?.showCountdown !== undefined) {
+        this.ksTableShowCountdownInsteadOfDates = appSettings.ks.table.showCountdown;
+      }
+      if (appSettings.ks?.table?.showSubProjects !== undefined) {
+        this.ksTableAllowSubprojectExpansion = appSettings.ks.table.showSubProjects;
+      }
+    });
   }
 
   private _selectedColumns: any[] = this.KS_TABLE_SUPPORTED_COLUMNS;
@@ -419,5 +427,15 @@ export class KnowledgeSourceTableComponent implements OnInit, OnChanges {
 
   ksTableTopicCount(topic: string) {
     return `${this.ksList.filter(k => k.topics?.includes(topic)).length}`;
+  }
+
+  onShowSubprojects($event: any) {
+    const show = $event.checked;
+    this.settingsService.saveSettings({app: {ks: {table: {showSubProjects: show}}}});
+  }
+
+  onShowCountdown($event: any) {
+    const show = $event.checked;
+    this.settingsService.saveSettings({app: {ks: {table: {showCountdown: show}}}});
   }
 }

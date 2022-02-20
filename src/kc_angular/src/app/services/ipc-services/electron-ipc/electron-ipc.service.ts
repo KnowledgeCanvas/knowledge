@@ -18,7 +18,7 @@ import {Injectable, NgZone} from '@angular/core';
 import {UuidModel} from "src/app/models/uuid.model";
 import {BehaviorSubject, Observable} from 'rxjs';
 import {SettingsModel} from "src/app/models/settings.model";
-import {IpcMessage, KsBrowserViewRequest, KsThumbnailRequest, KcDialogRequest} from "kc_electron/src/app/models/electron.ipc.model";
+import {IpcMessage, KcDialogRequest, KsBrowserViewRequest, KsThumbnailRequest} from "kc_electron/src/app/models/electron.ipc.model";
 import {FileModel} from "../../../models/file.model";
 
 export interface ElectronNavEvent {
@@ -108,6 +108,9 @@ export class ElectronIpcService {
   private _currentVersion = new BehaviorSubject<string>('');
   version = this._currentVersion.asObservable();
 
+  private _thumbnails = new BehaviorSubject<{ id: string, thumbnail: any }>({id: '', thumbnail: undefined});
+  thumbnail = this._thumbnails.asObservable();
+
   constructor(private zone: NgZone) {
     /**
      * Listen for auto update messages
@@ -161,7 +164,15 @@ export class ElectronIpcService {
       });
     });
 
-    this.getCurrentVersion();
+    this.receive(this.channels.getFileThumbnailResults, (response: IpcMessage[]) => {
+      for (let res of response) {
+        this.zone.run(() => {
+          if (res.success?.data) {
+            this._thumbnails.next(res.success.data);
+          }
+        });
+      }
+    });
   }
 
   checkForUpdates() {
@@ -233,27 +244,8 @@ export class ElectronIpcService {
     });
   }
 
-  getFileThumbnail(requests: KsThumbnailRequest[]): Promise<any[]> {
-    return new Promise<any[]>((resolve, reject) => {
-      if (requests.length < 1)
-        reject();
-
-      this.receiveOnce(this.channels.getFileThumbnailResults, (responses: IpcMessage[]) => {
-        this.removeAllListeners(this.channels.getFileThumbnailResults);
-        this.zone.run(() => {
-          let thumbnails: any[] = [];
-          for (let response of responses) {
-            if (response.success?.data) {
-              thumbnails.push(response.success.data);
-            } else if (response.error) {
-              reject(response.error);
-            }
-          }
-          resolve(thumbnails);
-        });
-      });
-      this.send(this.channels.getFileThumbnail, requests);
-    });
+  getFileThumbnail(requests: KsThumbnailRequest[]) {
+    this.send(this.channels.getFileThumbnail, requests);
   }
 
   promptForDirectory(request: PromptForDirectoryRequest): Promise<string> {

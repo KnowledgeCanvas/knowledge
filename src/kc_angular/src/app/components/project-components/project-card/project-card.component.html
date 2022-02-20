@@ -83,7 +83,8 @@ limitations under the License.-->
     <div style="max-height: 180px; overflow: scroll">
           <span *ngFor="let subproject of kcProject.subprojects" class="flex-row-center-between">
             {{subproject | projectName}}
-            <button pButton icon="pi pi-arrow-circle-right"
+            <button pButton *ngIf="showSubprojectNavigate"
+                    icon="pi pi-arrow-circle-right"
                     class="p-button-rounded p-button-text"
                     pTooltip="Goto {{subproject | projectName}}"
                     (click)="navigate(subproject)">

@@ -68,14 +68,84 @@ limitations under the License.-->
   </div>
 
   <div class="project-ks-list-container" *ngIf="ksList.length">
-    <ks-table [ksTableExpandRowOnClick]="clickExpandRows"
-              (kcSetCurrentProject)="kcSetCurrentProject.emit($event)"
-              [ksList]="ksList"
-              (ksTableShowSubprojects)="ksTableShowSubprojectSources($event)"
-              [ksTableAllowSubprojectExpansion]="showSubProjects">
-    </ks-table>
-    <!--    <div class="flex-col-center-center p-fluid" style="margin: 20px">-->
-    <!--      <app-ks-dataview [ksList]="ksList"></app-ks-dataview>-->
-    <!--    </div>-->
+    <p-tabView>
+      <p-tabPanel>
+        <ng-template pTemplate="header">
+          <i class="pi pi-table mr-3"></i>
+          <span>Table</span>
+        </ng-template>
+
+        <ng-template pTemplate="content">
+          <ks-table (kcSetCurrentProject)="kcSetCurrentProject.emit($event)"
+                    [ksList]="ksList">
+          </ks-table>
+        </ng-template>
+      </p-tabPanel>
+
+      <p-tabPanel>
+        <ng-template pTemplate="header">
+          <i class="pi pi-th-large mr-3"></i>
+          <span>Grid</span>
+        </ng-template>
+        <ng-template pTemplate="content">
+          <div class="grid p-fluid p-6" style="max-height: 80vh; overflow: scroll">
+            <app-ks-card *ngFor="let ks of ksList" [ks]="ks"
+                         class="sm:col-12 md:col-6 lg:col-4"
+                         (onEdit)="onKsDetail($event)"
+                         (onOpen)="onKsOpen($event)"
+                         (onPreview)="onKsPreview($event)"
+                         (onRemove)="onKsRemove($event)"
+                         (onTopicClick)="onTopicSearch.emit($event.topic)"
+                         (onTopicChange)="onKsModified($event)"
+                         [showDescription]="false"
+                         [showExpandedTags]="true"
+                         [showProjectSelection]="false">
+            </app-ks-card>
+          </div>
+        </ng-template>
+      </p-tabPanel>
+
+      <p-tabPanel [cache]="false">
+        <ng-template pTemplate="header">
+          <i class="pi pi-calendar mr-3"></i>
+          <span>Calendar</span>
+        </ng-template>
+        <ng-template pTemplate="content">
+          <div class="p-6" style="max-height: 80vh; overflow: scroll">
+            <full-calendar style="max-height: 80vh" #fullCalendarComponent [options]="calendarOptions"></full-calendar>
+          </div>
+        </ng-template>
+      </p-tabPanel>
+    </p-tabView>
   </div>
 </div>
+
+<p-overlayPanel #ksOverlay appendTo="body"
+                [style]="{'max-width': '48rem', 'min-width': '32rem', 'max-height': '40rem', 'overflow': 'scroll'}"
+                [dismissable]="true">
+  <ng-template pTemplate="content">
+    <app-ks-card [ks]="selectedKs"
+                 [showRemove]="false"
+                 [showProjectSelection]="false"
+                 (onPreview)="onKsPreview($event)"
+                 (onOpen)="onKsOpen($event)"
+                 (onEdit)="onKsDetail($event)">
+    </app-ks-card>
+  </ng-template>
+</p-overlayPanel>
+
+<p-overlayPanel #projectOverlay appendTo="body"
+                [dismissable]="true">
+  <ng-template pTemplate="content">
+    <app-project-card *ngIf="kcProject"
+                      style="max-width: 250px"
+                      [kcProject]="kcProject"
+                      [showRemove]="false"
+                      [showAddSubproject]="false"
+                      [showArchive]="false"
+                      [showNavigate]="false"
+                      [showSubprojectNavigate]="false"
+                      [showEdit]="false">
+    </app-project-card>
+  </ng-template>
+</p-overlayPanel>

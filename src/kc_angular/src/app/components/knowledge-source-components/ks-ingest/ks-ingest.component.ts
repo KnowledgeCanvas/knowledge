@@ -222,4 +222,8 @@ export class KsIngestComponent implements OnInit {
   onKsPreview(ks: KnowledgeSource) {
     this.ksCommandService.preview(ks);
   }
+
+  onKsDetail($event: KnowledgeSource) {
+    this.ksCommandService.detail($event);
+  }
 }

@@ -94,7 +94,6 @@ import {TooltipModule} from "primeng/tooltip";
 import {TreeModule} from "primeng/tree";
 import {TreeSelectModule} from "primeng/treeselect";
 import {YouTubePlayerModule} from "@angular/youtube-player";
-
 import {ViewportHeaderComponent} from "./components/knowledge-source-components/ks-viewport-components/viewport-header/viewport-header.component";
 import {FileViewComponent} from "./components/knowledge-source-components/ks-viewport-components/file-viewport/file-view.component";
 import {BrowserViewComponent} from "./components/knowledge-source-components/ks-viewport-components/browser-viewport/browser-view.component";
@@ -111,6 +110,8 @@ import {KsDataviewComponent} from './components/knowledge-source-components/ks-d
 import {ProjectCardComponent} from './components/project-components/project-card/project-card.component';
 import {TopicListPipe} from './pipes/text-pipes/topic-list-pipe/topic-list.pipe';
 import {AccordionModule} from "primeng/accordion";
+import {FullCalendarModule} from "@fullcalendar/angular";
+import {TagModule} from "primeng/tag";
 
 @NgModule({
   declarations: [
@@ -206,7 +207,10 @@ import {AccordionModule} from "primeng/accordion";
     SliderModule,
     InputSwitchModule,
     DockModule,
-    AccordionModule
+    AccordionModule,
+    FullCalendarModule,
+    FullCalendarModule,
+    TagModule
   ],
   providers: [
     SettingsService,

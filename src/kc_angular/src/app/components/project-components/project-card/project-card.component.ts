@@ -61,6 +61,12 @@ export class ProjectCardComponent implements OnInit {
   @Input() showNavigate: boolean = true;
 
   /**
+   * Whether to display the "GoTo Project" button for subprojects.
+   * Default is true.
+   */
+  @Input() showSubprojectNavigate: boolean = true;
+
+  /**
    * Emitted when the "edit" button is pressed.
    * Contains the ID of the project to be edited.
    */
