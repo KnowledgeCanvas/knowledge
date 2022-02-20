@@ -1854,6 +1854,81 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@fullcalendar/angular@npm:^5.10.2":
+  version: 5.10.2
+  resolution: "@fullcalendar/angular@npm:5.10.2"
+  dependencies:
+    "@fullcalendar/core": ~5.10.1
+    fast-deep-equal: ^3.1.1
+    tslib: ^2.0.0
+  peerDependencies:
+    "@angular/common": 9 - 13
+    "@angular/core": 9 - 13
+  checksum: faeea38308e6d2234eb923eb85a38db42ce63f8cb61d32ffac1ea65ea2ae8a24df96892d9fe85566eacd3c83ed3e5cf1aa39dad7b5c36e25987610f306b1ef46
+  languageName: node
+  linkType: hard
+
+"@fullcalendar/common@npm:~5.10.1":
+  version: 5.10.1
+  resolution: "@fullcalendar/common@npm:5.10.1"
+  dependencies:
+    tslib: ^2.1.0
+  checksum: ac5ad04c9ade350ad51a87146ba6c5e679e74c237229ced8057e3a4cc6af9ab93894375c8004beff6f45594bca73ed13763b91604c2b9851b78810dcd991729e
+  languageName: node
+  linkType: hard
+
+"@fullcalendar/core@npm:~5.10.1":
+  version: 5.10.1
+  resolution: "@fullcalendar/core@npm:5.10.1"
+  dependencies:
+    "@fullcalendar/common": ~5.10.1
+    preact: ^10.0.5
+    tslib: ^2.1.0
+  checksum: ee7decffe89b28fae3fe690fa3d738bdfc7d927c108d0725a186a43b2b264105f3bbb272601e20e4679e8f12805753f5b33d806b7f5c7b0758a687d2aa6735b1
+  languageName: node
+  linkType: hard
+
+"@fullcalendar/daygrid@npm:^5.10.1, @fullcalendar/daygrid@npm:~5.10.1":
+  version: 5.10.1
+  resolution: "@fullcalendar/daygrid@npm:5.10.1"
+  dependencies:
+    "@fullcalendar/common": ~5.10.1
+    tslib: ^2.1.0
+  checksum: 005e8e829a47eb49bcb6c9cd66a32e0b6b0a371f4554dfe67396818d26c109669cb91bb87c4d17f371aad82d27dadd272a11d19c5291795063a0c2edd912936f
+  languageName: node
+  linkType: hard
+
+"@fullcalendar/interaction@npm:^5.10.1":
+  version: 5.10.1
+  resolution: "@fullcalendar/interaction@npm:5.10.1"
+  dependencies:
+    "@fullcalendar/common": ~5.10.1
+    tslib: ^2.1.0
+  checksum: 5a90bcee3a704fca10c08cc3b96269a9b9c9a7268668947fb42abc48dace81c2b79b9f45440a6c07f57d335734c4c00cc84d02d2a08b97ff646fbc44977de8fd
+  languageName: node
+  linkType: hard
+
+"@fullcalendar/list@npm:^5.10.1":
+  version: 5.10.1
+  resolution: "@fullcalendar/list@npm:5.10.1"
+  dependencies:
+    "@fullcalendar/common": ~5.10.1
+    tslib: ^2.1.0
+  checksum: 442bd8c098d77c80312d543aae321d45ca071c170d7addf80ab5740aaf4b833504ee812c78c0e9ef8c3debbbe5e45201ef61e20555dba23bb817068dbdb19850
+  languageName: node
+  linkType: hard
+
+"@fullcalendar/timegrid@npm:^5.10.1":
+  version: 5.10.1
+  resolution: "@fullcalendar/timegrid@npm:5.10.1"
+  dependencies:
+    "@fullcalendar/common": ~5.10.1
+    "@fullcalendar/daygrid": ~5.10.1
+    tslib: ^2.1.0
+  checksum: 4fc0fc907dfbe4f24a9ca5938d473968f1fba9f840fd5b9d0003e18c603a5079e327f03c86fb25cf2686a59104ab5b7be3a11489c9f93c361ffbe87e98e296e3
+  languageName: node
+  linkType: hard
+
 "@gar/promisify@npm:^1.0.1":
   version: 1.1.2
   resolution: "@gar/promisify@npm:1.1.2"
@@ -8602,6 +8677,11 @@ __metadata:
     "@angular/platform-browser-dynamic": ^13.1.1
     "@angular/router": ~13.1.1
     "@angular/youtube-player": ^13.1.1
+    "@fullcalendar/angular": ^5.10.2
+    "@fullcalendar/daygrid": ^5.10.1
+    "@fullcalendar/interaction": ^5.10.1
+    "@fullcalendar/list": ^5.10.1
+    "@fullcalendar/timegrid": ^5.10.1
     "@types/d3": ^7.1.0
     "@types/jasmine": ~3.8.0
     "@types/node": ^16.7.2
@@ -10777,6 +10857,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"preact@npm:^10.0.5":
+  version: 10.6.6
+  resolution: "preact@npm:10.6.6"
+  checksum: d6a9581b222c60595f987be28738b68dabb3045f72043e2619af81e9ca00b2b0942717642bcfcaab77a0afa50a97cd35039139c7f425a62a4f02ceb793d8ef83
+  languageName: node
+  linkType: hard
+
 "prelude-ls@npm:^1.2.1":
   version: 1.2.1
   resolution: "prelude-ls@npm:1.2.1"
@@ -12541,7 +12628,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:2.3.1, tslib@npm:^2.0.0, tslib@npm:^2.2.0, tslib@npm:^2.3.0":
+"tslib@npm:2.3.1, tslib@npm:^2.0.0, tslib@npm:^2.1.0, tslib@npm:^2.2.0, tslib@npm:^2.3.0":
   version: 2.3.1
   resolution: "tslib@npm:2.3.1"
   checksum: de17a98d4614481f7fcb5cd53ffc1aaf8654313be0291e1bfaee4b4bb31a20494b7d218ff2e15017883e8ea9626599b3b0e0229c18383ba9dce89da2adf15cb9
