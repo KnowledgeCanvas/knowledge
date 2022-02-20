@@ -13,7 +13,10 @@ The app relies exclusively on local storage and local processes. There are no se
 - [Debugging](https://github.com/KnowledgeCanvas/knowledge-canvas/wiki/Debugging)
 
 # Screenshots
-<img width="1203" alt="image" src="https://user-images.githubusercontent.com/19367848/152470358-64ac12de-e811-42b4-996f-67c3725a2ba7.png">
+<img width="1279" alt="image" src="https://user-images.githubusercontent.com/19367848/154830635-0478f5b3-a2b3-47dc-93b4-3280a8e55b3a.png">
+<img width="1279" alt="image" src="https://user-images.githubusercontent.com/19367848/154831118-fb55f59b-1dfd-42fa-a2bd-e429016c1a3f.png">
+<img width="1279" alt="image" src="https://user-images.githubusercontent.com/19367848/154831016-75a569bd-fd38-4a7c-986e-1782fb0ef16c.png">
+<img width="1279" alt="image" src="https://user-images.githubusercontent.com/19367848/154831165-362c1326-c7cb-4145-9eac-3defc28e352e.png">
 <img width="1203" alt="image" src="https://user-images.githubusercontent.com/19367848/152474550-9432e28e-2511-4632-a327-15561b1f79cb.png">
 <img width="1203" alt="image" src="https://user-images.githubusercontent.com/19367848/152473853-1575bec7-2035-4b62-9783-8328097dcbde.png">
 <img width="1203" alt="image" src="https://user-images.githubusercontent.com/19367848/152473925-2e89c095-a24d-491d-a56a-4f3687d21b3b.png">
