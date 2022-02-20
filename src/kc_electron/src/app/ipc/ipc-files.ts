@@ -132,10 +132,10 @@ getFileThumbnail = ipcMain.on('electron-get-file-thumbnail', (event: any, reques
 
 
     Promise.all(actions).then((thumbnails) => {
-        for (let thumbnail of thumbnails) {
+        for (let i = 0; i < thumbnails.length; i++) {
             let response: IpcMessage = {
                 error: undefined,
-                success: {data: thumbnail.toDataURL()}
+                success: {data: {id: requests[i].id ?? '', thumbnail: thumbnails[i].toDataURL()}}
             }
             responses.push(response);
         }

@@ -150,11 +150,27 @@ export class KnowledgeCanvasComponent implements OnInit, OnDestroy {
     });
 
     this._subKsCommandUpdate = this.ksCommandService.ksUpdateEvent.subscribe((ksList) => {
-      console.warn('KsCommandUpdate is not implemented yet...');
-      for (let ks of ksList) {
-        if (!ks.associatedProject) {
+      let updates: ProjectUpdateRequest[] = [];
 
+      for (let ks of ksList) {
+        if (ks.associatedProject) {
+          let project = this.projectService.getProject(ks.associatedProject.value);
+          if (project) {
+            ks.dateModified.push(new Date);
+            let req: ProjectUpdateRequest = {
+              id: project.id,
+              updateKnowledgeSource: [ks]
+            }
+            updates.push(req);
+          }
         }
+      }
+
+      if (updates.length > 0) {
+        this.projectService.updateProjects(updates).then((_) => {
+        }).catch((reason) => {
+          console.error(reason);
+        });
       }
     });
 
@@ -246,5 +262,9 @@ export class KnowledgeCanvasComponent implements OnInit, OnDestroy {
         moveKnowledgeSource: {ks: $event.ks, new: new UuidModel($event.new)}
       }
     ]);
+  }
+
+  onKsEdit($event: KnowledgeSource) {
+    this.ksCommandService.detail($event);
   }
 }

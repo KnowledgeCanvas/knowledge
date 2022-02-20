@@ -1,18 +1,24 @@
-<p-dataView [value]="ksList" [paginator]="true" [rows]="9" layout="list">
+<p-dataView [value]="ksList" [paginator]="true" [rows]="9" layout="grid">
   <ng-template pTemplate="header">
     <p-dataViewLayoutOptions></p-dataViewLayoutOptions>
   </ng-template>
 
-  <ng-template let-ks pTemplate="listItem">
-    <div class="col-12 flex-row-center-start" style="height: 80px">
-      <app-ks-icon [ks]="ks"></app-ks-icon>
-      {{ks.title}}
-    </div>
-  </ng-template>
+<!--  <ng-template let-ks pTemplate="listItem">-->
+<!--    <div class="col-12 flex-row-center-start" style="height: 80px">-->
+<!--      <app-ks-icon [ks]="ks"></app-ks-icon>-->
+<!--      {{ks.title}}-->
+<!--    </div>-->
+<!--  </ng-template>-->
 
   <ng-template let-ks pTemplate="gridItem">
     <div class="col-12 md:col-4">
-      <app-ks-card [ks]="ks"></app-ks-card>
+      <app-ks-card [ks]="ks"
+                   [showProjectSelection]="false"
+                   (onRemove)="onKsRemove($event)"
+                   (onOpen)="onKsOpen($event)"
+                   (onEdit)="onKsDetail($event)"
+                   (onPreview)="onKsPreview($event)">
+      </app-ks-card>
     </div>
   </ng-template>
 </p-dataView>

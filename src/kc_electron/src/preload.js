@@ -55,7 +55,6 @@ const validReceiveOnceChannels = [
     "electron-browser-view-results",
     "electron-close-browser-view-results",
     'electron-get-file-icon-results',
-    'electron-get-file-thumbnail-results',
     'electron-open-local-file-results',
     'kc-get-knowledge-source-list-response',
     'app-open-kc-dialog-results'
@@ -68,7 +67,8 @@ const validReceiveChannels = [
     "electron-browser-view-can-go-back-results",
     "electron-browser-view-can-go-forward-results",
     "electron-browser-view-current-url-results",
-    "electron-browser-view-nav-events"
+    "electron-browser-view-nav-events",
+    'electron-get-file-thumbnail-results',
 ]
 
 contextBridge.exposeInMainWorld(

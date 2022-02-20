@@ -35,6 +35,7 @@ export interface ApplicationSettingsModel {
       expandRows?: boolean;
       showSubProjects?: boolean;
       hideSidebar?: boolean;
+      showCountdown?: boolean;
     }
   }
 }
