@@ -1,3 +1,8 @@
+# Download
+
+- [Latest Release](https://github.com/KnowledgeCanvas/knowledge-canvas/releases/latest)
+- [All Versions](https://github.com/KnowledgeCanvas/knowledge-canvas/releases)
+
 # Description
 Knowledge Canvas is a meta-productivity tool meant to make learning 🧠 and research 📚 easier 😌 and more organized 🗂 ([screenshots](#screenshots)). With Knowledge Canvas, you can import almost any digital resource and use it to build your own personal `Knowledge Base`. This is accomplished by converting documents, websites, files, YouTube videos, and more, into what we call `Knowledge Sources`. `Knowledge Sources` are [polymorphic](https://en.wikipedia.org/wiki/Polymorphism_(computer_science)) structures that contain things like metadata, raw text, images, video, audio, events, timelines, and more. Knowledge sources are grouped into Projects, which are organized hierarchically and can be extended in any configuration the user prefers. Projects can also have their own timelines, topics, etc.
 
