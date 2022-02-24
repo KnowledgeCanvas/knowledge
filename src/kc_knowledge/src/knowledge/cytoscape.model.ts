@@ -9,13 +9,15 @@ cytoscape.use(dagre);
 
 export class CytoscapeModel {
     public cyLayout: LayoutOptions = {
-        name: "dagre",
+        name: "cose",
 
         // whether to fit to viewport
         fit: true,
 
         // fit padding
         padding: 100,
+
+        componentSpacing: 1.5,
 
         // Applies a multiplicative factor (>0) to expand or compress the overall area that the nodes take up
         spacingFactor: 1,
@@ -24,12 +26,20 @@ export class CytoscapeModel {
         nodeDimensionsIncludeLabels: true,
 
         // whether to transition the node positions
-        animate: true,
+        animate: false,
 
         // whether to animate specific nodes when animation is on; non-animated nodes immediately go to their final positions
         animateFilter: (node, i) => {
-            return true;
+            return false;
         },
+
+        nodeRepulsion(node: any): number {
+            return 999999;
+        },
+
+        initialTemp: 999999,
+
+        gravity: 1,
 
         // duration of animation in ms if enabled
         animationDuration: 500,
@@ -141,7 +151,7 @@ export class CytoscapeModel {
         this.setListeners();
 
         this.cy?.layout({
-            name: 'grid'
+            name: 'cose'
         }).run();
     }
 

@@ -1,6 +1,6 @@
 {
   "name": "knowledge-canvas",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "Knowledge Canvas is an application for students, researchers, and life-long learners to manage their digital lives.",
   "author": "Rob Royce <robertris2@gmail.com> (https://robroyce.dev)",
   "license": "Apache-2.0",
@@ -30,11 +30,9 @@
     "purge": "yarn workspaces foreach run purge && rm -rf node_modules && yarn cache clean",
     "pack": "electron-builder --dir",
     "dist": "electron-builder --publish never",
-    "dist-all": "electron-builder -mwl --publish never",
-    "dist-all-x64": "electron-builder --x64 -mwl --publish never",
+    "dist-all": "electron-builder -mwl --x64 --arm64 --publish never",
     "publish": "electron-builder --publish always",
-    "publish-all": "electron-builder -mwl --publish always",
-    "publish-all-x64": "electron-builder --x64 -mwl --publish always",
+    "publish-all": "electron-builder -mwl --x64 --arm64 --publish always",
     "release": "standard-version",
     "start": "electron .",
     "start-debug": "electron . --inspect=5858",
@@ -65,6 +63,9 @@
     "files": [
       "src/kc_angular/dist/**/*",
       "src/kc_electron/dist/**/*",
+      "src/kc_knowledge/dist/**/*",
+      "src/kc_knowledge/src/style/*",
+      "src/kc_knowledge/src/*.html",
       "Resources/**/*"
     ],
     "extraResources": [

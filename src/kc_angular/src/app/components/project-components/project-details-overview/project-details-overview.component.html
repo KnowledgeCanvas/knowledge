@@ -69,7 +69,7 @@ limitations under the License.-->
 
   <div class="project-ks-list-container" *ngIf="ksList.length">
     <p-tabView>
-      <p-tabPanel>
+      <p-tabPanel [cache]="false">
         <ng-template pTemplate="header">
           <i class="pi pi-table mr-3"></i>
           <span>Table</span>
@@ -82,7 +82,7 @@ limitations under the License.-->
         </ng-template>
       </p-tabPanel>
 
-      <p-tabPanel>
+      <p-tabPanel #gridTab [cache]="false">
         <ng-template pTemplate="header">
           <i class="pi pi-th-large mr-3"></i>
           <span>Grid</span>
@@ -112,7 +112,7 @@ limitations under the License.-->
         </ng-template>
         <ng-template pTemplate="content">
           <div class="p-6" style="max-height: 80vh; overflow: scroll">
-            <full-calendar style="max-height: 80vh" #fullCalendarComponent [options]="calendarOptions"></full-calendar>
+            <full-calendar style="max-height: 80vh" #fullCalendarComponent [deepChangeDetection]="true" [options]="calendarOptions"></full-calendar>
           </div>
         </ng-template>
       </p-tabPanel>

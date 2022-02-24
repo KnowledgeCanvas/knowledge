@@ -14,6 +14,7 @@
  limitations under the License.
  */
 
+
 import {Component, ElementRef, EventEmitter, OnChanges, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
 import {ProjectService} from "../../../services/factory-services/project-service/project.service";
 import {ProjectModel} from "src/app/models/project.model";
@@ -29,6 +30,7 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import listPlugin from '@fullcalendar/list';
 import {KsCommandService} from "../../../services/command-services/ks-command/ks-command.service";
+
 
 FullCalendarModule.registerPlugins([
   dayGridPlugin,
@@ -72,10 +74,7 @@ export class ProjectDetailsOverviewComponent implements OnInit, OnChanges {
   projectContext: any;
   selectedKs!: KnowledgeSource;
   calendarOptions: CalendarOptions = {
-    initialView: 'listMonth',
-    dateClick: (arg) => {
-      console.log('Date clicked: ', arg);
-    },
+    initialView: 'listWeek',
     eventClick: (arg) => {
       arg.jsEvent.preventDefault();
       console.log('Event clicked: ', arg);
@@ -90,19 +89,18 @@ export class ProjectDetailsOverviewComponent implements OnInit, OnChanges {
         }
       }
     },
-    moreLinkClick: (arg) => {
-      console.log('More link clicked: ', arg);
-    },
     events: [],
     editable: false,
     selectable: false,
     selectMirror: false,
     dayMaxEvents: true,
     nowIndicator: true,
+    expandRows: true,
+    eventMaxStack: 25,
     headerToolbar: {
       left: 'prev,next today',
       center: 'title',
-      right: 'listMonth,timeGridWeek,timeGridDay,dayGridMonth'
+      right: 'listWeek,timeGridWeek,timeGridDay,dayGridMonth'
     },
   };
 
@@ -124,7 +122,6 @@ export class ProjectDetailsOverviewComponent implements OnInit, OnChanges {
       let events: {
         title: string,
         start: string | Date,
-        end?: string | Date,
         color?: string,
         textColor?: string,
         url?: string
