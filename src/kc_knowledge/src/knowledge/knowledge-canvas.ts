@@ -51,10 +51,10 @@ export class KnowledgeCanvas {
                                     id: ks.id.value,
                                     label: ks.title,
                                     type: 'ks',
-                                }, style: {'background-image': `url(${ks.icon})`}
+                                }, style: ks.icon ? {'background-image': `url(${ks.icon})`} : {'background-color': 'grey'}
                             }
                             let edge = {
-                                groupe: 'edges',
+                                group: 'edges',
                                 data: {
                                     id: `${(project as any).id.value}-${ks.id.value}`,
                                     source: (project as any).id.value,
