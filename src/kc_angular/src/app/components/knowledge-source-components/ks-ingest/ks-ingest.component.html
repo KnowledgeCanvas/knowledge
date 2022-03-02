@@ -33,7 +33,7 @@
       </div>
     </p-panel>
 
-    <div class="grid" style="max-height: 50vh; overflow: scroll">
+    <div class="grid" style="max-height: 50vh; overflow-x: hidden; overflow-y: auto">
       <app-ks-card *ngFor="let ks of ksList"
                    [ks]="ks"
                    (onRemove)="onKsRemoved($event)"

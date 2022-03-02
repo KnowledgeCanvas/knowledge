@@ -59,7 +59,7 @@ limitations under the License.-->
     </div>
     <div *ngIf="kcProject.topics.length">
       <b>Topics:</b>
-      <ul style="max-height: 128px; overflow: scroll">
+      <ul style="max-height: 128px; overflow-x: hidden; overflow-y: auto">
         <li *ngFor="let topic of kcProject.topics">
           {{topic}}
         </li>
@@ -73,14 +73,14 @@ limitations under the License.-->
       <b>Subprojects: </b> {{kcProject.subprojects.length}}
     </div>
     <b>Description:</b>
-    <div style="max-height: 200px; overflow: scroll">
+    <div style="max-height: 200px; overflow-x: auto; overflow-y: hidden">
       {{kcProject.description || 'None'}}<br>
     </div>
   </ng-template>
 
   <ng-template pTemplate="footer">
     <h4>Subprojects</h4>
-    <div style="max-height: 180px; overflow: scroll">
+    <div style="max-height: 180px; overflow-x: hidden; overflow-y: auto">
           <span *ngFor="let subproject of kcProject.subprojects" class="flex-row-center-between">
             {{subproject | projectName}}
             <button pButton *ngIf="showSubprojectNavigate"
