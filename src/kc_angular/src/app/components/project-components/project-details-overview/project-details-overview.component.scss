@@ -16,15 +16,17 @@
 
 .project-overview-container {
   // 36px is the height of the breadcrum and action toolbar that floats above the project overview
-  max-height: calc(100% - 36px);
-  overflow: hidden;
+  max-height: calc(100% - 84px);
+  overflow-x: hidden;
+  overflow-y: auto;
   user-select: none;
 }
 
 .project-ks-list-container {
-  margin: 10px;
-  overflow: scroll;
-  width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  width: 100vw;
+  height: 100%;
 }
 
 .project-topic-list {

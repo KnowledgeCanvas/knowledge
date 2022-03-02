@@ -61,7 +61,7 @@ limitations under the License.-->
         <div class="p-fluid grid col-12">
           <p-panel header="Timeline" class="p-fluid col-12">
             <ng-template pTemplate="content">
-              <div style="overflow: scroll">
+              <div style="overflow-x: auto; overflow-y: hidden">
                 <p-timeline [value]="events" layout="horizontal">
                   <ng-template pTemplate="content" let-event>
                     <div style="width: 10rem">
@@ -258,17 +258,6 @@ limitations under the License.-->
               <input id="authors" type="text" pInputText disabled [value]="ks.authors">
               <label for="authors">Authors</label>
             </div>
-          </div>
-
-
-          <div class="field p-float-label col-12 " *ngIf="ks.rawText">
-              <textarea pInputTextarea id="_ksRawText"
-                        [autoResize]="true"
-                        [rows]="6"
-                        [cols]="30"
-                        disabled
-                        [(ngModel)]="ks.rawText"></textarea>
-            <label for="_ksRawText">Raw Text</label>
           </div>
         </ng-template>
       </p-panel>

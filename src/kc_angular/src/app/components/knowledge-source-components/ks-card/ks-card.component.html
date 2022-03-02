@@ -77,7 +77,8 @@ limitations under the License.-->
             tooltipPosition="bottom">
           Topics
         </h2>
-    <div *ngIf="showTags && showExpandedTags" [style]="{'height':'64px', 'overflow':'scroll'}">
+    <div *ngIf="showTags && showExpandedTags"
+         [style]="{'height':'96px', 'overflow-y': 'auto', 'overflow-x': 'hidden'}">
       <p-chips [(ngModel)]="keywords"
                class="p-fluid w-full"
                (onChipClick)="onTopicClick.emit({ks: ks, topic: $event.value})"
