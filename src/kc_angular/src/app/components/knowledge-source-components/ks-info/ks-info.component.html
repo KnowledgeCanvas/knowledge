@@ -12,7 +12,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.-->
 
-<p-tabView>
+<p-tabView [style]="{height: 'calc(100% - 32px)', 'overflow-x': 'hidden', 'overflow-y': 'hidden'}">
   <p-tabPanel header="Details">
     <div class="ks-info-details">
       <ng-container>
@@ -166,10 +166,12 @@ limitations under the License.-->
     <ng-template pTemplate="content">
       <p-panel header="{{ksPreviewHeader}}" *ngIf="!this.ksIsYoutubeVideo">
         <ng-template pTemplate="content">
-          <div *ngIf="this.ksIsPdf" class="flex-col-center-start">
+          <div *ngIf="this.ksIsPdf" class="flex-col-center-start h-full">
             <embed *ngIf="safeUrl"
                    [src]="safeUrl"
+                   class="p-fluid"
                    (click)="onPdfClick($event)"
+                   [style]="{width: '100%', 'height': '65vh'}"
                    [class.ks-pdf-preview]="!maximized"
                    [class.ks-pdf-preview-max]="maximized">
           </div>
