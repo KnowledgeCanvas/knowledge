@@ -242,16 +242,17 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
             label: 'Display', icon: 'pi pi-fw pi-image', command: () => {
               this.dialogService.open(DisplaySettingsComponent, {
                 header: 'Display Settings',
-                width: '350px',
+                width: '64rem',
                 dismissableMask: true,
                 modal: true
               });
             }
           },
           // {
-          //   label: 'Ingest', icon: 'pi pi-fw pi-arrow-circle-down', command: () => {
+          //   label: 'Up Next', icon: 'pi pi-fw pi-arrow-circle-down', command: () => {
           //     this.dialogService.open(IngestSettingsComponent, {
-          //       header: 'Ingest Settings',
+          //       header: 'Up Next Settings',
+          //       width: '64rem',
           //       dismissableMask: true,
           //       modal: true
           //     });
@@ -260,7 +261,11 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           {
             label: 'Search', icon: 'pi pi-fw pi-search', command: () => {
               this.dialogService.open(SearchSettingsComponent, {
-                data: this.settingsService.getSettings().search
+                data: this.settingsService.getSettings().search,
+                header: 'Search Settings',
+                width: '64rem',
+                dismissableMask: true,
+                modal: true
               });
             }
           },
