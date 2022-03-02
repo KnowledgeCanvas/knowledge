@@ -181,7 +181,7 @@ limitations under the License.-->
         <div *ngIf="ksList.length && ksTopics.length">
           Knowledge Source Topics
           <p-divider></p-divider>
-          <div style="max-height: 10rem; overflow: scroll">
+          <div style="max-height: 10rem; overflow-x: hidden; overflow-y: auto">
             <p-chip *ngFor="let topic of ksTopics"
                     class="cursor-pointer"
                     [style]="{'margin-top': '5px', 'margin-right': '5px', padding: 0}"

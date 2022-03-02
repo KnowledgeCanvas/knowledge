@@ -67,7 +67,8 @@ limitations under the License.-->
     </p-panel>
   </div>
 
-  <div class="project-ks-list-container" *ngIf="ksList.length">
+  <div class="project-ks-list-container"
+       *ngIf="ksList.length">
     <p-tabView>
       <p-tabPanel [cache]="false">
         <ng-template pTemplate="header">
@@ -88,7 +89,7 @@ limitations under the License.-->
           <span>Grid</span>
         </ng-template>
         <ng-template pTemplate="content">
-          <div class="grid p-fluid p-6" style="max-height: 80vh; overflow: scroll">
+          <div class="grid p-fluid p-6" style="max-height: 80vh; overflow-y: auto; overflow-x: hidden">
             <app-ks-card *ngFor="let ks of ksList" [ks]="ks"
                          class="sm:col-12 md:col-6 lg:col-4"
                          (onEdit)="onKsDetail($event)"
@@ -111,8 +112,8 @@ limitations under the License.-->
           <span>Calendar</span>
         </ng-template>
         <ng-template pTemplate="content">
-          <div class="p-6" style="max-height: 80vh; overflow: scroll">
-            <full-calendar style="max-height: 80vh" #fullCalendarComponent [deepChangeDetection]="true" [options]="calendarOptions"></full-calendar>
+          <div class="p-6">
+            <full-calendar style="max-height: 70vh;" #fullCalendarComponent [deepChangeDetection]="true" [options]="calendarOptions"></full-calendar>
           </div>
         </ng-template>
       </p-tabPanel>
