@@ -69,6 +69,14 @@ export class DisplaySettingsComponent implements OnInit {
   }
 
   restoreDefaultTheme() {
+    if (this.selectedTheme?.code === this.themeService.defaultTheme.code) {
+      return;
+    }
+
+    this.themeService.switchTheme(this.themeService.defaultTheme.code).then((res) => {
+      console.debug('DisplaySettings: set theme to default: ', res);
+      this.settingsService.saveSettings({display: {theme: this.themeService.currentTheme}});
+    })
     this.selectedTheme = this.themeService.restoreDefault();
   }
 }
