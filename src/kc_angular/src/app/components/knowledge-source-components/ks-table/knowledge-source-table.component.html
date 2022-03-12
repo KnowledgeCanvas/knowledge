@@ -13,7 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License.-->
 
 
-<div style="width: 100%" class="flex-col-center-start">
+<div style="width: 100%" class="flex-col-center-center">
   <div class="p-card" style="width: 90%; height: 90%">
     <p-table #dataTable
              *ngIf="ksTableShouldExist"
@@ -211,7 +211,7 @@ limitations under the License.-->
                appendTo="body">
 </p-contextMenu>
 
-<p-overlayPanel #op>
+<p-overlayPanel #op styleClass="surface-100 shadow-7">
   <ng-template pTemplate="content">
     <div>
       <p-toggleButton onLabel="Show Countdown"

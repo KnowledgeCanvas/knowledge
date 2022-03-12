@@ -23,6 +23,7 @@ limitations under the License.-->
           *ngIf="currentKs"
           header="{{currentKs.title}}"
           [(visible)]="ksDetailsVisible"
+          [dismissableMask]="true"
           [maximizable]="true"
           [resizable]="true"
           [modal]="true"

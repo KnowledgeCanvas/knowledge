@@ -24,8 +24,8 @@ limitations under the License.-->
                required
                [autofocus]="true"
                (keydown.enter)="create()"
-               (invalid)="invalidTitle($event)"
                [minlength]="3"
+               [maxLength]="64"
                [(ngModel)]="projectCreationRequest.name">
         <label for="title">Title</label>
       </div>
@@ -37,14 +37,14 @@ limitations under the License.-->
 
       <div class="field p-float-label sm:col-6 md:col-6 lg:col-6 ">
         <p-calendar [(ngModel)]="projectCreationRequest.calendar.start"
-                    [showButtonBar]="true"
+                    [showButtonBar]="true" hourFormat="12" [showTime]="true"
                     [showIcon]="true" id="start" appendTo="body"></p-calendar>
         <label for="start">Start</label>
       </div>
 
       <div class="field p-float-label sm:col-6 md:col-6 lg:col-6 ">
         <p-calendar [(ngModel)]="projectCreationRequest.calendar.end"
-                    [showButtonBar]="true"
+                    [showButtonBar]="true" hourFormat="12" [showTime]="true"
                     [showIcon]="true" id="end" appendTo="body"></p-calendar>
         <label for="end">End</label>
       </div>
