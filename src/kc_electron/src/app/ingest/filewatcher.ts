@@ -37,9 +37,7 @@ class IngestFileWatcher {
             // Disable file watcher if autoscan is false
             if (!ingest.autoscan) {
                 if (this.ingestWatcher) {
-                    this.ingestWatcher.close().then((_: any) => {
-                        console.log('Closing ingest file watcher...');
-                    }).catch((reason) => {
+                    this.ingestWatcher.close().catch((reason) => {
                         console.warn('Ingest file watcher failed to close... ', reason);
                     });
 

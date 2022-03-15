@@ -14,19 +14,13 @@
  limitations under the License.
  */
 
-import { TestBed } from '@angular/core/testing';
 
-import { KsCommandService } from './ks-command.service';
+import {ProjectBreadcrumbPipe} from './project-breadcrumb.pipe';
 
-describe('KsCommandService', () => {
-  let service: KsCommandService;
-
-  beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(KsCommandService);
-  });
-
-  it('should be created', () => {
-    expect(service).toBeTruthy();
+describe('ProjectBreadcrumbPipe', () => {
+  it('create an instance', () => {
+    // @ts-ignore
+    const pipe = new ProjectBreadcrumbPipe();
+    expect(pipe).toBeTruthy();
   });
 });

@@ -14,8 +14,6 @@
  limitations under the License.
  */
 
-import {IpcMessage} from "./app/models/electron.ipc.model";
-import {FileModel} from "./app/models/file.model";
 import {UpdateCheckResult} from "electron-updater";
 
 const {app, BrowserWindow, BrowserView, ipcMain, dialog, shell} = require('electron');
@@ -32,20 +30,20 @@ const uuid = require('uuid');
 const MAIN_ENTRY: string = path.join(app.getAppPath(), 'src', 'kc_angular', 'dist', 'main', 'index.html');
 
 (global as any).share = {
-    settingsService,
-    BrowserWindow,
     BrowserView,
-    autoUpdater,
-    nativeImage,
-    ipcMain,
-    dialog,
-    uuid,
-    http,
-    shell,
-    path,
-    url,
+    BrowserWindow,
     app,
-    fs
+    autoUpdater,
+    dialog,
+    fs,
+    http,
+    ipcMain,
+    nativeImage,
+    path,
+    settingsService,
+    shell,
+    url,
+    uuid,
 };
 
 console.log('Dirname: ', __dirname);

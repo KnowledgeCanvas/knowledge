@@ -25,7 +25,12 @@ import {KnowledgeSource} from "../../../models/knowledge.source.model";
 })
 export class KsIconComponent implements OnInit {
   @Input() ks!: KnowledgeSource;
+
   @Input() showEditor: boolean = true;
+
+  @Input() showShadow: boolean = true;
+
+  @Input() autoBackgroundColor: boolean = true;
 
   constructor() { }
 

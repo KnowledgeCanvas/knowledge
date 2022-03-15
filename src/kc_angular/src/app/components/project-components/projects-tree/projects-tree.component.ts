@@ -84,7 +84,6 @@ export class ProjectsTreeComponent implements OnInit {
   }
 
   setExpand(id: string, expand: boolean) {
-    console.log('set expand with arg: ', id, expand);
     this.projectService.updateProjects([{
       id: new UuidModel(id),
       expanded: expand
@@ -125,7 +124,7 @@ export class ProjectsTreeComponent implements OnInit {
   }
 
   onNodeDrop($event: any) {
-    console.log('Project node drop: ', $event);
+    console.debug('ProjectTree.onNodeDrop($event) | $event === ', $event);
     $event.originalEvent.preventDefault();
     $event.originalEvent.stopPropagation();
 
@@ -135,7 +134,7 @@ export class ProjectsTreeComponent implements OnInit {
     let dragId = dragNode.key;
     let dropId = dropNode.key;
 
-    console.log(`Moving ${dragNode.label} (${dragId}) to ${dropNode.label} (${dropId})...`);
+    console.debug(`ProjectTree.onNodeDrop($event) | Moving ${dragNode.label} (${dragId}) to ${dropNode.label} (${dropId})...`);
 
     let dragProject = this.projectService.getProject(dragId);
     let dropProject = this.projectService.getProject(dropId);
@@ -156,9 +155,9 @@ export class ProjectsTreeComponent implements OnInit {
       })
     }
 
-    this.projectService.updateProjects(updates).then((result) => {
-      console.log('Projects updated with result: ', result);
-    });
+    this.projectService.updateProjects(updates).catch((reason) => {
+      console.error('ProjectTree.onNodeDrop($event) | error === ', reason);
+    })
   }
 
   private expandRecursive(node: TreeNode, isExpand: boolean) {

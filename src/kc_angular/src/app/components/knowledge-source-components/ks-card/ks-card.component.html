@@ -13,43 +13,53 @@ See the License for the specific language governing permissions and
 limitations under the License.-->
 
 
-<p-card>
-  <ng-template pTemplate="header">
-    <div *ngIf="showThumbnail">
-      <p-skeleton width="100%" height="200px" *ngIf="!thumbnail && !thumbnailUnavailable"></p-skeleton>
-      <div class="w-full p-fluid flex-col-center-center bg-auto">
-        <p-image *ngIf="thumbnail" [src]="thumbnail"
-                 class="align-self-center"
-                 height="200px"
-                 [preview]="true">
-        </p-image>
-        <div *ngIf="!thumbnail && thumbnailUnavailable"
+<div [class]="hovering ? 'shadow-3' : 'shadow-1'"
+     style="border: 1px dotted var(--surface-400); border-radius: 5px;">
+  <p-card (dblclick)="onEdit.emit(ks)">
+    <ng-template pTemplate="header">
+      <div *ngIf="showThumbnail">
+        <div *ngIf="!thumbnail"
              class="flex-col-center-center"
-             style="height: 200px; width: 100%; background-color: var(--surface-400); border-radius: 10px">
-          <app-ks-icon [ks]="ks"></app-ks-icon>
+             style="height: 200px; background-color: var(--surface-300); border-radius: 5px">
+          <app-ks-icon [ks]="ks"
+                       class="cursor-pointer"
+                       (click)="onEdit.emit(ks)">
+          </app-ks-icon>
+        </div>
+
+        <div class="w-full p-fluid flex-col-center-center bg-auto">
+          <p-image *ngIf="thumbnail" [src]="thumbnail"
+                   class="align-self-center"
+                   height="200px"
+                   [style]="{'border-radius': '5px'}"
+                   [preview]="true">
+          </p-image>
         </div>
       </div>
-    </div>
-  </ng-template>
+    </ng-template>
 
-  <ng-template pTemplate="title">
-    <div class="grid p-fluid flex-row-center-between">
-      <div class="col text-left">
-        <h1>{{ks.title | truncate: [32]}}</h1>
-        <h2 *ngIf="showContentType">Type: {{contentType | truncate: [24] | titlecase}}</h2>
-        <h2 *ngIf="showProjectName">Project: {{ks.associatedProject | projectName | truncate: [24]}}</h2>
+    <ng-template pTemplate="content">
+      <div class="flex-row-center-between">
+        <div (click)="onEdit.emit(this.ks)" class="font-bold text-xl cursor-pointer">
+          {{ks.title | truncate: [32]}}
+        </div>
+        <i *ngIf="showContentType"
+           class="pi pi-{{ks.ingestType | ksIngestTypeIcon}}"
+           [pTooltip]="ks.ingestType | titlecase">
+        </i>
       </div>
-      <div class="col-2 text-right">
-        <app-ks-icon [ks]="ks"></app-ks-icon>
+
+      <div *ngIf="showProjectBreadcrumbs">
+        {{ks.associatedProject | projectBreadcrumb}}
       </div>
-    </div>
-  </ng-template>
 
-  <ng-template pTemplate="subtitle">
-
-    <div class="grid p-fluid">
-      <div class="col-12" *ngIf="showDescription && description">
-        {{description}}
+      <div *ngIf="showDescription">
+        <div *ngIf="description" style="height: 4rem">
+          {{description | truncate: [32]}}
+        </div>
+        <div *ngIf="!description" class="text-400" style="height: 4rem">
+          Double-click to add a description
+        </div>
       </div>
 
       <div class="col-12" *ngIf="showProjectSelection">
@@ -61,58 +71,61 @@ limitations under the License.-->
         </p-treeSelect>
       </div>
 
-    </div>
-  </ng-template>
+      <div *ngIf="showTopics"
+           [style]="{'height':'5rem', 'overflow-y': 'auto', 'overflow-x': 'hidden'}">
+        <p-chips [(ngModel)]="keywords"
+                 class="p-fluid w-full"
+                 styleClass="ks-topic-chip"
+                 (onChipClick)="onTopicClick.emit({ks: ks, topic: $event.value})"
+                 (onAdd)="onTopicAdd()"
+                 (onRemove)="onTopicRemove()"
+                 [addOnTab]="true"
+                 [addOnBlur]="true"
+                 [allowDuplicate]="false"
+                 placeholder="Add a Topic...">
+        </p-chips>
+      </div>
 
-  <ng-template pTemplate="content">
-        <h2 *ngIf="showTags && keywords && keywords.length"
-            class="underline"
-            pTooltip="{{keywords | topicList}}"
-            tooltipPosition="bottom">
-          Topics
-        </h2>
-        <h2 *ngIf="showTags && (!keywords || !keywords.length)"
-            class="underline"
-            pTooltip="No topics found"
-            tooltipPosition="bottom">
-          Topics
-        </h2>
-    <div *ngIf="showTags && showExpandedTags"
-         [style]="{'height':'96px', 'overflow-y': 'auto', 'overflow-x': 'hidden'}">
-      <p-chips [(ngModel)]="keywords"
-               class="p-fluid w-full"
-               (onChipClick)="onTopicClick.emit({ks: ks, topic: $event.value})"
-               (onAdd)="onTopicAdd()"
-               (onRemove)="onTopicRemove()"
-               [addOnTab]="true"
-               [addOnBlur]="true"
-               [allowDuplicate]="false"
-               placeholder="Add a Topic...">
-      </p-chips>
-    </div>
-  </ng-template>
-  <ng-template pTemplate="footer">
-    <div class="col text-right">
-      <button pButton *ngIf="showRemove"
-              class="p-button-text"
-              icon="pi pi-trash"
-              (click)="onRemove.emit(this.ks)">
-      </button>
-      <button pButton *ngIf="showOpen"
-              class="p-button-text"
-              icon="pi pi-external-link"
-              (click)="onOpen.emit(this.ks)">
-      </button>
-      <button pButton *ngIf="showEdit"
-              class="p-button-text"
-              icon="pi pi-pencil"
-              (click)="onEdit.emit(this.ks)">
-      </button>
-      <button pButton *ngIf="showPreview"
-              class="p-button-text"
-              icon="pi pi-eye"
-              (click)="onPreview.emit(this.ks)">
-      </button>
-    </div>
-  </ng-template>
-</p-card>
+      <div *ngIf="showIcon || showRemove || showOpen || showEdit || showPreview"
+           class="flex-row-center-between">
+        <div class="col text-left">
+          <app-ks-icon [ks]="ks"
+                       *ngIf="showIcon"
+                       class="cursor-pointer"
+                       (click)="onOpen.emit(this.ks)">
+          </app-ks-icon>
+        </div>
+        <div *ngIf="showRemove || showOpen || showEdit || showPreview">
+          <button pButton *ngIf="showEdit"
+                  class="p-button-text"
+                  icon="pi pi-info"
+                  pTooltip="Details"
+                  [tooltipOptions]="actionButtonTooltipOptions"
+                  (click)="onEdit.emit(this.ks)">
+          </button>
+          <button pButton *ngIf="showPreview"
+                  class="p-button-text"
+                  icon="pi pi-eye"
+                  pTooltip="Preview"
+                  [tooltipOptions]="actionButtonTooltipOptions"
+                  (click)="onPreview.emit(this.ks)">
+          </button>
+          <button pButton *ngIf="showOpen"
+                  class="p-button-text"
+                  icon="pi pi-external-link"
+                  pTooltip="Open In..."
+                  [tooltipOptions]="actionButtonTooltipOptions"
+                  (click)="onOpen.emit(this.ks)">
+          </button>
+          <button pButton *ngIf="showRemove"
+                  class="p-button-text"
+                  icon="pi pi-trash"
+                  pTooltip="Remove"
+                  [tooltipOptions]="actionButtonTooltipOptions"
+                  (click)="onRemove.emit(this.ks)">
+          </button>
+        </div>
+      </div>
+    </ng-template>
+  </p-card>
+</div>

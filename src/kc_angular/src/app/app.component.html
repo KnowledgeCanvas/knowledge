@@ -46,7 +46,8 @@ limitations under the License.-->
                                (onProjectCreation)="createProject($event)"
                                (onProjectDeletion)="deleteProject($event)"
                                (onTopicSearch)="searchTopic($event)"
-                               (onHide)="showProjectTree = false">
+                               (onHide)="showProjectTree = false"
+                               (onShow)="showProjectTree = true">
   </app-project-detail-viewport>
 
   <!--Begin Notification Placeholders-->
@@ -57,6 +58,7 @@ limitations under the License.-->
 
   <!--Begin UpNext Knowledge Source Queue-->
   <p-overlayPanel #ksQueueOverlay
+                  styleClass="surface-100 shadow-7"
                   [appendTo]="'body'"
                   [dismissable]="true">
     <ng-template pTemplate="content">
@@ -85,7 +87,7 @@ limitations under the License.-->
   <!--End UpNext Knowledge Source Queue-->
 
   <!--Begin Add Knowledge Source FAB-->
-  <div style="" class="kc-speeddial" *ngIf="readyToShow">
+  <div style="" class="kc-speeddial" *ngIf="readyToShow && currentProject">
     <p-speedDial direction="up" (onClick)="onSpeedDialClick($event)"></p-speedDial>
   </div>
   <!--End Add Knowledge Source FAB-->

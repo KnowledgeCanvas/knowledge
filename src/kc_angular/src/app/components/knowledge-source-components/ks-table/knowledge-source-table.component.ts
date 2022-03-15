@@ -25,6 +25,7 @@ import {OverlayPanel} from "primeng/overlaypanel";
 import {BrowserViewDialogService} from "../../../services/ipc-services/browser-service/browser-view-dialog.service";
 import {KsFactoryService} from "../../../services/factory-services/ks-factory-service/ks-factory.service";
 import {SettingsService} from "../../../services/ipc-services/settings-service/settings.service";
+import {KsContextMenuService} from "../../../services/factory-services/ks-context-menu/ks-context-menu.service";
 
 @Component({
   selector: 'ks-table',
@@ -49,7 +50,7 @@ export class KnowledgeSourceTableComponent implements OnInit, OnChanges {
   ksTableSelectedKsList: KnowledgeSource[] = [];
   ksTableShouldExist: boolean = true;
   ksTableContextMenuSelectedKs?: KnowledgeSource;
-  ksTableContextMenuItems: MenuItem[] = [];
+  ksMenuItems: MenuItem[] = [];
   ksTableShowCountdownInsteadOfDates: boolean = true;
   ksTableGlobalFilterFields: string[] = ['title', 'ingestType', 'description', 'associatedProject', 'rawText', 'icon', 'accessLink', 'topics', 'snippet', 'note', 'authors'];
   ksTopics: string[] = [];
@@ -75,7 +76,7 @@ export class KnowledgeSourceTableComponent implements OnInit, OnChanges {
 
   constructor(private ksCommandService: KsCommandService, private ksFactory: KsFactoryService,
               private projectService: ProjectService, private browserService: BrowserViewDialogService,
-              private settingsService: SettingsService) {
+              private settingsService: SettingsService, private ksContextMenuService: KsContextMenuService) {
     settingsService.app.subscribe((appSettings) => {
       if (appSettings.ks?.table?.showCountdown !== undefined) {
         this.ksTableShowCountdownInsteadOfDates = appSettings.ks.table.showCountdown;
@@ -227,12 +228,10 @@ export class KnowledgeSourceTableComponent implements OnInit, OnChanges {
   }
 
   onExportClicked() {
-    console.log('table export: ', this.dataTable);
     this.dataTable.exportCSV();
   }
 
   exportFn = (event: { data: any, field: string }) => {
-    console.log('export event: ', event);
     if (event.field === 'icon') {
       return '';
     }
@@ -250,116 +249,9 @@ export class KnowledgeSourceTableComponent implements OnInit, OnChanges {
     }
   }
 
-  initMenu() {
-    this.ksTableContextMenuItems = [{
-      label: 'Details',
-      icon: PrimeIcons.INFO,
-      command: () => {
-        this.ksCommandService.detail(this.ksTableContextMenuSelectedKs);
-      }
-    }, {
-      label: 'Preview', icon: PrimeIcons.EYE, command: () => {
-        this.ksCommandService.preview(this.ksTableContextMenuSelectedKs);
-      }
-    }, {
-      label: 'Open', icon: PrimeIcons.EXTERNAL_LINK, command: () => {
-        this.ksCommandService.open(this.ksTableContextMenuSelectedKs);
-      }
-    }, {label: '', separator: true,}, {
-      label: 'Goto Project', icon: PrimeIcons.ARROW_CIRCLE_RIGHT, command: () => {
-        if (this.ksTableContextMenuSelectedKs?.associatedProject)
-          this.kcSetCurrentProject.emit(this.ksTableContextMenuSelectedKs.associatedProject.value);
-      }
-    }, {
-      label: 'Copy', icon: PrimeIcons.COPY
-    }, {label: '', separator: true,}, {
-      label: 'Move', icon: PrimeIcons.REPLY
-    }, {
-      label: 'Remove', icon: PrimeIcons.TRASH
-    }
-    ];
-  }
-
-  configureMenu() {
-    this.initMenu();
-
-    let ksLabel = this.ksTableContextMenuSelectedKs?.title.substring(0, 13);
-    if (this.ksTableContextMenuSelectedKs && this.ksTableContextMenuSelectedKs.title.length > 13) {
-      ksLabel += '...';
-    }
-
-    let remove = this.ksTableContextMenuItems.find(m => m.label === 'Remove');
-    if (remove) {
-      remove.items = [{
-        label: ksLabel, command: () => {
-          this.ksCommandService.remove([this.ksTableContextMenuSelectedKs]);
-        }
-      }];
-      if (this.ksTableSelectedKsList.length) {
-        remove.items.push({
-          label: `Selected (${this.ksTableSelectedKsList.length})`, command: () => {
-            this.ksCommandService.remove(this.ksTableSelectedKsList);
-          }
-        })
-      }
-    }
-
-    let move = this.ksTableContextMenuItems.find(m => m.label === 'Move');
-    if (move) {
-      move.items = [{
-        label: ksLabel, command: () => {
-          this.ksCommandService.move([this.ksTableContextMenuSelectedKs]);
-        }
-      }];
-      if (this.ksTableSelectedKsList.length) {
-        move.items.push({
-          label: `Selected (${this.ksTableSelectedKsList.length})`, command: () => {
-            this.ksCommandService.move(this.ksTableSelectedKsList);
-          }
-        })
-      }
-    }
-
-    let copy = this.ksTableContextMenuItems.find(m => m.label === 'Copy');
-    if (copy && this.ksTableContextMenuSelectedKs) {
-      copy.items = [{
-        label: ksLabel, items: [{
-          label: this.ksTableContextMenuSelectedKs.ingestType === 'file' ? 'File Path' : 'Web Link', command: () => {
-            this.ksCommandService.copyPath([this.ksTableContextMenuSelectedKs]);
-          }
-        }, {
-          label: 'JSON', command: () => {
-            this.ksCommandService.copyJSON([this.ksTableContextMenuSelectedKs]);
-          }
-        }]
-      }]
-
-      if (this.ksTableSelectedKsList.length) {
-        let nFiles = this.ksTableSelectedKsList.filter(k => k.ingestType === 'file').length;
-        let nLinks = this.ksTableSelectedKsList.length - nFiles;
-        let multiLabel = `Files (${nFiles}) - Links (${nLinks})`;
-        copy.items.push({
-          label: `Selected`, items: [{
-            label: multiLabel, command: () => {
-              this.ksCommandService.copyPath(this.ksTableSelectedKsList);
-            }
-          }, {
-            label: `JSON (${this.ksTableSelectedKsList.length})`, command: () => {
-              this.ksCommandService.copyJSON(this.ksTableSelectedKsList);
-            }
-          }]
-        })
-      }
-    }
-
-    // If KS is of type 'file', add the ability to go to that file in Files/Finder
-    if (this.ksTableContextMenuSelectedKs?.ingestType === 'file') {
-      let menuItem = {
-        label: 'Show in files', icon: PrimeIcons.FOLDER_OPEN, command: (_: any) => {
-          this.ksCommandService.showInFiles(this.ksTableContextMenuSelectedKs);
-        }
-      }
-      this.ksTableContextMenuItems.splice(4, 0, menuItem);
+  onKsContextMenu() {
+    if (this.ksTableContextMenuSelectedKs) {
+      this.ksMenuItems = this.ksContextMenuService.generate(this.ksTableContextMenuSelectedKs, this.ksTableSelectedKsList);
     }
   }
 
@@ -396,27 +288,21 @@ export class KnowledgeSourceTableComponent implements OnInit, OnChanges {
    * or EventEmitter event such that event.value contains a topic string
    */
   onChipClick(topic: any | string) {
-    console.log('Searching for topic: ', topic);
-
     let searchValue: string;
-
     if (typeof topic === 'string') {
       searchValue = topic.trim();
     } else {
       topic.preventDefault();
       topic.stopPropagation();
-
       if (!topic.value || typeof topic.value !== 'string') {
         return;
       }
       searchValue = topic.value.trim();
     }
-
     if (!topic.length) {
       console.warn('Topic appears to have no content.');
       return;
     }
-
     let ks = this.ksFactory.searchKS(searchValue);
     this.browserService.open({ks: ks});
   }

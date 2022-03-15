@@ -23,9 +23,6 @@ export interface KcFileViewConfig {
   isDialog?: true
 }
 
-export interface KcFileViewEvents {
-}
-
 export interface KcFileViewClickEvent extends KcViewportHeaderEvent {
 }
 
@@ -64,15 +61,12 @@ export class FileViewComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    console.log('Changes: ', changes);
-
     const config: KcFileViewConfig = changes.config.currentValue;
     // TODO: sanitize file paths to avoid errors (e.g. with # symbol in file path) [should be done when we import files...]
     if (config) {
       if (config.filePath) {
         if (this.validateFileURI(config.filePath)) {
           this.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl('file://' + encodeURI(config.filePath));
-          console.log('Emitting viewReady with safeURL: ', this.safeUrl);
           this.ready = true;
           this.viewReady.emit(true);
         } else {
