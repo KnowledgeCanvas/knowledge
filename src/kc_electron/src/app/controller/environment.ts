@@ -21,7 +21,6 @@ let os = require('os');
 let path = require('path');
 let dotenv = require('dotenv');
 
-
 const RET_OK = 0;
 const RET_ERR = -1;
 const appTitle = 'Knowledge-Canvas';
@@ -31,9 +30,6 @@ const appPath = path.join(homeDir, '.' + appTitle);
 const filesPath = path.join(appPath, 'files');
 const pdfPath = path.join(filesPath, 'pdfs');
 const resources = path.join(process.cwd(), 'Resources');
-
-console.log('Resources path: ', resources);
-
 const envPath = path.resolve(resources, 'app.env');
 const projectsPath = path.join(appPath, 'Projects');
 const ingestSettings = {
@@ -42,7 +38,11 @@ const ingestSettings = {
     managed: false,
     preserveTimestamps: false,
     interval: 15000,
-    storageLocation: appPath
+    storageLocation: appPath,
+    extensions: {
+        httpServerEnabled: false,
+        httpServerPort: 9000
+    }
 }
 const searchSettings = {
     numResults: 10,
@@ -51,7 +51,6 @@ const searchSettings = {
 const display = {
     theme: {code: 'lara-light-indigo', label: 'Lara Light Indigo', isDark: false}
 }
-
 const wellnessSettings = {
     timerMinutes: 25,
     timerSeconds: 0,
@@ -60,7 +59,6 @@ const wellnessSettings = {
     autostartAfterBreak: false,
     allowOverride: true
 }
-
 const applicationSettings = {
     ks: {
         table: {
@@ -70,6 +68,8 @@ const applicationSettings = {
         }
     }
 }
+
+console.log('Resources path: ', resources);
 
 // ApplicationEnvironment is a singleton class that serves as the ground-truth environment settings
 export class ApplicationEnvironment {
@@ -90,7 +90,6 @@ export class ApplicationEnvironment {
         if (!ApplicationEnvironment.instance) {
             ApplicationEnvironment.instance = new ApplicationEnvironment();
         }
-
         return ApplicationEnvironment.instance;
     }
 
@@ -178,12 +177,7 @@ export class ApplicationEnvironment {
     }
 
     private static checkPaths() {
-        for (let pathToCheck of [
-            appPath,
-            filesPath,
-            pdfPath,
-            projectsPath
-        ]) {
+        for (let pathToCheck of [appPath, filesPath, pdfPath, projectsPath]) {
             if (makeDirectory(pathToCheck) !== RET_OK)
                 console.error('Unexpected error while attempting to create directory: ', pathToCheck);
         }
@@ -193,7 +187,6 @@ export class ApplicationEnvironment {
         return ApplicationEnvironment.appEnv;
     }
 }
-
 
 function writeFile(dir: string, data: any) {
     dir = path.join(dir);
@@ -206,7 +199,6 @@ function writeFile(dir: string, data: any) {
         return RET_ERR;
     }
 }
-
 
 function makeDirectory(dir: string) {
     dir = path.resolve(dir);
