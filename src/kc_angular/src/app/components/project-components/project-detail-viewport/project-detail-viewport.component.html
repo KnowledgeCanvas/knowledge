@@ -18,13 +18,12 @@ limitations under the License.-->
            (onHide)="onHide.emit(true)"
            [modal]="true"
            [dismissible]="true">
-  <app-projects-tree
-    [treeNodes]="treeNodes"
-    [selectedNode]="selectedNode"
-    (onProjectCreation)="onProjectCreation.emit($event)"
-    (onProjectDeletion)="onProjectDeletion.emit($event)"
-    (onProjectEdit)="kcEditProject($event)"
-    (onHide)="onHide.emit($event)">
+  <app-projects-tree [treeNodes]="treeNodes"
+                     [selectedNode]="selectedNode"
+                     (onProjectCreation)="onProjectCreation.emit($event)"
+                     (onProjectDeletion)="onProjectDeletion.emit($event)"
+                     (onProjectEdit)="kcEditProject($event)"
+                     (onHide)="onHide.emit($event)">
   </app-projects-tree>
 </p-sidebar>
 
@@ -45,17 +44,15 @@ limitations under the License.-->
   </div>
 </div>
 
-<div *ngIf="kcProject">
-  <div>
-    <app-knowledge-canvas [projectTreeNodes]="treeNodes"
-      (kcSetCurrentProject)="kcSetCurrentProject($event)"
-                          (kcEditProject)="kcEditProject($event)"
-                          (kcProjectUpdate)="kcProjectUpdate($event)"
-                          (ksAdded)="ksAdded($event)"
-                          (onProjectCreation)="onProjectCreation.emit($event)"
-                          (onProjectRemove)="onProjectDeletion.emit($event)"
-                          (onTopicSearch)="onTopicSearch.emit($event)"
-                          [ngStyle]="kcStyle">
-    </app-knowledge-canvas>
-  </div>
-</div>
+<app-knowledge-canvas *ngIf="kcProject"
+                      [kcProject]="kcProject"
+                      [projectTreeNodes]="treeNodes"
+                      (kcSetCurrentProject)="kcSetCurrentProject($event)"
+                      (kcEditProject)="kcEditProject($event)"
+                      (kcProjectUpdate)="kcProjectUpdate($event)"
+                      (ksAdded)="ksAdded($event)"
+                      (onProjectCreation)="onProjectCreation.emit($event)"
+                      (onProjectRemove)="onProjectDeletion.emit($event)"
+                      (onTopicSearch)="onTopicSearch.emit($event)"
+                      [ngStyle]="kcStyle">
+</app-knowledge-canvas>

@@ -34,15 +34,15 @@ export class CytoscapeModel {
         },
 
         nodeRepulsion(node: any): number {
-            return 999999;
+            return 9999999;
         },
 
-        initialTemp: 999999,
+        initialTemp: 99999,
 
-        gravity: 1,
+        gravity: 99,
 
         // duration of animation in ms if enabled
-        animationDuration: 500,
+        animationDuration: 0,
 
         // easing of animation if enabled
         animationEasing: undefined,

@@ -90,7 +90,7 @@ extractWebsite = ipcMain.on("app-extract-website", (event: any, args: any) => {
     });
 
     window.webContents.once('dom-ready', () => {
-        console.log('DOM ready, waiting 3 seconds for renderer to catch up...');
+        console.debug('DOM ready, waiting 2 seconds for renderer to catch up...');
         setTimeout(() => {
             console.log('Calling printToPDF with options: ', options);
             window.webContents.printToPDF(options).then((data: any) => {
@@ -221,6 +221,7 @@ openBrowserView = ipcMain.on('electron-browser-view', (event: any, args: KsBrows
      * BrowserView event listeners
      */
     kcBrowserView.webContents.on('dom-ready', function () {
+        kcBrowserView.setBackgroundColor('#ffffff');
         if (args.returnHtml) {
             let js = [
                 kcBrowserView.webContents.executeJavaScript('document.getElementsByTagName(\'html\')[0].innerHTML;'),

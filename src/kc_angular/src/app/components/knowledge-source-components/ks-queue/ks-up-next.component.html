@@ -28,12 +28,6 @@ limitations under the License.-->
                 [dragdrop]="true"
                 [sourceStyle]="{'height':'30rem'}"
                 [targetStyle]="{'height':'30rem'}"
-                (onSourceSelect)="sourceSelect($event)"
-                (onTargetSelect)="targetSelect($event)"
-                (onMoveToTarget)="moveToTarget($event)"
-                (onMoveToSource)="moveToSource($event)"
-                (onMoveAllToSource)="moveToSource($event)"
-                (onMoveAllToTarget)="moveToTarget($event)"
                 filterBy="title,ingestType"
                 [showSourceFilter]="true"
                 [style]="{'min-height': '50vh'}">
@@ -67,4 +61,8 @@ limitations under the License.-->
   </div>
 </div>
 
-<p-contextMenu [global]="true" [model]="menu" appendTo="body"></p-contextMenu>
+<p-contextMenu [global]="true"
+               [model]="menu"
+               appendTo="body"
+               styleClass="shadow-7 surface-100">
+</p-contextMenu>

@@ -181,7 +181,7 @@ export class KnowledgeGraphComponent implements OnInit {
       return p.subprojects;
     });
     let root = this.tree(hierarchy);
-    console.log('Hierarchy root: ', root);
+    console.debug('KnowledgeGraph.drawProjectHierarchy() | root === ', root);
 
     const descendants = root.descendants();
     // @ts-ignore

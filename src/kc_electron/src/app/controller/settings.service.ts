@@ -47,9 +47,6 @@ class SettingsService {
             console.error(e);
         }
 
-        // TODO: Filter the settings that we don't want to expose in a more systematic way
-        delete settings.googleApiKey;
-
         appEnv = {
             ...appEnv,
             ...settings

@@ -26,7 +26,6 @@ export interface SettingsModel {
   projectsPath?: string;
   search?: SearchSettingsModel;
   userName?: string;
-  wellness?: WellnessSettingsModel;
 }
 
 export interface ApplicationSettingsModel {
@@ -56,17 +55,8 @@ export interface IngestSettingsModel {
   managed?: boolean;
   preserveTimestamps?: string;
   storageLocation?: string;
-}
-
-export interface StorageSettingsModel {
-
-}
-
-export interface WellnessSettingsModel {
-  allowOverride: boolean;
-  autostartAfterBreak: boolean;
-  breakMinutes: number;
-  breakSeconds: number;
-  timerMinutes: number;
-  timerSeconds: number;
+  extensions?: {
+    httpServerEnabled?: boolean,
+    httpServerPort?: number
+  }
 }

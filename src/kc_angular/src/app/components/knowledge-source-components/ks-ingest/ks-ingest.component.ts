@@ -206,11 +206,6 @@ export class KsIngestComponent implements OnInit {
     this.files = this.files.filter(f => f.name !== $event.file.name && f.size !== $event.file.size);
   }
 
-
-  onDrop($event: DragEvent) {
-    console.log('Drop event: ', $event);
-  }
-
   onKsRemoved($event: KnowledgeSource) {
     this.ksList = this.ksList.filter(ks => ks.id.value !== $event.id.value);
   }

@@ -15,12 +15,26 @@
  */
 
 
-import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {KnowledgeSource} from "../../../models/knowledge.source.model";
 import {ElectronIpcService} from "../../../services/ipc-services/electron-ipc/electron-ipc.service";
 import {TreeNode} from "primeng/api";
 import {Subscription} from "rxjs";
 import {UuidModel} from "../../../models/uuid.model";
+
+export interface KsCardOptions {
+  showThumbnail: boolean,
+  showDescription: boolean,
+  showProjectSelection: boolean,
+  showTopics: boolean,
+  showIcon: boolean,
+  showRemove: boolean,
+  showPreview: boolean,
+  showEdit: boolean,
+  showOpen: boolean,
+  showContentType: boolean,
+  showProjectName: boolean
+}
 
 @Component({
   selector: 'app-ks-card',
@@ -67,12 +81,7 @@ export class KsCardComponent implements OnInit, OnDestroy {
   /**
    * Determines whether to display list of KS Tags as a Tooltip (default: true)
    */
-  @Input() showTags: boolean = true;
-
-  /**
-   * Determines whether to display a full list of KS Tags (default: false)
-   */
-  @Input() showExpandedTags: boolean = true;
+  @Input() showTopics: boolean = true;
 
   /**
    * Determines whether to display the "Remove" button (default: true)
@@ -100,9 +109,14 @@ export class KsCardComponent implements OnInit, OnDestroy {
   @Input() showContentType: boolean = true;
 
   /**
+   * Determines whether to show KS icon (default: true)
+   */
+  @Input() showIcon: boolean = true;
+
+  /**
    * Determines whether to show name of the Associated Project (default: true)
    */
-  @Input() showProjectName: boolean = true;
+  @Input() showProjectBreadcrumbs: boolean = true;
 
   /**
    * EventEmitter that is triggered when the "Remove" button is pressed
@@ -139,14 +153,25 @@ export class KsCardComponent implements OnInit, OnDestroy {
    */
   @Output() onTopicChange = new EventEmitter<KnowledgeSource>();
 
-  thumbnail?: string;
-  thumbnailUnavailable: boolean = false;
-  contentType?: string;
-  keywords?: string[];
-  description?: string;
-  private _subProjectTree?: Subscription;
-  private _subThumbnail?: Subscription;
+  hovering: boolean = false;
 
+  thumbnail?: string;
+
+  thumbnailUnavailable: boolean = false;
+
+  contentType?: string;
+
+  keywords?: string[];
+
+  description?: string;
+
+  actionButtonTooltipOptions = {
+    showDelay: 750,
+    tooltipPosition: 'top'
+  };
+  private _subProjectTree?: Subscription;
+
+  private _subThumbnail?: Subscription;
 
   constructor(private ipcService: ElectronIpcService) {
 
@@ -211,6 +236,18 @@ export class KsCardComponent implements OnInit, OnDestroy {
     }
   }
 
+  @HostListener('mouseover')
+  onCardHover() {
+    if (!this.hovering)
+      this.hovering = true;
+  }
+
+  @HostListener('mouseleave')
+  onCardHoverExit() {
+    if (this.hovering)
+      this.hovering = false;
+  }
+
   async getContentType() {
     if (this.ks.ingestType === 'file') {
       return `File (${this.ks.reference.source.file?.type || 'unknown'})`;
@@ -271,7 +308,7 @@ export class KsCardComponent implements OnInit, OnDestroy {
       }
     }
 
-    return undefined;
+    return this.ks.description;
   }
 
   onProjectSelected($event: any) {
