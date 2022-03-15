@@ -15,25 +15,41 @@
  */
 
 import {IpcMessage} from "../models/electron.ipc.model";
+import * as http from "http";
 
 let share: any = (global as any).share;
-let http: any = share.http;
 let url: any = share.url;
 
-let createServer = () => {
-    const server = http.createServer((req: any, res: any) => {
-        // TODO: try to figure out which browsers the user has available for later use
+export class KcExtensionServer {
+    private __server?: http.Server;
+    private __PORT = 9000;
 
-        console.log('--------------------------------------------------------------------------------');
-        console.log('Browser Extension Server - Link Received')
-        console.log('Request: ', url.parse(req.url, true).query);
-        console.log('--------------------------------------------------------------------------------');
+    constructor() {
+        this.__server = http.createServer(this.receive);
+        this.__server.on('error', (e) => {
+            console.error('ExtensionServer Error: ', e);
+
+            if ((e as any).code && (e as any).code === 'EADDRINUSE') {
+                console.debug('Port in use, retrying...');
+                setTimeout(() => {
+                    if (!this.__server) {
+                        return;
+                    }
+                    this.__server.close();
+                    this.__server.listen(this.__PORT);
+                }, 10000);
+            }
+        });
+    }
+
+    async receive(req: any, res: any) {
+        console.debug('--------------------------------------------------------------------------------');
+        console.debug('Browser Extension Server - Link Received')
+        console.debug('Request: ', url.parse(req.url, true).query);
+        console.debug('--------------------------------------------------------------------------------');
 
         let kcMainWindow: any = share.BrowserWindow.getAllWindows()[0];
         let q = url.parse(req.url, true).query;
-
-        // console.log('Request: ', req);
-        // console.log('Meta: ', req.body);
 
         if (q.link) {
             let ipcResponse: IpcMessage = {
@@ -46,13 +62,20 @@ let createServer = () => {
             console.error('Received invalid link from Chrome extension...');
             res.end('Failed');
         }
-    });
+    }
 
-    server.listen(9000);
+    start() {
+        if (!this.__server) {
+            return;
+        }
+        this.__server?.listen(this.__PORT);
+    }
 }
 
+let kcExtensionServer = new KcExtensionServer();
+
 module.exports = {
-    createServer
+    kcExtensionServer
 }
 
 
