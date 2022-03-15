@@ -227,12 +227,10 @@ export class KnowledgeSourceTableComponent implements OnInit, OnChanges {
   }
 
   onExportClicked() {
-    console.log('table export: ', this.dataTable);
     this.dataTable.exportCSV();
   }
 
   exportFn = (event: { data: any, field: string }) => {
-    console.log('export event: ', event);
     if (event.field === 'icon') {
       return '';
     }
@@ -396,27 +394,21 @@ export class KnowledgeSourceTableComponent implements OnInit, OnChanges {
    * or EventEmitter event such that event.value contains a topic string
    */
   onChipClick(topic: any | string) {
-    console.log('Searching for topic: ', topic);
-
     let searchValue: string;
-
     if (typeof topic === 'string') {
       searchValue = topic.trim();
     } else {
       topic.preventDefault();
       topic.stopPropagation();
-
       if (!topic.value || typeof topic.value !== 'string') {
         return;
       }
       searchValue = topic.value.trim();
     }
-
     if (!topic.length) {
       console.warn('Topic appears to have no content.');
       return;
     }
-
     let ks = this.ksFactory.searchKS(searchValue);
     this.browserService.open({ks: ks});
   }

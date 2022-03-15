@@ -18,7 +18,6 @@ export class KnowledgeCanvas {
                 let data: any[] = [];
 
                 for (let project of projects) {
-                    console.log('Project: ', project);
                     let label = (project as any).name;
                     let node = {
                         data: {
@@ -43,7 +42,6 @@ export class KnowledgeCanvas {
 
                     if ((project as any).knowledgeSource) {
                         for (let ks of (project as any).knowledgeSource) {
-                            console.log('Adding ks to graph: ', ks);
                             ks.icon = localStorage.getItem(`icon-${ks.id.value}`);
                             let node = {
                                 group: 'nodes',

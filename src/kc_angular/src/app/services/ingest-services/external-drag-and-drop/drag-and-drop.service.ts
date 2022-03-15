@@ -190,7 +190,6 @@ export class DragAndDropService {
       });
     }
 
-    console.log('Returning request: ', req);
     return req;
   }
 }

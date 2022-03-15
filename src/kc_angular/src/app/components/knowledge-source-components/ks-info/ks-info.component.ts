@@ -168,7 +168,7 @@ export class KsInfoComponent implements OnInit, OnChanges {
   }
 
   ksYoutubeStateChange($event: any) {
-    console.log('Got state change from Youtube player: ', $event);
+    console.debug('KsInfo.ksYoutubeStateChange($event) | $event === ', $event);
   }
 
   onTopicClick($event: any) {

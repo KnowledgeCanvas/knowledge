@@ -217,7 +217,6 @@ export class KsFactoryService {
         resolve(ks);
       }
 
-      console.log('Getting icon for ks: ', ks);
       if (typeof ks.accessLink === 'string') {
         ks.iconUrl = ks.accessLink;
       } else {
@@ -227,11 +226,8 @@ export class KsFactoryService {
           ks.iconUrl = ks.accessLink.origin;
         }
       }
-      console.log('Got url: ', ks.iconUrl);
 
       ks.icon = this.faviconService.generic();
-
-      console.log('Get icon fo: ', ks);
 
       this.faviconService.extract([ks.iconUrl]).then((icons) => {
         ks.icon = icons[0];

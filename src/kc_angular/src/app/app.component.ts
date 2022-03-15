@@ -339,8 +339,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     let req: KcDialogRequest = {
       ksList: [this.currentProject?.knowledgeSource]
     }
-    this.ipcService.openKcDialog(req).then((result) => {
-      console.log('Result from knowledge canvas: ', result);
+    this.ipcService.openKcDialog(req).catch((reason) => {
+      console.error('App.onKcClick() | error === ', reason);
     });
 
     // let projectId: string | undefined = undefined;

@@ -14,6 +14,7 @@
  limitations under the License.
  */
 
+
 import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {CodeModel, WebsiteContentModel, WebsiteMetadataModel, WebsiteModel} from "src/app/models/website.model";
@@ -77,8 +78,6 @@ export class ExtractionService {
         // Meta Tags
         let meta = htmlDoc.getElementsByTagName('meta');
         if (meta && meta.length) {
-          console.debug('Original meta: ', meta);
-
           let extractedMeta = [];
 
           for (let i = 0; i < meta.length; i++) {
@@ -117,7 +116,6 @@ export class ExtractionService {
               extractedMeta.push(attr);
             }
           }
-
           metadata.meta = extractedMeta;
         }
 
@@ -125,11 +123,10 @@ export class ExtractionService {
         // Article Tag TODO: comprehensive testing and verification
         let article = htmlDoc.getElementsByTagName('article');
         if (article && article.length) {
-          console.log('Article before parsing: ', article);
+          console.debug('ExtractionService.extractWebsiteMetadata() | article detected')
 
           for (let i = 0; i < article.length; i++) {
             let a = article[i];
-
             let aTitle = metadata.title;
             if (a.title) {
               aTitle = a.title
@@ -148,12 +145,13 @@ export class ExtractionService {
               html: a.innerHTML
             };
           }
-
         }
 
         // Code tags
         let code = htmlDoc.getElementsByTagName('code');
         if (code && code.length) {
+          console.debug('ExtractionService.extractWebsiteMetadata() | code tags detected')
+
           let codeHtml: CodeModel[] = [];
           for (let i = 0; i < code.length; i++) {
             // @ts-ignore
@@ -170,6 +168,7 @@ export class ExtractionService {
         // Answers (StackOverflow)
         let answers = htmlDoc.getElementById('answers');
         if (answers) {
+          console.debug('ExtractionService.extractWebsiteMetadata() | "answers" element detected')
           console.warn('Answer extraction not implemented but an answer field was detected...');
         }
 

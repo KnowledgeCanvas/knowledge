@@ -155,8 +155,7 @@ export class ProjectService {
     if (typeof id !== 'string') {
       id = id.value;
     }
-
-    console.log('Recursively deleting: ', id);
+    console.debug('ProjectService.deleteProject(id) [recursive] | id === ', id);
 
     this.recursiveDelete(id);
 
@@ -382,15 +381,6 @@ export class ProjectService {
     }
   }
 
-  expandAncestorPath(project?: ProjectModel) {
-    if (project) {
-      console.log('Expanding: ', project);
-      project.expanded = true;
-      this.expandAncestorPath(this.projectSource.find(p => p.id.value === project.parentId?.value));
-    }
-  }
-
-
   getCurrentProjectId(): UuidModel | null {
     return this.selectedSource.value?.id ?? null;
   }
@@ -494,7 +484,6 @@ export class ProjectService {
   }
 
   private initialize(): void {
-    console.log('Getting tree from: ', this.tree);
     const data = this.buildFileTree(this.tree.asArray(), 0);
     this.allProjects.next(data);
     let currentProject = this.storageService.kcCurrentProject;
@@ -607,11 +596,8 @@ export class ProjectService {
   private updateKnowledgeSource(project: ProjectModel, update: KnowledgeSource[]): ProjectModel {
     if (project.knowledgeSource && project.knowledgeSource.length > 0) {
       for (let ks of update) {
-        console.log(`Updating project ${project.name} with KS: ${ks.title}...`, project, ks);
-
         // Make sure the item does not already exist in the project
         let idx = project.knowledgeSource.findIndex(p => p.id.value === ks.id.value);
-
         if (idx >= 0) {
           project.knowledgeSource[idx] = ks;
         } else {
