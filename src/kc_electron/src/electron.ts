@@ -57,12 +57,8 @@ require('./app/ipc');
 // Setup knowledge source ingestion
 require('./app/ingest');
 
-// Start browser extension server
-const browserExtensionServer = require('./app/server/server');
-
 const browserIpc = require('./app/ipc').browserIpc;
 
-browserExtensionServer.createServer();
 
 // Get application settings
 let appEnv = settingsService.getSettings();
@@ -72,6 +68,21 @@ let kcMainWindow: any;
 
 // Declare window used to display knowledge graphs, etc
 let kcKnowledgeWindow: any;
+
+if (!appEnv.ingest.extensions) {
+    appEnv.ingest.extensions = {
+        httpServerEnabled: false,
+        httpServerPort: 9000
+    }
+    settingsService.setSettings(appEnv);
+}
+
+if (appEnv.ingest.extensions.httpServerEnabled) {
+    // Start browser extension server
+    console.debug('Starting browser extension server...');
+    const browserExtensionServer = require('./app/server/server').kcExtensionServer;
+    browserExtensionServer.start();
+}
 
 /**
  *
