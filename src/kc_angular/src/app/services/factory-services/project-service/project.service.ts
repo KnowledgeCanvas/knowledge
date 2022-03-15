@@ -97,7 +97,6 @@ export class ProjectService {
 
   projectCommandNavigate(id: string) { // TODO: implement correctly
     this.setCurrentProject(id);
-    return;
     //
     // console.log(`Navigate to ${id} with current index ${this._projectCommandIndex} with command list: `, this._projectCommands);
     //

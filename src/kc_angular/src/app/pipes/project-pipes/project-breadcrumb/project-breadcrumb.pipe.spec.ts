@@ -19,6 +19,7 @@ import {ProjectBreadcrumbPipe} from './project-breadcrumb.pipe';
 
 describe('ProjectBreadcrumbPipe', () => {
   it('create an instance', () => {
+    // @ts-ignore
     const pipe = new ProjectBreadcrumbPipe();
     expect(pipe).toBeTruthy();
   });

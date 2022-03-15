@@ -76,28 +76,80 @@ export class KnowledgeCanvas {
     }
 
     private async getAllProjects() {
-        let projectsStr = localStorage.getItem('kc-projects');
-        if (!projectsStr) {
-            console.error('Unable to find projects in local storage...');
+        const currentProject = localStorage.getItem('current-project');
+        if (!currentProject) {
+            console.warn('KnowledgeCanvas.getAllProjects() | Invalid current-project: ', currentProject);
             return;
         }
-        projectsStr = JSON.parse(projectsStr);
-        if (!projectsStr) {
-            console.error('Unable to parse projects...');
+
+        const project = localStorage.getItem(currentProject);
+        if (!project) {
             return;
         }
-        let projects = [];
-        for (let pStr of projectsStr) {
-            let p = localStorage.getItem(pStr);
-            if (!p) {
-                continue;
-            }
-            p = JSON.parse(p);
-            if (!p) {
-                continue;
-            }
-            projects.push(p);
+
+        let root = JSON.parse(project);
+        if (!root) {
+            console.warn('KnowledgeCanvas.getAllProjects() | Invalid root: ', root);
+            return;
         }
-        return projects;
+
+        return this.getTree(root);
     }
+
+    private getTree(project: string | any): any[] {
+        if (!project) {
+            console.error('KnowledgeCanvas.getTree(project) | Invalid project: ', project)
+            return [];
+        }
+
+        if (typeof project === 'string') {
+            let pStr = localStorage.getItem(project);
+            if (!pStr) {
+                return [];
+            }
+
+            let p = JSON.parse(pStr);
+            if (!pStr) {
+                return [];
+            } else {
+                project = p;
+            }
+        }
+
+        let tree = [project];
+        if (!project.subprojects) {
+            return tree;
+        }
+        for (let subProject of project.subprojects) {
+            tree = tree.concat(this.getTree(subProject));
+        }
+
+        return tree;
+    }
+
+    private getRoot(id: string): any {
+        let projectStr = localStorage.getItem(id);
+        if (!projectStr) {
+            console.warn('KnowledgeCanvas.getRoot(id) | Invalid project string: ', projectStr, ' for ID: ', id);
+            return;
+        }
+
+        let project = JSON.parse(projectStr);
+        if (!project) {
+            console.warn('KnowledgeCanvas.getRoot(id) | Invalid JSON parse of project: ', project);
+            return;
+        }
+
+
+        if (project.parentId?.value) {
+            if (project.parentId.value === '') {
+                return project;
+            }
+            return this.getRoot(project.parentId.value);
+        } else {
+            return project;
+        }
+    }
+
+
 }

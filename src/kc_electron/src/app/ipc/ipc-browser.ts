@@ -221,6 +221,7 @@ openBrowserView = ipcMain.on('electron-browser-view', (event: any, args: KsBrows
      * BrowserView event listeners
      */
     kcBrowserView.webContents.on('dom-ready', function () {
+        kcBrowserView.setBackgroundColor('#ffffff');
         if (args.returnHtml) {
             let js = [
                 kcBrowserView.webContents.executeJavaScript('document.getElementsByTagName(\'html\')[0].innerHTML;'),

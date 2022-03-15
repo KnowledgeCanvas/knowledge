@@ -47,9 +47,9 @@ limitations under the License.-->
           (onHide)="onKsMoveHide(ksMoveTarget)"
           header="Move Knowledge Source">
   <ng-template pTemplate="body">
-    <div class="grid p-fluid" style="width: 70vw;">
+    <div class="grid p-fluid" style="width: 90vw; overflow-y: auto; overflow-x: hidden">
       <app-ks-card *ngFor="let ks of ksMoveTarget"
-                   class="sm:col-12 md:col-6 lg:col-4"
+                   class="sm:col-12 md:col-6 lg:col-6"
                    [ks]="ks"
                    [currentProject]="kcProject?.id"
                    [projectTreeNodes]="projectTreeNodes"
@@ -58,15 +58,17 @@ limitations under the License.-->
                    (onEdit)="onKsEdit($event)"
                    (onRemove)="onKsRemoveFromMoveList($event)"
                    (onProjectChange)="onKsProjectChange($event)"
-                   [showThumbnail]="false"
+                   [showThumbnail]="true"
                    [showRemove]="false"
-                   [showDescription]="false">
+                   [showDescription]="false"
+                   [showProjectBreadcrumbs]="true"
+                   [showTopics]="false">
       </app-ks-card>
     </div>
   </ng-template>
   <ng-template pTemplate="footer">
     <div class="w-full text-center mt-3">
-      <small>Note: changes will be saved automatically when a new project is selected</small>
+      <small class="text-500">Note: changes will be saved automatically when a new project is selected</small>
     </div>
   </ng-template>
 </p-dialog>
