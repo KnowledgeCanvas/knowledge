@@ -17,7 +17,7 @@ export class KsContextMenuService {
   generate(target: KnowledgeSource, ksList?: KnowledgeSource[]): MenuItem[] {
     let menu: MenuItem[] = [
       {
-        label: target.title,
+        label: target.title.substring(0, 16) + (target.title.length > 16 ? '...' : ''),
         disabled: true
       },
       {
