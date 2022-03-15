@@ -18,44 +18,52 @@ limitations under the License.-->
            (onHide)="onHide.emit(true)"
            [modal]="true"
            [dismissible]="true">
-  <app-projects-tree
-    [treeNodes]="treeNodes"
-    [selectedNode]="selectedNode"
-    (onProjectCreation)="onProjectCreation.emit($event)"
-    (onProjectDeletion)="onProjectDeletion.emit($event)"
-    (onProjectEdit)="kcEditProject($event)"
-    (onHide)="onHide.emit($event)">
+  <app-projects-tree [treeNodes]="treeNodes"
+                     [selectedNode]="selectedNode"
+                     (onProjectCreation)="onProjectCreation.emit($event)"
+                     (onProjectDeletion)="onProjectDeletion.emit($event)"
+                     (onProjectEdit)="kcEditProject($event)"
+                     (onHide)="onHide.emit($event)">
   </app-projects-tree>
 </p-sidebar>
 
 
-<div *ngIf="!kcProject" class="h-full">
-  <div class="flex-col-center-center h-full">
-    <p-card header="Let's get started..."
-            [style]="{width: '420px'}"
-            styleClass="p-card-shadow">
-      <ng-template pTemplate="header">
-        <p-image alt="Knowledge Canvas Logo" src="assets/img/kc-logo-transparent.svg"></p-image>
-      </ng-template>
-      <p>
-        Knowledge Canvas uses <b>Projects</b> to organize, link, and understand resources.
-        Click the "Projects" button to create a new project.
-      </p>
-    </p-card>
-  </div>
+<div *ngIf="!kcProject" class="flex-col-center-center h-full grid">
+  <p-panel header="Let's get started!">
+    <ng-template pTemplate="content">
+      <div class="w-full h-full grid">
+        <p-card class="col-12" subheader="Step 1: Create a new Project">
+          <div class="flex-row-center-start">
+            Click the
+            <button pButton icon="pi pi-list"
+                    class="p-button-text"
+                    label="Projects"
+                    (click)="onShow.emit()">
+            </button>
+            button to create a New Project
+          </div>
+        </p-card>
+        <p-card class="col-12" subheader="Step 2: Import Knowledge Sources">
+          <div class="flex-row-center-start">
+            Click the
+            <button pButton icon="pi pi-plus" class="p-button-sm p-button-text"></button>
+            button to import files, websites, and more.
+          </div>
+        </p-card>
+      </div>
+    </ng-template>
+  </p-panel>
 </div>
 
-<div *ngIf="kcProject">
-  <div>
-    <app-knowledge-canvas [projectTreeNodes]="treeNodes"
-      (kcSetCurrentProject)="kcSetCurrentProject($event)"
-                          (kcEditProject)="kcEditProject($event)"
-                          (kcProjectUpdate)="kcProjectUpdate($event)"
-                          (ksAdded)="ksAdded($event)"
-                          (onProjectCreation)="onProjectCreation.emit($event)"
-                          (onProjectRemove)="onProjectDeletion.emit($event)"
-                          (onTopicSearch)="onTopicSearch.emit($event)"
-                          [ngStyle]="kcStyle">
-    </app-knowledge-canvas>
-  </div>
-</div>
+<app-knowledge-canvas *ngIf="kcProject"
+                      [kcProject]="kcProject"
+                      [projectTreeNodes]="treeNodes"
+                      (kcSetCurrentProject)="kcSetCurrentProject($event)"
+                      (kcEditProject)="kcEditProject($event)"
+                      (kcProjectUpdate)="kcProjectUpdate($event)"
+                      (ksAdded)="ksAdded($event)"
+                      (onProjectCreation)="onProjectCreation.emit($event)"
+                      (onProjectRemove)="onProjectDeletion.emit($event)"
+                      (onTopicSearch)="onTopicSearch.emit($event)"
+                      [ngStyle]="kcStyle">
+</app-knowledge-canvas>

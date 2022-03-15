@@ -15,7 +15,7 @@
  */
 
 
-import {Component, ElementRef, EventEmitter, OnChanges, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
+import {Component, ElementRef, EventEmitter, OnInit, Output, ViewChild} from '@angular/core';
 import {ProjectService} from "../../../services/factory-services/project-service/project.service";
 import {ProjectModel} from "src/app/models/project.model";
 import {KnowledgeSource} from "../../../models/knowledge.source.model";
@@ -24,27 +24,16 @@ import {SettingsService} from "../../../services/ipc-services/settings-service/s
 import {MenuItem} from "primeng/api";
 import {OverlayPanel} from "primeng/overlaypanel";
 import {UuidModel} from "../../../models/uuid.model";
-import {CalendarOptions, FullCalendarModule} from "@fullcalendar/angular";
-import dayGridPlugin from '@fullcalendar/daygrid';
-import timeGridPlugin from '@fullcalendar/timegrid';
-import interactionPlugin from '@fullcalendar/interaction';
-import listPlugin from '@fullcalendar/list';
 import {KsCommandService} from "../../../services/command-services/ks-command/ks-command.service";
+import {KcCardRequest} from "../project-calendar/project-calendar.component";
 
-
-FullCalendarModule.registerPlugins([
-  dayGridPlugin,
-  timeGridPlugin,
-  listPlugin,
-  interactionPlugin
-]);
 
 @Component({
   selector: 'kc-project-overview',
   templateUrl: './project-details-overview.component.html',
   styleUrls: ['./project-details-overview.component.scss']
 })
-export class ProjectDetailsOverviewComponent implements OnInit, OnChanges {
+export class ProjectDetailsOverviewComponent implements OnInit {
   @ViewChild('projectOverview', {static: true}) container!: ElementRef;
 
   @ViewChild('projectInfoOverlay') projectInfoOverlay!: OverlayPanel;
@@ -52,6 +41,8 @@ export class ProjectDetailsOverviewComponent implements OnInit, OnChanges {
   @ViewChild('ksOverlay') ksOverlay!: OverlayPanel;
 
   @ViewChild('projectOverlay') projectOverlay!: OverlayPanel;
+
+  kcProject: ProjectModel | null = null;
 
   @Output() kcSetCurrentProject = new EventEmitter<string>();
 
@@ -65,157 +56,44 @@ export class ProjectDetailsOverviewComponent implements OnInit, OnChanges {
 
   showSubProjects: boolean = true;
 
-  kcProject: ProjectModel | null = null;
-
   ksList: KnowledgeSource[] = [];
 
   breadcrumbs: MenuItem[] = [];
 
   projectContext: any;
-  selectedKs!: KnowledgeSource;
-  calendarOptions: CalendarOptions = {
-    initialView: 'listWeek',
-    eventClick: (arg) => {
-      arg.jsEvent.preventDefault();
-      console.log('Event clicked: ', arg);
 
-      if (arg.event._def.url === 'project') {
-        this.projectOverlay.toggle(arg.jsEvent, arg.el);
-      } else {
-        const found = this.ksList.find(k => k.id.value === arg.event._def.url);
-        if (found) {
-          this.selectedKs = found;
-          this.ksOverlay.toggle(arg.jsEvent, arg.el);
-        }
-      }
-    },
-    events: [],
-    editable: false,
-    selectable: false,
-    selectMirror: false,
-    dayMaxEvents: true,
-    nowIndicator: true,
-    expandRows: true,
-    eventMaxStack: 25,
-    headerToolbar: {
-      left: 'prev,next today',
-      center: 'title',
-      right: 'listWeek,timeGridWeek,timeGridDay,dayGridMonth'
-    },
-  };
+  selectedKs!: KnowledgeSource;
+
+  selectedProject!: ProjectModel;
 
   constructor(private projectService: ProjectService, private faviconService: FaviconExtractorService,
               private settingsService: SettingsService, private ksCommandService: KsCommandService) {
-    projectService.currentProject.subscribe((project) => {
-
-      this.kcProject = project;
-
-      if (!project) {
+    projectService.currentProject.subscribe((kcProject) => {
+      if (!kcProject) {
         return;
       }
-
+      this.kcProject = kcProject;
       this.generateKsList(this.showSubProjects);
-
-      if (!project.calendar)
-        project.calendar = {events: [], start: null, end: null};
-
-      let events: {
-        title: string,
-        start: string | Date,
-        color?: string,
-        textColor?: string,
-        url?: string
-      }[] = [
-        {
-          title: `"${project.name}" (Created)`,
-          start: project.dateCreated,
-          color: 'yellow',
-          textColor: 'black',
-          url: 'project'
-        },
-        {
-          title: `"${project.name}" (Modified)`,
-          start: project.dateModified,
-          color: 'yellow',
-          textColor: 'black',
-          url: 'project'
-        },
-        {
-          title: `"${project.name}" (Accessed)`,
-          start: project.dateAccessed,
-          color: 'yellow',
-          textColor: 'black',
-          url: 'project'
-        }
-      ];
-
-      setTimeout(() => {
-        for (let ks of this.ksList) {
-          events.push({
-            title: `${ks.title} (Created)`,
-            start: ks.dateCreated,
-            url: ks.id.value
-          });
-          ks.dateModified.forEach((d) => {
-            events.push({
-              title: `${ks.title} (Modified)`,
-              start: d,
-              url: ks.id.value
-            });
-          });
-          ks.dateAccessed.forEach((d) => {
-            events.push({
-              title: `${ks.title} (Accessed)`,
-              start: d,
-              url: ks.id.value
-            });
-          });
-          if (ks.dateDue) {
-            events.push({
-              title: `(Due): ${ks.title}`,
-              start: ks.dateDue,
-              color: 'red',
-              url: ks.id.value
-            });
-          }
-        }
-      }, 500);
-
-      // @ts-ignore
-      this.calendarOptions.events = events;
-
-      let ancestors = this.projectService.getAncestors(project.id.value);
-
-      this.breadcrumbs = [];
-
-      for (let ancestor of ancestors) {
-        this.breadcrumbs.push({
-          label: ancestor.title, id: ancestor.id, title: ancestor.title,
-          items: [{label: ancestor.title, id: ancestor.id, title: ancestor.title,}]
-        });
-      }
-    });
-
+      this.setupBreadcrumbs(kcProject.id);
+    })
     settingsService.app.subscribe((settings) => {
       this.showSubProjects = settings.ks?.table?.showSubProjects ?? false;
       this.generateKsList(this.showSubProjects);
     });
   }
 
-  get canGoBack() {
-    return false;
-    // return this.projectService.projectCommandCanGoBack;
-  }
-
-  get canGoForward() {
-    return false;
-    // return this.projectService.projectCommandCanGoForward;
-  }
-
   ngOnInit(): void {
   }
 
-  ngOnChanges(changes: SimpleChanges) {
+  setupBreadcrumbs(id: UuidModel) {
+    let ancestors = this.projectService.getAncestors(id.value);
+    this.breadcrumbs = [];
+    for (let ancestor of ancestors) {
+      this.breadcrumbs.push({
+        label: ancestor.title, id: ancestor.id, title: ancestor.title,
+        items: [{label: ancestor.title, id: ancestor.id, title: ancestor.title,}]
+      });
+    }
   }
 
   /**
@@ -224,7 +102,7 @@ export class ProjectDetailsOverviewComponent implements OnInit, OnChanges {
    */
   changeKsList(ksList: KnowledgeSource[]) {
     this.faviconService.extractFromKsList(ksList).then((list) => {
-      this.ksList = [...list];
+      this.ksList = list;
     })
   }
 
@@ -284,14 +162,6 @@ export class ProjectDetailsOverviewComponent implements OnInit, OnChanges {
     this.projectInfoOverlay.toggle($event.originalEvent);
   }
 
-  goBack(_: MouseEvent) {
-    this.projectService.projectCommandGoBack();
-  }
-
-  goForward(_: MouseEvent) {
-    this.projectService.projectCommandGoForward();
-  }
-
   topicsOnChange($event: any) {
     if (!this.kcProject) {
       console.warn('A topic was changed but no current project exists.')
@@ -306,7 +176,9 @@ export class ProjectDetailsOverviewComponent implements OnInit, OnChanges {
   }
 
   topicsOnClick($event: any) {
-    if ($event.value && typeof $event.value === 'string') {
+    if (typeof $event === 'string') {
+      this.onTopicSearch.emit($event);
+    } else if ($event.value && typeof $event.value === 'string') {
       this.onTopicSearch.emit($event.value);
     }
   }
@@ -331,11 +203,31 @@ export class ProjectDetailsOverviewComponent implements OnInit, OnChanges {
     this.ksCommandService.detail($event);
   }
 
-  onKsRemove($event: KnowledgeSource) {
-    this.ksCommandService.remove([$event]);
+  onProjectCard(req: KcCardRequest) {
+    this.ksOverlay.hide();
+
+    if (!req.projectId) {
+      return;
+    }
+
+    const selected = this.projectService.getProject(req.projectId);
+    if (selected) {
+      this.selectedProject = selected;
+      this.projectOverlay.toggle(req.event, req.element);
+    }
   }
 
-  onKsModified($event: KnowledgeSource) {
-    this.ksCommandService.update([$event]);
+  onKsCard(req: KcCardRequest) {
+    this.projectOverlay.hide();
+
+    if (!req.ksId) {
+      return;
+    }
+
+    const selected = this.ksList.find(k => k.id.value === req.ksId?.value);
+    if (selected) {
+      this.selectedKs = selected;
+      this.ksOverlay.toggle(req.event, req.element);
+    }
   }
 }

@@ -33,7 +33,7 @@
       </div>
     </p-panel>
 
-    <div class="grid" style="max-height: 50vh; overflow: scroll">
+    <div class="grid" style="max-height: 50vh; overflow-x: hidden; overflow-y: auto">
       <app-ks-card *ngFor="let ks of ksList"
                    [ks]="ks"
                    (onRemove)="onKsRemoved($event)"
@@ -47,7 +47,9 @@
   </ng-template>
 </p-panel>
 
-<p-overlayPanel #overlayPanel appendTo="body">
+<p-overlayPanel #overlayPanel
+                styleClass="surface-100 shadow-7"
+                appendTo="body">
   <ng-template pTemplate="content">
     <div class="p-inputgroup">
       <input pInputText

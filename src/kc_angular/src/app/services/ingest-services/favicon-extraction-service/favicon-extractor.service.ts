@@ -119,8 +119,6 @@ export class FaviconExtractorService {
         url = ks.accessLink.origin;
       }
 
-      console.log('Extracting icon URL from: ', ks.accessLink);
-
       if (url.includes('github')) {
         url = 'https://github.com/favicon.ico';
       } else if (url.includes('google.com')) {

@@ -112,6 +112,11 @@ import {TopicListPipe} from './pipes/text-pipes/topic-list-pipe/topic-list.pipe'
 import {AccordionModule} from "primeng/accordion";
 import {FullCalendarModule} from "@fullcalendar/angular";
 import {TagModule} from "primeng/tag";
+import {ProjectCalendarComponent} from './components/project-components/project-calendar/project-calendar.component';
+import {KsCardListComponent} from './components/knowledge-source-components/ks-card-list/ks-card-list.component';
+import {PaginatorModule} from "primeng/paginator";
+import {CheckboxModule} from "primeng/checkbox";
+import {ProjectBreadcrumbPipe} from './pipes/project-pipes/project-breadcrumb/project-breadcrumb.pipe';
 
 @NgModule({
   declarations: [
@@ -148,6 +153,9 @@ import {TagModule} from "primeng/tag";
     KsDataviewComponent,
     ProjectCardComponent,
     TopicListPipe,
+    ProjectCalendarComponent,
+    KsCardListComponent,
+    ProjectBreadcrumbPipe,
   ],
   imports: [
     BrowserAnimationsModule,
@@ -210,7 +218,9 @@ import {TagModule} from "primeng/tag";
     AccordionModule,
     FullCalendarModule,
     FullCalendarModule,
-    TagModule
+    TagModule,
+    PaginatorModule,
+    CheckboxModule
   ],
   providers: [
     SettingsService,

@@ -34,15 +34,15 @@ export class CytoscapeModel {
         },
 
         nodeRepulsion(node: any): number {
-            return 999999;
+            return 9999999;
         },
 
-        initialTemp: 999999,
+        initialTemp: 99999,
 
-        gravity: 1,
+        gravity: 99,
 
         // duration of animation in ms if enabled
-        animationDuration: 500,
+        animationDuration: 0,
 
         // easing of animation if enabled
         animationEasing: undefined,
@@ -68,7 +68,12 @@ export class CytoscapeModel {
         layout: this.cyLayout,
         style: [{
             selector: 'edge',
-            style: {'line-color': 'black', 'width': 1}
+            style: {
+                'line-color': 'black',
+                'width': 2,
+                'curve-style': 'bezier',
+                'target-arrow-shape': 'triangle'
+            }
         }, {
             selector: 'node',
             style: {
@@ -94,43 +99,43 @@ export class CytoscapeModel {
             }
         },
             {
-            selector: '.eh-handle',
-            style: {
-                'background-color': 'red',
-                'width': 12,
-                'height': 12,
-                'shape': 'ellipse',
-                'overlay-opacity': 0,
-                'border-width': 12, // makes the handle easier to hit
-                'border-opacity': 0
-            }
-        }, {
-            selector: '.eh-hover',
-            style: {'background-color': 'red'}
-        }, {
-            selector: '.eh-source',
-            style: {
-                'border-width': 2,
-                'border-color': 'red'
-            }
-        }, {
-            selector: '.eh-target',
-            style: {
-                'border-width': 2,
-                'border-color': 'red'
-            }
-        }, {
-            selector: '.eh-preview, .eh-ghost-edge',
-            style: {
-                'background-color': 'red',
-                'line-color': 'red',
-                'target-arrow-color': 'red',
-                'source-arrow-color': 'red'
-            }
-        }, {
-            selector: '.eh-ghost-edge.eh-preview-active',
-            style: {'opacity': 0}
-        }]
+                selector: '.eh-handle',
+                style: {
+                    'background-color': 'red',
+                    'width': 12,
+                    'height': 12,
+                    'shape': 'ellipse',
+                    'overlay-opacity': 0,
+                    'border-width': 12, // makes the handle easier to hit
+                    'border-opacity': 0
+                }
+            }, {
+                selector: '.eh-hover',
+                style: {'background-color': 'red'}
+            }, {
+                selector: '.eh-source',
+                style: {
+                    'border-width': 2,
+                    'border-color': 'red'
+                }
+            }, {
+                selector: '.eh-target',
+                style: {
+                    'border-width': 2,
+                    'border-color': 'red'
+                }
+            }, {
+                selector: '.eh-preview, .eh-ghost-edge',
+                style: {
+                    'background-color': 'red',
+                    'line-color': 'red',
+                    'target-arrow-color': 'red',
+                    'source-arrow-color': 'red'
+                }
+            }, {
+                selector: '.eh-ghost-edge.eh-preview-active',
+                style: {'opacity': 0}
+            }]
     }
     private cx: cxtmenu.MenuInstance;
     private eh: EdgeHandlesInstance;
@@ -188,15 +193,6 @@ export class CytoscapeModel {
             selector: 'node',
             commands: [
                 {
-                    fillColor: 'rgba(200, 200, 200, 0.75)', // optional: custom background color for item
-                    content: 'View Text', // html/text content to be displayed in the menu
-                    contentStyle: {}, // css key:value pairs to set the command's css in js if you want
-                    select: function (ele: SingularData) { // a function to execute when the command is selected
-                        console.log(ele.id()) // `ele` holds the reference to the active element
-                    },
-                    enabled: true
-                },
-                {
                     fillColor: 'rgba(200, 200, 200, 0.75)',
                     content: 'Connect',
                     contentStyle: {},
@@ -206,17 +202,7 @@ export class CytoscapeModel {
                         this.cy.edgehandles().start(this.cy.$(ele));
                     },
                     enabled: true
-                },
-                {
-                    fillColor: 'rgba(200, 200, 200, 0.75)',
-                    content: 'Remove',
-                    contentStyle: {},
-                    select: function (ele: SingularData) {
-                        console.log(ele.id())
-                    },
-                    enabled: true
-                },
-
+                }
             ],
             fillColor: 'rgba(0, 0, 0, 0.75)', // the background colour of the menu
             activeFillColor: 'rgba(1, 105, 217, 0.75)', // the colour used to indicate the selected command

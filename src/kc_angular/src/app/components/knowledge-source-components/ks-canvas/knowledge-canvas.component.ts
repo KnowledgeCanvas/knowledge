@@ -34,46 +34,65 @@ import {NotificationsService} from "../../../services/user-services/notification
   styleUrls: ['./knowledge-canvas.component.scss']
 })
 export class KnowledgeCanvasComponent implements OnInit, OnDestroy {
+  @Input() kcProject: ProjectModel | null = null;
+
   @Input() projectTreeNodes: TreeNode[] = [];
+
   @Output() ksAdded = new EventEmitter<KnowledgeSource[]>();
+
   @Output() kcProjectUpdate = new EventEmitter<ProjectModel>();
+
   @Output() kcSetCurrentProject = new EventEmitter<string>();
+
   @Output() kcEditProject = new EventEmitter<UuidModel>();
+
   @Output() onProjectCreation = new EventEmitter<UuidModel | undefined>();
+
   @Output() onProjectRemove = new EventEmitter<UuidModel>();
+
   @Output() onTopicSearch = new EventEmitter<string>();
-  kcProject: ProjectModel | null = null;
+
   currentKs?: KnowledgeSource;
+
   ksMoveTarget?: KnowledgeSource[];
+
   ksDetailsVisible: boolean = false;
+
   readonly KS_INFO_DIALOG_WIDTH = '850px';
+
   readonly KS_INFO_DIALOG_HEIGHT = '700px';
+
   ksInfoMaximized: boolean = false;
+
   ksMoveVisible: boolean = false;
+
   private currentKsOriginal?: string;
+
   private _subKsCommandDetail: Subscription;
+
   private _subKsCommandPreview: Subscription;
+
   private _subKsCommandRemove: Subscription;
+
   private _subKsCommandMove: Subscription;
+
   private _subKsCommandOpen: Subscription;
+
   private _subKsCommandShare: Subscription;
+
   private _subKsCommandCopyPath: Subscription;
+
   private _subKsCommandCopyJSON: Subscription;
+
   private _subKsCommandUpdate: Subscription;
+
   private _subKsCommandShowInFiles: Subscription;
 
 
-  constructor(private ksCommandService: KsCommandService,
-              private browserViewDialogService: BrowserViewDialogService,
-              private projectService: ProjectService,
-              private confirmationService: ConfirmationService,
-              private ipcService: ElectronIpcService,
-              private notificationService: NotificationsService,
+  constructor(private ksCommandService: KsCommandService, private browserViewDialogService: BrowserViewDialogService,
+              private projectService: ProjectService, private confirmationService: ConfirmationService,
+              private ipcService: ElectronIpcService, private notificationService: NotificationsService,
               private clipboard: Clipboard) {
-    projectService.currentProject.subscribe((project) => {
-      this.kcProject = project;
-    });
-
     this._subKsCommandDetail = this.ksCommandService.ksDetailEvent.subscribe((ks) => {
       if (ks) {
         this.currentKs = ks;
@@ -256,6 +275,10 @@ export class KnowledgeCanvasComponent implements OnInit, OnDestroy {
   }
 
   onKsProjectChange($event: { ks: KnowledgeSource; old: string; new: string }) {
+    if ($event.old == $event.new) {
+      return;
+    }
+    console.debug(`Moving KS from ${$event.old} to ${$event.new}`)
     this.projectService.updateProjects([
       {
         id: new UuidModel($event.old),

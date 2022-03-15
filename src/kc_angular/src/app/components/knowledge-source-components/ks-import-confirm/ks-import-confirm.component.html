@@ -33,7 +33,8 @@ limitations under the License.-->
             <div class="flex-col-center-between">
               <i class="pi pi-list" style="font-size: 2rem"></i>
               <br>
-              Current Project
+              <div *ngIf="currentProjectName">{{currentProjectName}}</div>
+              <div *ngIf="!currentProjectName">Current Project</div>
             </div>
           </ng-template>
         </p-card>

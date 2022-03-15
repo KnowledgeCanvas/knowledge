@@ -12,12 +12,11 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.-->
 
+<!--TODO: add a "pinned items" section-->
 
 <div class="grid p-fluid">
   <div class="col-12">
-    <p-breadcrumb [model]="breadcrumbs"
-                  (onItemClick)="onBreadcrumbClick($event)">
-    </p-breadcrumb>
+    <p-breadcrumb [model]="breadcrumbs" (onItemClick)="onBreadcrumbClick($event)"></p-breadcrumb>
     <div *ngIf="kcProject">
       <p-chips (onRemove)="topicsOnChange($event)"
                (onAdd)="topicsOnChange($event)"
@@ -33,7 +32,10 @@ limitations under the License.-->
   </div>
 </div>
 
-<p-overlayPanel #projectInfoOverlay [style]="{'width': '500px'}" *ngIf="kcProject">
+<p-overlayPanel #projectInfoOverlay
+                [style]="{'width': '500px'}"
+                *ngIf="kcProject"
+                styleClass="surface-100 shadow-7">
   <ng-template pTemplate="content">
     <app-project-card [kcProject]="projectContext"
                       (onEditProject)="kcEditProject.emit($event)"
@@ -45,9 +47,9 @@ limitations under the License.-->
   </ng-template>
 </p-overlayPanel>
 
-<div class="flex-col-center-start project-overview-container h-full" #projectOverview>
-  <div *ngIf="!ksList.length" class="flex-col-center-center h-full grid">
-    <p-panel header="Add a Knowledge Source to get started...">
+<div class="flex-col-center-start project-overview-container h-full">
+  <div *ngIf="ksList.length === 0" class="flex-col-center-center h-full grid">
+    <p-panel header="Add a Knowledge Source">
       <ng-template pTemplate="content">
         <div class="w-full h-full grid p-fluid">
           <p-card class="col-12" subheader="Method 1">
@@ -67,7 +69,8 @@ limitations under the License.-->
     </p-panel>
   </div>
 
-  <div class="project-ks-list-container" *ngIf="ksList.length">
+  <div class="project-ks-list-container"
+       *ngIf="ksList.length">
     <p-tabView>
       <p-tabPanel [cache]="false">
         <ng-template pTemplate="header">
@@ -88,20 +91,9 @@ limitations under the License.-->
           <span>Grid</span>
         </ng-template>
         <ng-template pTemplate="content">
-          <div class="grid p-fluid p-6" style="max-height: 80vh; overflow: scroll">
-            <app-ks-card *ngFor="let ks of ksList" [ks]="ks"
-                         class="sm:col-12 md:col-6 lg:col-4"
-                         (onEdit)="onKsDetail($event)"
-                         (onOpen)="onKsOpen($event)"
-                         (onPreview)="onKsPreview($event)"
-                         (onRemove)="onKsRemove($event)"
-                         (onTopicClick)="onTopicSearch.emit($event.topic)"
-                         (onTopicChange)="onKsModified($event)"
-                         [showDescription]="false"
-                         [showExpandedTags]="true"
-                         [showProjectSelection]="false">
-            </app-ks-card>
-          </div>
+          <app-ks-card-list [ksList]="ksList"
+                            (onTopicSearch)="topicsOnClick($event)"
+          ></app-ks-card-list>
         </ng-template>
       </p-tabPanel>
 
@@ -111,8 +103,12 @@ limitations under the License.-->
           <span>Calendar</span>
         </ng-template>
         <ng-template pTemplate="content">
-          <div class="p-6" style="max-height: 80vh; overflow: scroll">
-            <full-calendar style="max-height: 80vh" #fullCalendarComponent [deepChangeDetection]="true" [options]="calendarOptions"></full-calendar>
+          <div class="p-6">
+            <app-project-calendar [kcProject]="kcProject"
+                                  [ksList]="ksList"
+                                  (onKsClick)="onKsCard($event)"
+                                  (onProjectClick)="onProjectCard($event)">
+            </app-project-calendar>
           </div>
         </ng-template>
       </p-tabPanel>
@@ -121,7 +117,8 @@ limitations under the License.-->
 </div>
 
 <p-overlayPanel #ksOverlay appendTo="body"
-                [style]="{'max-width': '48rem', 'min-width': '32rem', 'max-height': '40rem', 'overflow': 'scroll'}"
+                [style]="{'max-width': '48rem', 'min-width': '32rem'}"
+                styleClass="surface-100 shadow-7"
                 [dismissable]="true">
   <ng-template pTemplate="content">
     <app-ks-card [ks]="selectedKs"
@@ -135,11 +132,12 @@ limitations under the License.-->
 </p-overlayPanel>
 
 <p-overlayPanel #projectOverlay appendTo="body"
+                styleClass="surface-100 shadow-7"
                 [dismissable]="true">
   <ng-template pTemplate="content">
     <app-project-card *ngIf="kcProject"
                       style="max-width: 250px"
-                      [kcProject]="kcProject"
+                      [kcProject]="selectedProject"
                       [showRemove]="false"
                       [showAddSubproject]="false"
                       [showArchive]="false"

@@ -27,7 +27,7 @@ import {ProjectTreeNode} from "./models/project.tree.model";
 import {ProjectModel, ProjectUpdateRequest} from "./models/project.model";
 import {Subscription} from "rxjs";
 import {UuidModel} from "./models/uuid.model";
-import {KnowledgeSourceFactoryRequest, KsFactoryService} from "./services/factory-services/ks-factory-service/ks-factory.service";
+import {KsFactoryService} from "./services/factory-services/ks-factory-service/ks-factory.service";
 import {Dialog} from "primeng/dialog";
 import {KsCommandService} from "./services/command-services/ks-command/ks-command.service";
 import {KsImportConfirmComponent} from "./components/knowledge-source-components/ks-import-confirm/ks-import-confirm.component";
@@ -41,6 +41,7 @@ import {KsIngestComponent} from "./components/knowledge-source-components/ks-ing
 import {KcDialogRequest} from "kc_electron/src/app/models/electron.ipc.model";
 import {SearchSettingsComponent} from "./components/settings-components/search-settings/search-settings.component";
 import {ProjectTreeFactoryService} from "./services/factory-services/project-tree-factory/project-tree-factory.service";
+import {DragAndDropService} from "./services/ingest-services/external-drag-and-drop/drag-and-drop.service";
 
 
 @Component({
@@ -50,19 +51,33 @@ import {ProjectTreeFactoryService} from "./services/factory-services/project-tre
 })
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('ksUpNext') ksQueueDialog!: Dialog;
+
   @ViewChild('ksQueueOverlay') ksQueueOverlay!: OverlayPanel;
+
   @ViewChild('searchBar') searchBar!: ElementRef;
+
   currentProject: ProjectModel | null = null;
+
   menuBarItems: MenuItem[] = [];
+
   ksUpNextVisible: boolean = false;
+
   showProjectTree: boolean = false;
+
   readyToShow: boolean = false;
+
   treeNodes: TreeNode[] = [];
+
   ksQueueTreeNodes: TreeNode[] = [];
+
   ksQueue: KnowledgeSource[] = [];
+
   private _projectNodes: ProjectTreeNode[] = [];
+
   private _subProjectTree: Subscription;
+
   private _subCurrentProject: Subscription;
+
   private _subKsQueue: Subscription;
 
   constructor(private dialogService: DialogService, private confirmationService: ConfirmationService,
@@ -71,7 +86,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
               private projectService: ProjectService, private ksCommandService: KsCommandService,
               private ipcService: ElectronIpcService, private clipboard: Clipboard,
               private browserViewDialogService: BrowserViewDialogService, private themeService: ThemeService,
-              private projectTreeFactory: ProjectTreeFactoryService) {
+              private projectTreeFactory: ProjectTreeFactoryService, private dragAndDropService: DragAndDropService) {
     // Subscribe to changes in project tree
     this._subProjectTree = this.projectService.projectTree.subscribe((projectNodes: ProjectTreeNode[]) => {
       this._projectNodes = projectNodes;
@@ -82,6 +97,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     // Subscribe to active project
     this._subCurrentProject = this.projectService.currentProject.subscribe(current => {
       console.debug('AppComponent Project Update: ', current);
+      this.confirmationService.close();
       this.currentProject = current;
     });
 
@@ -113,75 +129,18 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Drop listener for importing files and links
   @HostListener('drop', ['$event']) handleDrop(event: DragEvent) {
-    // TODO: replace this with drag and drop handler service
-
-    event.preventDefault();
-
-    if (!event.dataTransfer?.items) {
-      return;
-    }
-
-    // Try to differentiate different drop types using text data
-    let textData = event.dataTransfer.getData('text/plain');
-    let htmlData = event.dataTransfer.getData('text/html');
-    let uriData = event.dataTransfer.getData('text/uri-list');
-
-    console.log('Types: ', event.dataTransfer.types);
-    console.log('Text Data: ', textData);
-    console.log('HTML Data: ', htmlData);
-    console.log('URL Data: ', uriData);
-
-
-    // Links/URLs will arrive such that uriData and textData are identical
-    if (textData.length && uriData.length && textData === uriData) {
-      let ksReq: KnowledgeSourceFactoryRequest = {ingestType: 'website', links: [uriData]}
-      this.ksFactory.many(ksReq).then((ks) => {
-        if (ks && ks.length) {
-          this.onImport(ks);
-        }
-      })
-      return;
-    }
-
-    // The Mozilla spec states that HTML content should be presented as both plain text or as html
-    if (event.dataTransfer.types.length === 2 && textData.length && htmlData.length) {
-      console.log('Give user choice between importing as text or as html...');
-      return;
-    }
-
-
-    let files: File[] = [];
-    if (event.dataTransfer?.items) {
-      // Use DataTransferItemList interface to access the file(s)
-      for (let i = 0; i < event.dataTransfer.items.length; i++) {
-
-        if (event.dataTransfer.items[i].kind === 'file') {
-          let file = event.dataTransfer.items[i].getAsFile();
-          if (file)
-            files.push(file);
-        }
+    this.dragAndDropService.parseDragEvent(event).then((requests) => {
+      if (requests === undefined) {
+        console.warn('Drag/Drop could not be handled...');
+        return;
       }
-    } else if (event.dataTransfer.files) {
-      // Use DataTransfer interface to access the file(s)
-      for (let i = 0; i < event.dataTransfer.files.length; i++) {
-        files.push(event.dataTransfer.files[i]);
-      }
-    }
-
-    if (files.length) {
-      let ksReq: KnowledgeSourceFactoryRequest = {
-        ingestType: 'file',
-        files: files
-      }
-
-      this.ksFactory.many(ksReq).then((ks) => {
-        if (ks && ks.length) {
-          this.onImport(ks);
-        }
-      }).catch((reason) => {
-        console.warn(reason);
-      })
-    }
+      this.ksFactory.many(requests).then((ksList) => {
+        this.onImport(ksList);
+      });
+    }).catch((reason) => {
+      console.error(reason);
+      return;
+    });
   }
 
   onImport(ksList: KnowledgeSource[]) {
@@ -192,7 +151,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       width: '420px',
       data: {
         projectName: this.currentProject?.name ?? '',
-        countdownSeconds: 5
+        countdownSeconds: 8
       }
     });
 
@@ -216,7 +175,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.primengConfig.ripple = false;
+    this.primengConfig.ripple = true;
     this.configureToolbar();
   }
 
@@ -242,16 +201,17 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
             label: 'Display', icon: 'pi pi-fw pi-image', command: () => {
               this.dialogService.open(DisplaySettingsComponent, {
                 header: 'Display Settings',
-                width: '350px',
+                width: '64rem',
                 dismissableMask: true,
                 modal: true
               });
             }
           },
           // {
-          //   label: 'Ingest', icon: 'pi pi-fw pi-arrow-circle-down', command: () => {
+          //   label: 'Up Next', icon: 'pi pi-fw pi-arrow-circle-down', command: () => {
           //     this.dialogService.open(IngestSettingsComponent, {
-          //       header: 'Ingest Settings',
+          //       header: 'Up Next Settings',
+          //       width: '64rem',
           //       dismissableMask: true,
           //       modal: true
           //     });
@@ -260,7 +220,11 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           {
             label: 'Search', icon: 'pi pi-fw pi-search', command: () => {
               this.dialogService.open(SearchSettingsComponent, {
-                data: this.settingsService.getSettings().search
+                data: this.settingsService.getSettings().search,
+                header: 'Search Settings',
+                width: '64rem',
+                dismissableMask: true,
+                modal: true
               });
             }
           },
@@ -334,8 +298,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     let req: KcDialogRequest = {
       ksList: [this.currentProject?.knowledgeSource]
     }
-    this.ipcService.openKcDialog(req).then((result) => {
-      console.log('Result from knowledge canvas: ', result);
+    this.ipcService.openKcDialog(req).catch((reason) => {
+      console.error('App.onKcClick() | error === ', reason);
     });
 
     // let projectId: string | undefined = undefined;
@@ -370,7 +334,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     dialogref.onClose.subscribe((creationRequest) => {
       if (creationRequest) {
         console.debug('AppComponent: submitting project creation request ', creationRequest);
-        this.projectService.newProject(creationRequest);
+        this.projectService.newProject(creationRequest).catch((reason) => {
+          console.error('Unable to create new project: ', reason);
+        });
       }
     });
   }

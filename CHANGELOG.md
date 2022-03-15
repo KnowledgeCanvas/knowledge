@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.3](https://github.com/KnowledgeCanvas/knowledge-canvas/compare/v0.5.0...v0.5.3) (2022-03-15)
+
+
+### Features
+
+* Add Grid and Calendar views ([#24](https://github.com/KnowledgeCanvas/knowledge-canvas/issues/24)) ([9367db8](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/9367db80f7801c65c175af7ce93af4bef618407d))
+
+
+### Bug Fixes
+
+* a bug where selecting the current project in dropdown causes the KS to be deleted completely ([#37](https://github.com/KnowledgeCanvas/knowledge-canvas/issues/37)) ([7e8ba77](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/7e8ba77232c39271f69ee4ab97782dda87023eca))
+* addresses 5 moderate and 2 high severity vulnerabilities ([47c13cf](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/47c13cf6e7d8d405c06e3bd8e701485e7a1bdabe))
+* browser extension server no longer starts automatically ([#36](https://github.com/KnowledgeCanvas/knowledge-canvas/issues/36)) ([4d70c14](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/4d70c14be03ea4e8502da5dcbc4b7b2eb6f9d6a0))
+* Even more scrollbars (╯°□°）╯︵ ┻━┻ ([bdb23b3](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/bdb23b34a3391f226a1720ebe8f96b36c98ba7fe))
+* Fixed a bug where `Knowledge Graph` fails to load completely due to a missing `Knowledge Source` icon. ([#28](https://github.com/KnowledgeCanvas/knowledge-canvas/issues/28)) ([5f6a95d](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/5f6a95d2dec71ceeac2c185c197345e8572a4205))
+* Fixed an issue where the window would start in dark mode, even if it should have been in light mode. ([#30](https://github.com/KnowledgeCanvas/knowledge-canvas/issues/30)) ([7c10edc](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/7c10edc8564c9a882b7e304867441ccf6ce77a12))
+* long titles get cut off and/or clutter context menu ([6a5cfc6](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/6a5cfc68c5a93358df54fd21d97f465011a62379))
+* PDF preview is now properly sized! ([#31](https://github.com/KnowledgeCanvas/knowledge-canvas/issues/31)) ([1eb23a6](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/1eb23a6be32aab8708ea1b58576103527cb1694e))
+* Scrollbars all over the place! (at least on Windows and Linux). ([#29](https://github.com/KnowledgeCanvas/knowledge-canvas/issues/29)) ([8d23167](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/8d23167623ad145783b515b92a9a328d73d991d2))
+
 ### [0.5.2](https://github.com/KnowledgeCanvas/knowledge-canvas/compare/v0.5.0...v0.5.2) (2022-02-24)
 
 

@@ -74,7 +74,6 @@ const validReceiveChannels = [
 contextBridge.exposeInMainWorld(
     'api', {
         invoke: (channel, data) => {
-            console.log(`Invoke on channel: ${channel} with data: ${data}`);
             if (validInvokeChannels.includes(channel)) {
                 ipcRenderer.invoke(channel, data);
             } else {

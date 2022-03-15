@@ -13,20 +13,20 @@ See the License for the specific language governing permissions and
 limitations under the License.-->
 
 
-<div style="width: 100%" class="flex-col-center-start">
+<div style="width: 100%" class="flex-col-center-center">
   <div class="p-card" style="width: 90%; height: 90%">
     <p-table #dataTable
              *ngIf="ksTableShouldExist"
              [value]="ksList"
              [scrollable]="true"
-             scrollHeight="50vh"
+             scrollHeight="60vh"
              [columns]="selectedColumns"
              [hidden]="ksList.length === 0"
              [(contextMenuSelection)]="ksTableContextMenuSelectedKs"
              [selectionPageOnly]="true"
              [(selection)]="ksTableSelectedKsList"
              [contextMenu]="cm"
-             [resizableColumns]="true"
+             [resizableColumns]="false"
              columnResizeMode="expand"
              [globalFilterFields]="ksTableGlobalFilterFields"
              exportFilename="kc-export"
@@ -104,18 +104,17 @@ limitations under the License.-->
 
           <td *ngFor="let col of columns" [style.max-width]="getColWidth(col)" style="width: auto">
             <div *ngIf="col.field === 'icon'">
-              <img [src]="rowData.icon"
-                   [width]="24"
-                   alt="Knowledge Source Icon"
-                   [style.cursor]="rowData.ingestType === 'file' ? 'grab' : 'default'"
-                   draggable="true" id="ks-drag"
-                   (dragstart)="onDragStart($event, rowData)">
+              <app-ks-icon [ks]="rowData"
+                           [style.cursor]="rowData.ingestType === 'file' ? 'grab' : 'default'"
+                           draggable="true" id="ks-drag"
+                           (dragstart)="onDragStart($event, rowData)">
+              </app-ks-icon>
             </div>
 
             <div *ngIf="col.field === 'title'"
                  class="overflow-hidden"
                  pTooltip="{{rowData.title}}">
-              {{rowData.title}}
+              {{rowData.title | truncate: [64]}}
             </div>
 
             <div *ngIf="col.field === 'associatedProject'"
@@ -180,8 +179,7 @@ limitations under the License.-->
       <ng-template pTemplate="summary">
         <div *ngIf="ksList.length && ksTopics.length">
           Knowledge Source Topics
-          <p-divider></p-divider>
-          <div style="max-height: 10rem; overflow: scroll">
+          <div style="max-height: 5rem; overflow-x: hidden; overflow-y: auto">
             <p-chip *ngFor="let topic of ksTopics"
                     class="cursor-pointer"
                     [style]="{'margin-top': '5px', 'margin-right': '5px', padding: 0}"
@@ -206,12 +204,13 @@ limitations under the License.-->
 </div>
 
 <p-contextMenu #cm
-               [model]="ksTableContextMenuItems"
-               (onShow)="configureMenu()"
+               [model]="ksMenuItems"
+               styleClass="shadow-7"
+               (onShow)="onKsContextMenu()"
                appendTo="body">
 </p-contextMenu>
 
-<p-overlayPanel #op>
+<p-overlayPanel #op styleClass="surface-100 shadow-7">
   <ng-template pTemplate="content">
     <div>
       <p-toggleButton onLabel="Show Countdown"

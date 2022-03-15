@@ -6,4 +6,6 @@ export declare class KnowledgeCanvas {
     constructor(options?: CytoscapeOptions);
     layout(method: string): void;
     private getAllProjects;
+    private getTree;
+    private getRoot;
 }

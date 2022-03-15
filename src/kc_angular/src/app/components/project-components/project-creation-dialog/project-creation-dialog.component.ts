@@ -42,12 +42,8 @@ export class ProjectCreationDialogComponent implements OnInit {
   constructor(private ref: DynamicDialogRef,
               private config: DynamicDialogConfig,
               private projectService: ProjectService) {
-    console.log('Parent ID: ', config.data.parentId);
-
     this.projectTypes = projectService.ProjectTypes;
-
     this.projectType = this.projectTypes[0];
-
     this.projectCreationRequest = {
       authors: [],
       calendar: {events: [], start: null, end: null},
@@ -74,12 +70,7 @@ export class ProjectCreationDialogComponent implements OnInit {
     }
 
     this.projectCreationRequest.type = this.projectType.code;
-
-    console.log('Issuing creation request: ', this.projectCreationRequest);
+    console.debug('ProjectCreationDialog.create() | projectCreationRequest: ', this.projectCreationRequest);
     this.ref.close(this.projectCreationRequest);
-  }
-
-  invalidTitle($event: Event) {
-    console.log('Invalid title: ', $event);
   }
 }

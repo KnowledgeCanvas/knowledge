@@ -54,6 +54,8 @@ export class ProjectDetailViewportComponent implements OnInit {
 
   @Output() onHide = new EventEmitter<boolean>();
 
+  @Output() onShow = new EventEmitter();
+
   constructor(private browserViewDialogService: BrowserViewDialogService,
               private dialogService: DialogService,
               private projectService: ProjectService) {

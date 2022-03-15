@@ -112,20 +112,4 @@ export class KsUpNextComponent implements OnInit, OnDestroy, OnChanges {
       this.destinationList = mapping.ksList;
     }
   }
-
-  sourceSelect(_: any) {
-
-  }
-
-  targetSelect($event: any) {
-    console.log('Target selected: ', $event);
-  }
-
-  moveToTarget(_: any) {
-
-  }
-
-  moveToSource(_: any) {
-
-  }
 }

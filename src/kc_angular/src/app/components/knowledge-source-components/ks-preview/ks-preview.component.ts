@@ -162,11 +162,8 @@ export class KsPreviewComponent implements OnInit, OnDestroy {
   previewFile() {
     // Make sure browserViewConfig is undefined
     this.browserViewConfig = undefined;
-
     if (!this.ks.reference.source.file || typeof this.ks.accessLink !== 'string')
       return;
-
-    console.log('Checking file type of: ', this.ks);
 
     let fileType = this.ks.reference.source.file.type;
 
@@ -176,29 +173,17 @@ export class KsPreviewComponent implements OnInit, OnDestroy {
       this.ref.close();
     }
 
-    console.log('File type is: ', fileType);
-
-    // console.log('Image: ', fileType.indexOf('image'));
-    // console.log('PDF: ', fileType.indexOf('pdf'));
-    // console.log('Video: ', fileType.indexOf('video'));
-    // console.log('Audio: ', fileType.indexOf('audio'));
-    // console.log('Office.x: ', fileType.indexOf('officedocument'));
-    // console.log('Old Word: ', fileType.indexOf('msword'));
-    // console.log('Old ppt: ', fileType.indexOf('powerpoint'));
-
-
     let supported: boolean = false;
     for (let supportedType of this.supportedFileTypes) {
       if (fileType.indexOf(supportedType) > 0) {
         supported = true;
-        console.log('File type is supported...');
+        console.debug('KsPreview.previewFile() | supported fileType === ', fileType);
         this.previewSupportedType(supportedType);
       }
     }
 
     if (!supported) {
       console.warn('This file type is not supported!');
-
       this.notificationsService.toast({
         severity: 'warn',
         summary: 'Oops!',
@@ -209,7 +194,6 @@ export class KsPreviewComponent implements OnInit, OnDestroy {
   }
 
   previewSupportedType(type: string) {
-    console.log('Switching on preview type: ', type);
     switch (type) {
       case 'pdf':
         this.previewPdf();
@@ -230,8 +214,6 @@ export class KsPreviewComponent implements OnInit, OnDestroy {
       filePath: this.ks.accessLink,
       isDialog: true
     }
-
-    console.log('FileViewConfig: ', this.fileViewConfig);
     this.viewReady = true;
   }
 
