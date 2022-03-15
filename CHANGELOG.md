@@ -4,16 +4,9 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### [0.5.3](https://github.com/KnowledgeCanvas/knowledge-canvas/compare/v0.5.0...v0.5.3) (2022-03-15)
 
-
-### Features
-
-* Add Grid and Calendar views ([#24](https://github.com/KnowledgeCanvas/knowledge-canvas/issues/24)) ([9367db8](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/9367db80f7801c65c175af7ce93af4bef618407d))
-
-
 ### Bug Fixes
 
 * a bug where selecting the current project in dropdown causes the KS to be deleted completely ([#37](https://github.com/KnowledgeCanvas/knowledge-canvas/issues/37)) ([7e8ba77](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/7e8ba77232c39271f69ee4ab97782dda87023eca))
-* addresses 5 moderate and 2 high severity vulnerabilities ([47c13cf](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/47c13cf6e7d8d405c06e3bd8e701485e7a1bdabe))
 * browser extension server no longer starts automatically ([#36](https://github.com/KnowledgeCanvas/knowledge-canvas/issues/36)) ([4d70c14](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/4d70c14be03ea4e8502da5dcbc4b7b2eb6f9d6a0))
 * Even more scrollbars (╯°□°）╯︵ ┻━┻ ([bdb23b3](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/bdb23b34a3391f226a1720ebe8f96b36c98ba7fe))
 * Fixed a bug where `Knowledge Graph` fails to load completely due to a missing `Knowledge Source` icon. ([#28](https://github.com/KnowledgeCanvas/knowledge-canvas/issues/28)) ([5f6a95d](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/5f6a95d2dec71ceeac2c185c197345e8572a4205))
