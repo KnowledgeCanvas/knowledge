@@ -275,6 +275,10 @@ export class KnowledgeCanvasComponent implements OnInit, OnDestroy {
   }
 
   onKsProjectChange($event: { ks: KnowledgeSource; old: string; new: string }) {
+    if ($event.old == $event.new) {
+      return;
+    }
+    console.debug(`Moving KS from ${$event.old} to ${$event.new}`)
     this.projectService.updateProjects([
       {
         id: new UuidModel($event.old),
