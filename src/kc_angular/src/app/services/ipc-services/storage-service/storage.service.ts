@@ -23,7 +23,6 @@ import {KnowledgeSource} from "src/app/models/knowledge.source.model";
 })
 export class StorageService {
   readonly KC_CURRENT_PROJECT = 'current-project';
-  readonly KS_LIST_SORT_INDEX = 'ks-sort-index';
   private KC_ALL_PROJECT_IDS = 'kc-projects';
   private db = window.localStorage;
   private knowledgeSources: KnowledgeSource[] | null = null;
@@ -130,22 +129,6 @@ export class StorageService {
     this.db.setItem(this.KC_ALL_PROJECT_IDS, JSON.stringify(pids));
   }
 
-  get sortByIndex(): number | undefined {
-    let idxStr = this.db.getItem(this.KS_LIST_SORT_INDEX);
-    if (idxStr) {
-      let idx: number = +idxStr;
-      if (idx && idx > 0)
-        return idx
-    }
-    return undefined;
-  }
-
-  set sortByIndex(index: number | undefined) {
-    if (index === undefined)
-      return;
-    this.db.setItem(this.KS_LIST_SORT_INDEX, `${index}`);
-  }
-
   get kcCurrentProject(): string | null {
     return this.db.getItem(this.KC_CURRENT_PROJECT);
   }
@@ -210,7 +193,7 @@ export class StorageService {
     }
 
     // Update the project in database
-    this.updateProject(project);
+    await this.updateProject(project);
 
     // Get list of all project IDs from local storage
     let projectList: string[] = [];
@@ -242,7 +225,6 @@ export class StorageService {
   }
 
   async updateProject(project: ProjectModel) {
-    console.debug(`StorageService: Updating Project: ${project.name} - ${project.id.value}`);
     let projectString = JSON.stringify(project);
     this.db.setItem(project.id.value, projectString);
   }
