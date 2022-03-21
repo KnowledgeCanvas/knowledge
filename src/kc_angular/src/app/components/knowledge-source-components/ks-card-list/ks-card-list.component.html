@@ -49,9 +49,11 @@ limitations under the License.-->
         </span>
         </div>
         <div class="p-fluid flex-row-center-between">
+          <app-ks-export [data]="ksList"></app-ks-export>
           <button type="button"
                   pButton
                   icon="pi pi-cog"
+                  style="margin-left: 10px"
                   (click)="settingsOverlay.toggle($event)">
           </button>
         </div>

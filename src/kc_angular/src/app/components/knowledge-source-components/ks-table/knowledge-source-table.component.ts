@@ -17,7 +17,7 @@
 
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
 import {KnowledgeSource} from "src/app/models/knowledge.source.model";
-import {MenuItem, PrimeIcons, SortEvent} from "primeng/api";
+import {MenuItem, SortEvent} from "primeng/api";
 import {Table} from "primeng/table";
 import {KsCommandService} from "../../../services/command-services/ks-command/ks-command.service";
 import {ProjectService} from "../../../services/factory-services/project-service/project.service";
@@ -47,32 +47,13 @@ export class KnowledgeSourceTableComponent implements OnInit, OnChanges {
   ];
   ksTableAllowSubprojectExpansion: boolean = true;
   filter: string = '';
-  ksTableSelectedKsList: KnowledgeSource[] = [];
+  ksSelected: KnowledgeSource[] = [];
   ksTableShouldExist: boolean = true;
   ksTableContextMenuSelectedKs?: KnowledgeSource;
   ksMenuItems: MenuItem[] = [];
   ksTableShowCountdownInsteadOfDates: boolean = true;
   ksTableGlobalFilterFields: string[] = ['title', 'ingestType', 'description', 'associatedProject', 'rawText', 'icon', 'accessLink', 'topics', 'snippet', 'note', 'authors'];
   ksTopics: string[] = [];
-  exportOptions: MenuItem[] = [
-    {
-      label: "All", items: [{
-        label: "CSV (default)", icon: PrimeIcons.FILE, command: () => {
-          this.dataTable.exportCSV();
-        }
-      }]
-    },
-    {
-      label: 'Selection Only', items: [
-        {
-          label: "CSV", icon: PrimeIcons.FILE,
-          command: () => {
-            this.dataTable.exportCSV({selectionOnly: true});
-          }
-        }
-      ]
-    }
-  ];
 
   constructor(private ksCommandService: KsCommandService, private ksFactory: KsFactoryService,
               private projectService: ProjectService, private browserService: BrowserViewDialogService,
@@ -106,7 +87,7 @@ export class KnowledgeSourceTableComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes.ksList) {
-      this.ksTableSelectedKsList = [];
+      this.ksSelected = [];
       this.ksTopics = [];
       this.ksList.forEach((ks) => {
         ks.topics?.forEach((topic) => {
@@ -193,7 +174,7 @@ export class KnowledgeSourceTableComponent implements OnInit, OnChanges {
 
   removeMultiple(selectedCheckboxKs: KnowledgeSource[]) {
     this.ksCommandService.remove(selectedCheckboxKs);
-    this.ksTableSelectedKsList = [];
+    this.ksSelected = [];
   }
 
   getColWidth(col: any): string {
@@ -227,21 +208,6 @@ export class KnowledgeSourceTableComponent implements OnInit, OnChanges {
     filter.value = '';
   }
 
-  onExportClicked() {
-    this.dataTable.exportCSV();
-  }
-
-  exportFn = (event: { data: any, field: string }) => {
-    if (event.field === 'icon') {
-      return '';
-    }
-
-    if (typeof event.data === 'string') {
-      return event.data;
-    }
-    return event.data.toString() ?? event.data;
-  };
-
   onDragStart($event: DragEvent, ks: KnowledgeSource) {
     $event.preventDefault();
     if (ks.ingestType === 'file') {
@@ -251,7 +217,7 @@ export class KnowledgeSourceTableComponent implements OnInit, OnChanges {
 
   onKsContextMenu() {
     if (this.ksTableContextMenuSelectedKs) {
-      this.ksMenuItems = this.ksContextMenuService.generate(this.ksTableContextMenuSelectedKs, this.ksTableSelectedKsList);
+      this.ksMenuItems = this.ksContextMenuService.generate(this.ksTableContextMenuSelectedKs, this.ksSelected);
     }
   }
 
