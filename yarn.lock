@@ -1802,7 +1802,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@electron/get@npm:^1.0.1, @electron/get@npm:^1.13.0":
+"@electron/get@npm:^1.13.0":
   version: 1.13.1
   resolution: "@electron/get@npm:1.13.1"
   dependencies:
@@ -2648,6 +2648,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/follow-redirects@npm:^1":
+  version: 1.14.1
+  resolution: "@types/follow-redirects@npm:1.14.1"
+  dependencies:
+    "@types/node": "*"
+  checksum: febc76e12adb1ba5655ba50cc6b594b50dd56ae87ef832993b43115b1c8c661ea6829b6035d312948e0cfa3f6634abdd17abbcf03c2da0d5d343547792dce490
+  languageName: node
+  linkType: hard
+
 "@types/fs-extra@npm:^9.0.11":
   version: 9.0.13
   resolution: "@types/fs-extra@npm:9.0.13"
@@ -2713,7 +2722,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/minimist@npm:^1.2.0":
+"@types/minimist@npm:^1, @types/minimist@npm:^1.2.0":
   version: 1.2.2
   resolution: "@types/minimist@npm:1.2.2"
   checksum: b8da83c66eb4aac0440e64674b19564d9d86c80ae273144db9681e5eeff66f238ade9515f5006ffbfa955ceff8b89ad2bd8ec577d7caee74ba101431fb07045d
@@ -2727,6 +2736,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/node-forge@npm:^1":
+  version: 1.0.1
+  resolution: "@types/node-forge@npm:1.0.1"
+  dependencies:
+    "@types/node": "*"
+  checksum: e432db4ff46091f2b77f609098833be0699b48a247945490e147cfd22112a2376c7f5869c7c8b59b99d77a5851a02fd44cb1cf7820a3c96f1d7ae109cf1f0078
+  languageName: node
+  linkType: hard
+
 "@types/node@npm:*, @types/node@npm:>=10.0.0, @types/node@npm:^17.0.2":
   version: 17.0.2
   resolution: "@types/node@npm:17.0.2"
@@ -2735,9 +2753,9 @@ __metadata:
   linkType: hard
 
 "@types/node@npm:^14.6.2":
-  version: 14.18.2
-  resolution: "@types/node@npm:14.18.2"
-  checksum: 4684fd4aa8a4bcd25e754186a83bfc2464436188df5200174b167d1e28aa6cac77312d02790913bf2b4035dc1221cbfbd65974465126354c17d1ca396e69b859
+  version: 14.18.12
+  resolution: "@types/node@npm:14.18.12"
+  checksum: 8a0273caa0584020adb8802784fc7d4f18f05e6c205335b7f3818a91d6b0c22736b9f51da3428d5bc54076ad47f1a4d6d57990a3ce8489a520ac66b2b3ff24bc
   languageName: node
   linkType: hard
 
@@ -2762,7 +2780,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/plist@npm:^3.0.1":
+"@types/plist@npm:^3, @types/plist@npm:^3.0.1":
   version: 3.0.2
   resolution: "@types/plist@npm:3.0.2"
   dependencies:
@@ -5983,29 +6001,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron@npm:^13.1.6":
-  version: 13.6.3
-  resolution: "electron@npm:13.6.3"
-  dependencies:
-    "@electron/get": ^1.0.1
-    "@types/node": ^14.6.2
-    extract-zip: ^1.0.3
-  bin:
-    electron: cli.js
-  checksum: 5b59ee21076773c3f0417a522338fc0db70af30672f72152df100268c71536defa0af257b69421cf17daf34b1c8a1280c78f0f5e82feee5d4e27e68e48b42f30
-  languageName: node
-  linkType: hard
-
-"electron@npm:^16.0.4, electron@npm:^16.0.5":
-  version: 16.0.5
-  resolution: "electron@npm:16.0.5"
+"electron@npm:^16.0.6":
+  version: 16.2.1
+  resolution: "electron@npm:16.2.1"
   dependencies:
     "@electron/get": ^1.13.0
     "@types/node": ^14.6.2
     extract-zip: ^1.0.3
   bin:
     electron: cli.js
-  checksum: 5b24d00e165d74d8039ac85646fb5953e3755bd503e0ffb27fe3a72c7f8acf8449fc661f51a1a8b42387e311aa44f161105796e13ed45ace4a3d8e0e586ece38
+  checksum: 1246b60845549ae0bff235ae6e6ca6d008d2ed50314c5edd799e6f6a9a7908037d2ccca5e47ff3924106f53da862565f328d605436800ba1c3a33ed85ee71572
   languageName: node
   linkType: hard
 
@@ -7061,13 +7066,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"follow-redirects@npm:^1.0.0":
-  version: 1.14.7
-  resolution: "follow-redirects@npm:1.14.7"
+"follow-redirects@npm:^1.0.0, follow-redirects@npm:^1.14.8":
+  version: 1.14.9
+  resolution: "follow-redirects@npm:1.14.9"
   peerDependenciesMeta:
     debug:
       optional: true
-  checksum: f6d03e5e30877431065bca0d1b2e3db93949eb799d368a5c07ea8a4b71205f0349a3f8f0191bf13a07c93885522834dca1dc8e527dc99a772c6911fba24edc5f
+  checksum: f5982e0eb481818642492d3ca35a86989c98af1128b8e1a62911a3410621bc15d2b079e8170b35b19d3bdee770b73ed431a257ed86195af773771145baa57845
   languageName: node
   linkType: hard
 
@@ -8713,7 +8718,7 @@ __metadata:
   dependencies:
     chokidar: ^3.5.2
     dotenv: ^10.0.0
-    electron: ^13.1.6
+    electron: ^16.0.6
     electron-builder: ^22.11.7
     electron-updater: ^4.3.9
     mime-types: ^2.1.32
@@ -8754,7 +8759,7 @@ __metadata:
     cytoscape-dagre: ^2.3.2
     cytoscape-edgehandles: ^4.0.1
     d3: ^7.2.1
-    electron: ^16.0.4
+    electron: ^16.0.6
     lodash: ^4.17.21
     ts-loader: ^9.2.6
     typescript: ^4.5.4
@@ -8792,9 +8797,16 @@ __metadata:
   resolution: "knowledge-canvas@workspace:."
   dependencies:
     "@angular/cli": ^13.1.2
+    "@types/follow-redirects": ^1
+    "@types/minimist": ^1
     "@types/node": ^17.0.2
-    electron: ^16.0.5
+    "@types/node-forge": ^1
+    "@types/plist": ^3
     electron-builder: ^22.14.5
+    follow-redirects: ^1.14.8
+    minimist: ^1.2.6
+    node-forge: ^1.3.0
+    plist: ^3.0.5
     standard-version: ^9.3.1
   languageName: unknown
   linkType: soft
@@ -9331,10 +9343,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minimist@npm:^1.2.0, minimist@npm:^1.2.5":
-  version: 1.2.5
-  resolution: "minimist@npm:1.2.5"
-  checksum: 86706ce5b36c16bfc35c5fe3dbb01d5acdc9a22f2b6cc810b6680656a1d2c0e44a0159c9a3ba51fb072bb5c203e49e10b51dcd0eec39c481f4c42086719bae52
+"minimist@npm:^1.2.0, minimist@npm:^1.2.5, minimist@npm:^1.2.6":
+  version: 1.2.6
+  resolution: "minimist@npm:1.2.6"
+  checksum: d15428cd1e11eb14e1233bcfb88ae07ed7a147de251441d61158619dfb32c4d7e9061d09cab4825fdee18ecd6fce323228c8c47b5ba7cd20af378ca4048fb3fb
   languageName: node
   linkType: hard
 
@@ -9606,10 +9618,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-forge@npm:^1.0.0":
-  version: 1.2.1
-  resolution: "node-forge@npm:1.2.1"
-  checksum: af4f88c3f69362359f35f6a9e231b35c96d906eeb6e976fb92742afe7fcdd76439dc22b41ce3755389d171f6320756ec7505bdfa7b252466c091b8c519a22674
+"node-forge@npm:^1.0.0, node-forge@npm:^1.3.0":
+  version: 1.3.1
+  resolution: "node-forge@npm:1.3.1"
+  checksum: 08fb072d3d670599c89a1704b3e9c649ff1b998256737f0e06fbd1a5bf41cae4457ccaee32d95052d80bbafd9ffe01284e078c8071f0267dc9744e51c5ed42a9
   languageName: node
   linkType: hard
 
@@ -10354,13 +10366,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"plist@npm:^3.0.1, plist@npm:^3.0.4":
-  version: 3.0.4
-  resolution: "plist@npm:3.0.4"
+"plist@npm:^3.0.1, plist@npm:^3.0.4, plist@npm:^3.0.5":
+  version: 3.0.5
+  resolution: "plist@npm:3.0.5"
   dependencies:
     base64-js: ^1.5.1
     xmlbuilder: ^9.0.7
-  checksum: cb5883ed1b1aa227ddc5f99003750d312a8ac5cfd6f58d3ce0b24939255b175b54f25ebc6adcbd4266105ffd54f6831acb6cb06f529652bb3344215c10f5601b
+  checksum: f8b82816f66559965a4dabf139bd8dd95cdec7e51f32742bb353af276ea8228b9807113743b860eda3e867f6ed70d2bcbc1e135b3204d92b5c37ac765f68444e
   languageName: node
   linkType: hard
 
