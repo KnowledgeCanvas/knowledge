@@ -111,41 +111,41 @@ export class DragAndDropService {
       })
     },
 
-    {
-      HANDLER_TYPE: 'Calendar (MacOS)',
-      URI_PREFIX: 'ical:',
-      accepts: (data: DragAndDropPacket) => {
-        return false;
-      },
-      callback: (data: DragAndDropPacket) => new Promise<KnowledgeSourceFactoryRequest | undefined>((resolve) => {
-        console.log('Got ical entry...');
-        resolve(undefined);
-      })
-    },
-
-    {
-      HANDLER_TYPE: 'Mail (MacOS)',
-      URI_PREFIX: 'message:',
-      accepts: (data: DragAndDropPacket) => {
-        return false;
-      },
-      callback: (data: DragAndDropPacket) => new Promise<KnowledgeSourceFactoryRequest | undefined>((resolve) => {
-        console.log('message entry...');
-        resolve(undefined);
-      })
-    },
-
-    {
-      HANDLER_TYPE: 'OmniFocus (MacOS)',
-      URI_PREFIX: 'omnifocus:',
-      accepts: (data: DragAndDropPacket) => {
-        return false;
-      },
-      callback: (data: DragAndDropPacket) => new Promise<KnowledgeSourceFactoryRequest | undefined>((resolve) => {
-        console.log('Got omnifocus entry...');
-        resolve(undefined);
-      })
-    }
+    // {
+    //   HANDLER_TYPE: 'Calendar (MacOS)',
+    //   URI_PREFIX: 'ical:',
+    //   accepts: (data: DragAndDropPacket) => {
+    //     return false;
+    //   },
+    //   callback: (data: DragAndDropPacket) => new Promise<KnowledgeSourceFactoryRequest | undefined>((resolve) => {
+    //     console.log('Got ical entry...');
+    //     resolve(undefined);
+    //   })
+    // },
+    //
+    // {
+    //   HANDLER_TYPE: 'Mail (MacOS)',
+    //   URI_PREFIX: 'message:',
+    //   accepts: (data: DragAndDropPacket) => {
+    //     return false;
+    //   },
+    //   callback: (data: DragAndDropPacket) => new Promise<KnowledgeSourceFactoryRequest | undefined>((resolve) => {
+    //     console.log('message entry...');
+    //     resolve(undefined);
+    //   })
+    // },
+    //
+    // {
+    //   HANDLER_TYPE: 'OmniFocus (MacOS)',
+    //   URI_PREFIX: 'omnifocus:',
+    //   accepts: (data: DragAndDropPacket) => {
+    //     return false;
+    //   },
+    //   callback: (data: DragAndDropPacket) => new Promise<KnowledgeSourceFactoryRequest | undefined>((resolve) => {
+    //     console.log('Got omnifocus entry...');
+    //     resolve(undefined);
+    //   })
+    // }
   ]
 
   constructor() {
@@ -167,10 +167,7 @@ export class DragAndDropService {
     let htmlData = event.dataTransfer.getData('text/html');
     let uriData = event.dataTransfer.getData('text/uri-list');
 
-    console.debug('Drag and Drop Transfer Types: ', event.dataTransfer.types);
-    console.debug('Text Data: ', textData);
-    console.debug('HTML Data: ', htmlData);
-    console.debug('URL Data: ', uriData);
+    console.debug(`Drag and Drop transfer types: ${event.dataTransfer.types}\nText data: ${textData}\nHTML data: ${htmlData}\nURI data: ${uriData}`);
 
     let dths_prefix = this.__data_transfer_handlers.filter(dth => (dth.URI_PREFIX && uriData && uriData.startsWith(dth.URI_PREFIX)));
     let dths_no_prefix = this.__data_transfer_handlers.filter(dth => dth.accepts({text: textData, html: htmlData, uri: uriData, event: event}));
@@ -184,7 +181,6 @@ export class DragAndDropService {
         req = res;
       });
     } else if (dths_no_prefix && dths_no_prefix.length) {
-      // We only want one handler, so we choose the first one (which would default to any handler that has a specific URI prefix
       await dths_no_prefix[0].callback({text: textData, html: htmlData, uri: uriData, event: event}).then((res) => {
         req = res;
       });
