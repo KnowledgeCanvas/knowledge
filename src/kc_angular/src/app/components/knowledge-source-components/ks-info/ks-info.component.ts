@@ -21,8 +21,8 @@ import {KcFileViewConfig} from "../ks-viewport-components/file-viewport/file-vie
 import {BrowserViewDialogService} from "../../../services/ipc-services/browser-service/browser-view-dialog.service";
 import {KsFactoryService} from "../../../services/factory-services/ks-factory-service/ks-factory.service";
 import {WebsiteMetaTagsModel} from "../../../models/website.model";
+import {KsCommandService} from "../../../services/command-services/ks-command/ks-command.service";
 
-let apiLoaded = false;
 
 @Component({
   selector: 'app-ks-info',
@@ -32,10 +32,6 @@ let apiLoaded = false;
 export class KsInfoComponent implements OnInit, OnChanges {
   @Input() ks!: KnowledgeSource;
 
-  @Input() height?: number;
-
-  @Input() width?: number;
-
   @Input() maximized?: boolean;
 
   @Output() shouldClose = new EventEmitter<boolean>();
@@ -44,17 +40,17 @@ export class KsInfoComponent implements OnInit, OnChanges {
 
   events: any[] = [];
   ksIsYoutubeVideo: boolean = false;
-  ksYouTubeSafeUrl?: SafeUrl;
   ksYoutubeVideoId: string = '';
+  apiLoaded = false;
   fileConfig?: KcFileViewConfig;
   ksYoutubeHidden: boolean = false;
-  safeUrl?: SafeUrl;
-  ksYoutubeWidth: number = 640;
-  ksYoutubeHeight: number = 480;
+  safeUrl?: SafeUrl | null;
   ksMetadata: WebsiteMetaTagsModel[] = [];
+
 
   constructor(private sanitizer: DomSanitizer,
               private browserService: BrowserViewDialogService,
+              private ksCommandService: KsCommandService,
               private ksFactory: KsFactoryService) {
   }
 
@@ -93,67 +89,26 @@ export class KsInfoComponent implements OnInit, OnChanges {
     if (changes.ks && changes.ks.currentValue) {
       let ks: KnowledgeSource = changes.ks.currentValue;
       if (ks) {
-        this.events.push({
-          status: 'Created',
-          date: ks.dateCreated
-        });
-
-        for (let mod of this.ks.dateModified) {
-          this.events.push({
-            status: 'Modified',
-            date: mod
-          });
-        }
-
-        for (let access of this.ks.dateAccessed) {
-          this.events.push({
-            status: 'Accessed',
-            date: access
-          });
-        }
-
-        if (!this.ks.events) {
-          this.ks.events = [];
-        }
-
-        for (let event of this.ks.events) {
-          this.events.push({
-            status: event.label,
-            date: event.date
-          })
-        }
-
-        this.events.sort((a, b) => {
-          a = new Date(a.date);
-          b = new Date(b.date);
-          if (a < b)
-            return -1;
-          if (a > b)
-            return 1;
-          return 0;
-        });
-
-        if (ks.dateDue) {
-          ks.dateDue = new Date(ks.dateDue);
-        } else {
-          ks.dateDue = undefined;
-        }
+        this.populateCalendar(ks);
 
         if (ks.ingestType === 'website') {
           ks.accessLink = new URL(ks.accessLink);
           let urlParam = ks.accessLink.searchParams.get('v');
+
           if (ks.accessLink.hostname === 'www.youtube.com' && urlParam) {
             this.ksIsYoutubeVideo = true;
             this.ksYoutubeVideoId = urlParam;
-            if (!apiLoaded) {
+            if (!this.apiLoaded) {
               // This code loads the IFrame Player API code asynchronously, according to the instructions at
               // https://developers.google.com/youtube/iframe_api_reference#Getting_Started
               const tag = document.createElement('script');
               tag.src = 'https://www.youtube.com/iframe_api';
               document.body.appendChild(tag);
-              apiLoaded = true;
+              this.apiLoaded = true;
             }
           }
+
+
         }
 
         if (ks.ingestType === 'file') {
@@ -164,6 +119,56 @@ export class KsInfoComponent implements OnInit, OnChanges {
             this.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl('file://' + encodeURI(ks.accessLink));
         }
       }
+    }
+  }
+
+  populateCalendar(ks: KnowledgeSource) {
+    this.events = [];
+
+    this.events.push({
+      status: 'Created',
+      date: ks.dateCreated
+    });
+
+    for (let mod of this.ks.dateModified) {
+      this.events.push({
+        status: 'Modified',
+        date: mod
+      });
+    }
+
+    for (let access of this.ks.dateAccessed) {
+      this.events.push({
+        status: 'Accessed',
+        date: access
+      });
+    }
+
+    if (!this.ks.events) {
+      this.ks.events = [];
+    }
+
+    for (let event of this.ks.events) {
+      this.events.push({
+        status: event.label,
+        date: event.date
+      })
+    }
+
+    this.events.sort((a, b) => {
+      a = new Date(a.date);
+      b = new Date(b.date);
+      if (a < b)
+        return -1;
+      if (a > b)
+        return 1;
+      return 0;
+    });
+
+    if (ks.dateDue) {
+      ks.dateDue = new Date(ks.dateDue);
+    } else {
+      ks.dateDue = undefined;
     }
   }
 
@@ -182,5 +187,9 @@ export class KsInfoComponent implements OnInit, OnChanges {
 
   onPdfClick($event: MouseEvent) {
     console.warn('Pdf click event unhandled: ', $event);
+  }
+
+  onKsOpen(ks: KnowledgeSource) {
+    this.ksCommandService.open(ks);
   }
 }
