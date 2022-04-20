@@ -60,43 +60,26 @@ export class ProjectCalendarComponent implements OnInit, OnChanges {
 
   @Output() onKsClick = new EventEmitter<KcCardRequest>();
 
-  calendarOptions: CalendarOptions = {};
+  calendarOptions: CalendarOptions = {events: []};
+
+  deepChangeDetection: boolean = true;
+
+  viewReady: boolean = false;
 
   constructor() {
   }
 
   ngOnInit(): void {
-    if (!this.kcProject) {
-      console.error('ProjectCalendar: no project specified as input...');
-      return;
-    }
-
-    if (!this.kcProject.calendar) {
-      this.kcProject.calendar = {
-        events: [],
-        start: null,
-        end: null
-      }
-    }
-
     this.configureCalendar();
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes.kcProject) {
-      this.calendarOptions.events = [];
-      this.setupCalendar(changes.kcProject.currentValue);
-    }
-
-    if (changes.ksList) {
-      if (this.kcProject) {
-        this.setupCalendar(this.kcProject);
-      }
-    }
+    if (this.kcProject)
+      this.setupCalendar();
   }
 
   configureCalendar() {
-    this.calendarOptions.initialView = 'listWeek';
+    this.calendarOptions.initialView = 'listYear';
     this.calendarOptions.editable = false;
     this.calendarOptions.selectable = false;
     this.calendarOptions.selectMirror = false;
@@ -107,7 +90,7 @@ export class ProjectCalendarComponent implements OnInit, OnChanges {
     this.calendarOptions.headerToolbar = {
       left: 'prev,next today',
       center: 'title',
-      right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+      right: 'dayGridMonth,timeGridWeek,timeGridDay,listYear'
     }
 
     this.calendarOptions.eventClick = (args) => {
@@ -131,12 +114,17 @@ export class ProjectCalendarComponent implements OnInit, OnChanges {
     }
   }
 
-  setupCalendar(project: ProjectModel) {
-    if (!project.calendar)
-      project.calendar = {events: [], start: null, end: null};
+  setupCalendar() {
+    if (!this.kcProject) {
+      console.warn('Unable to populate calendar due to missing project...');
+    } else {
+      if (!this.kcProject?.calendar)
+        this.kcProject.calendar = {events: [], start: null, end: null};
 
-    // @ts-ignore
-    this.calendarOptions.events = this.eventsFromProject(project);
+      // @ts-ignore
+      this.calendarOptions.events = this.eventsFromProject(this.kcProject);
+      this.viewReady = true;
+    }
   }
 
   eventsFromProject(project: ProjectModel): ProjectCalendarEvent[] {
@@ -171,30 +159,36 @@ export class ProjectCalendarComponent implements OnInit, OnChanges {
   }
 
   eventsFromKsList(ksList: KnowledgeSource[]) {
+    const createdColor = 'green';
+    const modifiedColor = 'orange';
+    const accessedColor = 'blue';
     let events: ProjectCalendarEvent[] = [];
     for (let ks of ksList) {
       events.push({
-        title: `${ks.title} (Created)`,
+        title: `${ks.title}`,
         start: ks.dateCreated,
-        url: ks.id.value
+        url: ks.id.value,
+        color: createdColor
       });
       ks.dateModified.forEach((d) => {
         events.push({
-          title: `${ks.title} (Modified)`,
+          title: `${ks.title}`,
           start: d,
-          url: ks.id.value
+          url: ks.id.value,
+          color: modifiedColor
         });
       });
       ks.dateAccessed.forEach((d) => {
         events.push({
-          title: `${ks.title} (Accessed)`,
+          title: `${ks.title}`,
           start: d,
-          url: ks.id.value
+          url: ks.id.value,
+          color: accessedColor
         });
       });
       if (ks.dateDue) {
         events.push({
-          title: `(Due): ${ks.title}`,
+          title: `${ks.title}`,
           start: ks.dateDue,
           color: 'red',
           url: ks.id.value
