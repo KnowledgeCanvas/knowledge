@@ -13,3 +13,26 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
+
+.calendar-legend-dot {
+  height: 1rem;
+  width: 1rem;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.calendar-legend-dot.green {
+  background-color: green;
+}
+
+.calendar-legend-dot.blue {
+  background-color: blue;
+}
+
+.calendar-legend-dot.red {
+  background-color: red;
+}
+
+.calendar-legend-dot.orange {
+  background-color: orange;
+}
