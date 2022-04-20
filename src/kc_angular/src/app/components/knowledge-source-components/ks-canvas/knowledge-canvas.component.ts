@@ -25,7 +25,7 @@ import {Clipboard} from "@angular/cdk/clipboard";
 import {UuidModel} from "../../../models/uuid.model";
 import {KsCommandService} from "../../../services/command-services/ks-command/ks-command.service";
 import {Subscription} from "rxjs";
-import {ConfirmationService, TreeNode} from "primeng/api";
+import {ConfirmationService, MenuItem, TreeNode} from "primeng/api";
 import {NotificationsService} from "../../../services/user-services/notification-service/notifications.service";
 
 @Component({
@@ -58,13 +58,11 @@ export class KnowledgeCanvasComponent implements OnInit, OnDestroy {
 
   ksDetailsVisible: boolean = false;
 
-  readonly KS_INFO_DIALOG_WIDTH = '850px';
-
-  readonly KS_INFO_DIALOG_HEIGHT = '700px';
-
   ksInfoMaximized: boolean = false;
 
   ksMoveVisible: boolean = false;
+
+  breadcrumbs: MenuItem[] = [];
 
   private currentKsOriginal?: string;
 
@@ -97,6 +95,8 @@ export class KnowledgeCanvasComponent implements OnInit, OnDestroy {
       if (ks) {
         this.currentKs = ks;
         this.ksDetailsVisible = true;
+
+        this.setupBreadcrumbs(ks.associatedProject);
       }
     });
 
@@ -150,7 +150,10 @@ export class KnowledgeCanvasComponent implements OnInit, OnDestroy {
       this.onKsOpen(ks);
     });
 
-    this._subKsCommandShare = this.ksCommandService.ksShareEvent.subscribe((_) => {
+    this._subKsCommandShare = this.ksCommandService.ksShareEvent.subscribe((ksList) => {
+      if (!ksList || ksList.length === 0) {
+        return;
+      }
       console.warn('KsCommandShare is not implemented yet...');
     });
 
@@ -222,12 +225,18 @@ export class KnowledgeCanvasComponent implements OnInit, OnDestroy {
     if (this.currentKs) {
       this.currentKsOriginal = JSON.stringify(this.currentKs);
     }
+
+    this.ksInfoMaximized = true
   }
 
   onKsInfoHide(ks: KnowledgeSource) {
     // Check for changes
     if (JSON.stringify(ks) === this.currentKsOriginal) {
       return;
+    }
+
+    if (!ks || !ks.dateModified) {
+      ks.dateModified = [];
     }
 
     ks.dateModified.push(new Date());
@@ -249,8 +258,11 @@ export class KnowledgeCanvasComponent implements OnInit, OnDestroy {
   onKsMoveHide(_?: KnowledgeSource[]) {
   }
 
-  onKsPreview(ks: KnowledgeSource) {
+  async onKsPreview(ks: KnowledgeSource) {
+    this.currentKsOriginal = JSON.stringify(ks);
+
     const dialogRef = this.browserViewDialogService.open({ks: ks});
+
     if (dialogRef === undefined) {
       this.notificationService.toast({
         severity: 'warn',
@@ -260,8 +272,34 @@ export class KnowledgeCanvasComponent implements OnInit, OnDestroy {
       });
 
       this.ksCommandService.open(ks);
+      return;
     }
-    console.warn('Need to do something after preview command is received...');
+
+    const textExtractor = this.ipcService.extractedText.subscribe((data) => {
+      const text = data.text.trim();
+      if (text !== '' && data.url.includes(typeof ks.accessLink === 'string' ? ks.accessLink : ks.accessLink.href)) {
+        if (!ks.description.includes(data.text)) {
+          ks.description += data.text + '\n\n';
+        }
+      }
+    })
+
+    let closed = false;
+    dialogRef?.onClose.subscribe((result) => {
+      if (!closed) {
+        textExtractor.unsubscribe();
+        this.onKsPreviewHide(result);
+        closed = true;
+      }
+    });
+  }
+
+  onKsPreviewHide(ks: KnowledgeSource) {
+    let update: ProjectUpdateRequest = {
+      id: ks.associatedProject,
+      updateKnowledgeSource: [ks]
+    }
+    this.projectService.updateProjects([update]);
   }
 
   onKsOpen(ks: KnowledgeSource) {
@@ -289,5 +327,24 @@ export class KnowledgeCanvasComponent implements OnInit, OnDestroy {
 
   onKsEdit($event: KnowledgeSource) {
     this.ksCommandService.detail($event);
+  }
+
+  setupBreadcrumbs(id: UuidModel) {
+    let ancestors = this.projectService.getAncestors(id.value);
+    this.breadcrumbs = [];
+    for (let ancestor of ancestors) {
+      this.breadcrumbs.push({
+        label: ancestor.title, id: ancestor.id, title: ancestor.title,
+        items: [{label: ancestor.title, id: ancestor.id, title: ancestor.title,}]
+      });
+    }
+  }
+
+  onBreadcrumbClick(_: any) {
+    // // Project context will contain the project associated with breadcrumb ID
+    // this.projectContext = this.projectService.getProject($event.item.id);
+    //
+    // // Toggle the overlay using the original event to guarantee correct positioning
+    // this.projectInfoOverlay.toggle($event.originalEvent);
   }
 }
