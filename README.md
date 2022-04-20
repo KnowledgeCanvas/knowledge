@@ -45,7 +45,7 @@ The app relies exclusively on local storage and local processes. There are no se
 
 
 - The `Grid` tab shows `Knowledge Sources` in a different light. Instead of rows, you get cards, complete with thumbnails, topics, and more. This view is useful for browsing resources and getting a birds-eye view of a particular project.
-<img width="1279" alt="image" src="https://user-images.githubusercontent.com/19367848/154831118-fb55f59b-1dfd-42fa-a2bd-e429016c1a3f.png">
+<img width="1392" alt="image" src="https://user-images.githubusercontent.com/19367848/158475091-374e0648-f72e-46a0-853d-55dd8de60bb9.png">
 
 - The `Calendar` tab allows us to view Knowledge Sources in the time domain. Every time a Knowledge Source is created, accessed, or modified, a new event is added to the calendar. This view is useful for the learning technique known as "spaced repitition," which is a way of strengthening your understanding of a subject by recollecting what you learned at various intervals of time. In future versions of Knowledge Canvas, we plan to include other learning tools like flashcards and "Pomodoro timers".
 <img width="1279" alt="image" src="https://user-images.githubusercontent.com/19367848/154831016-75a569bd-fd38-4a7c-986e-1782fb0ef16c.png">
