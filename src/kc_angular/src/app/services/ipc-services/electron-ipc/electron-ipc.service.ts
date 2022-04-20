@@ -89,6 +89,10 @@ export class ElectronIpcService {
     showItemInFolderResults: 'app-show-item-in-folder-results'
   }
 
+  receiveChannels = {
+    browserViewExtractText: 'electron-browser-view-extract-text'
+  }
+
   // Subscribers will be alerted when the browser view navigates to a new URL
   private browserViewNavEvent = new BehaviorSubject<string>('');
   navEvent = this.browserViewNavEvent.asObservable();
@@ -110,6 +114,9 @@ export class ElectronIpcService {
 
   private _thumbnails = new BehaviorSubject<{ id: string, thumbnail: any }>({id: '', thumbnail: undefined});
   thumbnail = this._thumbnails.asObservable();
+
+  private _extractedText = new BehaviorSubject<{url: string, text: string}>({url: '', text: ''});
+  extractedText = this._extractedText.asObservable();
 
   constructor(private zone: NgZone) {
     /**
@@ -163,6 +170,10 @@ export class ElectronIpcService {
           this._bvUrl.next(response.success.data);
       });
     });
+
+    this.receive(this.receiveChannels.browserViewExtractText, (response: any) => {
+      this._extractedText.next(response);
+    })
 
     this.receive(this.channels.getFileThumbnailResults, (response: IpcMessage[]) => {
       for (let res of response) {
