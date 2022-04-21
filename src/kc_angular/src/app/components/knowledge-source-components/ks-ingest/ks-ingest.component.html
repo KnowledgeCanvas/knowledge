@@ -45,6 +45,12 @@
       </app-ks-card>
     </div>
   </ng-template>
+  <ng-template pTemplate="footer">
+    <p-checkbox label="Import to current project"
+                [(ngModel)]="importToProject"
+                [binary]="true">
+    </p-checkbox>
+  </ng-template>
 </p-panel>
 
 <p-overlayPanel #overlayPanel
