@@ -42,8 +42,7 @@ export class KsExportComponent {
     {field: 'flagged', header: 'Important'},
     {field: 'associatedProject', header: 'Project'},
     {field: 'topics', header: 'Topics'},
-    {field: 'description', header: 'Description'},
-    {field: 'reference.source.website.metadata.meta', header: 'Meta'}
+    {field: 'description', header: 'Description'}
   ];
 
   constructor() {
@@ -80,32 +79,7 @@ export class KsExportComponent {
 
         if (column.field === 'id' || column.field === 'associatedProject') {
           cellData = ObjectUtils.resolveFieldData(record, column.field).value;
-        }
-
-        else if (column.field === 'reference.source.website.metadata.meta') {
-          let metadata = ObjectUtils.resolveFieldData(record, column.field);
-          cellData = '';
-
-          let metalist = [];
-
-          if (metadata && metadata.length) {
-            for (let meta of metadata) {
-              if (meta) {
-                metalist.push(JSON.stringify(meta)
-                  .replace('\n', '')
-                  .replace(', ', ',')
-                  .replace(' ,', ',')
-                  .replace(' , ', ',')
-                );
-              }
-            }
-            cellData = metalist.join(',');
-          } else {
-            cellData = ''
-          }
-        }
-
-        else {
+        } else {
           cellData = ObjectUtils.resolveFieldData(record, column.field);
         }
 
