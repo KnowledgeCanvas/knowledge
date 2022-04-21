@@ -66,6 +66,10 @@ export class ProjectDetailsOverviewComponent implements OnInit {
 
   selectedProject!: ProjectModel;
 
+  viewIndex: number = 0;
+
+  calendarIndex: number = 2;
+
   constructor(private projectService: ProjectService, private faviconService: FaviconExtractorService,
               private settingsService: SettingsService, private ksCommandService: KsCommandService) {
     projectService.currentProject.subscribe((kcProject) => {
@@ -83,6 +87,10 @@ export class ProjectDetailsOverviewComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    let idx = localStorage.getItem('project-view-index');
+    if (idx) {
+      this.viewIndex = Number(idx);
+    }
   }
 
   setupBreadcrumbs(id: UuidModel) {
@@ -229,5 +237,12 @@ export class ProjectDetailsOverviewComponent implements OnInit {
       this.selectedKs = selected;
       this.ksOverlay.toggle(req.event, req.element);
     }
+  }
+
+  onViewChange(index: number) {
+    if (index === this.calendarIndex) {
+      return;
+    }
+    localStorage.setItem('project-view-index', JSON.stringify(index));
   }
 }

@@ -17,18 +17,6 @@ limitations under the License.-->
 <div class="grid p-fluid">
   <div class="col-12">
     <p-breadcrumb [model]="breadcrumbs" (onItemClick)="onBreadcrumbClick($event)"></p-breadcrumb>
-    <div *ngIf="kcProject">
-      <p-chips (onRemove)="topicsOnChange($event)"
-               (onAdd)="topicsOnChange($event)"
-               (onChipClick)="topicsOnClick($event)"
-               placeholder="Add topics to '{{kcProject.name}}'..."
-               [(ngModel)]="kcProject.topics"
-               [allowDuplicate]="false"
-               [addOnTab]="true"
-               [addOnBlur]="true"
-               class="p-fluid w-full">
-      </p-chips>
-    </div>
   </div>
 </div>
 
@@ -71,7 +59,7 @@ limitations under the License.-->
 
   <div class="project-ks-list-container"
        *ngIf="ksList.length">
-    <p-tabView>
+    <p-tabView (activeIndexChange)="onViewChange($event)" [(activeIndex)]="viewIndex">
       <p-tabPanel [cache]="false">
         <ng-template pTemplate="header">
           <i class="pi pi-table mr-3"></i>
