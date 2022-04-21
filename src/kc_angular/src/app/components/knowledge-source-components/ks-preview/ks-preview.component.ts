@@ -91,7 +91,7 @@ export class KsPreviewComponent implements OnInit, OnDestroy {
 
   close() {
     this.ipcService.closeBrowserView();
-    this.ref.close();
+    this.ref.close(this.ks);
   }
 
   copy(text: string) {

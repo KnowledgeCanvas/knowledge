@@ -230,7 +230,17 @@ export class KsCardComponent implements OnInit, OnDestroy {
       if (meta) {
         let ogImage = meta.find(m => m.key === 'og:image');
         if (ogImage && ogImage.value) {
-          this.thumbnail = ogImage.value;
+          const url = ogImage.value;
+          fetch(url).then((result) => {
+            result.text().then((text) => {
+              // Sometimes, requesting an image will return HTML, which is signs of failure
+              if (!text.startsWith('<')) {
+                this.thumbnail = url;
+              }
+            })
+          }).catch((reason) => {
+            console.error('Unable to get thumbnail for ', url);
+          })
         }
       }
     }
