@@ -17,7 +17,7 @@
 
 import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {CodeModel, WebsiteContentModel, WebsiteMetadataModel, WebsiteModel} from "src/app/models/website.model";
+import {ArticleModel, CodeModel, WebsiteContentModel, WebsiteMetadataModel, WebsiteModel} from "src/app/models/website.model";
 
 @Injectable({
   providedIn: 'root'
@@ -61,6 +61,85 @@ export class ExtractionService {
     });
   }
 
+  async extractWebsiteArticle(url: string) {
+    this.httpClient.get(url, {responseType: 'text'}).subscribe((htmlString) => {
+      let parser = new DOMParser();
+      let htmlDoc = parser.parseFromString(htmlString, 'text/html');
+      let articles = htmlDoc.getElementsByTagName('article');
+
+      if (!articles) {
+        return null;
+      }
+
+      if (articles.length > 1) {
+        console.debug('ExtractionService.extractWebsiteMetadata() | More than one article detected, returning first instance')
+      }
+
+      let article = articles[0];
+      let title = '';
+
+      if (article.title) {
+        title = article.title
+      } else {
+        article.childNodes.forEach((value, key) => {
+          if (value.nodeName === 'H1' || value.nodeName === 'h1') {
+            if (value.textContent) {
+              title = value.textContent;
+              return;
+            }
+          }
+        });
+      }
+
+      let articleModel: ArticleModel = {
+        title: title,
+        type: article.attributes.getNamedItem('itemtype')?.nodeValue ?? undefined,
+        text: article.textContent ?? undefined,
+        html: article.innerHTML
+      };
+
+      return articleModel;
+    })
+  }
+
+  async extractWebsiteCode(url: string) {
+    this.httpClient.get(url, {responseType: 'text'}).subscribe((htmlString) => {
+      let parser = new DOMParser();
+      let htmlDoc = parser.parseFromString(htmlString, 'text/html');
+
+      // Code tags
+      let code = htmlDoc.getElementsByTagName('code');
+      if (!code || code.length === 0) {
+        return null;
+      }
+
+      let codeHtml: CodeModel[] = [];
+      for (let i = 0; i < code.length; i++) {
+        if (code[i].textContent?.length && (code[i].textContent?.length ?? 0) > this.MIN_CODE_LENGTH) {
+          let c: CodeModel = {
+            html: code[i].outerHTML
+          }
+          codeHtml.push(c);
+        }
+      }
+      return codeHtml;
+    })
+  }
+
+  async extractWebsiteAnswers(url: string) {
+    this.httpClient.get(url, {responseType: 'text'}).subscribe((htmlString) => {
+      let parser = new DOMParser();
+      let htmlDoc = parser.parseFromString(htmlString, 'text/html');
+
+      // Answers (StackOverflow)
+      let answers = htmlDoc.getElementById('answers');
+      if (answers) {
+        console.debug('ExtractionService.extractWebsiteMetadata() | "answers" element detected')
+        console.warn('Answer extraction not implemented but an answer field was detected...');
+      }
+    })
+  }
+
   extractWebsiteMetadata(url: string): Promise<WebsiteMetadataModel> {
     return new Promise<WebsiteMetadataModel>((resolve) => {
       let metadata: WebsiteMetadataModel = {};
@@ -79,99 +158,36 @@ export class ExtractionService {
         let meta = htmlDoc.getElementsByTagName('meta');
         if (meta && meta.length) {
           let extractedMeta = [];
-
           for (let i = 0; i < meta.length; i++) {
-            // Charset
+            // Charset tag
             if (meta[i].attributes && meta[i].attributes[0].name === 'charset') {
               extractedMeta.push({key: 'charset', value: meta[i].attributes[0].textContent, property: ''})
             }
 
-            // Open Graph property:content pairs
-            if (meta[i].attributes && meta[i].attributes.length == 2) {
-              let attr = {
-                key: meta[i].attributes[0].textContent,
-                value: meta[i].attributes[1].textContent,
-                property: ''
-              };
-              extractedMeta.push(attr);
-            }
+            // Open Graph tags
+            if (meta[i]?.attributes[0]?.textContent?.startsWith('og:')) {
+              let val = '';
+              if (!meta[i].attributes[1]?.textContent?.startsWith('og:')) {
+                val = meta[i].attributes[1].textContent ?? '';
+              } else {
+                val = meta[i].attributes[2].textContent ?? '';
+              }
 
-            // Open Graph property:content triples
-            if (meta[i].attributes && meta[i].attributes.length == 3) {
-              let attr = {
-                key: meta[i].attributes[0].textContent,
-                value: meta[i].attributes[2].textContent,
-                property: meta[i].attributes[1].textContent
-              };
-              extractedMeta.push(attr);
-            }
-
-            // Other stuff TODO: verify
-            if (meta[i].attributes && meta[i].attributes.length == 4) {
-              let attr = {
-                key: meta[i].name,
-                value: meta[i].content,
-                property: meta[i].attributes.getNamedItem('property')?.nodeValue ?? ''
-              };
-              extractedMeta.push(attr);
+              if (val !== '') {
+                let attr = {
+                  key: meta[i].attributes[0]?.textContent,
+                  value: val,
+                  property: ''
+                };
+                extractedMeta.push(attr);
+                if (attr.key === 'og:title' && attr.value) {
+                  metadata.title = attr.value;
+                }
+              }
             }
           }
           metadata.meta = extractedMeta;
         }
-
-
-        // Article Tag TODO: comprehensive testing and verification
-        let article = htmlDoc.getElementsByTagName('article');
-        if (article && article.length) {
-          console.debug('ExtractionService.extractWebsiteMetadata() | article detected')
-
-          for (let i = 0; i < article.length; i++) {
-            let a = article[i];
-            let aTitle = metadata.title;
-            if (a.title) {
-              aTitle = a.title
-            } else {
-              a.childNodes.forEach((value, key) => {
-                if (value.nodeName === 'H1' || value.nodeName === 'h1') {
-                  if (value.textContent)
-                    aTitle = value.textContent;
-                }
-              });
-            }
-            metadata.article = {
-              title: aTitle,
-              type: a.attributes.getNamedItem('itemtype')?.nodeValue ?? undefined,
-              text: a.textContent ?? undefined,
-              html: a.innerHTML
-            };
-          }
-        }
-
-        // Code tags
-        let code = htmlDoc.getElementsByTagName('code');
-        if (code && code.length) {
-          console.debug('ExtractionService.extractWebsiteMetadata() | code tags detected')
-
-          let codeHtml: CodeModel[] = [];
-          for (let i = 0; i < code.length; i++) {
-            // @ts-ignore
-            if (code[i].textContent?.length && code[i].textContent?.length > this.MIN_CODE_LENGTH) {
-              let c: CodeModel = {
-                html: code[i].outerHTML
-              }
-              codeHtml.push(c);
-            }
-          }
-          metadata.code = codeHtml;
-        }
-
-        // Answers (StackOverflow)
-        let answers = htmlDoc.getElementById('answers');
-        if (answers) {
-          console.debug('ExtractionService.extractWebsiteMetadata() | "answers" element detected')
-          console.warn('Answer extraction not implemented but an answer field was detected...');
-        }
-
         resolve(metadata);
       });
     });
