@@ -16,7 +16,10 @@ limitations under the License.-->
 
 <div class="grid p-fluid">
   <div class="col-12">
-    <p-breadcrumb [model]="breadcrumbs" (onItemClick)="onBreadcrumbClick($event)"></p-breadcrumb>
+    <p-breadcrumb [model]="breadcrumbs"
+                  [home]="breadcrumbHeader"
+                  styleClass="surface-100"
+                  (onItemClick)="onBreadcrumbClick($event)"></p-breadcrumb>
   </div>
 </div>
 

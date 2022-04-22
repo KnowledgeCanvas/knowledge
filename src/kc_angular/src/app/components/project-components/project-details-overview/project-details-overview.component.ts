@@ -60,6 +60,8 @@ export class ProjectDetailsOverviewComponent implements OnInit {
 
   breadcrumbs: MenuItem[] = [];
 
+  breadcrumbHeader: MenuItem = {icon: 'pi pi-list', disabled: false}
+
   projectContext: any;
 
   selectedKs!: KnowledgeSource;
