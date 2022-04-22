@@ -64,6 +64,8 @@ export class KnowledgeCanvasComponent implements OnInit, OnDestroy {
 
   breadcrumbs: MenuItem[] = [];
 
+  breadcrumbHeader: MenuItem = {icon: 'pi pi-list', disabled: true}
+
   private currentKsOriginal?: string;
 
   private _subKsCommandDetail: Subscription;
@@ -334,8 +336,8 @@ export class KnowledgeCanvasComponent implements OnInit, OnDestroy {
     this.breadcrumbs = [];
     for (let ancestor of ancestors) {
       this.breadcrumbs.push({
-        label: ancestor.title, id: ancestor.id, title: ancestor.title,
-        items: [{label: ancestor.title, id: ancestor.id, title: ancestor.title,}]
+        label: ancestor.title, id: ancestor.id, title: ancestor.title, disabled: true,
+        items: [{label: ancestor.title, id: ancestor.id, title: ancestor.title, disabled: true}]
       });
     }
   }

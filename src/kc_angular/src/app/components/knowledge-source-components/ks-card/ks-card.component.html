@@ -22,9 +22,10 @@ limitations under the License.-->
 
     <ng-template pTemplate="content">
       <div class="flex-row-center-between">
-        <div (click)="onEdit.emit(this.ks)" class="font-bold text-xl cursor-pointer">
-          {{ks.title | truncate: [32]}}
-        </div>
+        <span class="font-bold text-xl cursor-pointer"
+              (click)="onEdit.emit(this.ks)" [pTooltip]="ks.title">
+          {{ks.title |truncate: [28]}}
+        </span>
         <i *ngIf="showContentType"
            class="pi pi-{{ks.ingestType | ksIngestTypeIcon}}"
            [pTooltip]="ks.ingestType | titlecase">
