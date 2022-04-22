@@ -14,7 +14,7 @@
  limitations under the License.
  */
 
-import {Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
+import {Component, Input, OnInit, SecurityContext, ViewChild} from '@angular/core';
 import {KnowledgeSource} from "src/app/models/knowledge.source.model";
 import {DomSanitizer, SafeUrl} from "@angular/platform-browser";
 import {KcFileViewConfig} from "../ks-viewport-components/file-viewport/file-view.component";
@@ -22,6 +22,7 @@ import {BrowserViewDialogService} from "../../../services/ipc-services/browser-s
 import {KsFactoryService} from "../../../services/factory-services/ks-factory-service/ks-factory.service";
 import {WebsiteMetaTagsModel} from "../../../models/website.model";
 import {KsCommandService} from "../../../services/command-services/ks-command/ks-command.service";
+import {YouTubePlayer} from "@angular/youtube-player";
 
 
 @Component({
@@ -29,48 +30,34 @@ import {KsCommandService} from "../../../services/command-services/ks-command/ks
   templateUrl: './ks-info.component.html',
   styleUrls: ['./ks-info.component.scss']
 })
-export class KsInfoComponent implements OnInit, OnChanges {
+export class KsInfoComponent implements OnInit {
   @Input() ks!: KnowledgeSource;
 
   @Input() maximized?: boolean;
 
-  @Output() shouldClose = new EventEmitter<boolean>();
-
-  @ViewChild('ksNotes') ksNotes!: ElementRef;
+  @ViewChild('youtubePlayer') ksYoutubePlayer!: YouTubePlayer;
 
   events: any[] = [];
+
   ksIsYoutubeVideo: boolean = false;
+
   ksYoutubeVideoId: string = '';
+
   apiLoaded = false;
+
   fileConfig?: KcFileViewConfig;
-  ksYoutubeHidden: boolean = false;
+
   safeUrl?: SafeUrl | null;
+
   ksMetadata: WebsiteMetaTagsModel[] = [];
+
+  allowCollapsedContent: boolean = false;
 
 
   constructor(private sanitizer: DomSanitizer,
               private browserService: BrowserViewDialogService,
               private ksCommandService: KsCommandService,
               private ksFactory: KsFactoryService) {
-  }
-
-  get ksIsWebsite() {
-    return this.ks.ingestType === 'website';
-  };
-
-  get ksHasPreview() {
-    return this.ksIsPdf || this.ksIsYoutubeVideo;
-  };
-
-  get ksPreviewHeader() {
-    if (this.ksIsPdf)
-      return 'PDF';
-    if (this.ksIsYoutubeVideo)
-      return 'YouTube';
-    if (this.ksIsWebsite)
-      return 'Website'
-    else
-      return '';
   }
 
   get ksIsPdf() {
@@ -83,43 +70,44 @@ export class KsInfoComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.ksMetadata = this.ks.reference.source.website?.metadata?.meta ?? [];
-  }
 
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes.ks && changes.ks.currentValue) {
-      let ks: KnowledgeSource = changes.ks.currentValue;
-      if (ks) {
-        this.populateCalendar(ks);
+    let ks: KnowledgeSource = this.ks;
+    this.populateCalendar(ks);
 
-        if (ks.ingestType === 'website') {
-          ks.accessLink = new URL(ks.accessLink);
-          let urlParam = ks.accessLink.searchParams.get('v');
+    if (ks.ingestType === 'website') {
+      ks.accessLink = new URL(ks.accessLink);
+      let urlParam = ks.accessLink.searchParams.get('v');
 
-          if (ks.accessLink.hostname === 'www.youtube.com' && urlParam) {
-            this.ksIsYoutubeVideo = true;
-            this.ksYoutubeVideoId = urlParam;
-            if (!this.apiLoaded) {
-              // This code loads the IFrame Player API code asynchronously, according to the instructions at
-              // https://developers.google.com/youtube/iframe_api_reference#Getting_Started
-              const tag = document.createElement('script');
-              tag.src = 'https://www.youtube.com/iframe_api';
-              document.body.appendChild(tag);
-              this.apiLoaded = true;
-            }
-          }
-
-
-        }
-
-        if (ks.ingestType === 'file') {
-          this.fileConfig = {
-            filePath: ks.reference.source.file?.path ?? ''
-          }
-          if (typeof ks.accessLink === 'string')
-            this.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl('file://' + encodeURI(ks.accessLink));
+      if (ks.accessLink.hostname === 'www.youtube.com' && urlParam) {
+        this.ksIsYoutubeVideo = true;
+        this.ksYoutubeVideoId = urlParam;
+        if (!this.apiLoaded) {
+          // This code loads the IFrame Player API code asynchronously, according to the instructions at
+          // https://developers.google.com/youtube/iframe_api_reference#Getting_Started
+          const tag = document.createElement('script');
+          tag.src = 'https://www.youtube.com/iframe_api';
+          document.body.appendChild(tag);
+          this.apiLoaded = true;
         }
       }
+
+      const sanitized = this.sanitizer.sanitize(SecurityContext.URL, ks.accessLink)
+      if (sanitized) {
+        this.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(sanitized);
+      }
     }
+
+    if (ks.ingestType === 'file') {
+      this.fileConfig = {
+        filePath: ks.reference.source.file?.path ?? ''
+      }
+      if (typeof ks.accessLink === 'string')
+        this.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl('file://' + encodeURI(ks.accessLink));
+    }
+
+    setTimeout(() => {
+      this.allowCollapsedContent = true;
+    }, 500);
   }
 
   populateCalendar(ks: KnowledgeSource) {
@@ -172,10 +160,6 @@ export class KsInfoComponent implements OnInit, OnChanges {
     }
   }
 
-  ksYoutubeStateChange($event: any) {
-    console.debug('KsInfo.ksYoutubeStateChange($event) | $event === ', $event);
-  }
-
   onTopicClick($event: any) {
     if (!$event.value) {
       return;
@@ -185,11 +169,19 @@ export class KsInfoComponent implements OnInit, OnChanges {
     this.browserService.open({ks: ks});
   }
 
-  onPdfClick($event: MouseEvent) {
-    console.warn('Pdf click event unhandled: ', $event);
-  }
-
   onKsOpen(ks: KnowledgeSource) {
     this.ksCommandService.open(ks);
+  }
+
+  youtubeToggle($event: any) {
+    if (!this.ksYoutubePlayer) {
+      return;
+    }
+
+    if ($event.collapsed === true) {
+      this.ksYoutubePlayer.pauseVideo();
+    } else {
+      this.ksYoutubePlayer.playVideo();
+    }
   }
 }

@@ -14,8 +14,8 @@ limitations under the License.-->
 
 <p-scrollPanel [style]="{width: '100%', height: '100%'}">
   <div class="p-fluid grid">
-    <p-panel header="Details" class="col-6">
-      <div style="height: 40vh; max-height: 40vh" class="flex-col-center-between">
+    <p-panel header="Details" class="lg:col-6 col-12">
+      <div style="height: 40vh; max-height: 40vh" class="flex-col-center-between overflow-y-auto">
         <div class="field col-12">
           <input id="_ksTitle"
                  type="text"
@@ -27,7 +27,7 @@ limitations under the License.-->
         <div class="field col-12">
             <textarea pInputTextarea id="_ksDescription"
                       [autoResize]="true"
-                      [style]="{'max-height': '25vh'}"
+                      [style]="{'max-height': '20vh'}"
                       [rows]="3"
                       [cols]="30"
                       class="p-fluid"
@@ -47,7 +47,8 @@ limitations under the License.-->
         </div>
       </div>
     </p-panel>
-    <p-panel class="col-6" header="Timeline">
+
+    <p-panel header="Timeline" class="lg:col-6 col-12">
       <div style="height: 40vh; max-height: 40vh">
         <div class="p-inputgroup">
           <button pButton icon="pi pi-calendar-plus" (click)="dueDateCal.toggle()"
@@ -95,44 +96,50 @@ limitations under the License.-->
 
   <br>
 
-  <p-panel header="{{ksPreviewHeader}}"
-           *ngIf="!this.ksIsYoutubeVideo && this.ksIsPdf"
-           [toggleable]="true">
-    <ng-template pTemplate="icons">
-      <button pButton
-              class="p-panel-header-icon"
-              icon="pi pi-external-link"
-              (click)="onKsOpen(ks)">
-      </button>
-    </ng-template>
-    <ng-template pTemplate="content">
-      <div *ngIf="this.ksIsPdf" class="flex-col-center-start h-full">
-        <embed *ngIf="safeUrl"
-               [src]="safeUrl"
-               class="p-fluid"
-               (click)="onPdfClick($event)"
-               [style]="{width: '100%', 'height': '65vh'}"
-               [class.ks-pdf-preview]="!maximized"
-               [class.ks-pdf-preview-max]="maximized">
-      </div>
-    </ng-template>
-  </p-panel>
-  <p-panel *ngIf="this.ksIsYoutubeVideo" [toggleable]="true">
-    <ng-template pTemplate="content">
-      <div class="p-fluid w-full flex-row-center-center">
-        <youtube-player [hidden]="ksYoutubeHidden"
-                        [videoId]="ksYoutubeVideoId"
-                        (stateChange)="ksYoutubeStateChange($event)">
-        </youtube-player>
-      </div>
-    </ng-template>
-  </p-panel>
+  <div>
+    <p-panel *ngIf="this.ksIsPdf" #pdfPanel header="PDF Preview" [collapsed]="true" [toggleable]="true">
+      <ng-template pTemplate="icons">
+        <button pButton class="p-panel-header-icon" icon="pi pi-external-link" (click)="onKsOpen(ks)"></button>
+      </ng-template>
+
+      <ng-template pTemplate="content">
+        <div *ngIf="this.ksIsPdf" class="flex-col-center-start h-full">
+          <embed *ngIf="safeUrl && this.allowCollapsedContent" [src]="safeUrl" class="p-fluid"
+                 [style]="{width: '100%', 'height': '65vh'}"
+                 [class.ks-pdf-preview]="!maximized"
+                 [class.ks-pdf-preview-max]="maximized">
+        </div>
+      </ng-template>
+    </p-panel>
+
+    <p-panel *ngIf="this.ksIsYoutubeVideo"
+             header="YouTube Preview"
+             [collapsed]="true"
+             [toggleable]="true"
+             (onAfterToggle)="youtubeToggle($event)">
+      <ng-template pTemplate="icons">
+        <button pButton
+                class="p-panel-header-icon"
+                icon="pi pi-external-link"
+                (click)="onKsOpen(ks)">
+        </button>
+      </ng-template>
+      <ng-template pTemplate="content">
+        <div class="p-fluid w-full flex-row-center-center">
+          <youtube-player *ngIf="this.ksIsYoutubeVideo && this.allowCollapsedContent"
+                          [videoId]="ksYoutubeVideoId"
+                          #youtubePlayer>
+          </youtube-player>
+        </div>
+      </ng-template>
+    </p-panel>
+  </div>
 
   <br>
 
-  <p-panel header="Knowledge Source Model" class="pt-6">
+  <p-panel header="Knowledge Source Model" class="pt-6" [toggleable]="true" [collapsed]="true">
     <ng-template pTemplate="content">
-      <div class="p-fluid grid">
+      <div class="p-fluid grid" *ngIf="this.allowCollapsedContent">
         <div class="field p-float-label sm:col-12 md:col-12 lg:col-6 mt-4">
           <input id="ksId" type="text" pInputText disabled [value]="ks.id.value">
           <label for="ksId">Knowledge Source ID</label>
@@ -163,33 +170,42 @@ limitations under the License.-->
           <label for="accessLink">Access Link</label>
         </div>
       </div>
-
-      <p-table *ngIf="ksMetadata.length > 0"
-               [value]="ksMetadata"
-               [autoLayout]="true"
-               [paginator]="true"
-               [rows]="10">
-        <ng-template pTemplate="header">
-          <tr>
-            <th pSortableColumn="key">Key
-              <p-sortIcon field="key"></p-sortIcon>
-            </th>
-            <th pSortableColumn="value">Value
-              <p-sortIcon field="value"></p-sortIcon>
-            </th>
-            <th pSortableColumn="property">Property
-              <p-sortIcon field="property"></p-sortIcon>
-            </th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-meta>
-          <tr *ngIf="meta.key.length > 0 && meta.value.length > 0">
-            <td>{{meta.key}}</td>
-            <td>{{meta.value}}</td>
-            <td>{{meta.property}}</td>
-          </tr>
-        </ng-template>
-      </p-table>
     </ng-template>
+  </p-panel>
+
+  <br>
+
+  <p-panel header="Extracted Metadata" class="pt-6"
+           *ngIf="ksMetadata.length > 0"
+           [toggleable]="true"
+           [collapsed]="true">
+    <p-table *ngIf="this.allowCollapsedContent"
+             [value]="ksMetadata"
+             [autoLayout]="true"
+             [paginator]="true"
+             [responsive]="false"
+             [responsiveLayout]="'false'"
+             [rows]="10">
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="key">Key
+            <p-sortIcon field="key"></p-sortIcon>
+          </th>
+          <th pSortableColumn="value">Value
+            <p-sortIcon field="value"></p-sortIcon>
+          </th>
+          <th pSortableColumn="property">Property
+            <p-sortIcon field="property"></p-sortIcon>
+          </th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-meta>
+        <tr *ngIf="meta.key.length > 0 && meta.value.length > 0">
+          <td>{{meta.key}}</td>
+          <td>{{meta.value}}</td>
+          <td>{{meta.property}}</td>
+        </tr>
+      </ng-template>
+    </p-table>
   </p-panel>
 </p-scrollPanel>

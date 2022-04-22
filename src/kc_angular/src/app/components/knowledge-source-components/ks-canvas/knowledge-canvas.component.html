@@ -19,34 +19,31 @@ limitations under the License.-->
                      (onTopicSearch)="onTopicSearch.emit($event)">
 </kc-project-overview>
 
-<p-dialog #ksDetails
-          *ngIf="currentKs"
+<p-dialog *ngIf="currentKs"
           [(visible)]="ksDetailsVisible"
           [dismissableMask]="true"
           [maximizable]="true"
           [resizable]="true"
-          [modal]="false"
+          [modal]="true"
           styleClass="shadow-6"
+          [contentStyle]="{'overflow-y': 'hidden', 'max-height': '100%'}"
           [style]="{width: '95vw', height: '95vh', 'max-width': '128rem', 'max-height': '128rem', 'min-height': '64rem', 'min-width': '64rem'}"
           (onHide)="onKsInfoHide(currentKs)"
           (onShow)="onKsInfoShow($event)"
           (onMaximize)="onKsInfoMaximize($event)">
   <ng-template pTemplate="header">
-    <div class="p-fluid grid">
-      <p-breadcrumb [model]="breadcrumbs"
-                    class="col"
-                    styleClass="surface-100"
-                    (onItemClick)="onBreadcrumbClick($event)">
-      </p-breadcrumb>
+    <div class="w-full flex-row-center-start">
+      <app-ks-icon [ks]="currentKs" class="mr-3"></app-ks-icon>
+      <p-breadcrumb [model]="breadcrumbs" styleClass="surface-0"
+                    (onItemClick)="onBreadcrumbClick($event)"></p-breadcrumb>
     </div>
+  </ng-template>
 
-  </ng-template>
   <ng-template pTemplate="body">
-    <app-ks-info [ks]="currentKs" #ksInfoComponent
-                 [maximized]="ksInfoMaximized"
-                 (shouldClose)="ksDetailsVisible = false">
-    </app-ks-info>
+    <app-ks-info [ks]="currentKs" [maximized]="ksInfoMaximized"></app-ks-info>
   </ng-template>
+
+  <ng-template pTemplate="footer"></ng-template>
 </p-dialog>
 
 <p-dialog [(visible)]="ksMoveVisible"
