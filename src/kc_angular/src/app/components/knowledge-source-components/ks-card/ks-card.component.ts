@@ -17,7 +17,6 @@
 
 import {Component, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {KnowledgeSource} from "../../../models/knowledge.source.model";
-import {ElectronIpcService} from "../../../services/ipc-services/electron-ipc/electron-ipc.service";
 import {TreeNode} from "primeng/api";
 import {Subscription} from "rxjs";
 import {UuidModel} from "../../../models/uuid.model";
@@ -155,10 +154,6 @@ export class KsCardComponent implements OnInit, OnDestroy {
 
   hovering: boolean = false;
 
-  thumbnail?: string;
-
-  thumbnailUnavailable: boolean = false;
-
   contentType?: string;
 
   keywords?: string[];
@@ -171,23 +166,10 @@ export class KsCardComponent implements OnInit, OnDestroy {
   };
   private _subProjectTree?: Subscription;
 
-  private _subThumbnail?: Subscription;
-
-  constructor(private ipcService: ElectronIpcService) {
-
+  constructor() {
   }
 
   ngOnInit(): void {
-    if (this.ks.ingestType === 'file') {
-      this._subThumbnail = this.ipcService.thumbnail.subscribe((thumbnail) => {
-        if (thumbnail !== undefined && thumbnail.id && thumbnail.id === this.ks.id.value) {
-          this.thumbnail = thumbnail.thumbnail;
-        }
-      });
-    }
-
-    this.getThumbnail();
-
     this.getContentType().then((result) => {
       this.contentType = result;
     });
@@ -200,49 +182,12 @@ export class KsCardComponent implements OnInit, OnDestroy {
       this.description = result;
     });
 
-    setTimeout(() => {
-      if (this.thumbnail === undefined) {
-        this.thumbnailUnavailable = true;
-      }
-    }, 1000);
+
   }
 
   ngOnDestroy() {
     if (this._subProjectTree) {
       this._subProjectTree.unsubscribe();
-    }
-
-    if (this._subThumbnail) {
-      this._subThumbnail.unsubscribe();
-    }
-  }
-
-  getThumbnail() {
-    let link: string = typeof this.ks.accessLink === 'string' ? this.ks.accessLink : this.ks.accessLink.href;
-    if (this.ks.ingestType === 'file') {
-      this.ipcService.getFileThumbnail([{
-        path: link,
-        id: this.ks.id.value
-      }]);
-      return;
-    } else {
-      let meta = this.ks.reference.source.website?.metadata?.meta;
-      if (meta) {
-        let ogImage = meta.find(m => m.key === 'og:image');
-        if (ogImage && ogImage.value) {
-          const url = ogImage.value;
-          fetch(url).then((result) => {
-            result.text().then((text) => {
-              // Sometimes, requesting an image will return HTML, which is signs of failure
-              if (!text.startsWith('<')) {
-                this.thumbnail = url;
-              }
-            })
-          }).catch((reason) => {
-            console.error('Unable to get thumbnail for ', url);
-          })
-        }
-      }
     }
   }
 

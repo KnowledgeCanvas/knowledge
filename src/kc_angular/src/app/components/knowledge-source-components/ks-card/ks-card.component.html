@@ -17,25 +17,7 @@ limitations under the License.-->
      style="border: 1px dotted var(--surface-400); border-radius: 5px;">
   <p-card (dblclick)="onEdit.emit(ks)">
     <ng-template pTemplate="header">
-      <div *ngIf="showThumbnail">
-        <div *ngIf="!thumbnail"
-             class="flex-col-center-center"
-             style="height: 200px; background-color: var(--surface-300); border-radius: 5px">
-          <app-ks-icon [ks]="ks"
-                       class="cursor-pointer"
-                       (click)="onEdit.emit(ks)">
-          </app-ks-icon>
-        </div>
-
-        <div class="w-full p-fluid flex-col-center-center bg-auto">
-          <p-image *ngIf="thumbnail" [src]="thumbnail"
-                   class="align-self-center"
-                   height="200px"
-                   [style]="{'border-radius': '5px'}"
-                   [preview]="true">
-          </p-image>
-        </div>
-      </div>
+      <app-ks-thumbnail *ngIf="showThumbnail" [ks]="ks"></app-ks-thumbnail>
     </ng-template>
 
     <ng-template pTemplate="content">

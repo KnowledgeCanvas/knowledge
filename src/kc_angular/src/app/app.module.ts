@@ -120,6 +120,7 @@ import {ProjectBreadcrumbPipe} from './pipes/project-pipes/project-breadcrumb/pr
 import {ScrollPanelModule} from "primeng/scrollpanel";
 import {KsExportComponent} from "./components/knowledge-source-components/ks-export/ks-export.component";
 import {RadioButtonModule} from "primeng/radiobutton";
+import {KsThumbnailComponent} from './components/knowledge-source-components/ks-thumbnail/ks-thumbnail.component';
 
 @NgModule({
   declarations: [
@@ -160,6 +161,7 @@ import {RadioButtonModule} from "primeng/radiobutton";
     KsCardListComponent,
     ProjectBreadcrumbPipe,
     KsExportComponent,
+    KsThumbnailComponent,
   ],
   imports: [
     BrowserAnimationsModule,
