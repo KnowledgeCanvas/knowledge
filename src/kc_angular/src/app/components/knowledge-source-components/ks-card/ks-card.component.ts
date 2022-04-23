@@ -73,9 +73,9 @@ export class KsCardComponent implements OnInit, OnDestroy {
   @Input() showDescription: boolean = true;
 
   /**
-   * Determines whether to display Project selector (default: true)
+   * Determines whether to display Project selector (default: false)
    */
-  @Input() showProjectSelection: boolean = true;
+  @Input() showProjectSelection: boolean = false;
 
   /**
    * Determines whether to display list of KS Tags as a Tooltip (default: true)
@@ -113,9 +113,9 @@ export class KsCardComponent implements OnInit, OnDestroy {
   @Input() showIcon: boolean = true;
 
   /**
-   * Determines whether to show name of the Associated Project (default: true)
+   * Determines whether to show name of the Associated Project (default: false)
    */
-  @Input() showProjectBreadcrumbs: boolean = true;
+  @Input() showProjectBreadcrumbs: boolean = false;
 
   /**
    * EventEmitter that is triggered when the "Remove" button is pressed

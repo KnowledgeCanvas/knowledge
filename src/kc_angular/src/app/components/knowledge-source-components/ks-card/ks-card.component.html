@@ -45,7 +45,7 @@ limitations under the License.-->
         </div>
       </div>
 
-      <div class="col-12" *ngIf="showProjectSelection">
+      <div class="col-12" *ngIf="showProjectSelection && projectTreeNodes.length">
         <p-treeSelect [(ngModel)]="selectedProject"
                       [options]="projectTreeNodes"
                       (onNodeSelect)="onProjectSelected($event)"
