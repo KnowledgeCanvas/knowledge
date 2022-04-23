@@ -16,17 +16,15 @@
 
 .ks-preview-viewport {
   //background-color: black;
-  min-height: 80vh;
-  max-height: 80vh;
+  min-height: calc(100vh - 48px);
+  max-height: calc(100vh - 48px);
   min-width: 100%;
   max-width: 100%;
 }
 
 .ks-preview-body {
-  /**
-  * The dialog itself should be opened with a height of 90vh, the footer should be 8px, and the header should be 32px
-   */
-  height: calc(80vh);
+  // The dialog itself should be opened with a height of 100vh, the footer should be 8px, and the header should be 32px
+  height: calc(100vh - 48px);
 }
 
 .ks-preview-footer {
@@ -35,4 +33,10 @@
   flex-direction: column;
   flex-wrap: nowrap;
   justify-content: flex-end;
+}
+
+::ng-deep {
+  .p-dialog {
+    max-height: unset;
+  }
 }

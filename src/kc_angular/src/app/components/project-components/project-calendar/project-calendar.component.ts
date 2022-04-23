@@ -159,9 +159,9 @@ export class ProjectCalendarComponent implements OnInit, OnChanges {
   }
 
   eventsFromKsList(ksList: KnowledgeSource[]) {
-    const createdColor = 'green';
-    const modifiedColor = 'orange';
-    const accessedColor = 'blue';
+    const createdColor = 'var(--green-500)';
+    const modifiedColor = 'var(--yellow-500)';
+    const accessedColor = 'var(--blue-500)';
     let events: ProjectCalendarEvent[] = [];
     for (let ks of ksList) {
       events.push({
@@ -190,7 +190,7 @@ export class ProjectCalendarComponent implements OnInit, OnChanges {
         events.push({
           title: `${ks.title}`,
           start: ks.dateDue,
-          color: 'red',
+          color: 'var(--pink-500)',
           url: ks.id.value
         });
       }

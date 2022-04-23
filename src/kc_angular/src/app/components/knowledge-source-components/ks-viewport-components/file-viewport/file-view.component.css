@@ -15,6 +15,6 @@
  */
 
 .file-view {
-  height: 100%;
+  height: calc(100vh - 68px);
   width: 100%;
 }

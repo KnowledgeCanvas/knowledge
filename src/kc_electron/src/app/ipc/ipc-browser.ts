@@ -377,7 +377,12 @@ openBrowserView = ipcMain.on('electron-browser-view', (event: any, args: KsBrows
  *
  */
 function isKsBrowserViewRequest(arg: any): arg is KsBrowserViewRequest {
-    const containsArgs = arg && arg.url && arg.x && arg.y && arg.height && arg.width
+    const containsArgs = arg
+        && arg.url !== undefined
+        && arg.x !== undefined
+        && arg.y !== undefined
+        && arg.height !== undefined
+        && arg.width !== undefined
     const correctTypes = typeof (arg.url) === 'string'
         && typeof (arg.height) === 'number' && typeof (arg.x) === 'number'
         && typeof (arg.width) === 'number' && typeof (arg.y) === 'number';

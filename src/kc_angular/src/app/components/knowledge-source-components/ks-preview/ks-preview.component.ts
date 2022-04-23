@@ -187,9 +187,10 @@ export class KsPreviewComponent implements OnInit, OnDestroy {
       this.notificationsService.toast({
         severity: 'warn',
         summary: 'Oops!',
-        detail: `Knowledge Canvas does not support previewing files of type: ${fileType}`,
+        detail: `Knowledge Canvas currently does not support previewing files of that type.`,
         life: 5000
       });
+      this.ref.close();
     }
   }
 

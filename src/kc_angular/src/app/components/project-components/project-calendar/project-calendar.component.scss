@@ -22,17 +22,23 @@
 }
 
 .calendar-legend-dot.green {
-  background-color: green;
+  background-color: var(--green-500);
 }
 
 .calendar-legend-dot.blue {
-  background-color: blue;
+  background-color: var(--blue-500);
 }
 
 .calendar-legend-dot.red {
-  background-color: red;
+  background-color: var(--pink-500);
 }
 
 .calendar-legend-dot.orange {
-  background-color: orange;
+  background-color: var(--yellow-500);
+}
+
+::ng-deep {
+  .fc-theme-standard .fc-list {
+    border: 1px solid var(--surface-100) !important;
+  }
 }
