@@ -120,16 +120,25 @@ getFileThumbnail = ipcMain.on('electron-get-file-thumbnail', (event: any, reques
         return;
     }
 
-    for (let request of requests) {
-        if (request.height && request.width)
-            actions.push(nativeImage.createThumbnailFromPath(path.resolve(request.path), {
-                width: request.width,
-                height: request.height
-            }));
-        else
-            actions.push(nativeImage.createThumbnailFromPath(path.resolve(request.path), {width: 800, height: 1600}));
+    if (process.platform != 'darwin' && process.platform != 'win32') {
+        // The `createThumbnailFromPath` function is only available on Windows and MacOS
+        responses = [{
+            error: {code: 412, label: http.STATUS_CODES['412'], message: 'Thumbnail creation only supported on Windows and MacOS'},
+            success: undefined
+        }]
+        let kcMainWindow: any = share.BrowserWindow.getAllWindows()[0];
+        kcMainWindow.webContents.send('electron-get-file-thumbnail-results', responses);
+        return;
     }
 
+    for (let request of requests) {
+        const height = request.height ?? 1920;
+        const width = request.width ?? 1080;
+        actions.push(nativeImage.createThumbnailFromPath(path.resolve(request.path), {
+            width: width,
+            height: height
+        }));
+    }
 
     Promise.all(actions).then((thumbnails) => {
         for (let i = 0; i < thumbnails.length; i++) {
@@ -139,7 +148,6 @@ getFileThumbnail = ipcMain.on('electron-get-file-thumbnail', (event: any, reques
             }
             responses.push(response);
         }
-
         kcMainWindow.webContents.send('electron-get-file-thumbnail-results', responses);
     }).catch((reason) => {
         console.error('Caught promise exception while getting thumbnail: ', reason);
