@@ -48,7 +48,6 @@ import {IngestSettingsComponent} from './components/settings-components/ingest-s
 import {InputTextModule} from "primeng/inputtext";
 import {InputTextareaModule} from "primeng/inputtextarea";
 import {KnowledgeCanvasComponent} from './components/knowledge-source-components/ks-canvas/knowledge-canvas.component';
-import {KnowledgeGraphComponent} from './components/knowledge-graph-components/knowledge-graph.component';
 import {KnowledgeSourceTableComponent} from './components/knowledge-source-components/ks-table/knowledge-source-table.component';
 import {KsImportConfirmComponent} from './components/knowledge-source-components/ks-import-confirm/ks-import-confirm.component';
 import {KsInfoComponent} from './components/knowledge-source-components/ks-info/ks-info.component';
@@ -130,7 +129,6 @@ import {KsThumbnailComponent} from './components/knowledge-source-components/ks-
     BrowserViewComponent,
     DisplaySettingsComponent,
     KnowledgeCanvasComponent,
-    KnowledgeGraphComponent,
     KnowledgeSourceTableComponent,
     KsInfoComponent,
     KsUpNextComponent,
