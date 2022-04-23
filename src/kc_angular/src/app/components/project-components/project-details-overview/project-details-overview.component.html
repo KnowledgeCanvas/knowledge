@@ -14,13 +14,11 @@ limitations under the License.-->
 
 <!--TODO: add a "pinned items" section-->
 
-<div class="grid p-fluid">
-  <div class="col-12">
-    <p-breadcrumb [model]="breadcrumbs"
-                  [home]="breadcrumbHeader"
-                  styleClass="surface-100"
-                  (onItemClick)="onBreadcrumbClick($event)"></p-breadcrumb>
-  </div>
+<div class="p-fluid">
+  <p-breadcrumb [model]="breadcrumbs"
+                [home]="breadcrumbHeader"
+                styleClass="surface-100"
+                (onItemClick)="onBreadcrumbClick($event)"></p-breadcrumb>
 </div>
 
 <p-overlayPanel #projectInfoOverlay
@@ -81,10 +79,11 @@ limitations under the License.-->
           <i class="pi pi-th-large mr-3"></i>
           <span>Grid</span>
         </ng-template>
+
         <ng-template pTemplate="content">
           <app-ks-card-list [ksList]="ksList"
-                            (onTopicSearch)="topicsOnClick($event)"
-          ></app-ks-card-list>
+                            (onTopicSearch)="topicsOnClick($event)">
+          </app-ks-card-list>
         </ng-template>
       </p-tabPanel>
 
@@ -93,6 +92,7 @@ limitations under the License.-->
           <i class="pi pi-calendar mr-3"></i>
           <span>Calendar</span>
         </ng-template>
+
         <ng-template pTemplate="content">
           <div class="p-6">
             <app-project-calendar [kcProject]="kcProject"
