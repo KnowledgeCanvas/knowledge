@@ -84,28 +84,33 @@ export class ProjectCalendarComponent implements OnInit, OnChanges {
       this.setupCalendar();
   }
 
+  @HostListener('document:keydown.Control.]')
   @HostListener('document:keydown.meta.]')
   keyPressNext() {
     this.viewIndex = (this.viewIndex + 1) % 4;
     this.calendar.getApi().changeView(this.views[this.viewIndex]);
   }
 
+  @HostListener('document:keydown.Control.[')
   @HostListener('document:keydown.meta.[')
   keyPressPrevious() {
     this.viewIndex = this.viewIndex === 0 ? this.views.length - 1 : (this.viewIndex - 1) % 4;
     this.calendar.getApi().changeView(this.views[this.viewIndex]);
   }
 
+  @HostListener('document:keydown.Control.t')
   @HostListener('document:keydown.meta.t')
   keyPressToday() {
     this.calendar.getApi().today();
   }
 
+  @HostListener('document:keydown.Control.arrowright')
   @HostListener('document:keydown.meta.arrowright')
   keyPressRight() {
     this.calendar.getApi().next();
   }
 
+  @HostListener('document:keydown.Control.arrowleft')
   @HostListener('document:keydown.meta.arrowleft')
   keyPressLeft() {
     this.calendar.getApi().prev();

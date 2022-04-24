@@ -88,18 +88,21 @@ export class ProjectDetailsOverviewComponent implements OnInit {
     });
   }
 
+  @HostListener('document:keydown.Control.1')
   @HostListener('document:keydown.meta.1')
   changeTab1() {
     this.viewIndex = 0;
     this.onViewChange(this.viewIndex);
   }
 
+  @HostListener('document:keydown.Control.2')
   @HostListener('document:keydown.meta.2')
   changeTab2() {
     this.viewIndex = 1;
     this.onViewChange(this.viewIndex);
   }
 
+  @HostListener('document:keydown.Control.3')
   @HostListener('document:keydown.meta.3')
   changeTab3() {
     this.viewIndex = 2;

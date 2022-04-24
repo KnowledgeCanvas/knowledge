@@ -307,16 +307,18 @@ export class KsCardListComponent implements OnInit, OnChanges {
     }
   }
 
-  @HostListener('document:keydown.meta.f')
-  focusFilter() {
-    this.tableFilter.nativeElement.focus();
-  }
-
   @HostListener('window:resize', ['$event'])
   onResize(_: any) {
     this.setSizers();
   }
 
+  @HostListener('document:keydown.Control.f')
+  @HostListener('document:keydown.meta.f')
+  focusFilter() {
+    this.tableFilter.nativeElement.focus();
+  }
+
+  @HostListener('document:keydown.Control.]')
   @HostListener('document:keydown.meta.]')
   keyPressNext() {
     const next = this.paginateConfig.first + this.paginateConfig.rows;
@@ -327,6 +329,7 @@ export class KsCardListComponent implements OnInit, OnChanges {
     this.dataListTop.nativeElement.scrollIntoView();
   }
 
+  @HostListener('document:keydown.Control.[')
   @HostListener('document:keydown.meta.[')
   keyPressPrevious() {
     this.paginateConfig.first = Math.max(0, this.paginateConfig.first - this.paginateConfig.rows);

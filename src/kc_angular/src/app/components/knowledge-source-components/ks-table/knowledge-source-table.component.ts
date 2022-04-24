@@ -134,12 +134,14 @@ export class KnowledgeSourceTableComponent implements OnInit, OnChanges {
     }
   }
 
+  @HostListener('document:keydown.Control.f')
   @HostListener('document:keydown.meta.f')
   focusFilter() {
     this.tableFilter.nativeElement.focus();
     this.first = this.first + this.rows;
   }
 
+  @HostListener('document:keydown.Control.]')
   @HostListener('document:keydown.meta.]')
   keyPressNext() {
     const next = this.first + this.rows;
@@ -149,6 +151,7 @@ export class KnowledgeSourceTableComponent implements OnInit, OnChanges {
     this.dataTable.resetScrollTop();
   }
 
+  @HostListener('document:keydown.Control.[')
   @HostListener('document:keydown.meta.[')
   keyPressPrevious() {
     this.first = Math.max(0, this.first - this.rows);

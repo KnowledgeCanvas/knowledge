@@ -128,6 +128,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.projectTreeFactory.findTreeNode(this.treeNodes, this.currentProject?.id.value ?? '') ?? {};
   }
 
+  @HostListener('document:keydown.Control.n')
   @HostListener('document:keydown.meta.n')
   keyPressOpenIngest() {
     this.projectTreeVisible = false;
@@ -136,6 +137,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.onOpenIngest();
   }
 
+  @HostListener('document:keydown.Control.u')
   @HostListener('document:keydown.meta.u')
   keyPressOpenUpNext() {
     this.projectTreeVisible = false;
@@ -143,6 +145,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.onOpenUpNext();
   }
 
+  @HostListener('document:keydown.Control.p')
   @HostListener('document:keydown.meta.p')
   keyPressOpenProjects() {
     this.ksIngestVisible = false;
