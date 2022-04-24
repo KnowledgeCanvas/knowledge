@@ -1,9 +1,8 @@
-import {Component, HostListener, OnInit} from '@angular/core';
+import {Component, EventEmitter, HostListener, OnInit, Output} from '@angular/core';
 import {KnowledgeSource, KnowledgeSourceReference, SourceModel} from "../../../models/knowledge.source.model";
 import {KnowledgeSourceFactoryRequest, KsFactoryService} from "../../../services/factory-services/ks-factory-service/ks-factory.service";
 import {NotificationsService} from "../../../services/user-services/notification-service/notifications.service";
 import {ExtractionService} from "../../../services/ingest-services/web-extraction-service/extraction.service";
-import {DynamicDialogRef} from "primeng/dynamicdialog";
 import {ElectronIpcService} from "../../../services/ipc-services/electron-ipc/electron-ipc.service";
 import {KsQueueService} from "../../../services/command-services/ks-queue-service/ks-queue.service";
 import {UuidModel} from "../../../models/uuid.model";
@@ -27,6 +26,8 @@ interface PendingExtraction {
   styleUrls: ['./ks-ingest.component.scss']
 })
 export class KsIngestComponent implements OnInit {
+  @Output() shouldClose: EventEmitter<boolean> = new EventEmitter<boolean>();
+
   supportedTypes: string[] = ["Links", "Files"];
 
   files: File[] = [];
@@ -40,7 +41,6 @@ export class KsIngestComponent implements OnInit {
   constructor(private notificationService: NotificationsService,
               private extractionService: ExtractionService,
               private uuidService: UuidService,
-              private ref: DynamicDialogRef,
               private dragAndDropService: DragAndDropService,
               private faviconService: FaviconExtractorService,
               private upNextService: KsQueueService,
@@ -139,7 +139,7 @@ export class KsIngestComponent implements OnInit {
 
 
   close() {
-    this.ref.close();
+    this.shouldClose.emit(true);
   }
 
   import() {
@@ -158,7 +158,7 @@ export class KsIngestComponent implements OnInit {
       this.upNextService.enqueue(this.ksList);
     }
 
-    this.ref.close();
+    this.close();
   }
 
 
@@ -208,7 +208,7 @@ export class KsIngestComponent implements OnInit {
       }
 
       this.upNextService.enqueue(ksList);
-      this.ref.close();
+      this.close();
     });
   }
 

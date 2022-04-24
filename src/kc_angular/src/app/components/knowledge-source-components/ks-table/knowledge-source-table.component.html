@@ -17,14 +17,18 @@ limitations under the License.-->
   <div class="p-card" style="width: 90%; height: 90%; border: 1px solid var(--surface-100)">
     <p-table #dataTable
              *ngIf="ksTableShouldExist"
+             [(selection)]="ksSelected"
+             [hidden]="ksList.length === 0"
              [value]="ksList"
+             [rowsPerPageOptions]="[10, 20, 30, 40, 50]"
+             [(rows)]="rows"
+             (rowsChange)="onRowChange($event)"
+             [(first)]="first"
+             [columns]="selectedColumns"
              [scrollable]="true"
              scrollHeight="60vh"
-             [columns]="selectedColumns"
-             [hidden]="ksList.length === 0"
              [(contextMenuSelection)]="ksTableContextMenuSelectedKs"
              [selectionPageOnly]="true"
-             [(selection)]="ksSelected"
              [contextMenu]="cm"
              [resizableColumns]="false"
              columnResizeMode="expand"
@@ -33,8 +37,8 @@ limitations under the License.-->
              (sortFunction)="tableSort($event)"
              [paginator]="true"
              [showJumpToPageInput]="true"
-             [rows]="25"
              [showCurrentPageReport]="true"
+             [showPageLinks]="true"
              selectionMode="checkbox"
              dataKey="id.value">
       <ng-template pTemplate="caption">
@@ -189,12 +193,6 @@ limitations under the License.-->
         </div>
       </ng-template>
       <!--End Declare Table Summary Row-->
-
-      <!--Declare Table Paginator-->
-      <ng-template let-item pTemplate="paginatordropdownitem">
-        {{item.value}} - per page
-      </ng-template>
-      <!--End Declare Table Paginator-->
     </p-table>
   </div>
 </div>

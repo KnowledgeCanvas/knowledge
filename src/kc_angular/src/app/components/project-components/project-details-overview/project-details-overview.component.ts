@@ -15,7 +15,7 @@
  */
 
 
-import {Component, ElementRef, EventEmitter, OnInit, Output, ViewChild} from '@angular/core';
+import {Component, ElementRef, EventEmitter, HostListener, OnInit, Output, ViewChild} from '@angular/core';
 import {ProjectService} from "../../../services/factory-services/project-service/project.service";
 import {ProjectModel} from "src/app/models/project.model";
 import {KnowledgeSource} from "../../../models/knowledge.source.model";
@@ -86,6 +86,24 @@ export class ProjectDetailsOverviewComponent implements OnInit {
       this.showSubProjects = settings.ks?.table?.showSubProjects ?? false;
       this.generateKsList(this.showSubProjects);
     });
+  }
+
+  @HostListener('document:keydown.meta.1')
+  changeTab1() {
+    this.viewIndex = 0;
+    this.onViewChange(this.viewIndex);
+  }
+
+  @HostListener('document:keydown.meta.2')
+  changeTab2() {
+    this.viewIndex = 1;
+    this.onViewChange(this.viewIndex);
+  }
+
+  @HostListener('document:keydown.meta.3')
+  changeTab3() {
+    this.viewIndex = 2;
+    this.onViewChange(this.viewIndex);
   }
 
   ngOnInit(): void {

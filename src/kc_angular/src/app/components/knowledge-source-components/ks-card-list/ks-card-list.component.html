@@ -60,7 +60,10 @@ limitations under the License.-->
       </div>
     </ng-template>
 
-    <div class="grid p-fluid p-6" style="max-height: 65vh; overflow-y: auto; overflow-x: hidden">
+    <div #dataList
+         class="grid p-fluid p-1"
+         style="max-height: 65vh; overflow-y: auto; overflow-x: hidden">
+      <div #top style="height: 0; width: 0"></div>
       <div *ngFor="let ks of displayList"
            [class]="selectedSizer.gridColClass">
         <app-ks-card [ks]="ks"
@@ -87,7 +90,8 @@ limitations under the License.-->
     </div>
     <ng-template pTemplate="footer" pStyleClass="surface-100">
       <p-paginator #paginator
-                   [rows]="10"
+                   [rows]="paginateConfig.rows"
+                   [first]="paginateConfig.first"
                    [totalRecords]="filteredList.length"
                    [rowsPerPageOptions]="[10, 20, 30, 40, 50]"
                    [showJumpToPageDropdown]="true"

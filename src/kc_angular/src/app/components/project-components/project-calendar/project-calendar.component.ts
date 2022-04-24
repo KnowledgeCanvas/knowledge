@@ -14,8 +14,8 @@
  limitations under the License.
  */
 
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
-import {CalendarOptions, FullCalendarModule} from "@fullcalendar/angular";
+import {Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
+import {CalendarOptions, FullCalendarComponent, FullCalendarModule} from "@fullcalendar/angular";
 import {ProjectModel} from "../../../models/project.model";
 import {UuidModel} from "../../../models/uuid.model";
 import dayGridPlugin from '@fullcalendar/daygrid';
@@ -52,6 +52,8 @@ export interface KcCardRequest {
   styleUrls: ['./project-calendar.component.scss']
 })
 export class ProjectCalendarComponent implements OnInit, OnChanges {
+  @ViewChild('calendar') calendar!: FullCalendarComponent;
+
   @Input() kcProject!: ProjectModel | null;
 
   @Input() ksList!: KnowledgeSource[];
@@ -66,6 +68,10 @@ export class ProjectCalendarComponent implements OnInit, OnChanges {
 
   viewReady: boolean = false;
 
+  views = ['dayGridMonth', 'timeGridWeek', 'timeGridDay', 'listYear']
+
+  viewIndex = 3;
+
   constructor() {
   }
 
@@ -78,8 +84,35 @@ export class ProjectCalendarComponent implements OnInit, OnChanges {
       this.setupCalendar();
   }
 
+  @HostListener('document:keydown.meta.]')
+  keyPressNext() {
+    this.viewIndex = (this.viewIndex + 1) % 4;
+    this.calendar.getApi().changeView(this.views[this.viewIndex]);
+  }
+
+  @HostListener('document:keydown.meta.[')
+  keyPressPrevious() {
+    this.viewIndex = this.viewIndex === 0 ? this.views.length - 1 : (this.viewIndex - 1) % 4;
+    this.calendar.getApi().changeView(this.views[this.viewIndex]);
+  }
+
+  @HostListener('document:keydown.meta.t')
+  keyPressToday() {
+    this.calendar.getApi().today();
+  }
+
+  @HostListener('document:keydown.meta.arrowright')
+  keyPressRight() {
+    this.calendar.getApi().next();
+  }
+
+  @HostListener('document:keydown.meta.arrowleft')
+  keyPressLeft() {
+    this.calendar.getApi().prev();
+  }
+
   configureCalendar() {
-    this.calendarOptions.initialView = 'listYear';
+    this.calendarOptions.initialView = this.views[this.viewIndex];
     this.calendarOptions.editable = false;
     this.calendarOptions.selectable = false;
     this.calendarOptions.selectMirror = false;
@@ -90,7 +123,7 @@ export class ProjectCalendarComponent implements OnInit, OnChanges {
     this.calendarOptions.headerToolbar = {
       left: 'prev,next today',
       center: 'title',
-      right: 'dayGridMonth,timeGridWeek,timeGridDay,listYear'
+      right: this.views.join(',')
     }
 
     this.calendarOptions.eventClick = (args) => {

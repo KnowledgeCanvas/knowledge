@@ -57,6 +57,8 @@ interface KsCardListConfig {
   styleUrls: ['./ks-card-list.component.scss']
 })
 export class KsCardListComponent implements OnInit, OnChanges {
+  @ViewChild('top') dataListTop!: ElementRef;
+
   /**
    * List of Knowledge Sources to be displayed
    */
@@ -313,6 +315,23 @@ export class KsCardListComponent implements OnInit, OnChanges {
   @HostListener('window:resize', ['$event'])
   onResize(_: any) {
     this.setSizers();
+  }
+
+  @HostListener('document:keydown.meta.]')
+  keyPressNext() {
+    const next = this.paginateConfig.first + this.paginateConfig.rows;
+    if (next < this.ksList.length) {
+      this.paginateConfig.first = this.paginateConfig.first + this.paginateConfig.rows;
+    }
+    this.assignCopy();
+    this.dataListTop.nativeElement.scrollIntoView();
+  }
+
+  @HostListener('document:keydown.meta.[')
+  keyPressPrevious() {
+    this.paginateConfig.first = Math.max(0, this.paginateConfig.first - this.paginateConfig.rows);
+    this.assignCopy();
+    this.dataListTop.nativeElement.scrollIntoView();
   }
 
   setSizers() {
