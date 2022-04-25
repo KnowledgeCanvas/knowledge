@@ -97,7 +97,7 @@ export class DragAndDropService {
         if (!text || !text.length || !uri || !uri.length) {
           return false;
         } else {
-          return text === uri;
+          return text.includes(uri) || uri.includes(text);
         }
       },
       callback: (data: DragAndDropPacket) => new Promise<KnowledgeSourceFactoryRequest | undefined>((resolve) => {
