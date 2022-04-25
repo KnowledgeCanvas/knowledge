@@ -157,9 +157,11 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   @HostListener("dragover", ["$event"]) onDragOver(evt: any) {
     evt.preventDefault()
   }
-
   @HostListener('drop', ['$event']) handleDrop(event: DragEvent) {
     // Drop listener for importing files and links
+    if (this.ksIngestVisible) {
+      return;
+    }
     this.dragAndDropService.parseDragEvent(event).then((requests) => {
       if (requests === undefined) {
         console.warn('Drag/Drop could not be handled...');
