@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.5.4](https://github.com/KnowledgeCanvas/knowledge-canvas/compare/v0.5.0...v0.5.4) (2022-04-24)
+
+
+### Features
+
+* Add the ability to extract text from preview by highlighting and right-clicking. The extracted text is added to the Knowledge Source description. ([#47](https://github.com/KnowledgeCanvas/knowledge-canvas/issues/47)) ([fcbefec](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/fcbefeca26f955b63dd5e39d1cff1c6746bfc589))
+* Automatically restore the last view when app restarts (either table or grid view). ([#48](https://github.com/KnowledgeCanvas/knowledge-canvas/issues/48)) ([13c3e5a](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/13c3e5a104df716fd429495d76ce1e2ea498d705))
+* **Calendar:** Improve default calendar experience, add legend "indicators" to signal event type (fails basic accessibility metrics for people who are colorblind, should be more carefully designed with that in mind) ([#44](https://github.com/KnowledgeCanvas/knowledge-canvas/issues/44)) ([bc9e5ec](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/bc9e5ec96dd69c59b933802b21b67742653a8324))
+* **Import:** Add the ability to import directly into current project instead of automatically sending new Knowledge Sources to "Up Next". ([#45](https://github.com/KnowledgeCanvas/knowledge-canvas/issues/45)) ([83c21e4](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/83c21e485c48f9e1be279f073f428fb852cf89df))
+* **Shortcuts:** Added new shortcut keys for navigating the application. See the [Wiki](https://github.com/KnowledgeCanvas/knowledge-canvas/wiki/Shortcut-Keys) for a list of all shortcuts. ([c0c7eb4](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/c0c7eb44f316b37e48b6235adece161896189414))
+
+
+### Bug Fixes
+
+* Address 5 moderate and 2 high severity vulnerabilities ([47c13cf](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/47c13cf6e7d8d405c06e3bd8e701485e7a1bdabe))
+* Resolves an issue on Linux where attempting to retrieve thumbnails for files throws an error (only supported on MacOS and Windows by Electron). ([13404db](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/13404dbe45ca855aa28e795573b602c4445fbeb5))
+* Stop automatically attempting to extract text content from files through Tika until we figure out a better extraction pipeline. ([56dbdb4](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/56dbdb4f2ca9cf516efe6a6ee649f797c6f75122))
+
 ### [0.5.3](https://github.com/KnowledgeCanvas/knowledge-canvas/compare/v0.5.0...v0.5.3) (2022-03-15)
 
 ### Bug Fixes

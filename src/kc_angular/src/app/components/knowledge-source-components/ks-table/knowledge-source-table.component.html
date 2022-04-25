@@ -14,29 +14,31 @@ limitations under the License.-->
 
 
 <div style="width: 100%" class="flex-col-center-center">
-  <div class="p-card" style="width: 90%; height: 90%">
+  <div class="p-card" style="width: 90%; height: 90%; border: 1px solid var(--surface-100)">
     <p-table #dataTable
              *ngIf="ksTableShouldExist"
+             [(selection)]="ksSelected"
+             [hidden]="ksList.length === 0"
              [value]="ksList"
+             [rowsPerPageOptions]="[10, 20, 30, 40, 50]"
+             [(rows)]="rows"
+             (rowsChange)="onRowChange($event)"
+             [(first)]="first"
+             [columns]="selectedColumns"
              [scrollable]="true"
              scrollHeight="60vh"
-             [columns]="selectedColumns"
-             [hidden]="ksList.length === 0"
              [(contextMenuSelection)]="ksTableContextMenuSelectedKs"
              [selectionPageOnly]="true"
-             [(selection)]="ksTableSelectedKsList"
              [contextMenu]="cm"
              [resizableColumns]="false"
              columnResizeMode="expand"
              [globalFilterFields]="ksTableGlobalFilterFields"
-             exportFilename="kc-export"
              [customSort]="true"
              (sortFunction)="tableSort($event)"
-             [exportFunction]="exportFn"
              [paginator]="true"
              [showJumpToPageInput]="true"
-             [rows]="25"
              [showCurrentPageReport]="true"
+             [showPageLinks]="true"
              selectionMode="checkbox"
              dataKey="id.value">
       <ng-template pTemplate="caption">
@@ -64,12 +66,10 @@ limitations under the License.-->
 
           <div class="p-d-flex">
             <button type="button" pButton class="p-button-danger" icon="pi pi-trash"
-                    [disabled]="ksTableSelectedKsList.length === 0" style="margin-right: 10px"
-                    (click)="removeMultiple(ksTableSelectedKsList)">
+                    [disabled]="ksSelected.length === 0" style="margin-right: 10px"
+                    (click)="removeMultiple(ksSelected)">
             </button>
-            <p-splitButton icon="pi pi-download" [model]="exportOptions"
-                           styleClass="p-button-secondary p-mb-2" (onClick)="onExportClicked()">
-            </p-splitButton>
+            <app-ks-export [data]="ksList"></app-ks-export>
             <button type="button" pButton icon="pi pi-cog" style="margin-left: 10px" (click)="op.toggle($event)">
             </button>
           </div>
@@ -193,12 +193,6 @@ limitations under the License.-->
         </div>
       </ng-template>
       <!--End Declare Table Summary Row-->
-
-      <!--Declare Table Paginator-->
-      <ng-template let-item pTemplate="paginatordropdownitem">
-        {{item.value}} - per page
-      </ng-template>
-      <!--End Declare Table Paginator-->
     </p-table>
   </div>
 </div>

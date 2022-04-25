@@ -48,7 +48,6 @@ import {IngestSettingsComponent} from './components/settings-components/ingest-s
 import {InputTextModule} from "primeng/inputtext";
 import {InputTextareaModule} from "primeng/inputtextarea";
 import {KnowledgeCanvasComponent} from './components/knowledge-source-components/ks-canvas/knowledge-canvas.component';
-import {KnowledgeGraphComponent} from './components/knowledge-graph-components/knowledge-graph.component';
 import {KnowledgeSourceTableComponent} from './components/knowledge-source-components/ks-table/knowledge-source-table.component';
 import {KsImportConfirmComponent} from './components/knowledge-source-components/ks-import-confirm/ks-import-confirm.component';
 import {KsInfoComponent} from './components/knowledge-source-components/ks-info/ks-info.component';
@@ -117,6 +116,10 @@ import {KsCardListComponent} from './components/knowledge-source-components/ks-c
 import {PaginatorModule} from "primeng/paginator";
 import {CheckboxModule} from "primeng/checkbox";
 import {ProjectBreadcrumbPipe} from './pipes/project-pipes/project-breadcrumb/project-breadcrumb.pipe';
+import {ScrollPanelModule} from "primeng/scrollpanel";
+import {KsExportComponent} from "./components/knowledge-source-components/ks-export/ks-export.component";
+import {RadioButtonModule} from "primeng/radiobutton";
+import {KsThumbnailComponent} from './components/knowledge-source-components/ks-thumbnail/ks-thumbnail.component';
 
 @NgModule({
   declarations: [
@@ -126,7 +129,6 @@ import {ProjectBreadcrumbPipe} from './pipes/project-pipes/project-breadcrumb/pr
     BrowserViewComponent,
     DisplaySettingsComponent,
     KnowledgeCanvasComponent,
-    KnowledgeGraphComponent,
     KnowledgeSourceTableComponent,
     KsInfoComponent,
     KsUpNextComponent,
@@ -156,6 +158,8 @@ import {ProjectBreadcrumbPipe} from './pipes/project-pipes/project-breadcrumb/pr
     ProjectCalendarComponent,
     KsCardListComponent,
     ProjectBreadcrumbPipe,
+    KsExportComponent,
+    KsThumbnailComponent,
   ],
   imports: [
     BrowserAnimationsModule,
@@ -217,10 +221,11 @@ import {ProjectBreadcrumbPipe} from './pipes/project-pipes/project-breadcrumb/pr
     DockModule,
     AccordionModule,
     FullCalendarModule,
-    FullCalendarModule,
+    ScrollPanelModule,
     TagModule,
     PaginatorModule,
-    CheckboxModule
+    CheckboxModule,
+    RadioButtonModule
   ],
   providers: [
     SettingsService,

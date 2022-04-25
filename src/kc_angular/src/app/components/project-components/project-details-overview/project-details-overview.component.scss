@@ -32,3 +32,9 @@
 .ks-instructions {
   margin-top: 20px;
 }
+
+::ng-deep {
+  .p-tabview-panels {
+    max-height: 65vh;
+  }
+}

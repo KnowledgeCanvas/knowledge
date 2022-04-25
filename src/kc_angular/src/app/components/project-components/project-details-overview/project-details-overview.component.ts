@@ -15,7 +15,7 @@
  */
 
 
-import {Component, ElementRef, EventEmitter, OnInit, Output, ViewChild} from '@angular/core';
+import {Component, ElementRef, EventEmitter, HostListener, OnInit, Output, ViewChild} from '@angular/core';
 import {ProjectService} from "../../../services/factory-services/project-service/project.service";
 import {ProjectModel} from "src/app/models/project.model";
 import {KnowledgeSource} from "../../../models/knowledge.source.model";
@@ -60,11 +60,17 @@ export class ProjectDetailsOverviewComponent implements OnInit {
 
   breadcrumbs: MenuItem[] = [];
 
+  breadcrumbHeader: MenuItem = {icon: 'pi pi-list', disabled: false}
+
   projectContext: any;
 
   selectedKs!: KnowledgeSource;
 
   selectedProject!: ProjectModel;
+
+  viewIndex: number = 0;
+
+  calendarIndex: number = 2;
 
   constructor(private projectService: ProjectService, private faviconService: FaviconExtractorService,
               private settingsService: SettingsService, private ksCommandService: KsCommandService) {
@@ -82,7 +88,32 @@ export class ProjectDetailsOverviewComponent implements OnInit {
     });
   }
 
+  @HostListener('document:keydown.Control.1')
+  @HostListener('document:keydown.meta.1')
+  changeTab1() {
+    this.viewIndex = 0;
+    this.onViewChange(this.viewIndex);
+  }
+
+  @HostListener('document:keydown.Control.2')
+  @HostListener('document:keydown.meta.2')
+  changeTab2() {
+    this.viewIndex = 1;
+    this.onViewChange(this.viewIndex);
+  }
+
+  @HostListener('document:keydown.Control.3')
+  @HostListener('document:keydown.meta.3')
+  changeTab3() {
+    this.viewIndex = 2;
+    this.onViewChange(this.viewIndex);
+  }
+
   ngOnInit(): void {
+    let idx = localStorage.getItem('project-view-index');
+    if (idx) {
+      this.viewIndex = Number(idx);
+    }
   }
 
   setupBreadcrumbs(id: UuidModel) {
@@ -229,5 +260,12 @@ export class ProjectDetailsOverviewComponent implements OnInit {
       this.selectedKs = selected;
       this.ksOverlay.toggle(req.event, req.element);
     }
+  }
+
+  onViewChange(index: number) {
+    if (index === this.calendarIndex) {
+      return;
+    }
+    localStorage.setItem('project-view-index', JSON.stringify(index));
   }
 }

@@ -13,3 +13,32 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
+
+.calendar-legend-dot {
+  height: 1rem;
+  width: 1rem;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.calendar-legend-dot.green {
+  background-color: var(--green-500);
+}
+
+.calendar-legend-dot.blue {
+  background-color: var(--blue-500);
+}
+
+.calendar-legend-dot.red {
+  background-color: var(--pink-500);
+}
+
+.calendar-legend-dot.orange {
+  background-color: var(--yellow-500);
+}
+
+::ng-deep {
+  .fc-theme-standard .fc-list {
+    border: 1px solid var(--surface-100) !important;
+  }
+}

@@ -142,13 +142,12 @@ export class KsFactoryService {
     };
   }
 
-  private extractFileResource(link: string, file: File): Promise<KnowledgeSource> {
+  private async extractFileResource(link: string, file: File): Promise<KnowledgeSource> {
     const uuid: UuidModel = this.uuidService.generate(1)[0];
     let fileModel: FileModel = new FileModel(file.name, file.size, (file as any).path, uuid, file.type);
     let source = new SourceModel(fileModel, undefined, undefined);
     let ref = new KnowledgeSourceReference('file', source, link);
-    let ks = new KnowledgeSource(file.name, uuid, 'file', ref);
-    return this.getFileMetadata(ks, file);
+    return new KnowledgeSource(file.name, uuid, 'file', ref);
   }
 
   private getFileMetadata(ks: KnowledgeSource, file: File): Promise<KnowledgeSource> {

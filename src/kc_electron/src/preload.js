@@ -69,6 +69,7 @@ const validReceiveChannels = [
     "electron-browser-view-current-url-results",
     "electron-browser-view-nav-events",
     'electron-get-file-thumbnail-results',
+    'electron-browser-view-extract-text'
 ]
 
 contextBridge.exposeInMainWorld(

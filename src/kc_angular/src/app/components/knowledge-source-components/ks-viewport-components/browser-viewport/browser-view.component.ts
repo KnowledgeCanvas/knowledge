@@ -131,7 +131,7 @@ export class BrowserViewComponent implements OnInit, OnChanges, OnDestroy {
     let request: KsBrowserViewRequest = {
       url: sanitizedUrl,
       x: Math.floor(position.x),
-      y: Math.floor(position.y + 72),
+      y: Math.floor(position.y + 48),
       width: Math.ceil(position.width),
       height: Math.ceil(position.height)
     }

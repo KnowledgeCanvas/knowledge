@@ -14,8 +14,8 @@
  limitations under the License.
  */
 
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
-import {CalendarOptions, FullCalendarModule} from "@fullcalendar/angular";
+import {Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
+import {CalendarOptions, FullCalendarComponent, FullCalendarModule} from "@fullcalendar/angular";
 import {ProjectModel} from "../../../models/project.model";
 import {UuidModel} from "../../../models/uuid.model";
 import dayGridPlugin from '@fullcalendar/daygrid';
@@ -52,6 +52,8 @@ export interface KcCardRequest {
   styleUrls: ['./project-calendar.component.scss']
 })
 export class ProjectCalendarComponent implements OnInit, OnChanges {
+  @ViewChild('calendar') calendar!: FullCalendarComponent;
+
   @Input() kcProject!: ProjectModel | null;
 
   @Input() ksList!: KnowledgeSource[];
@@ -60,43 +62,62 @@ export class ProjectCalendarComponent implements OnInit, OnChanges {
 
   @Output() onKsClick = new EventEmitter<KcCardRequest>();
 
-  calendarOptions: CalendarOptions = {};
+  calendarOptions: CalendarOptions = {events: []};
+
+  deepChangeDetection: boolean = true;
+
+  viewReady: boolean = false;
+
+  views = ['dayGridMonth', 'timeGridWeek', 'timeGridDay', 'listYear']
+
+  viewIndex = 3;
 
   constructor() {
   }
 
   ngOnInit(): void {
-    if (!this.kcProject) {
-      console.error('ProjectCalendar: no project specified as input...');
-      return;
-    }
-
-    if (!this.kcProject.calendar) {
-      this.kcProject.calendar = {
-        events: [],
-        start: null,
-        end: null
-      }
-    }
-
     this.configureCalendar();
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes.kcProject) {
-      this.calendarOptions.events = [];
-      this.setupCalendar(changes.kcProject.currentValue);
-    }
+    if (this.kcProject)
+      this.setupCalendar();
+  }
 
-    if (changes.ksList) {
-      if (this.kcProject) {
-        this.setupCalendar(this.kcProject);
-      }
-    }
+  @HostListener('document:keydown.Control.]')
+  @HostListener('document:keydown.meta.]')
+  keyPressNext() {
+    this.viewIndex = (this.viewIndex + 1) % 4;
+    this.calendar.getApi().changeView(this.views[this.viewIndex]);
+  }
+
+  @HostListener('document:keydown.Control.[')
+  @HostListener('document:keydown.meta.[')
+  keyPressPrevious() {
+    this.viewIndex = this.viewIndex === 0 ? this.views.length - 1 : (this.viewIndex - 1) % 4;
+    this.calendar.getApi().changeView(this.views[this.viewIndex]);
+  }
+
+  @HostListener('document:keydown.Control.t')
+  @HostListener('document:keydown.meta.t')
+  keyPressToday() {
+    this.calendar.getApi().today();
+  }
+
+  @HostListener('document:keydown.Control.arrowright')
+  @HostListener('document:keydown.meta.arrowright')
+  keyPressRight() {
+    this.calendar.getApi().next();
+  }
+
+  @HostListener('document:keydown.Control.arrowleft')
+  @HostListener('document:keydown.meta.arrowleft')
+  keyPressLeft() {
+    this.calendar.getApi().prev();
   }
 
   configureCalendar() {
-    this.calendarOptions.initialView = 'listWeek';
+    this.calendarOptions.initialView = this.views[this.viewIndex];
     this.calendarOptions.editable = false;
     this.calendarOptions.selectable = false;
     this.calendarOptions.selectMirror = false;
@@ -107,7 +128,7 @@ export class ProjectCalendarComponent implements OnInit, OnChanges {
     this.calendarOptions.headerToolbar = {
       left: 'prev,next today',
       center: 'title',
-      right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+      right: this.views.join(',')
     }
 
     this.calendarOptions.eventClick = (args) => {
@@ -131,12 +152,17 @@ export class ProjectCalendarComponent implements OnInit, OnChanges {
     }
   }
 
-  setupCalendar(project: ProjectModel) {
-    if (!project.calendar)
-      project.calendar = {events: [], start: null, end: null};
+  setupCalendar() {
+    if (!this.kcProject) {
+      console.warn('Unable to populate calendar due to missing project...');
+    } else {
+      if (!this.kcProject?.calendar)
+        this.kcProject.calendar = {events: [], start: null, end: null};
 
-    // @ts-ignore
-    this.calendarOptions.events = this.eventsFromProject(project);
+      // @ts-ignore
+      this.calendarOptions.events = this.eventsFromProject(this.kcProject);
+      this.viewReady = true;
+    }
   }
 
   eventsFromProject(project: ProjectModel): ProjectCalendarEvent[] {
@@ -171,32 +197,38 @@ export class ProjectCalendarComponent implements OnInit, OnChanges {
   }
 
   eventsFromKsList(ksList: KnowledgeSource[]) {
+    const createdColor = 'var(--green-500)';
+    const modifiedColor = 'var(--yellow-500)';
+    const accessedColor = 'var(--blue-500)';
     let events: ProjectCalendarEvent[] = [];
     for (let ks of ksList) {
       events.push({
-        title: `${ks.title} (Created)`,
+        title: `${ks.title}`,
         start: ks.dateCreated,
-        url: ks.id.value
+        url: ks.id.value,
+        color: createdColor
       });
       ks.dateModified.forEach((d) => {
         events.push({
-          title: `${ks.title} (Modified)`,
+          title: `${ks.title}`,
           start: d,
-          url: ks.id.value
+          url: ks.id.value,
+          color: modifiedColor
         });
       });
       ks.dateAccessed.forEach((d) => {
         events.push({
-          title: `${ks.title} (Accessed)`,
+          title: `${ks.title}`,
           start: d,
-          url: ks.id.value
+          url: ks.id.value,
+          color: accessedColor
         });
       });
       if (ks.dateDue) {
         events.push({
-          title: `(Due): ${ks.title}`,
+          title: `${ks.title}`,
           start: ks.dateDue,
-          color: 'red',
+          color: 'var(--pink-500)',
           url: ks.id.value
         });
       }

@@ -126,7 +126,7 @@ export class ProjectService {
 
   }
 
-  refreshTree(): void {
+  async refreshTree() {
     this.lookup = new Map();
     this.tree = new ProjectTree();
 

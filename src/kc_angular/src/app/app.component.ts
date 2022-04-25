@@ -15,7 +15,7 @@
  */
 
 
-import {AfterViewInit, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, HostListener, OnDestroy, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {SettingsService} from "./services/ipc-services/settings-service/settings.service";
 import {ConfirmationService, MenuItem, PrimeIcons, PrimeNGConfig, TreeNode} from "primeng/api";
 import {DialogService} from "primeng/dynamicdialog";
@@ -37,7 +37,6 @@ import {ProjectCreationDialogComponent} from "./components/project-components/pr
 import {BrowserViewDialogService} from "./services/ipc-services/browser-service/browser-view-dialog.service";
 import {ThemeService} from "./services/user-services/theme-service/theme.service";
 import {DisplaySettingsComponent} from "./components/settings-components/display-settings/display-settings.component";
-import {KsIngestComponent} from "./components/knowledge-source-components/ks-ingest/ks-ingest.component";
 import {KcDialogRequest} from "kc_electron/src/app/models/electron.ipc.model";
 import {SearchSettingsComponent} from "./components/settings-components/search-settings/search-settings.component";
 import {ProjectTreeFactoryService} from "./services/factory-services/project-tree-factory/project-tree-factory.service";
@@ -56,13 +55,19 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('searchBar') searchBar!: ElementRef;
 
+  @ViewChild('importButton') importButton!: ElementRef;
+
+  @ViewChild('upNextButton') upNextButton!: TemplateRef<any>;
+
   currentProject: ProjectModel | null = null;
 
   menuBarItems: MenuItem[] = [];
 
   ksUpNextVisible: boolean = false;
 
-  showProjectTree: boolean = false;
+  ksIngestVisible: boolean = false;
+
+  projectTreeVisible: boolean = false;
 
   readyToShow: boolean = false;
 
@@ -123,12 +128,40 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.projectTreeFactory.findTreeNode(this.treeNodes, this.currentProject?.id.value ?? '') ?? {};
   }
 
+  @HostListener('document:keydown.Control.n')
+  @HostListener('document:keydown.meta.n')
+  keyPressOpenIngest() {
+    this.projectTreeVisible = false;
+    this.ksUpNextVisible = false;
+    this.ksQueueOverlay.hide();
+    this.onOpenIngest();
+  }
+
+  @HostListener('document:keydown.Control.u')
+  @HostListener('document:keydown.meta.u')
+  keyPressOpenUpNext() {
+    this.projectTreeVisible = false;
+    this.ksIngestVisible = false;
+    this.onOpenUpNext();
+  }
+
+  @HostListener('document:keydown.Control.p')
+  @HostListener('document:keydown.meta.p')
+  keyPressOpenProjects() {
+    this.ksIngestVisible = false;
+    this.ksUpNextVisible = false;
+    this.ksQueueOverlay.hide();
+    this.onOpenProjectTree();
+  }
+
   @HostListener("dragover", ["$event"]) onDragOver(evt: any) {
     evt.preventDefault()
   }
-
-  // Drop listener for importing files and links
   @HostListener('drop', ['$event']) handleDrop(event: DragEvent) {
+    // Drop listener for importing files and links
+    if (this.ksIngestVisible) {
+      return;
+    }
     this.dragAndDropService.parseDragEvent(event).then((requests) => {
       if (requests === undefined) {
         console.warn('Drag/Drop could not be handled...');
@@ -192,7 +225,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.menuBarItems = [
       {
         label: 'Projects', icon: PrimeIcons.LIST, command: () => {
-          this.showProjectTree = !this.showProjectTree;
+          this.projectTreeVisible = !this.projectTreeVisible;
         }
       },
       {
@@ -279,15 +312,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         updates.push(update);
       }
     }
-    this.projectService.updateProjects(updates);
-  }
-
-  openKsQueue($event?: any) {
-    if (this.ksQueue.length)
-      this.ksUpNextVisible = true;
-    else {
-      this.ksQueueOverlay.toggle($event);
-    }
+    if (updates.length > 0)
+      this.projectService.updateProjects(updates);
   }
 
   ksQueueRemove(ks: KnowledgeSource) {
@@ -301,27 +327,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.ipcService.openKcDialog(req).catch((reason) => {
       console.error('App.onKcClick() | error === ', reason);
     });
-
-    // let projectId: string | undefined = undefined;
-    // if (this.currentProject) {
-    //   let ancestors = this.projectService.getAncestors(this.currentProject.id.value);
-    //   if (ancestors) {
-    //     console.log('Ancestors: ', ancestors);
-    //     projectId = ancestors[0].id
-    //   }
-    // }
-    //
-    // let kGraphConfig: KnowledgeGraphConfig = {
-    //   type: 'project-hierarchy',
-    //   projectTree: this._projectNodes,
-    //   projectId: projectId
-    // }
-    //
-    // this.projectService.getAllProjects().then((projects) => {
-    //   this.dialogService.open(KnowledgeGraphComponent, {
-    //     height: '100vh', width: '100vw', closable: true, data: kGraphConfig
-    //   });
-    // })
   }
 
   createProject(parentId?: UuidModel) {
@@ -364,11 +369,24 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     })
   }
 
-  onSpeedDialClick($event: any) {
-    $event.preventDefault();
-    $event.stopPropagation();
-    this.dialogService.open(KsIngestComponent, {
-      width: '95%'
-    });
+  onOpenProjectTree(_?: any) {
+    this.projectTreeVisible = !this.projectTreeVisible;
+  }
+
+  onOpenIngest(_?: any) {
+    this.ksIngestVisible = !this.ksIngestVisible;
+  }
+
+  onOpenUpNext($event?: any) {
+    if (this.ksQueue.length)
+      this.ksUpNextVisible = !this.ksUpNextVisible;
+    else {
+      if ($event) {
+        this.ksQueueOverlay.toggle($event);
+      } else {
+        const container = document.getElementById('upNextButton');
+        this.ksQueueOverlay.toggle({}, container);
+      }
+    }
   }
 }

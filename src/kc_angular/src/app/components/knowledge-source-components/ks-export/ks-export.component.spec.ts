@@ -16,21 +16,21 @@
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { KnowledgeGraphComponent } from './knowledge-graph.component';
+import { KsExportComponent } from './ks-export.component';
 
-describe('KnowledgeGraphComponent', () => {
-  let component: KnowledgeGraphComponent;
-  let fixture: ComponentFixture<KnowledgeGraphComponent>;
+describe('KsExportComponent', () => {
+  let component: KsExportComponent;
+  let fixture: ComponentFixture<KsExportComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ KnowledgeGraphComponent ]
+      declarations: [ KsExportComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(KnowledgeGraphComponent);
+    fixture = TestBed.createComponent(KsExportComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

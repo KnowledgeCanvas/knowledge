@@ -20,7 +20,6 @@
     "cytoscape-cxtmenu": "^3.4.0",
     "cytoscape-dagre": "^2.3.2",
     "cytoscape-edgehandles": "^4.0.1",
-    "d3": "^7.2.1",
     "electron": "^16.0.6",
     "lodash": "^4.17.21",
     "ts-loader": "^9.2.6",
@@ -33,7 +32,6 @@
     "@types/cytoscape": "^3.19.2",
     "@types/cytoscape-cxtmenu": "^3.4.0",
     "@types/cytoscape-dagre": "^2.3.0",
-    "@types/cytoscape-edgehandles": "^4.0.0",
-    "@types/d3": "^7.1.0"
+    "@types/cytoscape-edgehandles": "^4.0.0"
   }
 }

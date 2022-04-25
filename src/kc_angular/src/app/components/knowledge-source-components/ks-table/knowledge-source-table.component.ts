@@ -15,9 +15,9 @@
  */
 
 
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
+import {Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
 import {KnowledgeSource} from "src/app/models/knowledge.source.model";
-import {MenuItem, PrimeIcons, SortEvent} from "primeng/api";
+import {MenuItem, SortEvent} from "primeng/api";
 import {Table} from "primeng/table";
 import {KsCommandService} from "../../../services/command-services/ks-command/ks-command.service";
 import {ProjectService} from "../../../services/factory-services/project-service/project.service";
@@ -34,10 +34,19 @@ import {KsContextMenuService} from "../../../services/factory-services/ks-contex
 })
 export class KnowledgeSourceTableComponent implements OnInit, OnChanges {
   @Input() ksList: KnowledgeSource[] = [];
+
   @Output() kcSetCurrentProject = new EventEmitter<string>();
-  @ViewChild('dataTable') dataTable!: any;
+
+  @ViewChild('dataTable') dataTable!: Table;
+
   @ViewChild('op') overlayPanel!: OverlayPanel;
+
+  @ViewChild('tableFilter') tableFilter!: ElementRef;
+
+  readonly KS_TABLE_ROWS = 'ks-table-rows';
+
   readonly KS_TABLE_SELECTED_COLUMNS_STATE_KEY = 'ks-table-selected-columns';
+
   readonly KS_TABLE_SUPPORTED_COLUMNS: { field: string, header: string }[] = [
     {field: 'icon', header: ''}, {field: 'title', header: 'Title'},
     {field: 'associatedProject', header: 'Project'}, {field: 'dateDue', header: 'Due Date'},
@@ -45,34 +54,28 @@ export class KnowledgeSourceTableComponent implements OnInit, OnChanges {
     {field: 'dateModified', header: 'Modified'}, {field: 'ingestType', header: 'Type'},
     {field: 'flagged', header: 'Important'}
   ];
+
   ksTableAllowSubprojectExpansion: boolean = true;
+
   filter: string = '';
-  ksTableSelectedKsList: KnowledgeSource[] = [];
+
+  ksSelected: KnowledgeSource[] = [];
+
   ksTableShouldExist: boolean = true;
+
   ksTableContextMenuSelectedKs?: KnowledgeSource;
+
   ksMenuItems: MenuItem[] = [];
+
   ksTableShowCountdownInsteadOfDates: boolean = true;
+
   ksTableGlobalFilterFields: string[] = ['title', 'ingestType', 'description', 'associatedProject', 'rawText', 'icon', 'accessLink', 'topics', 'snippet', 'note', 'authors'];
+
   ksTopics: string[] = [];
-  exportOptions: MenuItem[] = [
-    {
-      label: "All", items: [{
-        label: "CSV (default)", icon: PrimeIcons.FILE, command: () => {
-          this.dataTable.exportCSV();
-        }
-      }]
-    },
-    {
-      label: 'Selection Only', items: [
-        {
-          label: "CSV", icon: PrimeIcons.FILE,
-          command: () => {
-            this.dataTable.exportCSV({selectionOnly: true});
-          }
-        }
-      ]
-    }
-  ];
+
+  rows: number = 10;
+
+  first: number = 0;
 
   constructor(private ksCommandService: KsCommandService, private ksFactory: KsFactoryService,
               private projectService: ProjectService, private browserService: BrowserViewDialogService,
@@ -89,7 +92,7 @@ export class KnowledgeSourceTableComponent implements OnInit, OnChanges {
 
   private _selectedColumns: any[] = this.KS_TABLE_SUPPORTED_COLUMNS;
 
-  @Input() get selectedColumns(): any[] {
+  get selectedColumns(): any[] {
     return this._selectedColumns;
   }
 
@@ -102,11 +105,18 @@ export class KnowledgeSourceTableComponent implements OnInit, OnChanges {
     if (sel) {
       this._selectedColumns = JSON.parse(sel);
     }
+
+    let rows = localStorage.getItem(`${this.KS_TABLE_ROWS}`);
+    if (rows) {
+      this.rows = parseInt(rows);
+    } else {
+      localStorage.setItem(this.KS_TABLE_ROWS, `${this.rows}`);
+    }
   }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes.ksList) {
-      this.ksTableSelectedKsList = [];
+      this.ksSelected = [];
       this.ksTopics = [];
       this.ksList.forEach((ks) => {
         ks.topics?.forEach((topic) => {
@@ -122,6 +132,30 @@ export class KnowledgeSourceTableComponent implements OnInit, OnChanges {
         })
       })
     }
+  }
+
+  @HostListener('document:keydown.Control.f')
+  @HostListener('document:keydown.meta.f')
+  focusFilter() {
+    this.tableFilter.nativeElement.focus();
+    this.first = this.first + this.rows;
+  }
+
+  @HostListener('document:keydown.Control.]')
+  @HostListener('document:keydown.meta.]')
+  keyPressNext() {
+    const next = this.first + this.rows;
+    if (next < this.ksList.length) {
+      this.first = this.first + this.rows;
+    }
+    this.dataTable.resetScrollTop();
+  }
+
+  @HostListener('document:keydown.Control.[')
+  @HostListener('document:keydown.meta.[')
+  keyPressPrevious() {
+    this.first = Math.max(0, this.first - this.rows);
+    this.dataTable.resetScrollTop();
   }
 
   tableSort(event: SortEvent) {
@@ -193,7 +227,7 @@ export class KnowledgeSourceTableComponent implements OnInit, OnChanges {
 
   removeMultiple(selectedCheckboxKs: KnowledgeSource[]) {
     this.ksCommandService.remove(selectedCheckboxKs);
-    this.ksTableSelectedKsList = [];
+    this.ksSelected = [];
   }
 
   getColWidth(col: any): string {
@@ -227,21 +261,6 @@ export class KnowledgeSourceTableComponent implements OnInit, OnChanges {
     filter.value = '';
   }
 
-  onExportClicked() {
-    this.dataTable.exportCSV();
-  }
-
-  exportFn = (event: { data: any, field: string }) => {
-    if (event.field === 'icon') {
-      return '';
-    }
-
-    if (typeof event.data === 'string') {
-      return event.data;
-    }
-    return event.data.toString() ?? event.data;
-  };
-
   onDragStart($event: DragEvent, ks: KnowledgeSource) {
     $event.preventDefault();
     if (ks.ingestType === 'file') {
@@ -251,7 +270,7 @@ export class KnowledgeSourceTableComponent implements OnInit, OnChanges {
 
   onKsContextMenu() {
     if (this.ksTableContextMenuSelectedKs) {
-      this.ksMenuItems = this.ksContextMenuService.generate(this.ksTableContextMenuSelectedKs, this.ksTableSelectedKsList);
+      this.ksMenuItems = this.ksContextMenuService.generate(this.ksTableContextMenuSelectedKs, this.ksSelected);
     }
   }
 
@@ -323,5 +342,9 @@ export class KnowledgeSourceTableComponent implements OnInit, OnChanges {
   onShowCountdown($event: any) {
     const show = $event.checked;
     this.settingsService.saveSettings({app: {ks: {table: {showCountdown: show}}}});
+  }
+
+  onRowChange($event: number) {
+    localStorage.setItem(this.KS_TABLE_ROWS, `${$event}`);
   }
 }

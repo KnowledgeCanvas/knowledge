@@ -42,6 +42,7 @@ export class BrowserViewDialogService {
     return this.dialog.open(KsPreviewComponent, {
       width: '100vw',
       height: '100vh',
+      contentStyle: {'padding-left': 0, 'padding-right': 0},
       showHeader: false,
       data: ksPreviewInput
     });

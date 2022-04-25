@@ -1,9 +1,8 @@
-import {Component, HostListener, OnInit} from '@angular/core';
+import {Component, EventEmitter, HostListener, OnInit, Output} from '@angular/core';
 import {KnowledgeSource, KnowledgeSourceReference, SourceModel} from "../../../models/knowledge.source.model";
 import {KnowledgeSourceFactoryRequest, KsFactoryService} from "../../../services/factory-services/ks-factory-service/ks-factory.service";
 import {NotificationsService} from "../../../services/user-services/notification-service/notifications.service";
 import {ExtractionService} from "../../../services/ingest-services/web-extraction-service/extraction.service";
-import {DynamicDialogRef} from "primeng/dynamicdialog";
 import {ElectronIpcService} from "../../../services/ipc-services/electron-ipc/electron-ipc.service";
 import {KsQueueService} from "../../../services/command-services/ks-queue-service/ks-queue.service";
 import {UuidModel} from "../../../models/uuid.model";
@@ -12,6 +11,7 @@ import {UuidService} from "../../../services/ipc-services/uuid-service/uuid.serv
 import {FaviconExtractorService} from "../../../services/ingest-services/favicon-extraction-service/favicon-extractor.service";
 import {DragAndDropService} from "../../../services/ingest-services/external-drag-and-drop/drag-and-drop.service";
 import {KsCommandService} from "../../../services/command-services/ks-command/ks-command.service";
+import {ProjectService} from "../../../services/factory-services/project-service/project.service";
 
 interface PendingExtraction {
   link: string
@@ -26,6 +26,8 @@ interface PendingExtraction {
   styleUrls: ['./ks-ingest.component.scss']
 })
 export class KsIngestComponent implements OnInit {
+  @Output() shouldClose: EventEmitter<boolean> = new EventEmitter<boolean>();
+
   supportedTypes: string[] = ["Links", "Files"];
 
   files: File[] = [];
@@ -34,15 +36,17 @@ export class KsIngestComponent implements OnInit {
 
   ksList: KnowledgeSource[] = [];
 
+  importToProject: boolean = false;
+
   constructor(private notificationService: NotificationsService,
               private extractionService: ExtractionService,
               private uuidService: UuidService,
-              private ref: DynamicDialogRef,
               private dragAndDropService: DragAndDropService,
               private faviconService: FaviconExtractorService,
               private upNextService: KsQueueService,
               private ksCommandService: KsCommandService,
               private ipcService: ElectronIpcService,
+              private projectService: ProjectService,
               private ksFactory: KsFactoryService) {
     this.supportedTypes = dragAndDropService.supportedTypes;
   }
@@ -54,7 +58,6 @@ export class KsIngestComponent implements OnInit {
     evt.preventDefault()
   }
 
-  // Drop listener for importing files and links
   @HostListener('drop', ['$event']) handleDrop(event: DragEvent) {
     this.dragAndDropService.parseDragEvent(event).then((result) => {
       if (result === undefined) {
@@ -120,7 +123,7 @@ export class KsIngestComponent implements OnInit {
     });
 
     // TODO: setup web workers to extract website info asynchronously
-    // TODO: make it so these things can be enqued in Up Next even while they are still loading
+    // TODO: make it so these things can be enqueued in Up Next even while they are still loading
   }
 
   async onSuccess(link: string, ks: KnowledgeSource) {
@@ -136,12 +139,26 @@ export class KsIngestComponent implements OnInit {
 
 
   close() {
-    this.ref.close();
+    this.shouldClose.emit(true);
   }
 
   import() {
-    this.upNextService.enqueue(this.ksList);
-    this.ref.close();
+    if (this.importToProject) {
+      const projectId = this.projectService.getCurrentProjectId();
+      if (!projectId) {
+        console.warn(`Unable to import Knowledge Source to apparently invalid project id: ${projectId}`);
+        this.upNextService.enqueue(this.ksList);
+        return;
+      }
+      this.projectService.updateProjects([{
+        id: projectId,
+        addKnowledgeSource: this.ksList
+      }]);
+    } else {
+      this.upNextService.enqueue(this.ksList);
+    }
+
+    this.close();
   }
 
 
@@ -173,7 +190,6 @@ export class KsIngestComponent implements OnInit {
     let uuids: UuidModel[] = this.uuidService.generate(this.files.length);
     let ksList: KnowledgeSource[] = [];
     let paths: any[] = [];
-    let fileText: string[] = [];
 
     for (let file of this.files) {
       paths.push((file as any).path)
@@ -188,13 +204,11 @@ export class KsIngestComponent implements OnInit {
         let ks = new KnowledgeSource(file.filename, uuids[i], 'file', ref);
         ks.iconUrl = this.faviconService.file();
         ks.icon = result[i];
-        if (fileText[i])
-          ks.rawText = fileText[i];
         ksList.push(ks);
       }
 
       this.upNextService.enqueue(ksList);
-      this.ref.close();
+      this.close();
     });
   }
 

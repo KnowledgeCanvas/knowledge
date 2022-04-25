@@ -39,3 +39,11 @@ getTestBed().initTestEnvironment(
 const context = require.context('./', true, /\.spec\.ts$/);
 // And load the modules.
 context.keys().map(context);
+
+// Work around for modules that require Electron functionality
+declare global {
+  interface Window {
+    api?: any;
+    electron?: any;
+  }
+}

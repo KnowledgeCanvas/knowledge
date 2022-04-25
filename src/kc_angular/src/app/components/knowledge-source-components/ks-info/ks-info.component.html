@@ -12,287 +12,200 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.-->
 
-<p-tabView [style]="{height: 'calc(100% - 32px)', 'overflow-x': 'hidden', 'overflow-y': 'auto'}">
-  <p-tabPanel header="Details">
-    <div class="ks-info-details">
-      <ng-container>
-        <p-panel header="Details">
-          <div class="p-fluid grid">
-            <br>
-            <div class="field p-float-label col-12 ">
-              <input id="_ksTitle"
-                     type="text"
-                     pInputText
-                     required
-                     [(ngModel)]="ks.title">
-              <label for="_ksTitle">Title</label>
-            </div>
-            <br>
-            <div class="field p-float-label col-12 ">
-              <textarea pInputTextarea id="_ksDescription"
-                        [autoResize]="true"
-                        [rows]="3"
-                        [cols]="30"
-                        [(ngModel)]="ks.description">
+<p-scrollPanel [style]="{width: '100%', height: '100%'}">
+  <div class="p-fluid grid">
+    <p-panel header="Details" class="lg:col-6 col-12">
+      <div style="height: 40vh; max-height: 40vh" class="flex-col-center-between overflow-y-auto">
+        <div class="field col-12">
+          <input id="_ksTitle"
+                 type="text"
+                 class="text-2xl"
+                 pInputText
+                 required
+                 [(ngModel)]="ks.title">
+        </div>
+        <div class="field col-12">
+            <textarea pInputTextarea id="_ksDescription"
+                      [autoResize]="true"
+                      [style]="{'max-height': '20vh'}"
+                      [rows]="3"
+                      [cols]="30"
+                      class="p-fluid"
+                      placeholder="Description / Notes"
+                      [(ngModel)]="ks.description">
               </textarea>
-              <label for="_ksDescription">Description</label>
-            </div>
-          </div>
-        </p-panel>
-        <br>
-        <p-panel header="Topics">
+        </div>
+        <div class="field col-12">
           <p-chips [(ngModel)]="ks.topics"
-                   class="p-fluid"
-                   [max]="5"
+                   [max]="3"
                    [allowDuplicate]="false"
                    [addOnBlur]="true"
                    [addOnTab]="true"
                    (onChipClick)="onTopicClick($event)"
                    placeholder="Start typing to add a topic...">
           </p-chips>
-        </p-panel>
-      </ng-container>
-    </div>
-  </p-tabPanel>
+        </div>
+      </div>
+    </p-panel>
 
-  <p-tabPanel header="Calendar">
-    <ng-template pTemplate="content">
-      <div class="p-fluid grid h-full">
-        <div class="p-fluid grid col-12">
-          <p-panel header="Timeline" class="p-fluid col-12">
-            <ng-template pTemplate="content">
-              <div style="overflow-x: auto; overflow-y: hidden">
-                <p-timeline [value]="events" layout="horizontal">
-                  <ng-template pTemplate="content" let-event>
-                    <div style="width: 10rem">
-                      <small class="p-text-secondary">
-                        {{event.date | date: 'short'}}
-                      </small>
-                    </div>
-                  </ng-template>
-                  <ng-template pTemplate="opposite" let-event>
-                    <div style="width: 10rem" class="left-0">
-                      <small class="p-text-secondary">
-                        {{event.status}}
-                      </small>
-                    </div>
-                  </ng-template>
-                </p-timeline>
+    <p-panel header="Timeline" class="lg:col-6 col-12">
+      <div style="height: 40vh; max-height: 40vh">
+        <div class="p-inputgroup">
+          <button pButton icon="pi pi-calendar-plus" (click)="dueDateCal.toggle()"
+                  pTooltip="Select a date and time when {{ks.title}} is due.">
+          </button>
+          <p-calendar [(ngModel)]="ks.dateDue"
+                      #dueDateCal
+                      appendTo="body"
+                      placeholder="Due Date"
+                      [showOtherMonths]="true"
+                      [numberOfMonths]="1"
+                      [monthNavigator]="true"
+                      [showIcon]="false"
+                      [showTime]="true"
+                      [showButtonBar]="true"
+                      [hideOnDateTimeSelect]="false"
+                      hourFormat="12">
+          </p-calendar>
+          <button pButton icon="pi pi-times" [disabled]="!ks.dateDue" (click)="ks.dateDue = undefined"></button>
+        </div>
+
+        <p-divider layout="horizontal" class="w-full p-fluid"></p-divider>
+
+        <p-scrollPanel [style]="{height: '85%', width: '100%'}">
+          <p-timeline [value]="events" layout="vertical">
+            <ng-template pTemplate="content" let-event>
+              <div style="width: 10rem">
+                <small class="p-text-secondary">
+                  {{event.date | date: 'short'}}
+                </small>
               </div>
             </ng-template>
-          </p-panel>
+            <ng-template pTemplate="opposite" let-event>
+              <div style="width: 10rem" class="left-0">
+                <small class="p-text-secondary">
+                  {{event.status}}
+                </small>
+              </div>
+            </ng-template>
+          </p-timeline>
+        </p-scrollPanel>
+      </div>
+    </p-panel>
+  </div>
+
+  <br>
+
+  <div>
+    <p-panel *ngIf="this.ksIsPdf" #pdfPanel header="PDF Preview" [collapsed]="true" [toggleable]="true">
+      <ng-template pTemplate="icons">
+        <button pButton class="p-panel-header-icon" icon="pi pi-external-link" (click)="onKsOpen(ks)"></button>
+      </ng-template>
+
+      <ng-template pTemplate="content">
+        <div *ngIf="this.ksIsPdf" class="flex-col-center-start h-full">
+          <embed *ngIf="safeUrl && this.allowCollapsedContent" [src]="safeUrl" class="p-fluid"
+                 [style]="{width: '100%', 'height': '65vh'}"
+                 [class.ks-pdf-preview]="!maximized"
+                 [class.ks-pdf-preview-max]="maximized">
         </div>
-        <div class="p-fluid grid col-12">
-          <p-panel header="Events" class="col-12">
-            <div class="p-fluid grid">
-              <div class="col-12">
-                <div class="p-inputgroup">
-                  <button pButton icon="pi pi-calendar-plus" (click)="dueDateCal.toggle()"
-                          pTooltip="Select a date and time when {{ks.title}} is due.">
-                  </button>
-                  <p-calendar [(ngModel)]="ks.dateDue"
-                              #dueDateCal
-                              appendTo="body"
-                              placeholder="Due Date"
-                              [showOtherMonths]="true"
-                              [numberOfMonths]="2"
-                              [monthNavigator]="true"
-                              [showIcon]="false"
-                              [showTime]="true"
-                              [showButtonBar]="true"
-                              [hideOnDateTimeSelect]="false"
-                              hourFormat="12">
-                  </p-calendar>
-                  <button pButton icon="pi pi-times" [disabled]="!ks.dateDue" (click)="ks.dateDue = undefined"></button>
-                </div>
-              </div>
-              <div class="col-12">
-                <div class="p-inputgroup">
-                  <button pButton icon="pi pi-clock"
-                          (click)="reminderCal.toggle()"
-                          pTooltip="Select a date and time to be reminded about {{ks.title}}.">
-                  </button>
-                  <p-calendar #reminderCal
-                              appendTo="body"
-                              placeholder="Remind Me!"
-                              [showOtherMonths]="true"
-                              [numberOfMonths]="2"
-                              [showIcon]="false"
-                              [showTime]="true"
-                              [showButtonBar]="true"
-                              [hideOnDateTimeSelect]="false"
-                              hourFormat="12">
-                  </p-calendar>
-                  <button pButton icon="pi pi-check" [disabled]="true"></button>
-                </div>
-              </div>
-              <div class="col-12">
-                <div class="p-inputgroup">
-                  <button pButton icon="pi pi-clock"
-                          (click)="archiveCal.toggle()"
-                          pTooltip="Select a date and time for automatic archival.">
-                  </button>
-                  <p-calendar #archiveCal
-                              appendTo="body"
-                              placeholder="Auto-Archive"
-                              [showOtherMonths]="true"
-                              [numberOfMonths]="2"
-                              [showIcon]="false"
-                              [showTime]="true"
-                              [showButtonBar]="true"
-                              [hideOnDateTimeSelect]="false"
-                              hourFormat="12">
-                  </p-calendar>
-                  <button pButton icon="pi pi-check" [disabled]="true"></button>
-                </div>
-              </div>
-              <div class="col-12">
-                <div class="p-inputgroup">
-                  <button pButton icon="pi pi-comment" (click)="checkpointMsg.focus()"
-                          pTooltip="Enter a message describing changes, updates, etc.">
-                  </button>
-                  <input pInputText #checkpointMsg placeholder="Checkpoint">
-                  <button pButton icon="pi pi-check" [disabled]="!checkpointMsg.value.length"></button>
-                </div>
-              </div>
-            </div>
-          </p-panel>
+      </ng-template>
+    </p-panel>
+
+    <p-panel *ngIf="this.ksIsYoutubeVideo"
+             header="YouTube Preview"
+             [collapsed]="true"
+             [toggleable]="true"
+             (onAfterToggle)="youtubeToggle($event)">
+      <ng-template pTemplate="icons">
+        <button pButton
+                class="p-panel-header-icon"
+                icon="pi pi-external-link"
+                (click)="onKsOpen(ks)">
+        </button>
+      </ng-template>
+      <ng-template pTemplate="content">
+        <div class="p-fluid w-full flex-row-center-center">
+          <youtube-player *ngIf="this.ksIsYoutubeVideo && this.allowCollapsedContent"
+                          [videoId]="ksYoutubeVideoId"
+                          #youtubePlayer>
+          </youtube-player>
+        </div>
+      </ng-template>
+    </p-panel>
+  </div>
+
+  <br>
+
+  <p-panel header="Knowledge Source Model" class="pt-6" [toggleable]="true" [collapsed]="true">
+    <ng-template pTemplate="content">
+      <div class="p-fluid grid" *ngIf="this.allowCollapsedContent">
+        <div class="field p-float-label sm:col-12 md:col-12 lg:col-6 mt-4">
+          <input id="ksId" type="text" pInputText disabled [value]="ks.id.value">
+          <label for="ksId">Knowledge Source ID</label>
+        </div>
+
+        <div class="field p-float-label sm:col-12 md:col-12 lg:col-6 mt-4">
+          <input id="ingestType" type="text" pInputText disabled [value]="ks.ingestType">
+          <label for="ingestType">Ingest Type</label>
+        </div>
+
+        <div class="field p-float-label sm:col-12 md:col-12 lg:col-6">
+          <input id="ksProject" type="text" pInputText disabled [value]="ksAssociatedProjectId">
+          <label for="ksProject">Associated Project ID</label>
+        </div>
+
+        <div class="field p-float-label sm:col-12 md:col-12 lg:col-6">
+          <input id="ksTitle" type="text" pInputText disabled [value]="ks.icon">
+          <label for="ksTitle">Icon Encoding</label>
+        </div>
+
+        <div class="field p-float-label sm:col-12 md:col-12 lg:col-6">
+          <input id="iconUrl" type="text" pInputText disabled [value]="ks.iconUrl">
+          <label for="iconUrl">Icon URL</label>
+        </div>
+
+        <div class="field p-float-label sm:col-12 md:col-12 lg:col-6">
+          <input id="accessLink" type="text" pInputText disabled [value]="ks.accessLink">
+          <label for="accessLink">Access Link</label>
         </div>
       </div>
     </ng-template>
-  </p-tabPanel>
+  </p-panel>
 
-  <p-tabPanel header="Preview" *ngIf="ksHasPreview">
-    <ng-template pTemplate="content">
-      <p-panel header="{{ksPreviewHeader}}" *ngIf="!this.ksIsYoutubeVideo">
-        <ng-template pTemplate="content">
-          <div *ngIf="this.ksIsPdf" class="flex-col-center-start h-full">
-            <embed *ngIf="safeUrl"
-                   [src]="safeUrl"
-                   class="p-fluid"
-                   (click)="onPdfClick($event)"
-                   [style]="{width: '100%', 'height': '65vh'}"
-                   [class.ks-pdf-preview]="!maximized"
-                   [class.ks-pdf-preview-max]="maximized">
-          </div>
-          <div *ngIf="this.ksIsYoutubeVideo" class="p-fluid w-full">
-            <div class="grid p-fluid">
-              <p-slider [(ngModel)]="ksYoutubeWidth"
-                        [min]="640" [max]="1280"
-                        class="col-3">
-              </p-slider>
-              <p-slider [(ngModel)]="ksYoutubeHeight"
-                        [min]="480" [max]="1080"
-                        class="col-3">
-              </p-slider>
-            </div>
-            <youtube-player [hidden]="ksYoutubeHidden"
-                            [width]="ksYoutubeWidth"
-                            [height]="ksYoutubeHeight"
-                            [videoId]="ksYoutubeVideoId"
-                            (stateChange)="ksYoutubeStateChange($event)">
-            </youtube-player>
-          </div>
-        </ng-template>
-      </p-panel>
-      <p-panel *ngIf="this.ksIsYoutubeVideo"
-               [style]="{width: '{{ksYoutubeWidth}}px'}">
-        <ng-template pTemplate="content">
-          <div class="grid p-fluid">
-            <p-slider [(ngModel)]="ksYoutubeWidth"
-                      [min]="640" [max]="1280"
-                      class="col-3">
-            </p-slider>
-            <p-slider [(ngModel)]="ksYoutubeHeight"
-                      [min]="480" [max]="1080"
-                      class="col-3">
-            </p-slider>
-          </div>
-          <p-divider></p-divider>
-          <youtube-player [hidden]="ksYoutubeHidden"
-                          [width]="ksYoutubeWidth"
-                          [height]="ksYoutubeHeight"
-                          [videoId]="ksYoutubeVideoId"
-                          (stateChange)="ksYoutubeStateChange($event)">
-          </youtube-player>
-        </ng-template>
-      </p-panel>
-    </ng-template>
-  </p-tabPanel>
+  <br>
 
-  <p-tabPanel header="Advanced">
-    <ng-template pTemplate="content">
-      <p-panel header="Knowledge Source Model">
-        <ng-template pTemplate="content">
-          <br>
-          <div class="p-fluid grid">
-            <div class="field p-float-label sm:col-12 md:col-12 lg:col-6">
-              <input id="ksId" type="text" pInputText disabled [value]="ks.id.value">
-              <label for="ksId">Knowledge Source ID</label>
-            </div>
-
-            <div class="field p-float-label sm:col-12 md:col-12 lg:col-6">
-              <input id="ingestType" type="text" pInputText disabled [value]="ks.ingestType">
-              <label for="ingestType">Ingest Type</label>
-            </div>
-
-            <div class="field p-float-label sm:col-12 md:col-12 lg:col-6">
-              <input id="ksProject" type="text" pInputText disabled [value]="ksAssociatedProjectId">
-              <label for="ksProject">Associated Project ID</label>
-            </div>
-
-            <div class="field p-float-label sm:col-12 md:col-12 lg:col-6">
-              <input id="ksTitle" type="text" pInputText disabled [value]="ks.icon">
-              <label for="ksTitle">Icon Encoding</label>
-            </div>
-
-            <div class="field p-float-label sm:col-12 md:col-12 lg:col-6">
-              <input id="iconUrl" type="text" pInputText disabled [value]="ks.iconUrl">
-              <label for="iconUrl">Icon URL</label>
-            </div>
-
-            <div class="field p-float-label sm:col-12 md:col-12 lg:col-6">
-              <input id="accessLink" type="text" pInputText disabled [value]="ks.accessLink">
-              <label for="accessLink">Access Link</label>
-            </div>
-
-            <div class="field p-float-label sm:col-12 md:col-12 lg:col-6">
-              <input id="authors" type="text" pInputText disabled [value]="ks.authors">
-              <label for="authors">Authors</label>
-            </div>
-          </div>
-        </ng-template>
-      </p-panel>
-      <br>
-      <p-panel *ngIf="ksMetadata.length > 0" header="Metadata Key/Value Pairs">
-        <ng-template pTemplate="content">
-          <p-table [value]="ksMetadata"
-                   [autoLayout]="true"
-                   [paginator]="true"
-                   [rows]="10">
-            <ng-template pTemplate="header">
-              <tr>
-                <th pSortableColumn="key">Key
-                  <p-sortIcon field="key"></p-sortIcon>
-                </th>
-                <th pSortableColumn="value">Value
-                  <p-sortIcon field="value"></p-sortIcon>
-                </th>
-                <th pSortableColumn="property">Property
-                  <p-sortIcon field="property"></p-sortIcon>
-                </th>
-              </tr>
-            </ng-template>
-            <ng-template pTemplate="body" let-meta>
-              <tr *ngIf="meta.key.length > 0 && meta.value.length > 0">
-                <td>{{meta.key}}</td>
-                <td>{{meta.value}}</td>
-                <td>{{meta.property}}</td>
-              </tr>
-            </ng-template>
-          </p-table>
-        </ng-template>
-      </p-panel>
-    </ng-template>
-  </p-tabPanel>
-</p-tabView>
+  <p-panel header="Extracted Metadata" class="pt-6"
+           *ngIf="ksMetadata.length > 0"
+           [toggleable]="true"
+           [collapsed]="true">
+    <p-table *ngIf="this.allowCollapsedContent"
+             [value]="ksMetadata"
+             [autoLayout]="true"
+             [paginator]="true"
+             [responsive]="false"
+             [responsiveLayout]="'false'"
+             [rows]="10">
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="key">Key
+            <p-sortIcon field="key"></p-sortIcon>
+          </th>
+          <th pSortableColumn="value">Value
+            <p-sortIcon field="value"></p-sortIcon>
+          </th>
+          <th pSortableColumn="property">Property
+            <p-sortIcon field="property"></p-sortIcon>
+          </th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-meta>
+        <tr *ngIf="meta.key.length > 0 && meta.value.length > 0">
+          <td>{{meta.key}}</td>
+          <td>{{meta.value}}</td>
+          <td>{{meta.property}}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </p-panel>
+</p-scrollPanel>

@@ -13,9 +13,8 @@ See the License for the specific language governing permissions and
 limitations under the License.-->
 
 
-<ks-lib-viewport-header
-  *ngIf="headerConfig"
-  [config]="headerConfig"
-  (headerEvents)="headerEvents($event)">
+<ks-lib-viewport-header *ngIf="headerConfig"
+                        [config]="headerConfig"
+                        (headerEvents)="headerEvents($event)">
 </ks-lib-viewport-header>
 <embed *ngIf="ready" [src]="safeUrl" class="file-view">
