@@ -41,6 +41,7 @@ import {KcDialogRequest} from "kc_electron/src/app/models/electron.ipc.model";
 import {SearchSettingsComponent} from "./components/settings-components/search-settings/search-settings.component";
 import {ProjectTreeFactoryService} from "./services/factory-services/project-tree-factory/project-tree-factory.service";
 import {DragAndDropService} from "./services/ingest-services/external-drag-and-drop/drag-and-drop.service";
+import {IngestSettingsComponent} from "./components/settings-components/ingest-settings/ingest-settings.component";
 
 
 @Component({
@@ -240,16 +241,16 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
               });
             }
           },
-          // {
-          //   label: 'Up Next', icon: 'pi pi-fw pi-arrow-circle-down', command: () => {
-          //     this.dialogService.open(IngestSettingsComponent, {
-          //       header: 'Up Next Settings',
-          //       width: '64rem',
-          //       dismissableMask: true,
-          //       modal: true
-          //     });
-          //   }
-          // },
+          {
+            label: 'Up Next', icon: 'pi pi-fw pi-arrow-circle-down', command: () => {
+              this.dialogService.open(IngestSettingsComponent, {
+                header: 'Up Next Settings',
+                width: '64rem',
+                dismissableMask: true,
+                modal: true
+              });
+            }
+          },
           {
             label: 'Search', icon: 'pi pi-fw pi-search', command: () => {
               this.dialogService.open(SearchSettingsComponent, {

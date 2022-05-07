@@ -64,6 +64,7 @@ export class ExternalIngestService {
      * Once an extension event occurs, create a new Knowledge Source and notify listeners that a new KS is available
      */
     this.ipcService.fileWatcher().subscribe((fileModels) => {
+      console.log('File models received: ', fileModels);
       let iconRequests = [];
       let ksList: KnowledgeSource[] = [];
       for (let fileModel of fileModels) {
@@ -76,9 +77,9 @@ export class ExternalIngestService {
           let source = new SourceModel(fileModel, undefined, undefined);
           let ref = new KnowledgeSourceReference('file', source, sourceLink);
           let ks = new KnowledgeSource(fileModel.filename, fileModel.id, 'file', ref);
-          ks.dateAccessed = [new Date(fileModel.accessTime)];
-          ks.dateModified = [new Date(fileModel.modificationTime)];
-          ks.dateCreated = new Date(fileModel.creationTime);
+          ks.dateAccessed = [];
+          ks.dateModified = [];
+          ks.dateCreated = new Date();
           ks.iconUrl = this.faviconService.file();
           ks.icon = icons[i];
           ksList.push(ks);

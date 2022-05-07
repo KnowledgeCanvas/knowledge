@@ -17,37 +17,65 @@
 import {IngestSettingsModel} from "../models/ingest.model";
 import {Subscription} from 'rxjs';
 import {FSWatcher} from "chokidar";
+import {IpcMessage} from "../models/electron.ipc.model";
 
 const chokidar = require('chokidar');
-
+const mime = require('mime-types');
+const share: any = (global as any).share;
+const fs = share.fs;
+const path = share.path;
+const ipcMain = share.ipcMain;
+const uuid = share.uuid;
 
 const settingsService = require('../controller/settings.service');
+let appEnv = settingsService.getSettings();
 
 // TODO: give file watcher its own thread so it doesn't affect the main process
 
+interface FilewatcherUpdate {
+    remove: string[]
+}
 
 class IngestFileWatcher {
+    ingestSettings: IngestSettingsModel | null = null;
     ingestWatcher: FSWatcher | null = null;
     ingestSubscription: Subscription;
+    ipcSubscription: any;
     interval: any = undefined;
-    queue: any[] = [];
+    queue: string[] = [];
 
     constructor() {
+        // Listen for updates from the app (i.e. when KS have been successfully imported)
+        this.ipcSubscription = ipcMain.on('app:fileWatcher:update', (event: any, request: FilewatcherUpdate) => {
+            console.log('File Watcher was notified with event: ', event)
+            console.log('File watcher request: ', request);
+            for (let filePath of request.remove) {
+                this.queue.filter((f) => f !== filePath);
+            }
+        })
+
+
         this.ingestSubscription = settingsService.ingest.subscribe((ingest: IngestSettingsModel) => {
-            // Disable file watcher if autoscan is false
-            if (!ingest.autoscan) {
-                if (this.ingestWatcher) {
-                    this.ingestWatcher.close().catch((reason) => {
-                        console.warn('Ingest file watcher failed to close... ', reason);
-                    });
+            if (!this.ingestSettings) {
+                this.ingestSettings = ingest;
+            } else {
+                const prev = JSON.stringify(this.ingestSettings);
+                const next = JSON.stringify(ingest);
 
-
+                if (prev === next) {
+                    return;
+                } else if (this.ingestSettings.autoscan !== ingest.autoscan) {
+                    this.ingestSettings = ingest;
                 }
+            }
 
-                clearInterval(this.interval);
-                this.ingestWatcher = null;
-                this.queue = [];
-                return;
+
+            console.log('Ingest settings have changed: ', ingest);
+
+            if (ingest.autoscan) {
+                this.start(ingest);
+            } else {
+                this.stop();
             }
         });
     }
@@ -59,11 +87,86 @@ class IngestFileWatcher {
     }
 
     stop() {
+        console.log('Shutting down watcher...');
 
+        if (this.ingestWatcher) {
+            this.ingestWatcher.close().catch((reason) => {
+                console.warn('Ingest file watcher failed to close... ', reason);
+            });
+        }
+        this.reset();
     }
 
-    start() {
+    start(settings: IngestSettingsModel) {
+        const watchPath = path.resolve(settings.autoscanLocation);
 
+        if (!watchPath) {
+            console.error('Unable to find file watcher path...');
+        }
+
+        let fileStat: any;
+        try {
+            fileStat = fs.statSync(watchPath);
+        } catch (e) {
+            console.warn('Could not find directory: ', watchPath, '... creating now...');
+            fs.mkdirSync(watchPath, {recursive: true});
+            fileStat = fs.statSync(watchPath);
+        }
+
+        console.log(`Starting watcher in ${watchPath}...`);
+        console.log(`File watcher stat: `, fileStat);
+        this.setWatcher(watchPath);
+
+        this.interval = setInterval(() => {
+            if (this.queue.length <= 0) {
+                return;
+            }
+
+            let kcMainWindow: any = share.BrowserWindow.getAllWindows()[0];
+            let requests: IpcMessage[] = [];
+            for (let filePath of this.queue) {
+                let fstat: any;
+                try {
+                    fstat = fs.statSync(filePath);
+                } catch (e) {
+                    console.warn('FileWatcher found a file that does not exist...');
+                    continue;
+                }
+
+                const contentType = mime.lookup(filePath);
+                let fileExtension = mime.extension(contentType);
+                if (!fileExtension) {
+                    console.warn('Could not find file extension for filePath: ', filePath);
+                    fileExtension = path.extname(filePath).split('.')[1];
+                    console.warn('Using path extname instead: ', fileExtension);
+                }
+                let newId = uuid.v4();
+
+
+                let newFilePath = path.resolve(appEnv.appPath, 'files', newId) + `.${fileExtension}`;
+                fs.copyFileSync(filePath, newFilePath);
+
+                const fileModel = {
+                    filename: path.basename(filePath),
+                    id: {value: newId},
+                    path: newFilePath,
+                    size: fstat.size,
+                    type: contentType
+                }
+
+
+                const req: IpcMessage = {
+                    error: undefined,
+                    success: {
+                        data: fileModel
+                    }
+                }
+                requests.push(req);
+            }
+
+            kcMainWindow.webContents.send('app-ingest-watcher-results', requests);
+            this.queue = [];
+        }, this.ingestSettings?.interval);
     }
 
     setWatcher(watchPath: string) {
@@ -76,9 +179,20 @@ class IngestFileWatcher {
 
             // intended behavior: if the user doesn't move the files, then we shouldn't touch them and show them next time
             ignoreInitial: false
-        });
+        })
+            .on('add', (filePath: string) => {
+                const found = this.queue.find((f) => f === filePath);
+                if (!found) {
+                    this.queue.push(filePath);
+                    console.log('File list: ', this.queue);
+                }
+            });
     }
 }
 
+const fileWatcher = new IngestFileWatcher();
 
-module.exports = {}
+
+module.exports = {
+    fileWatcher
+}
