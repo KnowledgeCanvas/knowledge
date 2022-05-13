@@ -1,3 +1,3 @@
-interface WebSourceModel {
+export interface WebSourceModel {
 
 }

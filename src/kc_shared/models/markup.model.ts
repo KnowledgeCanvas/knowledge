@@ -1,32 +1,35 @@
-interface KnowledgeSourceMarkup {
+import {EventModel} from "./event.model";
+import {UuidModel} from "./uuid.model";
+
+export interface KnowledgeSourceMarkup {
     id: UuidModel
     pos: { x: Number, y: Number, width: Number, height: Number }
     events?: EventModel
 }
 
-interface MarkupColor {
+export interface MarkupColor {
     color: string
 }
 
-interface MarkupFont {
+export interface MarkupFont {
     weight: number
 }
 
-interface MarkupData {
+export interface MarkupData {
     data: string
 }
 
-interface MarkupNote extends KnowledgeSourceMarkup {
+export interface MarkupNote extends KnowledgeSourceMarkup {
     title: string
     body: string
 }
 
-interface MarkupSticker extends KnowledgeSourceMarkup, MarkupData {
+export interface MarkupSticker extends KnowledgeSourceMarkup, MarkupData {
     link?: string
 }
 
-interface MarkupUnderline extends KnowledgeSourceMarkup, MarkupColor, MarkupFont, Partial<MarkupData> {}
+export interface MarkupUnderline extends KnowledgeSourceMarkup, MarkupColor, MarkupFont, Partial<MarkupData> {}
 
-interface MarkupHighlight extends KnowledgeSourceMarkup, MarkupColor, MarkupFont, Partial<MarkupData> {
+export interface MarkupHighlight extends KnowledgeSourceMarkup, MarkupColor, MarkupFont, Partial<MarkupData> {
     opacity: number
 }

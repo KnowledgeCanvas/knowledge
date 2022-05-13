@@ -1,4 +1,8 @@
-interface KnowledgeSourceModel {
+import {Hashable} from "./hashable.model";
+import {UuidModel} from "./uuid.model";
+import {WebSourceModel} from "./web.source.model";
+
+export interface KnowledgeSourceModel {
     title: string
     id: UuidModel
     type: 'file' | 'web'
@@ -12,23 +16,23 @@ interface KnowledgeSourceModel {
     authors?: UuidModel[]
 }
 
-class KnowledgeSource implements KnowledgeSourceModel{
+export class KnowledgeSource implements KnowledgeSourceModel{
     id!: UuidModel;
     source!: File | WebSourceModel;
     title!: string;
     type!: 'file' | 'web';
 }
 
-interface KnowledgeSourceImage extends Hashable {
+export interface KnowledgeSourceImage extends Hashable {
     id: UuidModel
     data: string
 }
 
-interface KnowledgeSourceIcon extends KnowledgeSourceImage {
+export interface KnowledgeSourceIcon extends KnowledgeSourceImage {
     link?: string
 }
 
-interface KnowledgeSourceThumbnail extends KnowledgeSourceImage {
+export interface KnowledgeSourceThumbnail extends KnowledgeSourceImage {
     height: number
     width: number
     link?: string

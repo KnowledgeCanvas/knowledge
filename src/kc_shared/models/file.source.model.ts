@@ -1,3 +1,3 @@
-interface FileSourceModel {
+export interface FileSourceModel {
 
 }
