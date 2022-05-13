@@ -17,9 +17,9 @@
 import {Injectable, NgZone} from '@angular/core';
 import {UUID} from "src/app/models/uuid";
 import {BehaviorSubject, Observable} from 'rxjs';
-import {SettingsModel} from "src/app/models/settings.model";
 import {IpcMessage, KcDialogRequest, KsBrowserViewRequest, KsThumbnailRequest} from "kc_electron/src/app/models/electron.ipc.model";
-import {FileModel} from "../../../models/file.model";
+import {SettingsModel} from "../../../../../../kc_shared/models/settings.model";
+import {FileSourceModel} from "../../../../../../kc_shared/models/file.source.model";
 
 export interface ElectronNavEvent {
   stack: string[]
@@ -42,6 +42,9 @@ export type PromptForDirectoryProperties = 'openFile' | 'openDirectory' | 'multi
   providedIn: 'root'
 })
 export class ElectronIpcService {
+  receiveChannels = {
+    browserViewExtractText: 'electron-browser-view-extract-text'
+  }
   private ClassName = 'ElectronIpcService';
   private send = window.api.send;
   private receive = window.api.receive;
@@ -88,11 +91,6 @@ export class ElectronIpcService {
     showItemInFolder: 'app-show-item-in-folder',
     showItemInFolderResults: 'app-show-item-in-folder-results'
   }
-
-  receiveChannels = {
-    browserViewExtractText: 'electron-browser-view-extract-text'
-  }
-
   // Subscribers will be alerted when the browser view navigates to a new URL
   private browserViewNavEvent = new BehaviorSubject<string>('');
   navEvent = this.browserViewNavEvent.asObservable();
@@ -115,7 +113,7 @@ export class ElectronIpcService {
   private _thumbnails = new BehaviorSubject<{ id: string, thumbnail: any }>({id: '', thumbnail: undefined});
   thumbnail = this._thumbnails.asObservable();
 
-  private _extractedText = new BehaviorSubject<{url: string, text: string}>({url: '', text: ''});
+  private _extractedText = new BehaviorSubject<{ url: string, text: string }>({url: '', text: ''});
   extractedText = this._extractedText.asObservable();
 
   constructor(private zone: NgZone) {
@@ -364,11 +362,11 @@ export class ElectronIpcService {
     });
   }
 
-  fileWatcher(): Observable<FileModel[]> {
-    return new Observable<FileModel[]>((subscriber) => {
+  fileWatcher(): Observable<FileSourceModel[]> {
+    return new Observable<FileSourceModel[]>((subscriber) => {
       this.receive(this.channels.ingestWatcherResults, (responses: IpcMessage[]) => {
         this.zone.run(() => {
-          let files: FileModel[] = [];
+          let files: FileSourceModel[] = [];
 
           for (let response of responses) {
             if (response.error) {

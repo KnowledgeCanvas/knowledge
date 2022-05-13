@@ -13,17 +13,10 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
+import {UuidModel} from "./uuid.model";
 
-import {UUID} from "./uuid";
-
-export class AuthorModel {
-  firstName?: string;
-  lastName?: string;
-  id?: UUID;
-
-  constructor(firstName: string, lastName: string, uuid?: UUID) {
-    this.firstName = firstName;
-    this.lastName = lastName;
-    this.id = uuid;
-  }
+export interface AuthorModel {
+    firstName: string;
+    lastName: string;
+    id: UuidModel;
 }

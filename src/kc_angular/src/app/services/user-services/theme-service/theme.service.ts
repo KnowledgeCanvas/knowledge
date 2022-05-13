@@ -16,14 +16,7 @@
 
 import {Inject, Injectable} from '@angular/core';
 import {DOCUMENT} from "@angular/common";
-
-export interface KcTheme {
-  name: string
-  code: string
-  isDark: boolean
-  isDual: boolean
-  items?: KcTheme[]
-}
+import {KcTheme} from "../../../../../../kc_shared/models/style.model";
 
 @Injectable({
   providedIn: 'root'

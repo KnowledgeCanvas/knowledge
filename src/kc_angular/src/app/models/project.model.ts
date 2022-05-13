@@ -17,12 +17,14 @@
 import {KnowledgeSource} from "./knowledge.source.model";
 import {UUID} from "./uuid";
 import {KcCalendar} from "./calendar.model";
+import {KcProjectModel, KcProjectType} from "../../../../kc_shared/models/project.model";
+import {EventModel} from "../../../../kc_shared/models/event.model";
 
-export type ProjectType = 'school' | 'work' | 'hobby' | 'default' | 'research';
 
-export class ProjectModel {
+export class KcProject implements KcProjectModel{
   name: string = '';
   readonly id: UUID;
+  events?: EventModel[] = [];
   authors: string[] = [];
   description: string = '';
   readonly dateCreated: Date;
@@ -31,13 +33,13 @@ export class ProjectModel {
   parentId: UUID = new UUID('');
   subprojects: string[] = [];
   topics: string[] = [];
-  type: ProjectType;
-  notes: string[] = [];
+  type: KcProjectType;
   expanded: boolean = false;
   knowledgeSource: KnowledgeSource[] = [];
   calendar: KcCalendar;
 
-  constructor(name: string, id: UUID, type?: ProjectType, parentId?: UUID) {
+
+  constructor(name: string, id: UUID, type?: KcProjectType, parentId?: UUID) {
     this.name = name;
     this.id = id;
     this.type = type ? type : 'default';
@@ -57,7 +59,7 @@ export interface ProjectCreationRequest {
   knowledgeSource: KnowledgeSource[];
   authors: string[];
   topics: string[];
-  type: ProjectType;
+  type: KcProjectType;
   subProjects: ProjectCreationRequest[];
   calendar: KcCalendar;
 }
@@ -80,14 +82,4 @@ export interface ProjectUpdateRequest {
   removeKnowledgeSource?: KnowledgeSource[];
   updateKnowledgeSource?: KnowledgeSource[];
   moveKnowledgeSource?: { ks: KnowledgeSource, new: UUID }
-}
-
-export interface ProjectEntity {
-  readonly id: UUID;
-  parentId: UUID;
-  name: string;
-  description: string;
-  lastModified: string;
-  readonly creationDate: string;
-  subprojects: string[];
 }

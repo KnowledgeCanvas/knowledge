@@ -16,7 +16,7 @@
 
 
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {ProjectModel} from "../../../models/project.model";
+import {KcProject} from "../../../models/project.model";
 import {UUID} from "../../../models/uuid";
 
 @Component({
@@ -28,7 +28,7 @@ export class ProjectCardComponent implements OnInit {
   /**
    * The project to be displayed on this card.
    */
-  @Input() kcProject!: ProjectModel;
+  @Input() kcProject!: KcProject;
 
   /**
    * Whether to display the "Archive Project" button.

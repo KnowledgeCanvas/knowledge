@@ -14,28 +14,10 @@
  limitations under the License.
  */
 
-import {UUID} from "./uuid";
-
-export class FileModel {
-  filename: string;
-  size: number;
-  path: string;
-  id: UUID;
-  type: string;
-  accessTime: string;
-  modificationTime: string;
-  creationTime: string;
-  pages?: number;
-  words?: number;
-
-  constructor(filename: string, size: number, path: string, id: UUID, type: string) {
-    this.filename = filename;
-    this.id = id;
-    this.size = size;
-    this.path = path;
-    this.accessTime = Date();
-    this.modificationTime = Date();
-    this.creationTime = Date();
-    this.type = type;
-  }
+export interface KcTheme {
+    name: string
+    code: string
+    isDark: boolean
+    isDual: boolean
+    items?: KcTheme[]
 }

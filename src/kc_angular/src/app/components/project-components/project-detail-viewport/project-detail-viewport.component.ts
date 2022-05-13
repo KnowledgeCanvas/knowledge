@@ -16,7 +16,7 @@
 
 
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {ProjectModel, ProjectUpdateRequest} from "src/app/models/project.model";
+import {KcProject, ProjectUpdateRequest} from "src/app/models/project.model";
 import {ProjectService} from "../../../services/factory-services/project-service/project.service";
 import {KnowledgeSource} from "../../../models/knowledge.source.model";
 import {BrowserViewDialogService} from "../../../services/ipc-services/browser-service/browser-view-dialog.service";
@@ -32,7 +32,7 @@ import {TreeNode} from "primeng/api";
   styleUrls: ['./project-detail-viewport.component.scss'],
 })
 export class ProjectDetailViewportComponent implements OnInit {
-  @Input() kcProject: ProjectModel | null = null;
+  @Input() kcProject: KcProject | null = null;
 
   @Input() showProjectTree: boolean = false;
 
@@ -89,7 +89,7 @@ export class ProjectDetailViewportComponent implements OnInit {
     this.projectService.updateProjects([update]);
   }
 
-  kcProjectUpdate(project: ProjectModel) {
+  kcProjectUpdate(project: KcProject) {
     this.projectService.updateProjects([{
       id: project.id
     }])

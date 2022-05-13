@@ -24,8 +24,4 @@ export class UUID implements UuidModel {
       this.value = value;
     }
   }
-
-  isEmpty() {
-    return this.value === '';
-  }
 }

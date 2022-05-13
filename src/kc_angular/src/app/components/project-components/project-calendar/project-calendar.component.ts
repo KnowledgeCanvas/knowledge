@@ -16,7 +16,7 @@
 
 import {Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
 import {CalendarOptions, FullCalendarComponent, FullCalendarModule} from "@fullcalendar/angular";
-import {ProjectModel} from "../../../models/project.model";
+import {KcProject} from "../../../models/project.model";
 import {UUID} from "../../../models/uuid";
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -54,7 +54,7 @@ export interface KcCardRequest {
 export class ProjectCalendarComponent implements OnInit, OnChanges {
   @ViewChild('calendar') calendar!: FullCalendarComponent;
 
-  @Input() kcProject!: ProjectModel | null;
+  @Input() kcProject!: KcProject | null;
 
   @Input() ksList!: KnowledgeSource[];
 
@@ -165,7 +165,7 @@ export class ProjectCalendarComponent implements OnInit, OnChanges {
     }
   }
 
-  eventsFromProject(project: ProjectModel): ProjectCalendarEvent[] {
+  eventsFromProject(project: KcProject): ProjectCalendarEvent[] {
     const projectColor = 'yellow';
     const projectTextColor = 'black'
     const ksList = this.eventsFromKsList(this.ksList);

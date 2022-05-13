@@ -15,10 +15,10 @@
  */
 
 import {UUID} from "./uuid";
-import {SearchModel} from "./google.search.results.model";
-import {FileModel} from "./file.model";
 import {WebsiteModel} from "./website.model";
-import {AuthorModel} from "./author.model";
+import {AuthorModel} from "../../../../kc_shared/models/author.model";
+import {FileSourceModel} from "../../../../kc_shared/models/file.source.model";
+
 
 export type IngestType = 'google' | 'file' | 'website' | 'generic' | 'topic' | 'search' | 'note' | 'message';
 
@@ -26,16 +26,14 @@ export type IngestType = 'google' | 'file' | 'website' | 'generic' | 'topic' | '
 export type SourceType = 'article'
 
 export class SourceModel {
-  search: SearchModel | undefined;
-  file: FileModel | undefined;
+  file: FileSourceModel | undefined;
   website: WebsiteModel | undefined;
 
-  constructor(file?: FileModel, search?: SearchModel, website?: WebsiteModel) {
-    if (!file && !search && !website) {
+  constructor(file?: FileSourceModel, website?: WebsiteModel) {
+    if (!file && !website) {
       throw new Error('SourceModel must contain at lesat one valid source.');
     }
     this.file = file;
-    this.search = search;
     this.website = website;
   }
 }

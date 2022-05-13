@@ -22,7 +22,7 @@ import {ExtractionService} from "../../ingest-services/web-extraction-service/ex
 import {FaviconExtractorService} from "../../ingest-services/favicon-extraction-service/favicon-extractor.service";
 import {UUID} from "../../../models/uuid";
 import {SettingsService} from "../../ipc-services/settings-service/settings.service";
-import {FileModel} from "../../../models/file.model";
+import {FileSourceModel} from "../../../../../../kc_shared/models/file.source.model";
 
 export interface KnowledgeSourceFactoryRequest {
   ingestType: IngestType,
@@ -65,7 +65,7 @@ export class KsFactoryService {
           .then((result) => {
             resolve(result);
           }).catch((reason) => {
-            console.warn('Could not create KS from link because: ', reason);
+          console.warn('Could not create KS from link because: ', reason);
         });
       }
     });
@@ -117,7 +117,6 @@ export class KsFactoryService {
       reference: {
         ingestType: "website",
         source: {
-          search: undefined,
           file: undefined,
           website: {
             url: "",
@@ -144,8 +143,17 @@ export class KsFactoryService {
 
   private async extractFileResource(link: string, file: File): Promise<KnowledgeSource> {
     const uuid: UUID = this.uuidService.generate(1)[0];
-    let fileModel: FileModel = new FileModel(file.name, file.size, (file as any).path, uuid, file.type);
-    let source = new SourceModel(fileModel, undefined, undefined);
+    let fileModel: FileSourceModel = {
+      id: uuid,
+      filename: file.name,
+      path: (file as any).path,
+      size: file.size,
+      type: file.type,
+      creationTime: Date(),
+      modificationTime: Date(),
+      accessTime: Date()
+    }
+    let source = new SourceModel(fileModel, undefined);
     let ref = new KnowledgeSourceReference('file', source, link);
     return new KnowledgeSource(file.name, uuid, 'file', ref);
   }
@@ -184,7 +192,7 @@ export class KsFactoryService {
 
   private extractWebResource(link: URL): Promise<KnowledgeSource> {
     const uuid: UUID = this.uuidService.generate(1)[0];
-    let source = new SourceModel(undefined, undefined, {url: link.href});
+    let source = new SourceModel(undefined, {url: link.href});
     let ref = new KnowledgeSourceReference('website', source, link);
     let ks = new KnowledgeSource('', uuid, 'website', ref);
     return this.getWebsiteMetadata(ks)

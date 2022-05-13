@@ -24,7 +24,7 @@ import {KsQueueService} from "./services/command-services/ks-queue-service/ks-qu
 import {KnowledgeSource} from "./models/knowledge.source.model";
 import {OverlayPanel} from "primeng/overlaypanel";
 import {ProjectTreeNode} from "./models/project.tree.model";
-import {ProjectModel, ProjectUpdateRequest} from "./models/project.model";
+import {KcProject, ProjectUpdateRequest} from "./models/project.model";
 import {Subscription} from "rxjs";
 import {KsFactoryService} from "./services/factory-services/ks-factory-service/ks-factory.service";
 import {Dialog} from "primeng/dialog";
@@ -59,7 +59,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('upNextButton') upNextButton!: TemplateRef<any>;
 
-  currentProject: ProjectModel | null = null;
+  currentProject: KcProject | null = null;
 
   menuBarItems: MenuItem[] = [];
 
@@ -157,6 +157,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   @HostListener("dragover", ["$event"]) onDragOver(evt: any) {
     evt.preventDefault()
   }
+
   @HostListener('drop', ['$event']) handleDrop(event: DragEvent) {
     // Drop listener for importing files and links
     if (this.ksIngestVisible) {

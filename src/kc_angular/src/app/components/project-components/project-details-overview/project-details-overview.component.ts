@@ -17,7 +17,7 @@
 
 import {Component, ElementRef, EventEmitter, HostListener, OnInit, Output, ViewChild} from '@angular/core';
 import {ProjectService} from "../../../services/factory-services/project-service/project.service";
-import {ProjectModel} from "src/app/models/project.model";
+import {KcProject} from "src/app/models/project.model";
 import {KnowledgeSource} from "../../../models/knowledge.source.model";
 import {FaviconExtractorService} from "../../../services/ingest-services/favicon-extraction-service/favicon-extractor.service";
 import {SettingsService} from "../../../services/ipc-services/settings-service/settings.service";
@@ -42,7 +42,7 @@ export class ProjectDetailsOverviewComponent implements OnInit {
 
   @ViewChild('projectOverlay') projectOverlay!: OverlayPanel;
 
-  kcProject: ProjectModel | null = null;
+  kcProject: KcProject | null = null;
 
   @Output() kcSetCurrentProject = new EventEmitter<string>();
 
@@ -66,7 +66,7 @@ export class ProjectDetailsOverviewComponent implements OnInit {
 
   selectedKs!: KnowledgeSource;
 
-  selectedProject!: ProjectModel;
+  selectedProject!: KcProject;
 
   viewIndex: number = 0;
 
