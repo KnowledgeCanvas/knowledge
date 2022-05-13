@@ -1,9 +1,9 @@
-import { UuidModel } from "./uuid.model";
+import { UUID } from "./uuid";
 export declare class TopicModel {
-    id: UuidModel;
+    id: UUID;
     name: string;
     description?: string;
     dateCreated: string;
     dateUpdated: string;
-    constructor(id: UuidModel, name: string);
+    constructor(id: UUID, name: string);
 }

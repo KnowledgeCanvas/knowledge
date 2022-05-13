@@ -26,7 +26,6 @@ import {OverlayPanel} from "primeng/overlaypanel";
 import {ProjectTreeNode} from "./models/project.tree.model";
 import {ProjectModel, ProjectUpdateRequest} from "./models/project.model";
 import {Subscription} from "rxjs";
-import {UuidModel} from "./models/uuid.model";
 import {KsFactoryService} from "./services/factory-services/ks-factory-service/ks-factory.service";
 import {Dialog} from "primeng/dialog";
 import {KsCommandService} from "./services/command-services/ks-command/ks-command.service";
@@ -41,6 +40,7 @@ import {KcDialogRequest} from "kc_electron/src/app/models/electron.ipc.model";
 import {SearchSettingsComponent} from "./components/settings-components/search-settings/search-settings.component";
 import {ProjectTreeFactoryService} from "./services/factory-services/project-tree-factory/project-tree-factory.service";
 import {DragAndDropService} from "./services/ingest-services/external-drag-and-drop/drag-and-drop.service";
+import {UUID} from "./models/uuid";
 
 
 @Component({
@@ -303,10 +303,10 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     for (let map of mappings) {
       if (map.ksList.length > 0) {
         for (let ks of map.ksList) {
-          ks.associatedProject = new UuidModel(map.projectId);
+          ks.associatedProject = new UUID(map.projectId);
         }
         let update: ProjectUpdateRequest = {
-          id: new UuidModel(map.projectId),
+          id: new UUID(map.projectId),
           addKnowledgeSource: map.ksList
         }
         updates.push(update);
@@ -329,7 +329,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  createProject(parentId?: UuidModel) {
+  createProject(parentId?: UUID) {
     const dialogref = this.dialogService.open(ProjectCreationDialogComponent, {
       width: '90%',
       modal: true,
@@ -357,7 +357,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       this.searchBar.nativeElement.value = ''
   }
 
-  deleteProject(id: UuidModel) {
+  deleteProject(id: UUID) {
     let project = this.projectService.getProject(id);
     let subprojects = this.projectService.getSubTree(id)
     this.confirmationService.confirm({

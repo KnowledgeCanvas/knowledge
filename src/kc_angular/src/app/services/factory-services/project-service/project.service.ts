@@ -20,7 +20,7 @@ import {BehaviorSubject, Observable} from 'rxjs';
 import {ProjectCreationRequest, ProjectModel, ProjectType, ProjectUpdateRequest} from "src/app/models/project.model";
 import {KnowledgeSource} from "src/app/models/knowledge.source.model";
 import {UuidService} from "../../ipc-services/uuid-service/uuid.service";
-import {UuidModel} from "src/app/models/uuid.model";
+import {UUID} from "src/app/models/uuid";
 import {StorageService} from "../../ipc-services/storage-service/storage.service";
 
 export interface ProjectIdentifiers {
@@ -150,7 +150,7 @@ export class ProjectService {
       });
   }
 
-  deleteProject(id: UuidModel | string) {
+  deleteProject(id: UUID | string) {
     if (typeof id !== 'string') {
       id = id.value;
     }
@@ -188,9 +188,9 @@ export class ProjectService {
   }
 
   async newProject(project: ProjectCreationRequest) {
-    let uuid: UuidModel[] = this.uuidService.generate(1);
+    let uuid: UUID[] = this.uuidService.generate(1);
 
-    let projectId: UuidModel = uuid[0];
+    let projectId: UUID = uuid[0];
 
     let newProject = new ProjectModel(project.name, projectId, project.type, project.parentId);
     newProject.topics = project.topics;
@@ -273,7 +273,7 @@ export class ProjectService {
 
       // Handle parentId update
       if (projectUpdate.parentId) {
-        projectToUpdate.parentId = new UuidModel(projectUpdate.parentId);
+        projectToUpdate.parentId = new UUID(projectUpdate.parentId);
       }
 
       // Handle add subproject update
@@ -380,11 +380,11 @@ export class ProjectService {
     }
   }
 
-  getCurrentProjectId(): UuidModel | null {
+  getCurrentProjectId(): UUID | null {
     return this.selectedSource.value?.id ?? null;
   }
 
-  getProject(id: UuidModel | string): ProjectModel | undefined {
+  getProject(id: UUID | string): ProjectModel | undefined {
     if (typeof id !== 'string') {
       id = id.value;
     }
@@ -396,7 +396,7 @@ export class ProjectService {
     return undefined;
   }
 
-  getSubTree(id: UuidModel | string): ProjectIdentifiers[] {
+  getSubTree(id: UUID | string): ProjectIdentifiers[] {
     if (typeof id !== 'string') {
       id = id.value;
     }
@@ -571,7 +571,7 @@ export class ProjectService {
     return project;
   }
 
-  private moveKnowledgeSource(project: ProjectModel, move: { ks: KnowledgeSource, new: UuidModel }): ProjectModel {
+  private moveKnowledgeSource(project: ProjectModel, move: { ks: KnowledgeSource, new: UUID }): ProjectModel {
     const newProject = this.projectSource.find(p => p.id.value === move.new.value);
     if (!newProject) {
       return project;

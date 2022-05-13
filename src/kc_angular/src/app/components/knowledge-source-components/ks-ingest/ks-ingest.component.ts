@@ -5,7 +5,7 @@ import {NotificationsService} from "../../../services/user-services/notification
 import {ExtractionService} from "../../../services/ingest-services/web-extraction-service/extraction.service";
 import {ElectronIpcService} from "../../../services/ipc-services/electron-ipc/electron-ipc.service";
 import {KsQueueService} from "../../../services/command-services/ks-queue-service/ks-queue.service";
-import {UuidModel} from "../../../models/uuid.model";
+import {UUID} from "../../../models/uuid";
 import {FileModel} from "../../../models/file.model";
 import {UuidService} from "../../../services/ipc-services/uuid-service/uuid.service";
 import {FaviconExtractorService} from "../../../services/ingest-services/favicon-extraction-service/favicon-extractor.service";
@@ -187,7 +187,7 @@ export class KsIngestComponent implements OnInit {
 
 
   async submit() {
-    let uuids: UuidModel[] = this.uuidService.generate(this.files.length);
+    let uuids: UUID[] = this.uuidService.generate(this.files.length);
     let ksList: KnowledgeSource[] = [];
     let paths: any[] = [];
 

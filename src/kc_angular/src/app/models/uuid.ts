@@ -14,7 +14,9 @@
  limitations under the License.
  */
 
-export class UuidModel {
+import {UuidModel} from "../../../../kc_shared/models/uuid.model";
+
+export class UUID implements UuidModel {
   value: string = ''
 
   constructor(value: string) {

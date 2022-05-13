@@ -15,20 +15,20 @@
  */
 
 import {KnowledgeSource} from "./knowledge.source.model";
-import {UuidModel} from "./uuid.model";
+import {UUID} from "./uuid";
 import {KcCalendar} from "./calendar.model";
 
 export type ProjectType = 'school' | 'work' | 'hobby' | 'default' | 'research';
 
 export class ProjectModel {
   name: string = '';
-  readonly id: UuidModel;
+  readonly id: UUID;
   authors: string[] = [];
   description: string = '';
   readonly dateCreated: Date;
   dateModified: Date;
   dateAccessed: Date;
-  parentId: UuidModel = new UuidModel('');
+  parentId: UUID = new UUID('');
   subprojects: string[] = [];
   topics: string[] = [];
   type: ProjectType;
@@ -37,11 +37,11 @@ export class ProjectModel {
   knowledgeSource: KnowledgeSource[] = [];
   calendar: KcCalendar;
 
-  constructor(name: string, id: UuidModel, type?: ProjectType, parentId?: UuidModel) {
+  constructor(name: string, id: UUID, type?: ProjectType, parentId?: UUID) {
     this.name = name;
     this.id = id;
     this.type = type ? type : 'default';
-    this.parentId = parentId ?? new UuidModel('');
+    this.parentId = parentId ?? new UUID('');
     this.dateCreated = new Date();
     this.dateModified = new Date();
     this.dateAccessed = new Date();
@@ -52,7 +52,7 @@ export class ProjectModel {
 
 export interface ProjectCreationRequest {
   name: string;
-  parentId: UuidModel;
+  parentId: UUID;
   description: string;
   knowledgeSource: KnowledgeSource[];
   authors: string[];
@@ -63,7 +63,7 @@ export interface ProjectCreationRequest {
 }
 
 export interface ProjectUpdateRequest {
-  id: UuidModel;
+  id: UUID;
   name?: string;
   description?: string;
   notes?: string;
@@ -79,12 +79,12 @@ export interface ProjectUpdateRequest {
   addKnowledgeSource?: KnowledgeSource[];
   removeKnowledgeSource?: KnowledgeSource[];
   updateKnowledgeSource?: KnowledgeSource[];
-  moveKnowledgeSource?: { ks: KnowledgeSource, new: UuidModel }
+  moveKnowledgeSource?: { ks: KnowledgeSource, new: UUID }
 }
 
 export interface ProjectEntity {
-  readonly id: UuidModel;
-  parentId: UuidModel;
+  readonly id: UUID;
+  parentId: UUID;
   name: string;
   description: string;
   lastModified: string;

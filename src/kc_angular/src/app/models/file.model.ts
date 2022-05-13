@@ -14,13 +14,13 @@
  limitations under the License.
  */
 
-import {UuidModel} from "./uuid.model";
+import {UUID} from "./uuid";
 
 export class FileModel {
   filename: string;
   size: number;
   path: string;
-  id: UuidModel;
+  id: UUID;
   type: string;
   accessTime: string;
   modificationTime: string;
@@ -28,7 +28,7 @@ export class FileModel {
   pages?: number;
   words?: number;
 
-  constructor(filename: string, size: number, path: string, id: UuidModel, type: string) {
+  constructor(filename: string, size: number, path: string, id: UUID, type: string) {
     this.filename = filename;
     this.id = id;
     this.size = size;

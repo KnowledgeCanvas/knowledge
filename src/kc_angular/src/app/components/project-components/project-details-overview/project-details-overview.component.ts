@@ -23,7 +23,7 @@ import {FaviconExtractorService} from "../../../services/ingest-services/favicon
 import {SettingsService} from "../../../services/ipc-services/settings-service/settings.service";
 import {MenuItem} from "primeng/api";
 import {OverlayPanel} from "primeng/overlaypanel";
-import {UuidModel} from "../../../models/uuid.model";
+import {UUID} from "../../../models/uuid";
 import {KsCommandService} from "../../../services/command-services/ks-command/ks-command.service";
 import {KcCardRequest} from "../project-calendar/project-calendar.component";
 
@@ -46,11 +46,11 @@ export class ProjectDetailsOverviewComponent implements OnInit {
 
   @Output() kcSetCurrentProject = new EventEmitter<string>();
 
-  @Output() kcEditProject = new EventEmitter<UuidModel>();
+  @Output() kcEditProject = new EventEmitter<UUID>();
 
-  @Output() onProjectCreation = new EventEmitter<UuidModel | undefined>();
+  @Output() onProjectCreation = new EventEmitter<UUID | undefined>();
 
-  @Output() onProjectRemove = new EventEmitter<UuidModel>();
+  @Output() onProjectRemove = new EventEmitter<UUID>();
 
   @Output() onTopicSearch = new EventEmitter<string>();
 
@@ -116,7 +116,7 @@ export class ProjectDetailsOverviewComponent implements OnInit {
     }
   }
 
-  setupBreadcrumbs(id: UuidModel) {
+  setupBreadcrumbs(id: UUID) {
     let ancestors = this.projectService.getAncestors(id.value);
     this.breadcrumbs = [];
     for (let ancestor of ancestors) {
@@ -173,14 +173,14 @@ export class ProjectDetailsOverviewComponent implements OnInit {
     }
   }
 
-  navigate(id: UuidModel) {
+  navigate(id: UUID) {
     if (id.value !== this.kcProject?.id.value) {
       this.projectService.projectCommandNavigate(id.value);
     }
     this.projectInfoOverlay.hide();
   }
 
-  addSubproject(id: UuidModel) {
+  addSubproject(id: UUID) {
     this.onProjectCreation.emit(id);
     this.projectInfoOverlay.hide();
   }
@@ -214,11 +214,11 @@ export class ProjectDetailsOverviewComponent implements OnInit {
     }
   }
 
-  onArchiveProject(_: UuidModel) {
+  onArchiveProject(_: UUID) {
     // TODO: develop archival process (long-term storage and ability to retrieve later must be supported)
   }
 
-  onRemoveProject($event: UuidModel) {
+  onRemoveProject($event: UUID) {
     this.onProjectRemove.emit($event);
   }
 

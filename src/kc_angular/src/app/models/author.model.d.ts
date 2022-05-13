@@ -1,7 +1,7 @@
-import { UuidModel } from "./uuid.model";
+import { UUID } from "./uuid";
 export declare class AuthorModel {
     firstName?: string;
     lastName?: string;
-    id?: UuidModel;
+    id?: UUID;
     constructor(firstName: string, lastName: string);
 }

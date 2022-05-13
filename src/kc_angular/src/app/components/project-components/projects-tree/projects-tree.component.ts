@@ -19,7 +19,7 @@ import {ProjectService} from "../../../services/factory-services/project-service
 import {ProjectUpdateRequest} from "src/app/models/project.model";
 import {PrimeIcons, TreeNode} from "primeng/api";
 import {TreeModule} from "primeng/tree";
-import {UuidModel} from "../../../models/uuid.model";
+import {UUID} from "../../../models/uuid";
 
 @Component({
   selector: 'app-projects-tree',
@@ -33,15 +33,15 @@ export class ProjectsTreeComponent implements OnInit {
   @Output() onHide = new EventEmitter<any>();
 
   // Emitted when a project should be created. Value can be string (parent ID) or undefined
-  @Output() onProjectCreation = new EventEmitter<UuidModel | undefined>();
+  @Output() onProjectCreation = new EventEmitter<UUID | undefined>();
 
   // Emitted when a project is to be deleted. Parent element should warn and process
   // Value: Project ID
-  @Output() onProjectDeletion = new EventEmitter<UuidModel>();
+  @Output() onProjectDeletion = new EventEmitter<UUID>();
 
   // Emitted when a project is to be edited
   // Value: Project ID
-  @Output() onProjectEdit = new EventEmitter<UuidModel>();
+  @Output() onProjectEdit = new EventEmitter<UUID>();
 
   @Input() treeNodes: TreeNode[] = [];
 
@@ -85,7 +85,7 @@ export class ProjectsTreeComponent implements OnInit {
 
   setExpand(id: string, expand: boolean) {
     this.projectService.updateProjects([{
-      id: new UuidModel(id),
+      id: new UUID(id),
       expanded: expand
     }]);
   }
@@ -93,19 +93,19 @@ export class ProjectsTreeComponent implements OnInit {
   delete(projectId?: string, _?: any): void {
     let id = projectId ?? this.selectedNode.key ?? '';
 
-    this.onProjectDeletion.emit(new UuidModel(id));
+    this.onProjectDeletion.emit(new UUID(id));
     this.onHide.emit();
   }
 
   newProject(parentId?: string): void {
     this.onHide.emit();
-    this.onProjectCreation.emit(parentId ? new UuidModel(parentId) : undefined);
+    this.onProjectCreation.emit(parentId ? new UUID(parentId) : undefined);
   }
 
 
   editProject() {
     let id = this.selectedNode.key ?? '';
-    this.onProjectEdit.emit(new UuidModel(id));
+    this.onProjectEdit.emit(new UUID(id));
     this.onHide.emit(true);
   }
 

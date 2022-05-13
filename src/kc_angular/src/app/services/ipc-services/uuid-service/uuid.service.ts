@@ -15,7 +15,7 @@
  */
 
 import {Injectable} from '@angular/core';
-import {UuidModel} from 'src/app/models/uuid.model';
+import {UUID} from 'src/app/models/uuid';
 import {ElectronIpcService} from "../electron-ipc/electron-ipc.service";
 
 declare global {
@@ -28,19 +28,19 @@ declare global {
   providedIn: 'root'
 })
 export class UuidService {
-  private uuidBuffer: UuidModel[] = [];
+  private uuidBuffer: UUID[] = [];
 
   constructor(private ipcService: ElectronIpcService) {
     this.asyncGenerate();
   }
 
-  generate(quantity: number): UuidModel[] {
+  generate(quantity: number): UUID[] {
     if (quantity < 1) {
       console.error('Requested less than 1 UUID.. which is invalid...');
       return [];
     }
 
-    let uuids: UuidModel[] = this.uuidBuffer.slice(0, quantity);
+    let uuids: UUID[] = this.uuidBuffer.slice(0, quantity);
     this.uuidBuffer = this.uuidBuffer.slice(quantity);
     if (this.uuidBuffer.length <= 32) {
       this.asyncGenerate();
@@ -49,7 +49,7 @@ export class UuidService {
   }
 
   private asyncGenerate() {
-    this.ipcService.generateUuid(128).then((ids: UuidModel[]) => {
+    this.ipcService.generateUuid(128).then((ids: UUID[]) => {
       if (ids)
         this.uuidBuffer = ids;
     });

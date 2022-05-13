@@ -1,4 +1,4 @@
-import { UuidModel } from "./uuid.model";
+import { UUID } from "./uuid";
 import { SearchModel } from "./google.search.results.model";
 import { FileModel } from "./file.model";
 import { WebsiteModel } from "./website.model";
@@ -19,7 +19,7 @@ export declare class KnowledgeSourceReference {
     constructor(ingestType: IngestType, source: SourceModel, link: URL | string);
 }
 export declare class KnowledgeSource {
-    associatedProjects?: UuidModel[];
+    associatedProjects?: UUID[];
     authors?: AuthorModel[];
     dateCreated: Date;
     dateAccessed: Date;
@@ -29,7 +29,7 @@ export declare class KnowledgeSource {
     googleItem?: SearchModel;
     icon?: any;
     iconUrl?: string;
-    id: UuidModel;
+    id: UUID;
     ingestType: IngestType;
     snippet?: string;
     sourceRef?: SourceReference;
@@ -38,7 +38,7 @@ export declare class KnowledgeSource {
     notes: KnowledgeSourceNotes;
     readonly accessLink: URL | string;
     readonly reference: KnowledgeSourceReference;
-    constructor(title: string, id: UuidModel, ingestType: IngestType, reference: KnowledgeSourceReference);
+    constructor(title: string, id: UUID, ingestType: IngestType, reference: KnowledgeSourceReference);
 }
 export declare class KnowledgeSourceNotes {
     private content;

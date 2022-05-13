@@ -14,16 +14,16 @@
  limitations under the License.
  */
 
-import {UuidModel} from "./uuid.model";
+import {UUID} from "./uuid";
 
 export class TopicModel {
-  public id: UuidModel;
+  public id: UUID;
   public name: string;
   public description?: string;
   public dateCreated: string;
   public dateUpdated: string;
 
-  constructor(id: UuidModel, name: string) {
+  constructor(id: UUID, name: string) {
     this.id = id;
     this.name = name;
     this.dateCreated = Date();

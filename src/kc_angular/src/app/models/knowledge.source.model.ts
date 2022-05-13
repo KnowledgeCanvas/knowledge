@@ -14,7 +14,7 @@
  limitations under the License.
  */
 
-import {UuidModel} from "./uuid.model";
+import {UUID} from "./uuid";
 import {SearchModel} from "./google.search.results.model";
 import {FileModel} from "./file.model";
 import {WebsiteModel} from "./website.model";
@@ -62,7 +62,7 @@ export type KnowledgeSourceEvent = {
 }
 
 export class KnowledgeSource {
-  associatedProject: UuidModel;
+  associatedProject: UUID;
   authors: AuthorModel[];
   dateDue?: Date;
   dateCheckpoint: Date[];
@@ -73,7 +73,7 @@ export class KnowledgeSource {
   events?: KnowledgeSourceEvent[] = [];
   icon?: any;
   iconUrl?: string;
-  id: UuidModel;
+  id: UUID;
   ingestType: IngestType;
   snippet?: string;
   rawText?: string;
@@ -84,10 +84,10 @@ export class KnowledgeSource {
   accessLink: URL | string;
   readonly reference: KnowledgeSourceReference;
 
-  constructor(title: string, id: UuidModel, ingestType: IngestType, reference: KnowledgeSourceReference) {
+  constructor(title: string, id: UUID, ingestType: IngestType, reference: KnowledgeSourceReference) {
     this.title = title;
     this.id = id;
-    this.associatedProject = new UuidModel('');
+    this.associatedProject = new UUID('');
     this.authors = [];
     this.reference = reference;
     this.ingestType = ingestType;
