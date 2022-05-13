@@ -1,0 +1,3 @@
+interface Hashable {
+    hash: string
+}
