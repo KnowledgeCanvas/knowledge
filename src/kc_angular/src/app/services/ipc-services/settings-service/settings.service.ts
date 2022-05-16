@@ -16,9 +16,8 @@
 
 import {Injectable} from '@angular/core';
 import {BehaviorSubject} from 'rxjs';
-import {ApplicationSettingsModel, SearchSettingsModel, SettingsModel} from 'src/app/models/settings.model';
 import {ElectronIpcService} from "../electron-ipc/electron-ipc.service";
-import {IngestSettingsModel} from "../../../models/settings.model";
+import {ApplicationSettingsModel, IngestSettingsModel, SearchSettingsModel, SettingsModel} from "../../../../../../kc_shared/models/settings.model";
 
 @Injectable({
   providedIn: 'root'

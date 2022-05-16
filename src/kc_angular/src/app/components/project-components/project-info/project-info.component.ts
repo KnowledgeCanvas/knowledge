@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {ProjectModel} from "../../../models/project.model";
+import {KcProject} from "../../../models/project.model";
 import {DynamicDialogConfig, DynamicDialogRef} from "primeng/dynamicdialog";
 
 @Component({
@@ -8,7 +8,7 @@ import {DynamicDialogConfig, DynamicDialogRef} from "primeng/dynamicdialog";
   styleUrls: ['./project-info.component.scss']
 })
 export class ProjectInfoComponent implements OnInit {
-  project: ProjectModel;
+  project: KcProject;
   start: Date | null = null;
   end: Date | null = null;
 

@@ -14,23 +14,14 @@
  limitations under the License.
  */
 
-import {Pipe, PipeTransform} from '@angular/core';
-import {ProjectService} from "../../../services/factory-services/project-service/project.service";
-import {KcProjectType} from "../../../../../../kc_shared/models/project.model";
+import {UuidModel} from "../../../../kc_shared/models/uuid.model";
 
-@Pipe({
-  name: 'projectType'
-})
-export class ProjectTypePipe implements PipeTransform {
-  constructor(private projectService: ProjectService) {
-  }
+export class UUID implements UuidModel {
+  value: string = ''
 
-  transform(type: KcProjectType): string {
-    if (!type) {
-      return 'Default';
-    } else {
-      return this.projectService.ProjectTypes.find(t => t.code === type)?.name ?? 'Default';
+  constructor(value: string) {
+    if (value) {
+      this.value = value;
     }
   }
-
 }

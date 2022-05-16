@@ -16,10 +16,11 @@
 
 import {Component, OnInit} from '@angular/core';
 import {DynamicDialogConfig, DynamicDialogRef} from "primeng/dynamicdialog";
-import {DisplaySettingsModel} from "../../../models/settings.model";
-import {KcTheme, ThemeService} from "../../../services/user-services/theme-service/theme.service";
+import {ThemeService} from "../../../services/user-services/theme-service/theme.service";
 import {SettingsService} from "../../../services/ipc-services/settings-service/settings.service";
 import {NotificationsService} from "../../../services/user-services/notification-service/notifications.service";
+import {KcTheme} from "../../../../../../kc_shared/models/style.model";
+import {DisplaySettingsModel} from "../../../../../../kc_shared/models/settings.model";
 
 @Component({
   selector: 'app-display-settings',

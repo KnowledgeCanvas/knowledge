@@ -13,17 +13,17 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
+import {UuidModel} from "./uuid.model";
 
-export class ProjectFlatModel {
-    name = '';
-    id = '';
-    description = '';
-    created = '';
-    modified = '';
-    authors: string[] = [];
-    parent = '';
-    children: string[] = [];
-    tags: string[] = [];
-    expandable = false;
-    level = -1;
+export interface FileSourceModel {
+    filename: string;
+    size: number;
+    path: string;
+    id: UuidModel;
+    type: string;
+    accessTime: string;
+    modificationTime: string;
+    creationTime: string;
+    pages?: number;
+    words?: number;
 }

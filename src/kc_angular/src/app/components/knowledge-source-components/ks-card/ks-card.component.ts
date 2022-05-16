@@ -19,7 +19,7 @@ import {Component, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output}
 import {KnowledgeSource} from "../../../models/knowledge.source.model";
 import {TreeNode} from "primeng/api";
 import {Subscription} from "rxjs";
-import {UuidModel} from "../../../models/uuid.model";
+import {UUID} from "../../../models/uuid";
 
 export interface KsCardOptions {
   showThumbnail: boolean,
@@ -60,7 +60,7 @@ export class KsCardComponent implements OnInit, OnDestroy {
   /**
    * The ID of the current project
    */
-  @Input() currentProject?: UuidModel | null;
+  @Input() currentProject?: UUID | null;
 
   /**
    * Determines whether to display KS thumbnail in header (default: true)

@@ -1,15 +1,15 @@
 import { KnowledgeSource } from "./knowledge.source.model";
-import { UuidModel } from "./uuid.model";
+import { UUID } from "./uuid";
 import { KcCalendar } from "./calendar.model";
 export declare type ProjectType = 'school' | 'work' | 'hobby' | 'default';
 export declare class ProjectModel {
     name: string;
-    readonly id: UuidModel;
+    readonly id: UUID;
     authors?: string[];
     description?: string;
     readonly dateCreated: string;
     readonly dateModified: string;
-    readonly parentId?: UuidModel;
+    readonly parentId?: UUID;
     subprojects?: string[];
     topics?: string[];
     type: ProjectType;
@@ -17,11 +17,11 @@ export declare class ProjectModel {
     expanded?: boolean;
     knowledgeSource?: KnowledgeSource[];
     calendar?: KcCalendar;
-    constructor(name: string, id: UuidModel, type?: ProjectType, parentId?: UuidModel);
+    constructor(name: string, id: UUID, type?: ProjectType, parentId?: UUID);
 }
 export interface ProjectCreationRequest {
     name: string;
-    parentId?: UuidModel;
+    parentId?: UUID;
     description?: string;
     knowledgeSource?: KnowledgeSource[];
     authors?: string[];
@@ -30,7 +30,7 @@ export interface ProjectCreationRequest {
     subProjects?: ProjectCreationRequest[];
 }
 export interface ProjectUpdateRequest {
-    id: UuidModel;
+    id: UUID;
     name?: string;
     description?: string;
     authors?: string[];
@@ -43,8 +43,8 @@ export interface ProjectUpdateRequest {
     updateKnowledgeSource?: KnowledgeSource[];
 }
 export interface ProjectEntity {
-    readonly id: UuidModel;
-    parentId: UuidModel;
+    readonly id: UUID;
+    parentId: UUID;
     name: string;
     description: string;
     lastModified: string;

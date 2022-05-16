@@ -16,8 +16,8 @@
 
 import {Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
 import {CalendarOptions, FullCalendarComponent, FullCalendarModule} from "@fullcalendar/angular";
-import {ProjectModel} from "../../../models/project.model";
-import {UuidModel} from "../../../models/uuid.model";
+import {KcProject} from "../../../models/project.model";
+import {UUID} from "../../../models/uuid";
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
@@ -36,14 +36,14 @@ export interface ProjectCalendarEvent {
   start: Date,
   color?: string,
   textColor?: string,
-  url?: string | UuidModel
+  url?: string | UUID
 }
 
 export interface KcCardRequest {
   event: any,
   element: any,
-  ksId?: UuidModel,
-  projectId?: UuidModel
+  ksId?: UUID,
+  projectId?: UUID
 }
 
 @Component({
@@ -54,7 +54,7 @@ export interface KcCardRequest {
 export class ProjectCalendarComponent implements OnInit, OnChanges {
   @ViewChild('calendar') calendar!: FullCalendarComponent;
 
-  @Input() kcProject!: ProjectModel | null;
+  @Input() kcProject!: KcProject | null;
 
   @Input() ksList!: KnowledgeSource[];
 
@@ -138,14 +138,14 @@ export class ProjectCalendarComponent implements OnInit, OnChanges {
         this.onProjectClick.emit({
           event: args.jsEvent,
           element: args.el,
-          projectId: this.kcProject?.id ?? new UuidModel('')
+          projectId: this.kcProject?.id ?? new UUID('')
         });
       } else {
         if (args.event._def.url) {
           this.onKsClick.emit({
             event: args.jsEvent,
             element: args.el,
-            ksId: new UuidModel(args.event._def.url)
+            ksId: new UUID(args.event._def.url)
           })
         }
       }
@@ -165,7 +165,7 @@ export class ProjectCalendarComponent implements OnInit, OnChanges {
     }
   }
 
-  eventsFromProject(project: ProjectModel): ProjectCalendarEvent[] {
+  eventsFromProject(project: KcProject): ProjectCalendarEvent[] {
     const projectColor = 'yellow';
     const projectTextColor = 'black'
     const ksList = this.eventsFromKsList(this.ksList);

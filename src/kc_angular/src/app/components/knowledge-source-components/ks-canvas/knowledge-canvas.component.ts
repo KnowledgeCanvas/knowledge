@@ -16,13 +16,13 @@
 
 
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
-import {ProjectModel, ProjectUpdateRequest} from "src/app/models/project.model";
+import {KcProject, ProjectUpdateRequest} from "src/app/models/project.model";
 import {KnowledgeSource} from "../../../models/knowledge.source.model";
 import {ProjectService} from "../../../services/factory-services/project-service/project.service";
 import {BrowserViewDialogService} from "../../../services/ipc-services/browser-service/browser-view-dialog.service";
 import {ElectronIpcService} from "../../../services/ipc-services/electron-ipc/electron-ipc.service";
 import {Clipboard} from "@angular/cdk/clipboard";
-import {UuidModel} from "../../../models/uuid.model";
+import {UUID} from "../../../models/uuid";
 import {KsCommandService} from "../../../services/command-services/ks-command/ks-command.service";
 import {Subscription} from "rxjs";
 import {ConfirmationService, MenuItem, TreeNode} from "primeng/api";
@@ -34,21 +34,21 @@ import {NotificationsService} from "../../../services/user-services/notification
   styleUrls: ['./knowledge-canvas.component.scss']
 })
 export class KnowledgeCanvasComponent implements OnInit, OnDestroy {
-  @Input() kcProject: ProjectModel | null = null;
+  @Input() kcProject: KcProject | null = null;
 
   @Input() projectTreeNodes: TreeNode[] = [];
 
   @Output() ksAdded = new EventEmitter<KnowledgeSource[]>();
 
-  @Output() kcProjectUpdate = new EventEmitter<ProjectModel>();
+  @Output() kcProjectUpdate = new EventEmitter<KcProject>();
 
   @Output() kcSetCurrentProject = new EventEmitter<string>();
 
-  @Output() kcEditProject = new EventEmitter<UuidModel>();
+  @Output() kcEditProject = new EventEmitter<UUID>();
 
-  @Output() onProjectCreation = new EventEmitter<UuidModel | undefined>();
+  @Output() onProjectCreation = new EventEmitter<UUID | undefined>();
 
-  @Output() onProjectRemove = new EventEmitter<UuidModel>();
+  @Output() onProjectRemove = new EventEmitter<UUID>();
 
   @Output() onTopicSearch = new EventEmitter<string>();
 
@@ -321,8 +321,8 @@ export class KnowledgeCanvasComponent implements OnInit, OnDestroy {
     console.debug(`Moving KS from ${$event.old} to ${$event.new}`)
     this.projectService.updateProjects([
       {
-        id: new UuidModel($event.old),
-        moveKnowledgeSource: {ks: $event.ks, new: new UuidModel($event.new)}
+        id: new UUID($event.old),
+        moveKnowledgeSource: {ks: $event.ks, new: new UUID($event.new)}
       }
     ]);
   }
@@ -331,7 +331,7 @@ export class KnowledgeCanvasComponent implements OnInit, OnDestroy {
     this.ksCommandService.detail($event);
   }
 
-  setupBreadcrumbs(id: UuidModel) {
+  setupBreadcrumbs(id: UUID) {
     let ancestors = this.projectService.getAncestors(id.value);
     this.breadcrumbs = [];
     for (let ancestor of ancestors) {

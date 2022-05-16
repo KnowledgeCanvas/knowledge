@@ -1,12 +1,25 @@
+/**
+ Copyright 2022 Rob Royce
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
 import {Component, EventEmitter, HostListener, OnInit, Output} from '@angular/core';
-import {KnowledgeSource, KnowledgeSourceReference, SourceModel} from "../../../models/knowledge.source.model";
+import {KnowledgeSource} from "../../../models/knowledge.source.model";
 import {KnowledgeSourceFactoryRequest, KsFactoryService} from "../../../services/factory-services/ks-factory-service/ks-factory.service";
 import {NotificationsService} from "../../../services/user-services/notification-service/notifications.service";
 import {ExtractionService} from "../../../services/ingest-services/web-extraction-service/extraction.service";
 import {ElectronIpcService} from "../../../services/ipc-services/electron-ipc/electron-ipc.service";
 import {KsQueueService} from "../../../services/command-services/ks-queue-service/ks-queue.service";
-import {UuidModel} from "../../../models/uuid.model";
-import {FileModel} from "../../../models/file.model";
 import {UuidService} from "../../../services/ipc-services/uuid-service/uuid.service";
 import {FaviconExtractorService} from "../../../services/ingest-services/favicon-extraction-service/favicon-extractor.service";
 import {DragAndDropService} from "../../../services/ingest-services/external-drag-and-drop/drag-and-drop.service";
@@ -182,33 +195,6 @@ export class KsIngestComponent implements OnInit {
 
     }).catch((reason) => {
       console.warn('Unable to create Knowledge Source from ', files, reason);
-    });
-  }
-
-
-  async submit() {
-    let uuids: UuidModel[] = this.uuidService.generate(this.files.length);
-    let ksList: KnowledgeSource[] = [];
-    let paths: any[] = [];
-
-    for (let file of this.files) {
-      paths.push((file as any).path)
-    }
-
-    await this.ipcService.getFileIcon(paths).then((result) => {
-      for (let i = 0; i < this.files.length; i++) {
-        const file = new FileModel(this.files[i].name, this.files[i].size, (this.files[i] as any).path, uuids[i], this.files[i].type);
-        const source = new SourceModel(file, undefined, undefined);
-        const link = file.path;
-        const ref = new KnowledgeSourceReference('file', source, link);
-        let ks = new KnowledgeSource(file.filename, uuids[i], 'file', ref);
-        ks.iconUrl = this.faviconService.file();
-        ks.icon = result[i];
-        ksList.push(ks);
-      }
-
-      this.upNextService.enqueue(ksList);
-      this.close();
     });
   }
 

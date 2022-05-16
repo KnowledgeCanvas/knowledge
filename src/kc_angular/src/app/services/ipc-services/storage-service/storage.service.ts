@@ -15,7 +15,7 @@
  */
 
 import {Injectable} from '@angular/core';
-import {ProjectModel} from "src/app/models/project.model";
+import {KcProject} from "src/app/models/project.model";
 import {KnowledgeSource} from "src/app/models/knowledge.source.model";
 
 @Injectable({
@@ -26,13 +26,13 @@ export class StorageService {
   private KC_ALL_PROJECT_IDS = 'kc-projects';
   private db = window.localStorage;
   private knowledgeSources: KnowledgeSource[] | null = null;
-  private projectList: ProjectModel[] | null = null;
+  private projectList: KcProject[] | null = null;
 
   constructor() {
   }
 
-  get projects(): ProjectModel[] {
-    let projects: ProjectModel[] = [];
+  get projects(): KcProject[] {
+    let projects: KcProject[] = [];
 
     // Get and parse Project list from local storage
     let projectsStr: string | null = this.db.getItem(this.KC_ALL_PROJECT_IDS);
@@ -52,7 +52,7 @@ export class StorageService {
     }
 
     let pStr: string | null = null;
-    let project: ProjectModel | null = null;
+    let project: KcProject | null = null;
 
     // Deserialize projects from list of Project IDs
     for (let pId of projectIds) {
@@ -118,7 +118,7 @@ export class StorageService {
     return projects;
   }
 
-  set projects(projectModels: ProjectModel[]) {
+  set projects(projectModels: KcProject[]) {
     let pStr: string;
     let pids = [];
     for (let project of projectModels) {
@@ -157,7 +157,7 @@ export class StorageService {
 
     let ksList: KnowledgeSource[] = [];
     for (let projectId of projectIds) {
-      let project: ProjectModel;
+      let project: KcProject;
       let projectStr = this.db.getItem(projectId);
       if (!projectStr)
         break;
@@ -176,7 +176,7 @@ export class StorageService {
     return this.projects;
   }
 
-  async saveProject(project: ProjectModel) {
+  async saveProject(project: KcProject) {
     // Update project in local cache
     let idx = this.projectList?.findIndex(p => p.id.value === project.id.value);
 
@@ -218,13 +218,13 @@ export class StorageService {
     }
   }
 
-  saveProjectList(projects: ProjectModel[]) {
+  saveProjectList(projects: KcProject[]) {
     for (let project of projects) {
       this.saveProject(project);
     }
   }
 
-  async updateProject(project: ProjectModel) {
+  async updateProject(project: KcProject) {
     let projectString = JSON.stringify(project);
     this.db.setItem(project.id.value, projectString);
   }

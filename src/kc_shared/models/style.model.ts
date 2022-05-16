@@ -14,7 +14,10 @@
  limitations under the License.
  */
 
-export interface CanvasNodeModel {
-  uuid: string,
-  title: string
+export interface KcTheme {
+    name: string
+    code: string
+    isDark: boolean
+    isDual: boolean
+    items?: KcTheme[]
 }

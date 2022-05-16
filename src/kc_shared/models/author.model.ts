@@ -13,10 +13,10 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-import {EventModel} from "../../../../kc_shared/models/event.model";
+import {UuidModel} from "./uuid.model";
 
-export interface KcCalendar {
-  events: EventModel[];
-  end: Date | string | null;
-  start: Date | string | null;
+export interface AuthorModel {
+    firstName: string;
+    lastName: string;
+    id: UuidModel;
 }

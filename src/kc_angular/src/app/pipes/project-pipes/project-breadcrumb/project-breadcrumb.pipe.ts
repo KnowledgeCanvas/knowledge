@@ -16,7 +16,7 @@
 
 
 import {Pipe, PipeTransform} from '@angular/core';
-import {UuidModel} from "../../../models/uuid.model";
+import {UUID} from "../../../models/uuid";
 import {ProjectService} from "../../../services/factory-services/project-service/project.service";
 
 @Pipe({
@@ -26,9 +26,9 @@ export class ProjectBreadcrumbPipe implements PipeTransform {
   constructor(private projectService: ProjectService) {
   }
 
-  transform(id: UuidModel | string, ...args: unknown[]): string {
+  transform(id: UUID | string, ...args: unknown[]): string {
     if (typeof id === 'string') {
-      id = new UuidModel(id);
+      id = new UUID(id);
     }
 
     const ancestors = this.projectService.getAncestors(id.value);
