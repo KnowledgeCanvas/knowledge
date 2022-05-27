@@ -7,18 +7,16 @@
 Join our [Slack channel](https://join.slack.com/t/knowledgecanvas/shared_invite/zt-14df0e92b-fFXxyYwnaiQrVYOeBkR0mQ) to provide feedback, share ideas, and get support!
 
 # Description
-Knowledge Canvas is a meta-productivity tool meant to make learning and research easier and more organized ([screenshots](#screenshots)). With Knowledge Canvas, you can import almost any digital resource and use it to build your own personal `Knowledge Base`. This is accomplished by converting documents, websites, files, YouTube videos, and more, into what we call `Knowledge Sources`. `Knowledge Sources` are [polymorphic](https://en.wikipedia.org/wiki/Polymorphism_(computer_science)) structures that contain things like metadata, raw text, images, video, audio, events, timelines, and more. Knowledge sources are grouped into Projects, which are organized hierarchically and can be extended in any configuration the user prefers. Projects can also have their own timelines, topics, etc.
+Knowledge Canvas is a meta-productivity tool meant to make learning and research easier and more organized ([screenshots](#screenshots)). With Knowledge Canvas, you can import almost any digital resource and use it to build your own personal `Knowledge Base`. Users can track their learning and research activity with event-driven logging and calendar support. This makes it easy to visualize where your time is spent while learning or researching. It also makes finding recently accessed or modified resources a piece of cake 🍰.
 
-[Apache Tika](https://tika.apache.org) is used to extract text from Knowledge Sources. Once text is extracted, users can feed it into their own Machine Learning pipeline for training and inference. Future versions will include support for custom parsers and integrations with Jupyter Notebook. We also plan to provide various ML pipelines for standard things like text summarization, document clustering, and more.
-
-Users can track their learning and research activity with event-driven logging and calendar support. This makes it easy to visualize where your time is spent while learning or researching, and which resources you rely on the most. This also makes finding recently-accessed or modified resources a piece of cake 🍰.
-
-Knowledge Canvas is built on Electron and Angular and is primarily written in TypeScript. It is intended to be Web3 capable and utilizes Open Graph standards. Knowledge Canvas also comes with 20 (!) light and dark user-selectable themes ([screenshots](#screenshots)) and uses [PrimeNG](https://www.primefaces.org/primeng/showcase/#/) design language and Angular components.
+Knowledge Canvas is built on Electron and Angular and is primarily written in TypeScript.
 
 # Security and Privacy
-The app relies exclusively on local storage and local processes. There are no servers involved (except a local Docker instance of Tika Server) and local documents never leave your computer. Future versions may include opt-in reporting services to enhance functionality and improve support.
+The app relies exclusively on local storage and local processes. There are no servers involved (except an _optional_ local Docker instance of Tika Server) and local documents never leave your computer. Future versions may include opt-in reporting services to enhance functionality and improve support.
 
 # Documentation
+
+These are all works-in-progress (sorry)!
 - [Knowledge Canvas - Background and Inspiration](https://github.com/KnowledgeCanvas/knowledge-canvas/wiki) 
 - [Development and Build Instructions](https://github.com/KnowledgeCanvas/knowledge-canvas/wiki/Development)
 - [Getting Started](https://github.com/KnowledgeCanvas/knowledge-canvas/wiki/Getting-Started)
