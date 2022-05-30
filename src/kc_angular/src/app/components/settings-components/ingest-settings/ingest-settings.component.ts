@@ -68,7 +68,7 @@ export class IngestSettingsComponent implements OnInit {
     let req: PromptForDirectoryRequest = {
       title: 'Local Storage Location',
       defaultPath: this.ingestSettings.storageLocation,
-      properties: ['openDirectory']
+      properties: ['openDirectory', 'showHiddenFiles', 'createDirectory']
     }
     this.ipcService.promptForDirectory(req).then((path) => {
       this.ingestSettings.storageLocation = path;
