@@ -16,6 +16,7 @@
 
 import {Injectable} from '@angular/core';
 import {KnowledgeSourceFactoryRequest} from "../../factory-services/ks-factory-service/ks-factory.service";
+import {NotificationsService} from "../../user-services/notification-service/notifications.service";
 
 export type DragAndDropPacket = {
   text?: string,
@@ -148,7 +149,7 @@ export class DragAndDropService {
     // }
   ]
 
-  constructor() {
+  constructor(private notifications: NotificationsService) {
   }
 
   get supportedTypes() {
@@ -166,13 +167,11 @@ export class DragAndDropService {
     let textData = event.dataTransfer.getData('text/plain');
     let htmlData = event.dataTransfer.getData('text/html');
     let uriData = event.dataTransfer.getData('text/uri-list');
-
-    console.debug(`Drag and Drop transfer types: ${event.dataTransfer.types}\nText data: ${textData}\nHTML data: ${htmlData}\nURI data: ${uriData}`);
-
     let dths_prefix = this.__data_transfer_handlers.filter(dth => (dth.URI_PREFIX && uriData && uriData.startsWith(dth.URI_PREFIX)));
     let dths_no_prefix = this.__data_transfer_handlers.filter(dth => dth.accepts({text: textData, html: htmlData, uri: uriData, event: event}));
 
-    console.debug('found the following data transfer handlers: ', dths_prefix, dths_no_prefix);
+    let details = `${dths_prefix.map(a => a.HANDLER_TYPE).join(', ')}` + `${dths_no_prefix.map(a => a.HANDLER_TYPE).join(', ')}`
+    this.notifications.debug('Drag And Drop', 'Handlers Found', details);
 
     let req: KnowledgeSourceFactoryRequest | undefined;
     if (dths_prefix && dths_prefix.length) {

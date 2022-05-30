@@ -24,7 +24,7 @@ import {KsQueueService} from "./services/command-services/ks-queue-service/ks-qu
 import {KnowledgeSource} from "./models/knowledge.source.model";
 import {OverlayPanel} from "primeng/overlaypanel";
 import {ProjectTreeNode} from "./models/project.tree.model";
-import {ProjectModel, ProjectUpdateRequest} from "./models/project.model";
+import {ProjectCreationRequest, ProjectModel, ProjectUpdateRequest} from "./models/project.model";
 import {Subscription} from "rxjs";
 import {UuidModel} from "./models/uuid.model";
 import {KsFactoryService} from "./services/factory-services/ks-factory-service/ks-factory.service";
@@ -42,6 +42,7 @@ import {SearchSettingsComponent} from "./components/settings-components/search-s
 import {ProjectTreeFactoryService} from "./services/factory-services/project-tree-factory/project-tree-factory.service";
 import {DragAndDropService} from "./services/ingest-services/external-drag-and-drop/drag-and-drop.service";
 import {IngestSettingsComponent} from "./components/settings-components/ingest-settings/ingest-settings.component";
+import {NotificationsService} from "./services/user-services/notification-service/notifications.service";
 
 
 @Component({
@@ -92,7 +93,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
               private projectService: ProjectService, private ksCommandService: KsCommandService,
               private ipcService: ElectronIpcService, private clipboard: Clipboard,
               private browserViewDialogService: BrowserViewDialogService, private themeService: ThemeService,
-              private projectTreeFactory: ProjectTreeFactoryService, private dragAndDropService: DragAndDropService) {
+              private projectTreeFactory: ProjectTreeFactoryService, private dragAndDropService: DragAndDropService,
+              private notificationService: NotificationsService) {
     // Subscribe to changes in project tree
     this._subProjectTree = this.projectService.projectTree.subscribe((projectNodes: ProjectTreeNode[]) => {
       this._projectNodes = projectNodes;
@@ -102,14 +104,16 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Subscribe to active project
     this._subCurrentProject = this.projectService.currentProject.subscribe(current => {
-      console.debug('AppComponent Project Update: ', current);
+      this.notificationService.debug('App', 'Project Changed', current?.name ?? current?.id.value ?? '');
       this.confirmationService.close();
       this.currentProject = current;
     });
 
     // Subscribe to changes in Up Next
     this._subKsQueue = this.ksQueueService.ksQueue.subscribe((queue) => {
-      console.debug('AppComponent UpNext Update: ', queue);
+      if (queue.length > 0) {
+        this.notificationService.debug('App', 'Up Next Changed', `${queue.length} Knowledge Sources available.`);
+      }
       this.ksQueue = queue;
     });
 
@@ -158,6 +162,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   @HostListener("dragover", ["$event"]) onDragOver(evt: any) {
     evt.preventDefault()
   }
+
   @HostListener('drop', ['$event']) handleDrop(event: DragEvent) {
     // Drop listener for importing files and links
     if (this.ksIngestVisible) {
@@ -165,15 +170,14 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     this.dragAndDropService.parseDragEvent(event).then((requests) => {
       if (requests === undefined) {
-        console.warn('Drag/Drop could not be handled...');
+        this.notificationService.warn('App', 'Unsupported Drag-and-Drop', 'Unable to find data transfer handlers for that type.')
         return;
       }
       this.ksFactory.many(requests).then((ksList) => {
         this.onImport(ksList);
       });
     }).catch((reason) => {
-      console.error(reason);
-      return;
+      this.notificationService.error('App', 'Drag-and-Drop Failed', `Unable to parse drag-and-drop event: ${reason}`);
     });
   }
 
@@ -280,7 +284,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   confirmExit(event: any) {
     if (!event.originalEvent.target && !event.target) {
-      console.error('Confirmation target does not exist.', event);
+      this.notificationService.error('Knowledge Canvas', 'Unable to Exit', `Something prevented Knowledge Canvas from closing.`);
       return;
     }
 
@@ -326,7 +330,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       ksList: [this.currentProject?.knowledgeSource]
     }
     this.ipcService.openKcDialog(req).catch((reason) => {
-      console.error('App.onKcClick() | error === ', reason);
+      this.notificationService.error('Knowledge Canvas', 'Error Opening Graph', `Something prevented Knowledge Canvas from opening graph view.`);
     });
   }
 
@@ -337,11 +341,11 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       data: {parentId: parentId ?? undefined}
     });
 
-    dialogref.onClose.subscribe((creationRequest) => {
+    dialogref.onClose.subscribe((creationRequest: ProjectCreationRequest) => {
       if (creationRequest) {
-        console.debug('AppComponent: submitting project creation request ', creationRequest);
+        this.notificationService.debug('App', 'Creating Project', creationRequest.name);
         this.projectService.newProject(creationRequest).catch((reason) => {
-          console.error('Unable to create new project: ', reason);
+          this.notificationService.error('App', 'Unable to Create Project', reason);
         });
       }
     });
@@ -364,7 +368,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.confirmationService.confirm({
       message: `Are you sure you want to remove ${subprojects.length} Projects?`,
       accept: () => {
-        console.debug('AppComponent: Deleting project(s): ', project, subprojects);
+        let details = project?.name + ', ' + subprojects.map((p) => p.title).join(', ');
+        this.notificationService.debug('App', 'Deleting Project(s)', details);
         this.projectService.deleteProject(id)
       }
     })

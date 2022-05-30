@@ -100,16 +100,10 @@ export class KnowledgeSource {
     this.note = new KnowledgeSourceNote();
     this.flagged = false;
     this.topics = [];
-
-    if (!this.events) {
-      this.events = [];
-    }
-
-    this.events.push({
+    this.events = [{
       date: new Date(),
-      label: 'Created',
-      hash: ''
-    });
+      label: 'Created'
+    }];
   }
 }
 

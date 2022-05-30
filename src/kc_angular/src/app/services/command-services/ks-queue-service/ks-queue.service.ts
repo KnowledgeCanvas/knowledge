@@ -51,6 +51,10 @@ export class KsQueueService {
     ksQueue = ksQueue.concat(ksList);
     this.ksQueueSubject.next(ksQueue);
 
+    if (ksList.length <= 0) {
+      return;
+    }
+
     this.notificationsService.toast({
       severity: 'success',
       summary: 'Up Next',
