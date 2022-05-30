@@ -83,6 +83,7 @@ export class KnowledgeSource {
   note: KnowledgeSourceNote;
   accessLink: URL | string;
   readonly reference: KnowledgeSourceReference;
+  importMethod?: 'autoscan' | 'dnd' | 'extension' | 'manual' = 'manual';
 
   constructor(title: string, id: UuidModel, ingestType: IngestType, reference: KnowledgeSourceReference) {
     this.title = title;
