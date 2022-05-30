@@ -20,7 +20,7 @@ const autoUpdater = share.autoUpdater;
 
 import {IpcMessage} from "../models/electron.ipc.model";
 
-let checkForUpdate = ipcMain.on('electron-check-for-update', (_: any) => {
+let checkForUpdate = ipcMain.on('A2E:AutoUpdate:Check', (_: any) => {
     autoUpdater.checkForUpdates().then((result: any) => {
         console.warn('Result from check for update: ', result);
     }).catch((error: any) => {
@@ -28,7 +28,7 @@ let checkForUpdate = ipcMain.on('electron-check-for-update', (_: any) => {
     });
 });
 
-let getCurrentVersion = ipcMain.on('app-get-current-version', (_: any) => {
+let getCurrentVersion = ipcMain.on('A2E:Version:Get', (_: any) => {
     let kcMainWindow: any = share.BrowserWindow.getAllWindows()[0];
     let message: IpcMessage = {
         error: undefined,
@@ -36,7 +36,7 @@ let getCurrentVersion = ipcMain.on('app-get-current-version', (_: any) => {
             data: autoUpdater.currentVersion.version
         }
     }
-    kcMainWindow.webContents.send('app-get-current-version-results', message);
+    kcMainWindow.webContents.send('E2A:Version:Get', message);
 });
 
 

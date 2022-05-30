@@ -30,8 +30,8 @@ export class ExtractionService {
 
   websiteToPdf(url: string, outFileName?: string) {
     // TODO: move this to ipc service...
-    window.api.receive("app-extract-website-results", (data: any) => {
-      console.info(`app-extract-website-results not implemented...`);
+    window.api.receive("E2A:Extraction:Website", (data: any) => {
+      console.info(`E2A:Extraction:Website not implemented...`);
     });
 
     // Send message to Electron ipcMain
@@ -39,7 +39,7 @@ export class ExtractionService {
       url: url,
       filename: outFileName,
     }
-    window.api.send("app-extract-website", args);
+    window.api.send("A2E:Extraction:Website", args);
   }
 
   extractWebsite(url: string): Promise<WebsiteModel> {
