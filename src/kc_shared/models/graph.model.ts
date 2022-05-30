@@ -14,16 +14,16 @@
  limitations under the License.
  */
 
-export class ProjectFlatModel {
-    name = '';
-    id = '';
-    description = '';
-    created = '';
-    modified = '';
-    authors: string[] = [];
-    parent = '';
-    children: string[] = [];
-    tags: string[] = [];
-    expandable = false;
-    level = -1;
+export interface ProjectGraphNode {
+    name: string
+    id: string
+    type: string
+    expanded: boolean
+    subprojects: ProjectGraphNode[]
+}
+
+export interface KnowledgeSourceGraphNode {
+    name: string
+    id: string
+    icon: string
 }

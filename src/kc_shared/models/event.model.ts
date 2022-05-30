@@ -13,17 +13,12 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-
 import {UuidModel} from "./uuid.model";
 
-export class AuthorModel {
-  firstName?: string;
-  lastName?: string;
-  id?: UuidModel;
-
-  constructor(firstName: string, lastName: string, uuid?: UuidModel) {
-    this.firstName = firstName;
-    this.lastName = lastName;
-    this.id = uuid;
-  }
+export interface EventModel {
+    timestamp: string;
+    id: UuidModel;
+    type: 'create' | 'read' | 'update' | 'delete' | 'reminder' | 'checkpoint';
+    description?: string;
+    icon?: string;
 }
