@@ -84,42 +84,42 @@ contextBridge.exposeInMainWorld(
     'api', {
         invoke: (channel, data) => {
             if (ipcInvokeChannels.includes(channel)) {
-                console.debug(`[Debug]-[${Date.now()}]-[Preload]: ${channel} invoked with data: `, data);
+                console.debug(`[Debug]-[${Date.now()}]-[Electron IPC]: ${channel} invoked with data: `, data);
                 ipcRenderer.invoke(channel, data);
             } else {
-                console.error(`[Error]-[${Date.now()}]-[Preload]: Invalid Invoke Channel -- ${channel}`);
+                console.error(`[Error]-[${Date.now()}]-[Electron IPC]: Invalid Invoke Channel -- ${channel}`);
             }
         },
         send: (channel, data) => {
             if (ipcSendChannels.includes(channel)) {
-                console.debug(`[Debug]-[${Date.now()}]-[Preload]: ${channel} invoked with data: `, data);
+                console.debug(`[Debug]-[${Date.now()}]-[Electron IPC]: ${channel} invoked with data: `, data);
                 ipcRenderer.send(channel, data);
             } else {
-                console.error(`[Error]-[${Date.now()}]-[Preload]: Invalid Send Channel -- ${channel}`);
+                console.error(`[Error]-[${Date.now()}]-[Electron IPC]: Invalid Send Channel -- ${channel}`);
             }
         },
         receive: (channel, func) => {
             if (ipcReceiveChannels.includes(channel)) {
                 if (func) {
-                    console.debug(`[Debug]-[${Date.now()}]-[Preload]: Receive - Invoked on ${channel}.`);
+                    console.debug(`[Debug]-[${Date.now()}]-[Electron IPC]: Receive - Invoked on ${channel}.`);
                     ipcRenderer.on(channel, (event, ...args) => func(...args));
                 }
             } else {
-                console.error(`[Error]-[${Date.now()}]-[Preload]: Invalid Receive -- ${channel}`);
+                console.error(`[Error]-[${Date.now()}]-[Electron IPC]: Invalid Receive -- ${channel}`);
             }
         },
         receiveOnce: (channel, func) => {
             if (ipcReceiveOnceChannels.includes(channel)) {
                 if (func) {
-                    console.debug(`[Debug]-[${Date.now()}]-[Preload]: Receive Once - Invoked on ${channel}.`);
+                    console.debug(`[Debug]-[${Date.now()}]-[Electron IPC]: Receive Once - Invoked on ${channel}.`);
                     ipcRenderer.once(channel, (event, ...args) => func(...args));
                 }
             } else {
-                console.error(`[Error]-[${Date.now()}]-[Preload]: Invalid Receive Once -- ${channel}`);
+                console.error(`[Error]-[${Date.now()}]-[Electron IPC]: Invalid Receive Once -- ${channel}`);
             }
         },
         removeAllListeners: (channel) => {
-            console.debug(`[Debug]-[${Date.now()}]-[Preload]: Remove All Listeners - Invoked on ${channel}`);
+            console.debug(`[Debug]-[${Date.now()}]-[Electron IPC]: Remove All Listeners - Invoked on ${channel}`);
             ipcRenderer.removeAllListeners(channel);
         }
     }
