@@ -21,6 +21,7 @@ import {TreeNode} from "primeng/api";
 import {Subscription} from "rxjs";
 import {UUID} from "../../../models/uuid";
 
+
 export interface KsCardOptions {
   showThumbnail: boolean,
   showDescription: boolean,

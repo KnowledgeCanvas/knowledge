@@ -46,7 +46,7 @@ let generateUuid, getSettings, setSettings;
  *
  *
  */
-generateUuid = ipcMain.on("app-generate-uuid", (event: any, args: any) => {
+generateUuid = ipcMain.on("A2E:Uuid:Generate", (event: any, args: any) => {
     let kcMainWindow: any = share.BrowserWindow.getAllWindows()[0];
     let response: IpcMessage = {
         error: undefined,
@@ -56,7 +56,7 @@ generateUuid = ipcMain.on("app-generate-uuid", (event: any, args: any) => {
         const message = `electron-generate-uuid argument does not conform to KcUuidRequest`;
         response.error = {code: 412, label: http.STATUS_CODES['412'], message: message};
         console.warn(response.error);
-        kcMainWindow.webContents.send('electron-browser-view-results', response);
+        kcMainWindow.webContents.send('E2A:BrowserView:Open', response);
         return;
     }
     let ids = [];
@@ -68,7 +68,7 @@ generateUuid = ipcMain.on("app-generate-uuid", (event: any, args: any) => {
             ids.push(id);
     }
     response.success = {data: ids};
-    kcMainWindow.webContents.send("app-generate-uuid-results", response);
+    kcMainWindow.webContents.send("E2A:Uuid:Generate", response);
 });
 
 
@@ -93,11 +93,11 @@ generateUuid = ipcMain.on("app-generate-uuid", (event: any, args: any) => {
  *
  *
  */
-getSettings = ipcMain.on("app-get-settings", (_: any) => {
+getSettings = ipcMain.on("A2E:Settings:Get", (_: any) => {
     let kcMainWindow: any = share.BrowserWindow.getAllWindows()[0];
     let appEnv = settingsService.getSettings();
 
-    kcMainWindow.webContents.send("app-get-settings-results", appEnv);
+    kcMainWindow.webContents.send("E2A:Settings:Get", appEnv);
 });
 
 
@@ -122,14 +122,14 @@ getSettings = ipcMain.on("app-get-settings", (_: any) => {
  *
  *
  */
-setSettings = ipcMain.on("app-save-settings", (event: any, args: any) => {
+setSettings = ipcMain.on("A2E:Settings:Set", (event: any, args: any) => {
     let kcMainWindow: any = share.BrowserWindow.getAllWindows()[0];
     let appEnv = settingsService.getSettings();
     appEnv = {...appEnv, ...args};
     settingsService.setSettings(appEnv).then((settings: EnvironmentModel) => {
         appEnv = settings;
     });
-    kcMainWindow.webContents.send("app-save-settings-results", appEnv);
+    kcMainWindow.webContents.send("E2A:Settings:Set", appEnv);
 });
 
 

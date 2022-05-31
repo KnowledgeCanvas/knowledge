@@ -56,7 +56,7 @@ export class KcExtensionServer {
                 error: undefined,
                 success: {data: q.link}
             }
-            kcMainWindow.webContents.send('app-chrome-extension-results', ipcResponse);
+            kcMainWindow.webContents.send('E2A:Extension:Import', ipcResponse);
             res.end("Done");
         } else {
             console.error('Received invalid link from Chrome extension...');

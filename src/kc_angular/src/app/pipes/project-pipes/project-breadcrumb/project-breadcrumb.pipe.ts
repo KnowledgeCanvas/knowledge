@@ -16,8 +16,8 @@
 
 
 import {Pipe, PipeTransform} from '@angular/core';
-import {UUID} from "../../../models/uuid";
 import {ProjectService} from "../../../services/factory-services/project-service/project.service";
+import {UUID} from "../../../models/uuid";
 
 @Pipe({
   name: 'projectBreadcrumb'

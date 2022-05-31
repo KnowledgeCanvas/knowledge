@@ -23,9 +23,9 @@ import {FaviconExtractorService} from "../../../services/ingest-services/favicon
 import {SettingsService} from "../../../services/ipc-services/settings-service/settings.service";
 import {MenuItem} from "primeng/api";
 import {OverlayPanel} from "primeng/overlaypanel";
-import {UUID} from "../../../models/uuid";
 import {KsCommandService} from "../../../services/command-services/ks-command/ks-command.service";
 import {KcCardRequest} from "../project-calendar/project-calendar.component";
+import {UUID} from "../../../models/uuid";
 
 
 @Component({

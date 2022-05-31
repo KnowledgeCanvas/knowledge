@@ -8191,7 +8191,6 @@ __metadata:
     electron-builder: ^23.0.3
     electron-updater: ^4.3.9
     mime-types: ^2.1.32
-    python-shell: ^3.0.0
     rxjs: ^7.4.0
     ts-loader: ^9.2.3
     typescript: ^4.3.5
@@ -10488,13 +10487,6 @@ __metadata:
   dependencies:
     escape-goat: ^2.0.0
   checksum: 49529e50372ffdb0cccf0efa0f3b3cb0a2c77805d0d9cc2725bd2a0f6bb414631e61c93a38561b26be1259550b7bb6c2cb92315aa09c8bf93f3bdcb49f2b2fb7
-  languageName: node
-  linkType: hard
-
-"python-shell@npm:^3.0.0":
-  version: 3.0.1
-  resolution: "python-shell@npm:3.0.1"
-  checksum: 6140f1f7323fd2ce74250b6d379677c91177b3914f4cdac07ab7858c8ffe1b87518273657b7d50ea2c9e76328384fe54c6756a8076420d7497151bcd5c7a3163
   languageName: node
   linkType: hard
 

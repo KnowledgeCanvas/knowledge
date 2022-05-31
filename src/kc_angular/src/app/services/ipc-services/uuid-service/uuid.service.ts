@@ -15,8 +15,9 @@
  */
 
 import {Injectable} from '@angular/core';
-import {UUID} from 'src/app/models/uuid';
 import {ElectronIpcService} from "../electron-ipc/electron-ipc.service";
+import {UUID} from "../../../models/uuid";
+
 
 declare global {
   interface Window {

@@ -20,10 +20,10 @@ import {BehaviorSubject, Observable} from 'rxjs';
 import {KcProject, ProjectCreationRequest, ProjectUpdateRequest} from "src/app/models/project.model";
 import {KnowledgeSource} from "src/app/models/knowledge.source.model";
 import {UuidService} from "../../ipc-services/uuid-service/uuid.service";
-import {UUID} from "src/app/models/uuid";
 import {StorageService} from "../../ipc-services/storage-service/storage.service";
 import {KcProjectType} from "../../../../../../kc_shared/models/project.model";
 import {EventModel} from "../../../../../../kc_shared/models/event.model";
+import {UUID} from "../../../models/uuid";
 
 export interface ProjectIdentifiers {
   id: string;

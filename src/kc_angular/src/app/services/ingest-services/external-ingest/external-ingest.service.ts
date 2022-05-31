@@ -23,6 +23,8 @@ import {FaviconExtractorService} from "../favicon-extraction-service/favicon-ext
 import {ElectronIpcService} from "../../ipc-services/electron-ipc/electron-ipc.service";
 import {DomSanitizer} from "@angular/platform-browser";
 import {KsFactoryService} from "../../factory-services/ks-factory-service/ks-factory.service";
+import {FileWatcherService} from "../../ipc-services/filewatcher-service/file-watcher.service";
+import {NotificationsService} from "../../user-services/notification-service/notifications.service";
 
 @Injectable({
   providedIn: 'root'
@@ -30,14 +32,14 @@ import {KsFactoryService} from "../../factory-services/ks-factory-service/ks-fac
 export class ExternalIngestService {
   private externalKS = new BehaviorSubject<KnowledgeSource[]>([]);
   ks = this.externalKS.asObservable();
-  private receive = window.api.receive;
-  private send = window.api.send;
 
   constructor(private faviconService: FaviconExtractorService,
               private extractionService: ExtractionService,
               private ipcService: ElectronIpcService,
+              private fileWatcher: FileWatcherService,
               private ksFactory: KsFactoryService,
               private uuidService: UuidService,
+              private notifications: NotificationsService,
               private sanitizer: DomSanitizer) {
     /**
      * Subscribe to browser watcher, which communicates with Electron IPC, which in turn listens to browser kc_extensions
@@ -46,29 +48,32 @@ export class ExternalIngestService {
     this.ipcService.browserWatcher().subscribe((link) => {
       let sanitized = this.sanitizer.sanitize(SecurityContext.URL, link);
       if (!sanitized) {
-        console.warn('Unable to sanitize URL received from browser... rejecting!');
+        this.notifications.error('ExternalIngestService', 'Link Rejected', 'Unable to sanitize URL received from browser extension.');
         return;
       }
 
       this.ksFactory.make('website', sanitized).then((ks) => {
-        if (!ks)
-          return;
+        ks.importMethod = 'extension';
         this.externalKS.next([ks]);
       }).catch((reason) => {
-        console.warn('Unable to create Knowledge Source from extension because: ', reason);
+        this.notifications.error('ExternalIngestService', 'Exception', 'Unable to sanitize URL received from browser extension.');
       });
     });
 
     /**
      * Subscribe to file watcher, which communicates with Electron IPC, which in turn watches a local directory for files
      * Once an extension event occurs, create a new Knowledge Source and notify listeners that a new KS is available
+     *
+     * TODO: Ideally, this function should use ksFactory to create KS
      */
-    this.ipcService.fileWatcher().subscribe((fileModels) => {
+    this.fileWatcher.files.subscribe((fileModels) => {
       let iconRequests = [];
       let ksList: KnowledgeSource[] = [];
+
       for (let fileModel of fileModels) {
         iconRequests.push(fileModel.path);
       }
+
       this.ipcService.getFileIcon(iconRequests).then((icons) => {
         for (let i = 0; i < fileModels.length; i++) {
           let fileModel = fileModels[i];
@@ -76,13 +81,15 @@ export class ExternalIngestService {
           let source = new SourceModel(fileModel, undefined);
           let ref = new KnowledgeSourceReference('file', source, sourceLink);
           let ks = new KnowledgeSource(fileModel.filename, fileModel.id, 'file', ref);
-          ks.dateAccessed = [new Date(fileModel.accessTime)];
-          ks.dateModified = [new Date(fileModel.modificationTime)];
-          ks.dateCreated = new Date(fileModel.creationTime);
+          ks.dateAccessed = [];
+          ks.dateModified = [];
+          ks.dateCreated = new Date();
           ks.iconUrl = this.faviconService.file();
           ks.icon = icons[i];
+          ks.importMethod = 'autoscan';
           ksList.push(ks);
         }
+
         this.externalKS.next(ksList);
       });
     });

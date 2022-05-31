@@ -17,7 +17,8 @@
 import * as fs from 'fs';
 import {EnvironmentModel} from "../models/environment.model";
 import {BehaviorSubject} from 'rxjs';
-import {IngestSettingsModel} from "../models/ingest.model";
+import {IngestSettingsModel} from "../../../../kc_shared/models/settings.model";
+
 
 const RET_OK = 0;
 const RET_FAIL = -1;

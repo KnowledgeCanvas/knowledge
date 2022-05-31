@@ -24,17 +24,17 @@ export class KcIpc {
 
     getKs(): Promise<any> {
         return new Promise((res) => {
-            this.receiveOnce('kc-get-knowledge-source-list-response', (response: any) => {
+            this.receiveOnce('E2A:KnowledgeCanvas:GetSources', (response: any) => {
                 console.log('Get response from Electron IPC in knowledge canvas: ', response);
                 res(response);
             });
             console.log('Sending kc-get-ks-list...');
-            this.send('kc-get-knowledge-source-list');
+            this.send('A2E:KnowledgeCanvas:GetSources');
         })
     }
 
     closeModal() {
         console.log('Sending close modal signal...');
-        this.send('kc-close-modal');
+        this.send('A2E:KnowledgeCanvas:Close');
     }
 }

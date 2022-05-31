@@ -20,6 +20,7 @@ import {DomSanitizer, SafeUrl} from "@angular/platform-browser";
 import {forkJoin} from "rxjs";
 import {KnowledgeSource} from "../../../models/knowledge.source.model";
 import {ElectronIpcService} from "../../ipc-services/electron-ipc/electron-ipc.service";
+import {NotificationsService} from "../../user-services/notification-service/notifications.service";
 
 @Injectable({
   providedIn: 'root'
@@ -31,7 +32,10 @@ export class FaviconExtractorService {
   private defaultIcon = 'assets/img/kc-icon-greyscale.png';
   private loadingIcon = 'assets/img/kc-icon-greyscale.png';
 
-  constructor(private httpClient: HttpClient, private sanitizer: DomSanitizer, private ipcService: ElectronIpcService) {
+  constructor(private httpClient: HttpClient,
+              private sanitizer: DomSanitizer,
+              private ipcService: ElectronIpcService,
+              private notifications: NotificationsService) {
   }
 
   loading() {
@@ -181,7 +185,7 @@ export class FaviconExtractorService {
     }
 
     if (!iconStr) {
-      console.warn('did not find icon for knowledge source with id ', ks.id.value);
+      this.notifications.debug('Favicon Extractor', 'Cache Miss', `Icon not found in local storage - ${ks.title}`);
       return undefined;
     }
 
@@ -194,7 +198,7 @@ export class FaviconExtractorService {
     if (result) {
       localStorage.setItem(`icon-${ks.id.value}`, <string>result);
     } else {
-      console.error('refusing to save icon for knowledge source...');
+      this.notifications.error('Favicon Extractor', 'Invalid Icon', ks.title);
     }
   }
 

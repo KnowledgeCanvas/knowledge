@@ -28,15 +28,15 @@ let ipcHandshake = (ksList: []): Promise<any> => {
     console.log('Starting IPC Handshake with modal window...');
     let kcMainWindow: typeof BrowserWindow = BrowserWindow.getAllWindows()[0];
     return new Promise<any>((resolve) => {
-        ipcMain.once('kc-get-knowledge-source-list', (_: any) => {
+        ipcMain.once('A2E:KnowledgeCanvas:GetSources', (_: any) => {
             console.log('Sending back ksList to Knowledge Canvas modal...');
-            kcMainWindow.webContents.send('kc-get-knowledge-source-list-response', ksList);
+            kcMainWindow.webContents.send('E2A:KnowledgeCanvas:GetSources', ksList);
             resolve(ksList);
         });
     });
 }
 
-let getKnowledgeSourceList = ipcMain.on('app-open-kc-dialog', (_: any, args: any) => {
+let getKnowledgeSourceList = ipcMain.on('A2E:KnowledgeCanvas:Open', (_: any, args: any) => {
     console.debug('Getting knowledge source list for KC...');
 
     let kcMainWindow: typeof BrowserWindow = BrowserWindow.getAllWindows()[0];
@@ -76,7 +76,7 @@ let getKnowledgeSourceList = ipcMain.on('app-open-kc-dialog', (_: any, args: any
         }
     });
 
-    ipcMain.on('kc-close-modal', (_: any) => {
+    ipcMain.on('A2E:KnowledgeCanvas:Close', (_: any) => {
         console.log('Close modal signal received...');
         if (kcKnowledgeWindow)
             kcKnowledgeWindow.close();

@@ -14,10 +14,11 @@
  limitations under the License.
  */
 
-import {UUID} from "./uuid";
 import {WebsiteModel} from "./website.model";
 import {AuthorModel} from "../../../../kc_shared/models/author.model";
 import {FileSourceModel} from "../../../../kc_shared/models/file.source.model";
+import {UUID} from "./uuid";
+
 
 
 export type IngestType = 'google' | 'file' | 'website' | 'generic' | 'topic' | 'search' | 'note' | 'message';
@@ -81,6 +82,7 @@ export class KnowledgeSource {
   note: KnowledgeSourceNote;
   accessLink: URL | string;
   readonly reference: KnowledgeSourceReference;
+  importMethod?: 'autoscan' | 'dnd' | 'extension' | 'manual' = 'manual';
 
   constructor(title: string, id: UUID, ingestType: IngestType, reference: KnowledgeSourceReference) {
     this.title = title;
@@ -97,16 +99,10 @@ export class KnowledgeSource {
     this.note = new KnowledgeSourceNote();
     this.flagged = false;
     this.topics = [];
-
-    if (!this.events) {
-      this.events = [];
-    }
-
-    this.events.push({
+    this.events = [{
       date: new Date(),
-      label: 'Created',
-      hash: ''
-    });
+      label: 'Created'
+    }];
   }
 }
 

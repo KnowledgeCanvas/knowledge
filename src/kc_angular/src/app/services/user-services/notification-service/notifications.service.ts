@@ -14,7 +14,7 @@
  limitations under the License.
  */
 
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Message, MessageService} from "primeng/api";
 
 export interface KcNotification extends Message {
@@ -30,12 +30,63 @@ export class NotificationsService {
   }
 
   toast(msg: KcNotification) {
-    msg.key = 'app-toast'
+    msg.key = 'app-toast';
+    msg.life = 5000;
     this.messageService.add(msg);
   }
 
   banner(msg: KcNotification) {
     msg.key = 'app-banner'
+    msg.life = 5000;
     this.messageService.add(msg);
+  }
+
+  debug(component: string, summary: string, detail: string, presentation: 'banner' | 'none' | 'toast' = 'none') {
+    console.debug(`[Debug]-[${Date.now()}]-[${component}]: ${summary} - ${detail}`);
+    const msg: KcNotification = {
+      severity: 'info',
+      summary: 'Debug: ' + summary,
+      detail: detail
+    }
+
+    if (presentation === 'toast') {
+      this.toast(msg);
+    } else if (presentation === 'banner') {
+      this.banner(msg);
+    }
+  }
+
+  error(component: string, summary: string, detail: string, presentation: 'banner' | 'none' | 'toast' = 'toast') {
+    console.error(`[Error]-[${Date.now()}]-[${component}]: ${summary} - ${detail}`);
+    const msg: KcNotification = {
+      severity: 'error',
+      summary: 'Error: ' + summary,
+      detail: detail
+    }
+
+    if (presentation === 'toast') {
+      this.toast(msg);
+    } else if (presentation === 'banner') {
+      this.banner(msg);
+    }
+  }
+
+  log(component: string, summary: string, detail: string) {
+    console.log(`[Info ]-[${Date.now()}]-[${component}]: ${summary} - ${detail}`);
+  }
+
+  warn(component: string, summary: string, detail: string, presentation: 'banner' | 'none' | 'toast' = 'toast') {
+    console.warn(`[Warn ]-[${Date.now()}]-[${component}]: ${summary} - ${detail}`);
+    const msg: KcNotification = {
+      severity: 'warn',
+      summary: summary,
+      detail: 'Warn: ' + detail
+    }
+
+    if (presentation === 'toast') {
+      this.toast(msg);
+    } else if (presentation === 'banner') {
+      this.banner(msg);
+    }
   }
 }

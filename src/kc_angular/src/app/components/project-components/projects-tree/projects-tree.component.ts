@@ -70,8 +70,6 @@ export class ProjectsTreeComponent implements OnInit {
     }
   ];
 
-  toggleFilter: boolean = false;
-
   constructor(private projectService: ProjectService) {
   }
 

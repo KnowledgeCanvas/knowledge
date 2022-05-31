@@ -20,9 +20,9 @@ import {IngestType, KnowledgeSource, KnowledgeSourceNote, KnowledgeSourceReferen
 import {ElectronIpcService} from "../../ipc-services/electron-ipc/electron-ipc.service";
 import {ExtractionService} from "../../ingest-services/web-extraction-service/extraction.service";
 import {FaviconExtractorService} from "../../ingest-services/favicon-extraction-service/favicon-extractor.service";
-import {UUID} from "../../../models/uuid";
 import {SettingsService} from "../../ipc-services/settings-service/settings.service";
 import {FileSourceModel} from "../../../../../../kc_shared/models/file.source.model";
+import {UUID} from "../../../models/uuid";
 
 export interface KnowledgeSourceFactoryRequest {
   ingestType: IngestType,
