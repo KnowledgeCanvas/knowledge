@@ -13,15 +13,10 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-import {ProjectCreationRequest, ProjectUpdateRequest} from "./project.model";
-
-export interface ProjectEvent {
-  event: ProjectUpdateRequest | ProjectCreationRequest;
-  timestamp: Date;
-}
+import {EventModel} from "../../../../kc_shared/models/event.model";
 
 export interface KcCalendar {
-  events: ProjectEvent[];
+  events: EventModel[];
   end: Date | string | null;
   start: Date | string | null;
 }

@@ -20,9 +20,9 @@ import {IngestType, KnowledgeSource, KnowledgeSourceNote, KnowledgeSourceReferen
 import {ElectronIpcService} from "../../ipc-services/electron-ipc/electron-ipc.service";
 import {ExtractionService} from "../../ingest-services/web-extraction-service/extraction.service";
 import {FaviconExtractorService} from "../../ingest-services/favicon-extraction-service/favicon-extractor.service";
-import {UuidModel} from "../../../models/uuid.model";
 import {SettingsService} from "../../ipc-services/settings-service/settings.service";
-import {FileModel} from "../../../models/file.model";
+import {FileSourceModel} from "../../../../../../kc_shared/models/file.source.model";
+import {UUID} from "../../../models/uuid.model";
 
 export interface KnowledgeSourceFactoryRequest {
   ingestType: IngestType,
@@ -65,7 +65,7 @@ export class KsFactoryService {
           .then((result) => {
             resolve(result);
           }).catch((reason) => {
-            console.warn('Could not create KS from link because: ', reason);
+          console.warn('Could not create KS from link because: ', reason);
         });
       }
     });
@@ -113,11 +113,10 @@ export class KsFactoryService {
 
     return {
       authors: [], description: "",
-      title: "Knowledge Canvas Search", id: new UuidModel('kc-search-ks'),
+      title: "Knowledge Canvas Search", id: new UUID('kc-search-ks'),
       reference: {
         ingestType: "website",
         source: {
-          search: undefined,
           file: undefined,
           website: {
             url: "",
@@ -130,7 +129,7 @@ export class KsFactoryService {
         link: ""
       },
       ingestType: "website",
-      associatedProject: new UuidModel(''),
+      associatedProject: new UUID(''),
       dateCheckpoint: [],
       dateAccessed: [new Date()],
       dateModified: [new Date()],
@@ -143,9 +142,18 @@ export class KsFactoryService {
   }
 
   private async extractFileResource(link: string, file: File): Promise<KnowledgeSource> {
-    const uuid: UuidModel = this.uuidService.generate(1)[0];
-    let fileModel: FileModel = new FileModel(file.name, file.size, (file as any).path, uuid, file.type);
-    let source = new SourceModel(fileModel, undefined, undefined);
+    const uuid: UUID = this.uuidService.generate(1)[0];
+    let fileModel: FileSourceModel = {
+      id: uuid,
+      filename: file.name,
+      path: (file as any).path,
+      size: file.size,
+      type: file.type,
+      creationTime: Date(),
+      modificationTime: Date(),
+      accessTime: Date()
+    }
+    let source = new SourceModel(fileModel, undefined);
     let ref = new KnowledgeSourceReference('file', source, link);
     return new KnowledgeSource(file.name, uuid, 'file', ref);
   }
@@ -183,8 +191,8 @@ export class KsFactoryService {
   }
 
   private extractWebResource(link: URL): Promise<KnowledgeSource> {
-    const uuid: UuidModel = this.uuidService.generate(1)[0];
-    let source = new SourceModel(undefined, undefined, {url: link.href});
+    const uuid: UUID = this.uuidService.generate(1)[0];
+    let source = new SourceModel(undefined, {url: link.href});
     let ref = new KnowledgeSourceReference('website', source, link);
     let ks = new KnowledgeSource('', uuid, 'website', ref);
     return this.getWebsiteMetadata(ks)

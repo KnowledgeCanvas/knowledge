@@ -15,8 +15,8 @@
  */
 
 import {Pipe, PipeTransform} from '@angular/core';
-import {ProjectType} from "../../../models/project.model";
 import {ProjectService} from "../../../services/factory-services/project-service/project.service";
+import {KcProjectType} from "../../../../../../kc_shared/models/project.model";
 
 @Pipe({
   name: 'projectType'
@@ -25,7 +25,7 @@ export class ProjectTypePipe implements PipeTransform {
   constructor(private projectService: ProjectService) {
   }
 
-  transform(type: ProjectType): string {
+  transform(type: KcProjectType): string {
     if (!type) {
       return 'Default';
     } else {

@@ -1,7 +1,7 @@
 import {Injectable, NgZone} from '@angular/core';
 import {BehaviorSubject, Observable} from "rxjs";
-import {FileModel} from "../../../models/file.model";
 import {IpcMessage} from "kc_electron/src/app/models/electron.ipc.model";
+import {FileSourceModel} from "../../../../../../kc_shared/models/file.source.model";
 
 interface FileWatcherUpdate {
   id: string,
@@ -21,13 +21,13 @@ export class FileWatcherIpcService {
     ingestWatcherFinalize: `A2E:FileWatcher:Finalize`
   }
 
-  private __files = new BehaviorSubject<FileModel[]>([]);
-  files: Observable<FileModel[]> = this.__files.asObservable();
+  private __files = new BehaviorSubject<FileSourceModel[]>([]);
+  files: Observable<FileSourceModel[]> = this.__files.asObservable();
 
   constructor(private zone: NgZone) {
     this.receive(this.channels.ingestWatcherResults, (responses: IpcMessage[]) => {
       this.zone.run(() => {
-        let files: FileModel[] = [];
+        let files: FileSourceModel[] = [];
 
         for (let response of responses) {
           if (response.error) {

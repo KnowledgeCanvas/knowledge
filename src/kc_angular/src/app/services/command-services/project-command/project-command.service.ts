@@ -16,23 +16,23 @@
 
 import {Injectable} from '@angular/core';
 import {BehaviorSubject} from "rxjs";
-import {ProjectModel, ProjectUpdateRequest} from "../../../models/project.model";
+import {KcProject, ProjectUpdateRequest} from "../../../models/project.model";
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProjectCommandService {
 
-  private _projectDetailEvent = new BehaviorSubject<ProjectModel | undefined>(undefined);
+  private _projectDetailEvent = new BehaviorSubject<KcProject | undefined>(undefined);
   projectDetailEvent = this._projectDetailEvent.asObservable();
 
-  private _projectRemoveEvent = new BehaviorSubject<ProjectModel[]>([]);
+  private _projectRemoveEvent = new BehaviorSubject<KcProject[]>([]);
   projectRemoveEvent = this._projectRemoveEvent.asObservable();
 
-  private _projectShareEvent = new BehaviorSubject<ProjectModel[]>([]);
+  private _projectShareEvent = new BehaviorSubject<KcProject[]>([]);
   projectShareEvent = this._projectShareEvent.asObservable();
 
-  private _projectCopyJSONEvent = new BehaviorSubject<ProjectModel[]>([]);
+  private _projectCopyJSONEvent = new BehaviorSubject<KcProject[]>([]);
   projectCopyJSONEvent = this._projectCopyJSONEvent.asObservable();
 
   private _projectUpdateEvent = new BehaviorSubject<ProjectUpdateRequest[]>([]);
@@ -45,19 +45,19 @@ export class ProjectCommandService {
     this._projectUpdateEvent.next(projectList);
   }
 
-  remove(projectList: ProjectModel[]) {
+  remove(projectList: KcProject[]) {
     this._projectRemoveEvent.next(projectList);
   }
 
-  detail(project: ProjectModel) {
+  detail(project: KcProject) {
     this._projectDetailEvent.next(project);
   }
 
-  share(projectList: ProjectModel[]) {
+  share(projectList: KcProject[]) {
     this._projectShareEvent.next(projectList);
   }
 
-  copyJSON(projectList: ProjectModel[]) {
+  copyJSON(projectList: KcProject[]) {
     this._projectCopyJSONEvent.next(projectList);
   }
 }

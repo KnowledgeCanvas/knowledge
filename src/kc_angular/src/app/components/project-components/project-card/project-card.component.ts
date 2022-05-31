@@ -16,8 +16,8 @@
 
 
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {ProjectModel} from "../../../models/project.model";
-import {UuidModel} from "../../../models/uuid.model";
+import {KcProject} from "../../../models/project.model";
+import {UUID} from "../../../models/uuid.model";
 
 @Component({
   selector: 'app-project-card',
@@ -28,7 +28,7 @@ export class ProjectCardComponent implements OnInit {
   /**
    * The project to be displayed on this card.
    */
-  @Input() kcProject!: ProjectModel;
+  @Input() kcProject!: KcProject;
 
   /**
    * Whether to display the "Archive Project" button.
@@ -70,31 +70,31 @@ export class ProjectCardComponent implements OnInit {
    * Emitted when the "edit" button is pressed.
    * Contains the ID of the project to be edited.
    */
-  @Output() onEditProject = new EventEmitter<UuidModel>();
+  @Output() onEditProject = new EventEmitter<UUID>();
 
   /**
    * Emitted when the "GoTo" button is pressed.
    * Contains the ID of the project to be navigated to.
    */
-  @Output() onNavigateToProject = new EventEmitter<UuidModel>();
+  @Output() onNavigateToProject = new EventEmitter<UUID>();
 
   /**
    * Emitted when the "Add Subproject" button is pressed.
    * Contains the ID of the parent project.
    */
-  @Output() onAddSubproject = new EventEmitter<UuidModel>();
+  @Output() onAddSubproject = new EventEmitter<UUID>();
 
   /**
    * Emitted when the "Remove Project" button is pressed.
    * Contains the ID of the project to be removed.
    */
-  @Output() onRemoveProject = new EventEmitter<UuidModel>();
+  @Output() onRemoveProject = new EventEmitter<UUID>();
 
   /**
    * Emitted when the "Archive Project" button is pressed.
    * Contains the ID of the project to be archived.
    */
-  @Output() onArchiveProject = new EventEmitter<UuidModel>();
+  @Output() onArchiveProject = new EventEmitter<UUID>();
 
 
   constructor() {
@@ -108,6 +108,6 @@ export class ProjectCardComponent implements OnInit {
    * @param id
    */
   navigate(id: string) {
-    this.onNavigateToProject.emit(new UuidModel(id));
+    this.onNavigateToProject.emit(new UUID(id));
   }
 }

@@ -18,6 +18,12 @@ import {Component, Input} from '@angular/core';
 import {KnowledgeSource} from "../../../models/knowledge.source.model";
 import {ObjectUtils} from "primeng/utils";
 
+interface ExportType {
+  name: string,
+  value: string,
+  export: (data: KnowledgeSource[]) => void
+}
+
 @Component({
   selector: 'app-ks-export',
   templateUrl: './ks-export.component.html',
@@ -25,6 +31,8 @@ import {ObjectUtils} from "primeng/utils";
 })
 export class KsExportComponent {
   @Input() data: KnowledgeSource[] = [];
+
+  exportDialogVisible: boolean = false;
 
   EXPORT_FILENAME = 'kc_export';
 
@@ -45,33 +53,107 @@ export class KsExportComponent {
     {field: 'description', header: 'Description'}
   ];
 
+  selectedFeatures: string[] = this.EXPORT_COLUMNS.map(c => c.field);
+
+  exportTypes: ExportType[] = [
+    {
+      name: 'JSON', value: '.json', export: (data: KnowledgeSource[]) => {
+        const encoding = this.encodeJSON(data);
+        this.createFile(encoding, 'text/json', 'utf-8');
+      }
+    },
+    {
+      name: 'CSV', value: '.csv', export: (data: KnowledgeSource[]) => {
+        const encoding = this.encodeCSV(data)
+        this.createFile(encoding, 'text/csv', 'utf-8');
+      }
+    },
+    {
+      name: 'TSV', value: '.tsv', export: (data: KnowledgeSource[]) => {
+        const encoding = this.encodeTSV(data)
+        this.createFile(encoding, 'text/tsv', 'utf-8');
+      }
+    }
+  ];
+
+  selectedExportType: string = '.json'
+
   constructor() {
+  }
+
+  createFile(encoding: string, type: string, charset: string) {
+    let blob = new Blob([encoding], {
+      type: `${type};charset=${charset};`
+    });
+
+    let link = document.createElement("a");
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    if (link.download !== undefined) {
+      link.setAttribute('href', URL.createObjectURL(blob));
+      link.setAttribute('download', this.EXPORT_FILENAME + this.selectedExportType);
+      link.click();
+    } else {
+      encoding = `data:${type};charset=${charset}` + encoding;
+      window.open(encodeURI(encoding));
+    }
+    document.body.removeChild(link);
+  }
+
+  export() {
+    this.exportTypes.find(e => e.value === this.selectedExportType)?.export(this.data)
   }
 
   getExportHeader(column: any) {
     return column.header || column.field;
   }
 
-  onClick() {
-    let data;
-    let csv = '';
-    let columns = this.EXPORT_COLUMNS;
+  encodeJSON(data: KnowledgeSource[]): string {
+    let encoded: any[] = []
 
-    data = this.data;
+    for (let ks of data) {
+      let temp: any = {};
+      const selectedColumns = this.EXPORT_COLUMNS.filter(c => this.selectedFeatures.includes(c.field))
+      for (let column of selectedColumns) {
+        let cellData;
+        if (column.field === 'id' || column.field === 'associatedProject') {
+          cellData = ObjectUtils.resolveFieldData(ks, column.field).value;
+        } else {
+          cellData = ObjectUtils.resolveFieldData(ks, column.field);
+        }
+        temp[column.field] = cellData;
+      }
+      encoded.push(temp);
+    }
+
+    return JSON.stringify(encoded);
+  }
+
+  encodeTSV(data: KnowledgeSource[]): string {
+    return this.encodeSV(data, '\t');
+  }
+
+  encodeCSV(data: KnowledgeSource[]): string {
+    return this.encodeSV(data, ',');
+  }
+
+  encodeSV(data: KnowledgeSource[], separator: string): string {
+    let text = '';
+    let columns = this.EXPORT_COLUMNS;
 
     //headers
     for (let i = 0; i < columns.length; i++) {
       let column = columns[i];
-      csv += '"' + this.getExportHeader(column) + '"';
+      text += '"' + this.getExportHeader(column) + '"';
 
       if (i < (columns.length - 1)) {
-        csv += this.EXPORT_SEPARATOR;
+        text += separator;
       }
     }
 
     //body
     data.forEach((record) => {
-      csv += '\n';
+      text += '\n';
       for (let i = 0; i < columns.length; i++) {
         let column = columns[i];
 
@@ -91,29 +173,16 @@ export class KsExportComponent {
 
         cellData = cellData.replace('\n', '');
 
-        csv += '"' + cellData + '"';
+        text += '"' + cellData + '"';
 
         if (i < (columns.length - 1)) {
-          csv += this.EXPORT_SEPARATOR;
+          text += separator;
         }
       }
     });
 
-    let blob = new Blob([csv], {
-      type: 'text/csv;charset=utf-8;'
-    });
-
-    let link = document.createElement("a");
-    link.style.display = 'none';
-    document.body.appendChild(link);
-    if (link.download !== undefined) {
-      link.setAttribute('href', URL.createObjectURL(blob));
-      link.setAttribute('download', this.EXPORT_FILENAME + '.csv');
-      link.click();
-    } else {
-      csv = 'data:text/csv;charset=utf-8,' + csv;
-      window.open(encodeURI(csv));
-    }
-    document.body.removeChild(link);
+    return text;
   }
+
+
 }

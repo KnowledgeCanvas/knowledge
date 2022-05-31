@@ -16,14 +16,14 @@
 
 
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {ProjectModel, ProjectUpdateRequest} from "src/app/models/project.model";
+import {KcProject, ProjectUpdateRequest} from "src/app/models/project.model";
 import {ProjectService} from "../../../services/factory-services/project-service/project.service";
 import {KnowledgeSource} from "../../../models/knowledge.source.model";
 import {BrowserViewDialogService} from "../../../services/ipc-services/browser-service/browser-view-dialog.service";
-import {UuidModel} from "../../../models/uuid.model";
 import {DialogService} from "primeng/dynamicdialog";
 import {ProjectInfoComponent} from "../project-info/project-info.component";
 import {TreeNode} from "primeng/api";
+import {UUID} from "../../../models/uuid.model";
 
 
 @Component({
@@ -32,7 +32,7 @@ import {TreeNode} from "primeng/api";
   styleUrls: ['./project-detail-viewport.component.scss'],
 })
 export class ProjectDetailViewportComponent implements OnInit {
-  @Input() kcProject: ProjectModel | null = null;
+  @Input() kcProject: KcProject | null = null;
 
   @Input() showProjectTree: boolean = false;
 
@@ -46,9 +46,9 @@ export class ProjectDetailViewportComponent implements OnInit {
 
   @Output() ksPreview = new EventEmitter<KnowledgeSource>();
 
-  @Output() onProjectCreation = new EventEmitter<UuidModel | undefined>();
+  @Output() onProjectCreation = new EventEmitter<UUID | undefined>();
 
-  @Output() onProjectDeletion = new EventEmitter<UuidModel>();
+  @Output() onProjectDeletion = new EventEmitter<UUID>();
 
   @Output() onTopicSearch = new EventEmitter<string>();
 
@@ -89,7 +89,7 @@ export class ProjectDetailViewportComponent implements OnInit {
     this.projectService.updateProjects([update]);
   }
 
-  kcProjectUpdate(project: ProjectModel) {
+  kcProjectUpdate(project: KcProject) {
     this.projectService.updateProjects([{
       id: project.id
     }])
@@ -99,7 +99,7 @@ export class ProjectDetailViewportComponent implements OnInit {
     this.projectService.setCurrentProject($event);
   }
 
-  kcEditProject(id: UuidModel) {
+  kcEditProject(id: UUID) {
     let project = this.projectService.getProject(id.value);
     if (!project) {
       console.error('Attempting to edit non-existent project.');

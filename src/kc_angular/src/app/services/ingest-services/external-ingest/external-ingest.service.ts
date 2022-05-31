@@ -78,7 +78,7 @@ export class ExternalIngestService {
         for (let i = 0; i < fileModels.length; i++) {
           let fileModel = fileModels[i];
           let sourceLink = fileModel.path;
-          let source = new SourceModel(fileModel, undefined, undefined);
+          let source = new SourceModel(fileModel, undefined);
           let ref = new KnowledgeSourceReference('file', source, sourceLink);
           let ks = new KnowledgeSource(fileModel.filename, fileModel.id, 'file', ref);
           ks.dateAccessed = [];

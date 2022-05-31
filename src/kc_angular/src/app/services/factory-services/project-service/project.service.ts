@@ -17,11 +17,13 @@
 import {Injectable} from '@angular/core';
 import {ProjectTree, ProjectTreeNode} from "src/app/models/project.tree.model";
 import {BehaviorSubject, Observable} from 'rxjs';
-import {ProjectCreationRequest, ProjectModel, ProjectType, ProjectUpdateRequest} from "src/app/models/project.model";
+import {KcProject, ProjectCreationRequest, ProjectUpdateRequest} from "src/app/models/project.model";
 import {KnowledgeSource} from "src/app/models/knowledge.source.model";
 import {UuidService} from "../../ipc-services/uuid-service/uuid.service";
-import {UuidModel} from "src/app/models/uuid.model";
+import {UUID} from "../../../models/uuid.model";
 import {StorageService} from "../../ipc-services/storage-service/storage.service";
+import {KcProjectType} from "../../../../../../kc_shared/models/project.model";
+import {EventModel} from "../../../../../../kc_shared/models/event.model";
 
 export interface ProjectIdentifiers {
   id: string;
@@ -40,15 +42,15 @@ export class ProjectService {
   private allProjects: BehaviorSubject<ProjectTreeNode[]> = new BehaviorSubject<ProjectTreeNode[]>([]);
   projectTree: Observable<ProjectTreeNode[]> = this.allProjects.asObservable();
 
-  private selectedSource = new BehaviorSubject<ProjectModel | null>(null);
+  private selectedSource = new BehaviorSubject<KcProject | null>(null);
   currentProject = this.selectedSource.asObservable();
 
-  private allProjectModels: BehaviorSubject<ProjectModel[]> = new BehaviorSubject<ProjectModel[]>([]);
+  private allProjectModels: BehaviorSubject<KcProject[]> = new BehaviorSubject<KcProject[]>([]);
   projects = this.allProjectModels.asObservable();
 
   private tree: ProjectTree;
-  private projectSource: ProjectModel[] = [];
-  private lookup: Map<string, ProjectModel>;
+  private projectSource: KcProject[] = [];
+  private lookup: Map<string, KcProject>;
   private _projectCommands: ProjectNavigationCommand[] = [];
   private _projectCommandIndex: number = 0;
 
@@ -66,7 +68,7 @@ export class ProjectService {
    * Returns a list of Project types. The first element is guaranteed to be the default type
    * @constructor
    */
-  get ProjectTypes(): { code: ProjectType, name: string }[] {
+  get ProjectTypes(): { code: KcProjectType, name: string }[] {
     return [
       {code: 'default', name: 'Default'},
       {code: 'school', name: 'School'},
@@ -130,7 +132,7 @@ export class ProjectService {
     this.lookup = new Map();
     this.tree = new ProjectTree();
 
-    this.getAllProjects().then((projects: ProjectModel[]) => {
+    this.getAllProjects().then((projects: KcProject[]) => {
         this.projectSource = [];
         for (const project of projects) {
           this.lookup.set(project.id.value, project);
@@ -150,7 +152,7 @@ export class ProjectService {
       });
   }
 
-  deleteProject(id: UuidModel | string) {
+  deleteProject(id: UUID | string) {
     if (typeof id !== 'string') {
       id = id.value;
     }
@@ -181,38 +183,59 @@ export class ProjectService {
     this.refreshTree();
   }
 
-  async getAllProjects(): Promise<ProjectModel[]> {
+  async getAllProjects(): Promise<KcProject[]> {
     return new Promise((resolve) => {
       resolve(this.storageService.getProjects());
     });
   }
 
   async newProject(project: ProjectCreationRequest) {
-    let uuid: UuidModel[] = this.uuidService.generate(1);
+    // Generate UUID
+    let uuid: UUID[] = this.uuidService.generate(1);
+    let projectId: UUID = uuid[0];
 
-    let projectId: UuidModel = uuid[0];
+    let newProject: KcProject = {
+      calendar: project.calendar ? project.calendar : {events: [], start: null, end: null},
+      dateCreated: new Date(),
+      dateAccessed: new Date(),
+      dateModified: new Date(),
+      authors: project.authors,
+      description: project.description,
+      events: [],
+      expanded: true,
+      id: projectId,
+      knowledgeSource: project.knowledgeSource,
+      name: project.name,
+      parentId: project.parentId,
+      subprojects: [],
+      topics: project.topics,
+      type: project.type
+    }
 
-    let newProject = new ProjectModel(project.name, projectId, project.type, project.parentId);
-    newProject.topics = project.topics;
-    newProject.knowledgeSource = project.knowledgeSource;
-    newProject.authors = project.authors;
-    newProject.description = project.description;
-    newProject.calendar = project.calendar ? project.calendar : {events: [], start: null, end: null};
-
-    let subProjects: ProjectModel[] = [];
+    let subProjects: KcProject[] = [];
 
     if (project.subProjects && project.subProjects.length > 0) {
       uuid = this.uuidService.generate(project.subProjects.length);
-      newProject.subprojects = [];
 
       for (let i = 0; i < project.subProjects.length; i++) {
         let subRequest = project.subProjects[i];
-
-        let newSubProject = new ProjectModel(subRequest.name, uuid[i], subRequest.type, projectId);
-        newSubProject.topics = subRequest.topics;
-        newSubProject.knowledgeSource = subRequest.knowledgeSource;
-        newSubProject.authors = subRequest.authors;
-        newSubProject.description = subRequest.description;
+        let newSubProject = {
+          authors: [],
+          calendar: {events: [], start: null, end: null},
+          dateAccessed: new Date(),
+          dateCreated: new Date(),
+          dateModified: new Date(),
+          description: subRequest.description,
+          events: [],
+          expanded: true,
+          id: uuid[i],
+          knowledgeSource: subRequest.knowledgeSource,
+          name: subRequest.name,
+          parentId: subRequest.parentId,
+          subprojects: [],
+          topics: subRequest.topics,
+          type: subRequest.type
+        }
 
         subProjects.push(newSubProject);
         newProject.subprojects.push(newSubProject.id.value);
@@ -273,7 +296,7 @@ export class ProjectService {
 
       // Handle parentId update
       if (projectUpdate.parentId) {
-        projectToUpdate.parentId = new UuidModel(projectUpdate.parentId);
+        projectToUpdate.parentId = new UUID(projectUpdate.parentId);
       }
 
       // Handle add subproject update
@@ -335,7 +358,13 @@ export class ProjectService {
         projectToUpdate.topics = projectUpdate.overWriteTopics;
       }
 
-      projectToUpdate.calendar.events.push({event: projectUpdate, timestamp: new Date()});
+      let event: EventModel = {
+        description: "",
+        id: projectToUpdate.id,
+        type: 'update',
+        timestamp: Date()
+      }
+      projectToUpdate.calendar.events.push(event);
       projectToUpdate.dateModified = new Date();
 
       if (projectToUpdate.knowledgeSource) {
@@ -380,11 +409,11 @@ export class ProjectService {
     }
   }
 
-  getCurrentProjectId(): UuidModel | null {
+  getCurrentProjectId(): UUID | null {
     return this.selectedSource.value?.id ?? null;
   }
 
-  getProject(id: UuidModel | string): ProjectModel | undefined {
+  getProject(id: UUID | string): KcProject | undefined {
     if (typeof id !== 'string') {
       id = id.value;
     }
@@ -396,7 +425,7 @@ export class ProjectService {
     return undefined;
   }
 
-  getSubTree(id: UuidModel | string): ProjectIdentifiers[] {
+  getSubTree(id: UUID | string): ProjectIdentifiers[] {
     if (typeof id !== 'string') {
       id = id.value;
     }
@@ -508,7 +537,7 @@ export class ProjectService {
     return tree;
   }
 
-  private buildTree(input: ProjectModel[]): void {
+  private buildTree(input: KcProject[]): void {
     const visited = new Map<string, boolean>();
 
     for (const model of input) {
@@ -517,7 +546,7 @@ export class ProjectService {
 
         if (model.subprojects)
           for (const subId of model.subprojects) {
-            const sub: ProjectModel | undefined = this.lookup.get(subId);
+            const sub: KcProject | undefined = this.lookup.get(subId);
             if (sub) {
               node.subprojects.push(this.modelToNode(sub));
               visited.set(subId, true);
@@ -529,11 +558,11 @@ export class ProjectService {
     }
   }
 
-  private modelToNode(model: ProjectModel): ProjectTreeNode {
+  private modelToNode(model: KcProject): ProjectTreeNode {
     return new ProjectTreeNode(model.name, model.id.value, 'project', [], model.expanded);
   }
 
-  private addKnowledgeSource(project: ProjectModel, add: KnowledgeSource[]): ProjectModel {
+  private addKnowledgeSource(project: KcProject, add: KnowledgeSource[]): KcProject {
     // Assume knowledge source icons have not been persisted to local memory yet...
     // TODO: this would be better suited for StorageService
     for (let ks of add) {
@@ -559,7 +588,7 @@ export class ProjectService {
     return project;
   }
 
-  private removeKnowledgeSource(project: ProjectModel, remove: KnowledgeSource[]): ProjectModel {
+  private removeKnowledgeSource(project: KcProject, remove: KnowledgeSource[]): KcProject {
     if (project.knowledgeSource && project.knowledgeSource.length > 0) {
       for (let toRemove of remove) {
         localStorage.removeItem(`icon-${toRemove.id.value}`);
@@ -571,7 +600,7 @@ export class ProjectService {
     return project;
   }
 
-  private moveKnowledgeSource(project: ProjectModel, move: { ks: KnowledgeSource, new: UuidModel }): ProjectModel {
+  private moveKnowledgeSource(project: KcProject, move: { ks: KnowledgeSource, new: UUID }): KcProject {
     const newProject = this.projectSource.find(p => p.id.value === move.new.value);
     if (!newProject) {
       return project;
@@ -592,7 +621,7 @@ export class ProjectService {
     return project;
   }
 
-  private updateKnowledgeSource(project: ProjectModel, update: KnowledgeSource[]): ProjectModel {
+  private updateKnowledgeSource(project: KcProject, update: KnowledgeSource[]): KcProject {
     if (project.knowledgeSource && project.knowledgeSource.length > 0) {
       for (let ks of update) {
         // Make sure the item does not already exist in the project

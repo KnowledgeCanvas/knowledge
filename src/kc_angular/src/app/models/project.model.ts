@@ -15,33 +15,35 @@
  */
 
 import {KnowledgeSource} from "./knowledge.source.model";
-import {UuidModel} from "./uuid.model";
 import {KcCalendar} from "./calendar.model";
+import {KcProjectModel, KcProjectType} from "../../../../kc_shared/models/project.model";
+import {EventModel} from "../../../../kc_shared/models/event.model";
+import {UUID} from "./uuid.model";
 
-export type ProjectType = 'school' | 'work' | 'hobby' | 'default' | 'research';
 
-export class ProjectModel {
+export class KcProject implements KcProjectModel{
   name: string = '';
-  readonly id: UuidModel;
+  readonly id: UUID;
+  events?: EventModel[] = [];
   authors: string[] = [];
   description: string = '';
   readonly dateCreated: Date;
   dateModified: Date;
   dateAccessed: Date;
-  parentId: UuidModel = new UuidModel('');
+  parentId: UUID = new UUID('');
   subprojects: string[] = [];
   topics: string[] = [];
-  type: ProjectType;
-  notes: string[] = [];
+  type: KcProjectType;
   expanded: boolean = false;
   knowledgeSource: KnowledgeSource[] = [];
   calendar: KcCalendar;
 
-  constructor(name: string, id: UuidModel, type?: ProjectType, parentId?: UuidModel) {
+
+  constructor(name: string, id: UUID, type?: KcProjectType, parentId?: UUID) {
     this.name = name;
     this.id = id;
     this.type = type ? type : 'default';
-    this.parentId = parentId ?? new UuidModel('');
+    this.parentId = parentId ?? new UUID('');
     this.dateCreated = new Date();
     this.dateModified = new Date();
     this.dateAccessed = new Date();
@@ -52,18 +54,18 @@ export class ProjectModel {
 
 export interface ProjectCreationRequest {
   name: string;
-  parentId: UuidModel;
+  parentId: UUID;
   description: string;
   knowledgeSource: KnowledgeSource[];
   authors: string[];
   topics: string[];
-  type: ProjectType;
+  type: KcProjectType;
   subProjects: ProjectCreationRequest[];
   calendar: KcCalendar;
 }
 
 export interface ProjectUpdateRequest {
-  id: UuidModel;
+  id: UUID;
   name?: string;
   description?: string;
   notes?: string;
@@ -79,15 +81,5 @@ export interface ProjectUpdateRequest {
   addKnowledgeSource?: KnowledgeSource[];
   removeKnowledgeSource?: KnowledgeSource[];
   updateKnowledgeSource?: KnowledgeSource[];
-  moveKnowledgeSource?: { ks: KnowledgeSource, new: UuidModel }
-}
-
-export interface ProjectEntity {
-  readonly id: UuidModel;
-  parentId: UuidModel;
-  name: string;
-  description: string;
-  lastModified: string;
-  readonly creationDate: string;
-  subprojects: string[];
+  moveKnowledgeSource?: { ks: KnowledgeSource, new: UUID }
 }

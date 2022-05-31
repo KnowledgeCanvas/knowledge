@@ -15,11 +15,12 @@
  */
 
 import {Injectable, NgZone} from '@angular/core';
-import {UuidModel} from "src/app/models/uuid.model";
+
 import {BehaviorSubject, Observable} from 'rxjs';
-import {SettingsModel} from "src/app/models/settings.model";
 import {IpcMessage, KcDialogRequest, KsBrowserViewRequest, KsThumbnailRequest} from "kc_electron/src/app/models/electron.ipc.model";
-import {FileModel} from "../../../models/file.model";
+import {SettingsModel} from "../../../../../../kc_shared/models/settings.model";
+import {FileSourceModel} from "../../../../../../kc_shared/models/file.source.model";
+import {UUID} from "../../../models/uuid.model";
 
 export interface ElectronNavEvent {
   stack: string[]
@@ -115,7 +116,7 @@ export class ElectronIpcService {
   private _thumbnails = new BehaviorSubject<{ id: string, thumbnail: any }>({id: '', thumbnail: undefined});
   thumbnail = this._thumbnails.asObservable();
 
-  private _extractedText = new BehaviorSubject<{url: string, text: string}>({url: '', text: ''});
+  private _extractedText = new BehaviorSubject<{ url: string, text: string }>({url: '', text: ''});
   extractedText = this._extractedText.asObservable();
 
   constructor(private zone: NgZone) {
@@ -342,15 +343,15 @@ export class ElectronIpcService {
     });
   }
 
-  generateUuid(quantity: number): Promise<UuidModel[]> {
-    return new Promise<UuidModel[]>((resolve, reject) => {
+  generateUuid(quantity: number): Promise<UUID[]> {
+    return new Promise<UUID[]>((resolve, reject) => {
       this.receiveOnce(this.channels.generateUuidResults, (response: IpcMessage) => {
         this.removeAllListeners(this.channels.generateUuidResults);
         this.zone.run(() => {
           if (response.success?.data) {
-            let uuids: UuidModel[] = [];
+            let uuids: UUID[] = [];
             for (let id of response.success.data) {
-              let uuid = new UuidModel(id);
+              let uuid = new UUID(id);
               uuids.push(uuid);
             }
             resolve(uuids);
@@ -364,11 +365,11 @@ export class ElectronIpcService {
     });
   }
 
-  fileWatcher(): Observable<FileModel[]> {
-    return new Observable<FileModel[]>((subscriber) => {
+  fileWatcher(): Observable<FileSourceModel[]> {
+    return new Observable<FileSourceModel[]>((subscriber) => {
       this.receive(this.channels.ingestWatcherResults, (responses: IpcMessage[]) => {
         this.zone.run(() => {
-          let files: FileModel[] = [];
+          let files: FileSourceModel[] = [];
 
           for (let response of responses) {
             if (response.error) {

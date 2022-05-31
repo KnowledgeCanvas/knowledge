@@ -24,9 +24,8 @@ import {KsQueueService} from "./services/command-services/ks-queue-service/ks-qu
 import {KnowledgeSource} from "./models/knowledge.source.model";
 import {OverlayPanel} from "primeng/overlaypanel";
 import {ProjectTreeNode} from "./models/project.tree.model";
-import {ProjectCreationRequest, ProjectModel, ProjectUpdateRequest} from "./models/project.model";
+import {KcProject, ProjectCreationRequest, ProjectUpdateRequest} from "./models/project.model";
 import {Subscription} from "rxjs";
-import {UuidModel} from "./models/uuid.model";
 import {KsFactoryService} from "./services/factory-services/ks-factory-service/ks-factory.service";
 import {Dialog} from "primeng/dialog";
 import {KsCommandService} from "./services/command-services/ks-command/ks-command.service";
@@ -43,6 +42,7 @@ import {ProjectTreeFactoryService} from "./services/factory-services/project-tre
 import {DragAndDropService} from "./services/ingest-services/external-drag-and-drop/drag-and-drop.service";
 import {IngestSettingsComponent} from "./components/settings-components/ingest-settings/ingest-settings.component";
 import {NotificationsService} from "./services/user-services/notification-service/notifications.service";
+import {UUID} from "./models/uuid.model";
 
 
 @Component({
@@ -61,7 +61,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('upNextButton') upNextButton!: TemplateRef<any>;
 
-  currentProject: ProjectModel | null = null;
+  currentProject: KcProject | null = null;
 
   menuBarItems: MenuItem[] = [];
 
@@ -308,10 +308,10 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     for (let map of mappings) {
       if (map.ksList.length > 0) {
         for (let ks of map.ksList) {
-          ks.associatedProject = new UuidModel(map.projectId);
+          ks.associatedProject = new UUID(map.projectId);
         }
         let update: ProjectUpdateRequest = {
-          id: new UuidModel(map.projectId),
+          id: new UUID(map.projectId),
           addKnowledgeSource: map.ksList
         }
         updates.push(update);
@@ -334,7 +334,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  createProject(parentId?: UuidModel) {
+  createProject(parentId?: UUID) {
     const dialogref = this.dialogService.open(ProjectCreationDialogComponent, {
       width: '90%',
       modal: true,
@@ -362,7 +362,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       this.searchBar.nativeElement.value = ''
   }
 
-  deleteProject(id: UuidModel) {
+  deleteProject(id: UUID) {
     let project = this.projectService.getProject(id);
     let subprojects = this.projectService.getSubTree(id)
     this.confirmationService.confirm({

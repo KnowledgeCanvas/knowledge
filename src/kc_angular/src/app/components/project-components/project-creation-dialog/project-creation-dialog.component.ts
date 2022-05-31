@@ -15,9 +15,10 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {ProjectCreationRequest, ProjectType} from "src/app/models/project.model";
+import {ProjectCreationRequest} from "src/app/models/project.model";
 import {DynamicDialogConfig, DynamicDialogRef} from "primeng/dynamicdialog";
 import {ProjectService} from "../../../services/factory-services/project-service/project.service";
+import {KcProjectType} from "../../../../../../kc_shared/models/project.model";
 
 
 @Component({
@@ -34,10 +35,10 @@ export class ProjectCreationDialogComponent implements OnInit {
   parentProjectName: string = 'None';
 
   // A list of potential project types
-  projectTypes: { code: ProjectType, name: string }[];
+  projectTypes: { code: KcProjectType, name: string }[];
 
   // Instance used during the creation process
-  projectType: { code: ProjectType, name: string };
+  projectType: { code: KcProjectType, name: string };
 
   constructor(private ref: DynamicDialogRef,
               private config: DynamicDialogConfig,

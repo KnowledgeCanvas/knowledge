@@ -14,11 +14,12 @@
  limitations under the License.
  */
 
-import {UuidModel} from "./uuid.model";
-import {SearchModel} from "./google.search.results.model";
-import {FileModel} from "./file.model";
+
 import {WebsiteModel} from "./website.model";
-import {AuthorModel} from "./author.model";
+import {AuthorModel} from "../../../../kc_shared/models/author.model";
+import {FileSourceModel} from "../../../../kc_shared/models/file.source.model";
+import {UUID} from "./uuid.model";
+
 
 export type IngestType = 'google' | 'file' | 'website' | 'generic' | 'topic' | 'search' | 'note' | 'message';
 
@@ -26,16 +27,14 @@ export type IngestType = 'google' | 'file' | 'website' | 'generic' | 'topic' | '
 export type SourceType = 'article'
 
 export class SourceModel {
-  search: SearchModel | undefined;
-  file: FileModel | undefined;
+  file: FileSourceModel | undefined;
   website: WebsiteModel | undefined;
 
-  constructor(file?: FileModel, search?: SearchModel, website?: WebsiteModel) {
-    if (!file && !search && !website) {
+  constructor(file?: FileSourceModel, website?: WebsiteModel) {
+    if (!file && !website) {
       throw new Error('SourceModel must contain at lesat one valid source.');
     }
     this.file = file;
-    this.search = search;
     this.website = website;
   }
 }
@@ -62,7 +61,7 @@ export type KnowledgeSourceEvent = {
 }
 
 export class KnowledgeSource {
-  associatedProject: UuidModel;
+  associatedProject: UUID;
   authors: AuthorModel[];
   dateDue?: Date;
   dateCheckpoint: Date[];
@@ -73,7 +72,7 @@ export class KnowledgeSource {
   events?: KnowledgeSourceEvent[] = [];
   icon?: any;
   iconUrl?: string;
-  id: UuidModel;
+  id: UUID;
   ingestType: IngestType;
   snippet?: string;
   rawText?: string;
@@ -85,10 +84,10 @@ export class KnowledgeSource {
   readonly reference: KnowledgeSourceReference;
   importMethod?: 'autoscan' | 'dnd' | 'extension' | 'manual' = 'manual';
 
-  constructor(title: string, id: UuidModel, ingestType: IngestType, reference: KnowledgeSourceReference) {
+  constructor(title: string, id: UUID, ingestType: IngestType, reference: KnowledgeSourceReference) {
     this.title = title;
     this.id = id;
-    this.associatedProject = new UuidModel('');
+    this.associatedProject = new UUID('');
     this.authors = [];
     this.reference = reference;
     this.ingestType = ingestType;
