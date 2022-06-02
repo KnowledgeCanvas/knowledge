@@ -30,10 +30,6 @@ export class ProjectTreeNode implements ProjectGraphNode {
     this.subprojects = subprojects ? subprojects : [];
     this.expanded = expanded;
   }
-
-  public addSubProject(sub: ProjectTreeNode): void {
-    this.subprojects.push(sub);
-  }
 }
 
 export class ProjectTree {
@@ -55,7 +51,7 @@ export class ProjectTree {
     if (parentId) {
       this.addChild(node, parentId, this.root);
     } else {
-      this.root.addSubProject(node);
+      this.root.subprojects.push(node);
     }
   }
 

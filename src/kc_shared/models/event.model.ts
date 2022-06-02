@@ -15,10 +15,31 @@
  */
 import {UuidModel} from "./uuid.model";
 
+<<<<<<< HEAD:src/kc_shared/models/author.model.ts
+export interface AuthorModel {
+    firstName: string;
+    lastName: string;
+    id: UuidModel;
+=======
 export interface EventModel {
     timestamp: string;
     id: UuidModel;
-    type: 'create' | 'read' | 'update' | 'delete' | 'reminder' | 'checkpoint';
+    type: 'create' | 'read' | 'update' | 'delete' | 'reminder' | 'checkPoint' | 'dueDate';
     description?: string;
     icon?: string;
+}
+
+export interface ProjectGraphNode {
+    name: string
+    id: string
+    type: string
+    expanded: boolean
+    subprojects: ProjectGraphNode[]
+}
+
+export interface KnowledgeSourceGraphNode {
+    name: string
+    id: string
+    icon: string
+>>>>>>> release-0.5.5:src/kc_shared/models/event.model.ts
 }

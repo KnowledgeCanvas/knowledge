@@ -14,11 +14,11 @@
  limitations under the License.
  */
 
-
 import {WebsiteModel} from "./website.model";
 import {AuthorModel} from "../../../../kc_shared/models/author.model";
 import {FileSourceModel} from "../../../../kc_shared/models/file.source.model";
-import {UUID} from "./uuid.model";
+import {UUID} from "./uuid";
+
 
 
 export type IngestType = 'google' | 'file' | 'website' | 'generic' | 'topic' | 'search' | 'note' | 'message';

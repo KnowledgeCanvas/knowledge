@@ -14,9 +14,9 @@
  limitations under the License.
  */
 import {Hashable} from "./hashable.model";
-import {UuidModel} from "./uuid.model";
 import {WebSourceModel} from "./web.source.model";
 import {FileSourceModel} from "./file.source.model";
+import {UuidModel} from "./uuid.model";
 
 export interface KnowledgeSourceModel {
     title: string

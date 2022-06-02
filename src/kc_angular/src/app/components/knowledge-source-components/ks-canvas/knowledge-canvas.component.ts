@@ -26,7 +26,7 @@ import {KsCommandService} from "../../../services/command-services/ks-command/ks
 import {Subscription} from "rxjs";
 import {ConfirmationService, MenuItem, TreeNode} from "primeng/api";
 import {NotificationsService} from "../../../services/user-services/notification-service/notifications.service";
-import {UUID} from "../../../models/uuid.model";
+import {UUID} from "../../../models/uuid";
 
 @Component({
   selector: 'app-knowledge-canvas',

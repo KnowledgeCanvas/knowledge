@@ -19,7 +19,7 @@ import {ProjectService} from "../../../services/factory-services/project-service
 import {ProjectUpdateRequest} from "src/app/models/project.model";
 import {PrimeIcons, TreeNode} from "primeng/api";
 import {TreeModule} from "primeng/tree";
-import {UUID} from "../../../models/uuid.model";
+import {UUID} from "../../../models/uuid";
 
 @Component({
   selector: 'app-projects-tree',

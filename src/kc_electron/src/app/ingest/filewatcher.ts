@@ -14,10 +14,10 @@
  limitations under the License.
  */
 
-import {IngestSettingsModel} from "../models/ingest.model";
 import {Subscription} from 'rxjs';
 import {FSWatcher} from "chokidar";
 import {IpcMessage} from "../models/electron.ipc.model";
+import {IngestSettingsModel} from "../../../../kc_shared/models/settings.model";
 
 const chokidar = require('chokidar');
 const mime = require('mime-types');

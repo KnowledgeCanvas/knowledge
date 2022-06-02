@@ -45,7 +45,7 @@ export class NotificationsService {
     console.debug(`[Debug]-[${Date.now()}]-[${component}]: ${summary} - ${detail}`);
     const msg: KcNotification = {
       severity: 'info',
-      summary: 'Debug: ' + summary,
+      summary: summary,
       detail: detail
     }
 
@@ -60,7 +60,7 @@ export class NotificationsService {
     console.error(`[Error]-[${Date.now()}]-[${component}]: ${summary} - ${detail}`);
     const msg: KcNotification = {
       severity: 'error',
-      summary: 'Error: ' + summary,
+      summary: summary,
       detail: detail
     }
 
@@ -75,12 +75,27 @@ export class NotificationsService {
     console.log(`[Info ]-[${Date.now()}]-[${component}]: ${summary} - ${detail}`);
   }
 
+  success(component: string, summary: string, detail: string, presentation: 'banner' | 'none' | 'toast' = 'toast') {
+    console.log(`[Info ]-[${Date.now()}]-[${component}]: ${summary} - ${detail}`);
+    const msg: KcNotification = {
+      severity: 'success',
+      summary: summary,
+      detail: detail
+    }
+
+    if (presentation === 'toast') {
+      this.toast(msg);
+    } else if (presentation === 'banner') {
+      this.banner(msg);
+    }
+  }
+
   warn(component: string, summary: string, detail: string, presentation: 'banner' | 'none' | 'toast' = 'toast') {
     console.warn(`[Warn ]-[${Date.now()}]-[${component}]: ${summary} - ${detail}`);
     const msg: KcNotification = {
       severity: 'warn',
       summary: summary,
-      detail: 'Warn: ' + detail
+      detail: detail
     }
 
     if (presentation === 'toast') {

@@ -19,7 +19,7 @@ import {Component, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output}
 import {KnowledgeSource} from "../../../models/knowledge.source.model";
 import {TreeNode} from "primeng/api";
 import {Subscription} from "rxjs";
-import {UUID} from "../../../models/uuid.model";
+import {UUID} from "../../../models/uuid";
 
 
 export interface KsCardOptions {

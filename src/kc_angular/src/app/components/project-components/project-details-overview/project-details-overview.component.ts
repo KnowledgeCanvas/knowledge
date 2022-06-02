@@ -25,7 +25,7 @@ import {MenuItem} from "primeng/api";
 import {OverlayPanel} from "primeng/overlaypanel";
 import {KsCommandService} from "../../../services/command-services/ks-command/ks-command.service";
 import {KcCardRequest} from "../project-calendar/project-calendar.component";
-import {UUID} from "../../../models/uuid.model";
+import {UUID} from "../../../models/uuid";
 
 
 @Component({

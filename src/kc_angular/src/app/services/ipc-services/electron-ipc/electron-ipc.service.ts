@@ -15,12 +15,11 @@
  */
 
 import {Injectable, NgZone} from '@angular/core';
-
 import {BehaviorSubject, Observable} from 'rxjs';
 import {IpcMessage, KcDialogRequest, KsBrowserViewRequest, KsThumbnailRequest} from "kc_electron/src/app/models/electron.ipc.model";
 import {SettingsModel} from "../../../../../../kc_shared/models/settings.model";
 import {FileSourceModel} from "../../../../../../kc_shared/models/file.source.model";
-import {UUID} from "../../../models/uuid.model";
+import {UUID} from "../../../models/uuid";
 
 export interface ElectronNavEvent {
   stack: string[]

@@ -23,7 +23,7 @@ import {BrowserViewDialogService} from "../../../services/ipc-services/browser-s
 import {DialogService} from "primeng/dynamicdialog";
 import {ProjectInfoComponent} from "../project-info/project-info.component";
 import {TreeNode} from "primeng/api";
-import {UUID} from "../../../models/uuid.model";
+import {UUID} from "../../../models/uuid";
 
 
 @Component({

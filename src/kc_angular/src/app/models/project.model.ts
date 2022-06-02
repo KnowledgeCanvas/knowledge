@@ -18,7 +18,8 @@ import {KnowledgeSource} from "./knowledge.source.model";
 import {KcCalendar} from "./calendar.model";
 import {KcProjectModel, KcProjectType} from "../../../../kc_shared/models/project.model";
 import {EventModel} from "../../../../kc_shared/models/event.model";
-import {UUID} from "./uuid.model";
+import {UUID} from "./uuid";
+
 
 
 export class KcProject implements KcProjectModel{

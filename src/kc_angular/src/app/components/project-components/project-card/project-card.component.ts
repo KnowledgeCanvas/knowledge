@@ -17,7 +17,7 @@
 
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {KcProject} from "../../../models/project.model";
-import {UUID} from "../../../models/uuid.model";
+import {UUID} from "../../../models/uuid";
 
 @Component({
   selector: 'app-project-card',

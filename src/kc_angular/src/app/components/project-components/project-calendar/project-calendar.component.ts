@@ -17,12 +17,12 @@
 import {Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
 import {CalendarOptions, FullCalendarComponent, FullCalendarModule} from "@fullcalendar/angular";
 import {KcProject} from "../../../models/project.model";
+import {UUID} from "../../../models/uuid";
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import listPlugin from '@fullcalendar/list';
 import {KnowledgeSource} from "../../../models/knowledge.source.model";
-import {UUID} from "../../../models/uuid.model";
 
 FullCalendarModule.registerPlugins([
   dayGridPlugin,

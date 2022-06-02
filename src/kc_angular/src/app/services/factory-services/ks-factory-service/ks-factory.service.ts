@@ -22,7 +22,7 @@ import {ExtractionService} from "../../ingest-services/web-extraction-service/ex
 import {FaviconExtractorService} from "../../ingest-services/favicon-extraction-service/favicon-extractor.service";
 import {SettingsService} from "../../ipc-services/settings-service/settings.service";
 import {FileSourceModel} from "../../../../../../kc_shared/models/file.source.model";
-import {UUID} from "../../../models/uuid.model";
+import {UUID} from "../../../models/uuid";
 
 export interface KnowledgeSourceFactoryRequest {
   ingestType: IngestType,

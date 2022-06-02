@@ -23,7 +23,7 @@ import {FaviconExtractorService} from "../favicon-extraction-service/favicon-ext
 import {ElectronIpcService} from "../../ipc-services/electron-ipc/electron-ipc.service";
 import {DomSanitizer} from "@angular/platform-browser";
 import {KsFactoryService} from "../../factory-services/ks-factory-service/ks-factory.service";
-import {FileWatcherIpcService} from "../../ipc-services/filewatcher-ipc-service/file-watcher-ipc.service";
+import {FileWatcherService} from "../../ipc-services/filewatcher-service/file-watcher.service";
 import {NotificationsService} from "../../user-services/notification-service/notifications.service";
 
 @Injectable({
@@ -36,7 +36,7 @@ export class ExternalIngestService {
   constructor(private faviconService: FaviconExtractorService,
               private extractionService: ExtractionService,
               private ipcService: ElectronIpcService,
-              private fileWatcher: FileWatcherIpcService,
+              private fileWatcher: FileWatcherService,
               private ksFactory: KsFactoryService,
               private uuidService: UuidService,
               private notifications: NotificationsService,
