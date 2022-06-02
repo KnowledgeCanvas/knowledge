@@ -208,6 +208,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           }
           this.projectService.updateProjects([update]);
         }
+        this.notificationService.success('App', `Knowledge Source${ksList.length > 1 ? 's' : ''} Added`, ksList.map(ks => ks.title).join(', '));
       }
     });
 
@@ -344,9 +345,10 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
     dialogref.onClose.subscribe((creationRequest: ProjectCreationRequest) => {
       if (creationRequest) {
-        this.notificationService.debug('App', 'Creating Project', creationRequest.name);
         this.projectService.newProject(creationRequest).catch((reason) => {
           this.notificationService.error('App', 'Unable to Create Project', reason);
+        }).then((_) => {
+          this.notificationService.success('App', 'Project Created', creationRequest.name);
         });
       }
     });
@@ -369,8 +371,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.confirmationService.confirm({
       message: `Are you sure you want to remove ${subprojects.length} Projects?`,
       accept: () => {
-        let details = project?.name + ', ' + subprojects.map((p) => p.title).join(', ');
-        this.notificationService.debug('App', 'Deleting Project(s)', details);
+        let details: string = subprojects.map((p) => p.title).join(', ');
+        this.notificationService.warn('App', 'Project(s) Deleted', details);
         this.projectService.deleteProject(id)
       }
     })
