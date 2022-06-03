@@ -319,8 +319,15 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         updates.push(update);
       }
     }
-    if (updates.length > 0)
-      this.projectService.updateProjects(updates);
+    if (updates.length > 0) {
+      this.projectService.updateProjects(updates).then(() => {
+        for (let update of updates) {
+          for (let ks of update.addKnowledgeSource ?? []) {
+            this.ksQueueService.add(ks);
+          }
+        }
+      });
+    }
   }
 
   ksQueueRemove(ks: KnowledgeSource) {

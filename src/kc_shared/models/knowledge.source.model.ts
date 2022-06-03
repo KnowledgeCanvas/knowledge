@@ -53,3 +53,9 @@ export interface KnowledgeSourceThumbnail extends KnowledgeSourceImage {
     width: number
     link?: string
 }
+
+export interface KnowledgeSourceIngestTask {
+    method: 'manual' | 'extension' | 'autoscan' | 'dnd'
+    callback: (method: 'add' | 'remove' | 'delay') => void
+    id: string
+}

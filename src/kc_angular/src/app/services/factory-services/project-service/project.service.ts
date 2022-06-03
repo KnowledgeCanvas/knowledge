@@ -568,6 +568,10 @@ export class ProjectService {
     for (let ks of add) {
       if (ks.ingestType === 'file') {
         localStorage.setItem(`icon-${ks.id.value}`, ks.icon);
+
+        if (ks.importMethod === 'autoscan' && typeof ks.accessLink === 'string') {
+          ks.accessLink = ks.accessLink.replace('pending-', '');
+        }
       }
     }
 
@@ -591,7 +595,7 @@ export class ProjectService {
   private removeKnowledgeSource(project: KcProject, remove: KnowledgeSource[]): KcProject {
     if (project.knowledgeSource && project.knowledgeSource.length > 0) {
       for (let toRemove of remove) {
-        localStorage.removeItem(`icon-${toRemove.id.value}`);
+        this.storageService.deleteKnowledgeSource(toRemove);
         project.knowledgeSource = project.knowledgeSource.filter(ks => ks.id.value !== toRemove.id.value);
       }
     } else {

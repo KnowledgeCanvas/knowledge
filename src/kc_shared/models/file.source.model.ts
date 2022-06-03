@@ -27,3 +27,14 @@ export interface FileSourceModel {
     pages?: number;
     words?: number;
 }
+
+export interface FileWatcherUpdate {
+    id: string,
+    method: 'add' | 'remove' | 'delay'
+}
+
+export interface PendingFileTransfer {
+    id: string
+    oldPath: string
+    newPath: string
+}

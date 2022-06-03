@@ -42,6 +42,10 @@ export class KsQueueService {
   }
 
   clearResults() {
+    this.notificationsService.debug('Up Next', `Clearing Results`, `Removing ${this.ksQueueSubject.value.length} Knowledge Sources`);
+    for (let ks of this.ksQueueSubject.value) {
+      this.externalIngestService.finalize(ks, 'remove');
+    }
     this.ksQueueSubject.next([]);
   }
 
@@ -62,7 +66,17 @@ export class KsQueueService {
     });
   }
 
-  remove(data: KnowledgeSource) {
-    this.ksQueueSubject.next(this.ksQueueSubject.value.filter(ks => ks.id.value !== data.id.value));
+  add(ks: KnowledgeSource) {
+    this.externalIngestService.finalize(ks, 'add');
+  }
+
+  remove(ks: KnowledgeSource) {
+    this.externalIngestService.finalize(ks, 'remove');
+    this.ksQueueSubject.next(this.ksQueueSubject.value.filter(k => k.id.value !== ks.id.value));
+  }
+
+  delay(ks: KnowledgeSource) {
+    this.externalIngestService.finalize(ks, 'delay');
+    this.ksQueueSubject.next(this.ksQueueSubject.value.filter(k => k.id.value !== ks.id.value));
   }
 }

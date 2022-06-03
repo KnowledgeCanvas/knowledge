@@ -31,13 +31,13 @@ export class NotificationsService {
 
   toast(msg: KcNotification) {
     msg.key = 'app-toast';
-    msg.life = 5000;
+    msg.life = msg.life ?? 10000;
     this.messageService.add(msg);
   }
 
   banner(msg: KcNotification) {
     msg.key = 'app-banner'
-    msg.life = 5000;
+    msg.life = msg.life ?? 10000;
     this.messageService.add(msg);
   }
 
@@ -61,7 +61,8 @@ export class NotificationsService {
     const msg: KcNotification = {
       severity: 'error',
       summary: summary,
-      detail: detail
+      detail: detail,
+      sticky: true
     }
 
     if (presentation === 'toast') {
@@ -95,7 +96,8 @@ export class NotificationsService {
     const msg: KcNotification = {
       severity: 'warn',
       summary: summary,
-      detail: detail
+      detail: detail,
+      sticky: true
     }
 
     if (presentation === 'toast') {
