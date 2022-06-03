@@ -23,7 +23,10 @@ export class FileWatcherService {
   private removeAllListeners = window.api.removeAllListeners;
   private channels = {
     fwNewFiles: 'E2A:FileWatcher:NewFiles',
-    fwFinalize: `A2E:FileWatcher:Finalize`
+    fwError: 'E2A:FileWatcher:Error',
+    fwDelete: 'A2E:FileWatcher:Delete',
+    fwFinalize: `A2E:FileWatcher:Finalize`,
+    fwWarn: 'E2A:FileWatcher:Warn'
   }
 
   private __files = new BehaviorSubject<FileSourceModel[]>([]);
@@ -45,6 +48,22 @@ export class FileWatcherService {
         }
         this.__files.next(files);
       });
+    })
+
+    this.receive(this.channels.fwError, (message: IpcMessage) => {
+      this.zone.run(() => {
+        if (message.error) {
+          this.notifications.error('FileWatcher', `${message.error.label}`, `${message.error.message} (${message.error.code})`);
+        }
+      })
+    })
+
+    this.receive(this.channels.fwWarn, (message: IpcMessage) => {
+      this.zone.run(() => {
+        if (message.error) {
+          this.notifications.warn('FileWatcher', `${message.error.label}`, `${message.error.message}`);
+        }
+      })
     })
   }
 

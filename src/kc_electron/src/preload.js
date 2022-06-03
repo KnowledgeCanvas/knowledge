@@ -42,6 +42,7 @@ const ipcSendChannels = [
     "A2E:FileSystem:FileThumbnail",
     "A2E:FileSystem:OpenFile",
     "A2E:FileSystem:ShowFile",
+    "A2E:FileWatcher:Delete",
     "A2E:FileWatcher:Finalize",
     "A2E:KnowledgeCanvas:Close",
     "A2E:KnowledgeCanvas:GetSources",
@@ -76,7 +77,9 @@ const ipcReceiveChannels = [
     "E2A:BrowserView:NavEvent",
     "E2A:Extension:Import",
     "E2A:FileSystem:FileThumbnail",
+    "E2A:FileWatcher:Error",
     "E2A:FileWatcher:NewFiles",
+    "E2A:FileWatcher:Warn",
     "E2A:Version:Get",
 ]
 

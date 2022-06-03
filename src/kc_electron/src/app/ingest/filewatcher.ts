@@ -46,12 +46,14 @@ class IngestFileWatcher {
 
     constructor() {
         // Listen for updates from the app (i.e. when KS have been successfully imported)
-        this.ipcSubscription = ipcMain.on('A2E:FileWatcher:Finalize', (event: any, request: FilewatcherUpdate) => {
-            console.log('File Watcher was notified with event: ', event)
-            console.log('File watcher request: ', request);
-            for (let filePath of request.remove) {
-                this.queue.filter((f) => f !== filePath);
-            }
+        ipcMain.on('A2E:FileWatcher:Finalize', (event: any, update: FileWatcherUpdate) => {
+            console.log('File watcher request: ', update);
+            this.finalize(update.id, update.method);
+        })
+
+        ipcMain.on('A2E:FileWatcher:Delete', (_: any, path: string) => {
+            console.warn('IngestFileWatcher deleting managed file at: ', path);
+            IngestFileWatcher.delete(path);
         })
 
 
