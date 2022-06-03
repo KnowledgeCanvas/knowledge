@@ -122,15 +122,14 @@ class IngestFileWatcher {
                 for (let mv of move) {
                     IngestFileWatcher.move(mv.from, mv.to);
                 }
-                IngestFileWatcher.warn('Autoscan Files Recovered', `${move.length} ${move.length > 1 ? 'files were' : 'file was'} recovered and moved back to the autoscan directory.`);
             }, 5000);
 
         }
     }
 
     private static delete(path: string) {
-        console.warn('IngestFileWatcher removing file at ', path);
         try {
+            IngestFileWatcher.warn('Deleting Autoscan File', path);
             fs.rmSync(path);
         } catch (e) {
             IngestFileWatcher.error('Exception', `Failed to delete file at ${path}`)

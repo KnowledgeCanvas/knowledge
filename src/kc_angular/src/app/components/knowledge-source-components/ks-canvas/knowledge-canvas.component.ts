@@ -305,9 +305,27 @@ export class KnowledgeCanvasComponent implements OnInit, OnDestroy {
   }
 
   onKsOpen(ks: KnowledgeSource) {
-    // TODO IMPORTANT: this fails when a file has weird characters like #, so files should probably be opened using Electron IPC
-    window.open(typeof ks.accessLink === 'string' ? ks.accessLink : ks.accessLink.href);
-    ks.dateAccessed.push(new Date());
+    if (ks.ingestType === 'file' && typeof ks.accessLink === 'string') {
+      this.ipcService.openLocalFile(ks.accessLink).then((result) => {
+        if (result) {
+          this.notificationService.success('KnowledgeCanvas', 'File Opened', ks.title);
+        } else {
+          this.notificationService.error('KnowledgeCanvas', 'Failed to Open', ks.title);
+        }
+      });
+    } else {
+      window.open(typeof ks.accessLink === 'string' ? ks.accessLink : ks.accessLink.href);
+      this.notificationService.success('KnowledgeCanvas', 'Link Opened', ks.title);
+    }
+
+    if (!ks.events) {
+      ks.events = [];
+    }
+
+    ks.events.push({
+      date: new Date(),
+      label: "Accessed"
+    })
   }
 
   onKsRemoveFromMoveList(ks: KnowledgeSource) {

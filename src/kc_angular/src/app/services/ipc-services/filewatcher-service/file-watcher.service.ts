@@ -87,7 +87,6 @@ export class FileWatcherService {
   }
 
   delete(path: string) {
-    this.notifications.warn('FileWatcher', 'Deleting File', path);
     this.send(this.channels.fwDelete, path);
   }
 }
