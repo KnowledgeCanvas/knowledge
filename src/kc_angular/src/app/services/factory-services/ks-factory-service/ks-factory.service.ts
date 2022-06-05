@@ -49,7 +49,7 @@ export class KsFactoryService {
   }
 
   make(type: IngestType, link?: URL | string, file?: File): Promise<KnowledgeSource> {
-    return new Promise<KnowledgeSource>((resolve) => {
+    return new Promise<KnowledgeSource>((resolve, reject) => {
       if (type === 'file' && file) {
         if (typeof link === 'string') {
           this.extractFileResource(link, file)
@@ -65,6 +65,7 @@ export class KsFactoryService {
           .then((result) => {
             resolve(result);
           }).catch((reason) => {
+            reject(reason)
           console.warn('Could not create KS from link because: ', reason);
         });
       }

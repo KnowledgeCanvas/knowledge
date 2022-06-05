@@ -1,5 +1,4 @@
 import { CytoscapeOptions } from "cytoscape";
-export declare type KnowledgeSource = any;
 export declare class KnowledgeCanvas {
     private cyContainer;
     private cyModel;

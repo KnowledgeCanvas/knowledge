@@ -22,20 +22,6 @@ import {Subscription} from "rxjs";
 import {UUID} from "../../../models/uuid";
 
 
-export interface KsCardOptions {
-  showThumbnail: boolean,
-  showDescription: boolean,
-  showProjectSelection: boolean,
-  showTopics: boolean,
-  showIcon: boolean,
-  showRemove: boolean,
-  showPreview: boolean,
-  showEdit: boolean,
-  showOpen: boolean,
-  showContentType: boolean,
-  showProjectName: boolean
-}
-
 @Component({
   selector: 'app-ks-card',
   templateUrl: './ks-card.component.html',

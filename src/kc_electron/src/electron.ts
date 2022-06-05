@@ -64,27 +64,12 @@ let appEnv = settingsService.getSettings();
 // Declare main window for later use
 let kcMainWindow: any;
 
-if (!appEnv.ingest.extensions) {
-    appEnv.ingest.extensions = {
-        httpServerEnabled: false,
-        httpServerPort: 9000
-    }
-    settingsService.setSettings(appEnv);
-}
-
-if (appEnv.ingest.extensions.httpServerEnabled) {
-    // Start browser extension server
-    console.debug('Starting browser extension server...');
-    const browserExtensionServer = require('./app/server/server').kcExtensionServer;
-    browserExtensionServer.start();
-}
-
 /**
  * Main Window Functions
  */
 function createMainWindow() {
-    let WIDTH: number = parseInt(appEnv.DEFAULT_WINDOW_WIDTH);
-    let HEIGHT: number = parseInt(appEnv.DEFAULT_WINDOW_HEIGHT);
+    let WIDTH: number = parseInt(appEnv.env.DEFAULT_WINDOW_WIDTH);
+    let HEIGHT: number = parseInt(appEnv.env.DEFAULT_WINDOW_HEIGHT);
     let darkMode = appEnv.display.theme.isDark;
     let backgroundColor = darkMode ? '#1E1E1E' : '#F9F9F9';
     console.log('Theme: ', appEnv.display.theme);

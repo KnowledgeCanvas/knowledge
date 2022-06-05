@@ -13,7 +13,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-import {KnowledgeSource} from "kc_knowledge/src/knowledge/knowledge-canvas";
+import {KnowledgeSource} from "./knowledge.source.model";
 
 export interface IpcSuccess {
     message?: string;

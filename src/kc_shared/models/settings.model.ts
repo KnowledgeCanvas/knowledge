@@ -15,48 +15,131 @@
  */
 import {KcTheme} from "./style.model";
 
+
+/**
+ * All of these are set to default values inside the Electron Settings Service file under the `defaults()` function.
+ */
 export interface SettingsModel {
-    app?: ApplicationSettingsModel;
-    appPath?: string;
-    display?: DisplaySettingsModel;
-    firstRun?: boolean;
-    googleApiKey?: string;
-    ingest?: IngestSettingsModel;
-    pathSep?: string;
-    projectsPath?: string;
-    search?: SearchSettingsModel;
-    userName?: string;
+    env: EnvironmentSettingsModel;
+    app: ApplicationSettingsModel;
+    display: DisplaySettingsModel;
+    docker: DockerSettingsModel;
+    ingest: IngestSettingsModel;
+    system: SystemSettingsModel;
+    search: SearchSettingsModel;
+    user: UserSettingsModel;
+}
+
+export interface DockerSettingsModel {
+    enabled: boolean;
+    dockerPath: string;
+}
+
+export interface UserSettingsModel {
+    firstName: string;
+    lastName: string;
+    userName: string;
+    birthdate: string;
+}
+
+export interface EnvironmentSettingsModel {
+    appTitle: string;
+    settingsFilename: string;
+    DEFAULT_WINDOW_HEIGHT: number;
+    DEFAULT_WINDOW_WIDTH: number;
+    STARTUP_WINDOW_HEIGHT: number;
+    STARTUP_WINDOW_WIDTH: number;
+}
+
+export interface SystemSettingsModel {
+    appPath: string // Root storage location
+    appVersion: string // Knowledge Canvas version
+    cwd: string // The current working directory, dynamically set on App startup
+    downloadPath: string // Default downloads location
+    electronVersion: string // Current version of Electron, determined by process.versions.electron
+    envPath: string // Location of `.env` file TODO: could this be set to process.resourcesPath?
+    firstRun: boolean // Set to true if this is the first time the app is run, otherwise false, used for lifecycle
+    homePath: string // Depends on OS, equivalent to `~/` in Linux/MacOS
+    nodeVersion: string // Current version of node, determined by process.versions.node
+    osPlatform: string // Current platform as determined by process.platform
+    osVersion: string // Current platform version, set to process.getSystemVersion()
+    pathSep: string // Set to "/" for Linux and MacOS, set to "\" for Windows using `path.sep`
+    resourcesPath: string // Location of the Resources directory, copied into the final build but must be computed dynamically
+    settingsPath: string // Location of the directory containing the settings file
+    settingsFilePath: string // Fully qualified path to the JSON settings file
 }
 
 export interface ApplicationSettingsModel {
-    ks?: {
-        table?: {
-            expandRows?: boolean;
-            showSubProjects?: boolean;
-            hideSidebar?: boolean;
-            showCountdown?: boolean;
-        }
-    }
+    table: TableSettingsModel
+    grid: GridSettingsModel
+    calendar: CalendarSettingsModel
+}
+
+export interface TableSettingsModel {
+    showSubProjects: boolean
+    showCountdown: boolean
+}
+
+export interface GridSettingsModel {
+    size: CardSizeType
+    sorter: CardSortType
+}
+
+export type CardSizeType = 'auto' | 'xs' | 'sm' | 'md' | 'lg';
+export type CardSortType = 'title-a' | 'title-d' | 'created-a' | 'created-d' | 'type-a' | 'type-d'
+export type CardOptions = {
+    showThumbnail: boolean,
+    showDescription: boolean,
+    showProjectSelection: boolean,
+    showTopics: boolean,
+    showIcon: boolean,
+    showRemove: boolean,
+    showPreview: boolean,
+    showEdit: boolean,
+    showOpen: boolean,
+    showContentType: boolean,
+    showProjectName: boolean
+}
+
+export interface CalendarSettingsModel {
+    
 }
 
 export interface SearchSettingsModel {
-    numResults?: number,
-    provider?: string
+    provider: 'google' | 'bing' | 'duck'
 }
 
 export interface DisplaySettingsModel {
-    theme: KcTheme;
+    theme: KcTheme
+    logging: LoggingSettingsModel
+}
+
+export interface LoggingSettingsModel {
+    warn: boolean
+    error: boolean
+    debug: boolean
 }
 
 export interface IngestSettingsModel {
-    autoscan?: boolean;
-    autoscanLocation?: string;
-    interval?: number;
-    managed?: boolean;
-    preserveTimestamps?: string;
-    storageLocation?: string;
-    extensions?: {
-        httpServerEnabled?: boolean,
-        httpServerPort?: number
-    }
+    manager: FileManagerSettingsModel
+    extensions: ExtensionServerSettingsModel
+    autoscan: AutoscanSettingsModel
+}
+
+export interface ExtensionServerSettingsModel {
+    enabled: boolean,
+    port: number,
+    path: string
+}
+
+export interface AutoscanSettingsModel {
+    enabled: boolean,
+    path: string,
+    interval: number,
+}
+
+export interface FileManagerSettingsModel {
+    enabled: boolean,
+    storageLocation: string,
+    target: 'autoscan' | 'all'
 }

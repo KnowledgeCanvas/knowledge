@@ -81,11 +81,11 @@ export class KnowledgeSourceTableComponent implements OnInit, OnChanges {
               private projectService: ProjectService, private browserService: BrowserViewDialogService,
               private settingsService: SettingsService, private ksContextMenuService: KsContextMenuService) {
     settingsService.app.subscribe((appSettings) => {
-      if (appSettings.ks?.table?.showCountdown !== undefined) {
-        this.ksTableShowCountdownInsteadOfDates = appSettings.ks.table.showCountdown;
+      if (appSettings.table?.showCountdown !== undefined) {
+        this.ksTableShowCountdownInsteadOfDates = appSettings.table.showCountdown;
       }
-      if (appSettings.ks?.table?.showSubProjects !== undefined) {
-        this.ksTableAllowSubprojectExpansion = appSettings.ks.table.showSubProjects;
+      if (appSettings.table?.showSubProjects !== undefined) {
+        this.ksTableAllowSubprojectExpansion = appSettings.table.showSubProjects;
       }
     });
   }
@@ -336,12 +336,12 @@ export class KnowledgeSourceTableComponent implements OnInit, OnChanges {
 
   onShowSubprojects($event: any) {
     const show = $event.checked;
-    this.settingsService.saveSettings({app: {ks: {table: {showSubProjects: show}}}});
+    this.settingsService.set({app: {table: {showSubProjects: show}}});
   }
 
   onShowCountdown($event: any) {
     const show = $event.checked;
-    this.settingsService.saveSettings({app: {ks: {table: {showCountdown: show}}}});
+    this.settingsService.set({app: {table: {showCountdown: show}}});
   }
 
   onRowChange($event: number) {

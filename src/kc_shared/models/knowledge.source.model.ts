@@ -32,7 +32,7 @@ export interface KnowledgeSourceModel {
     authors?: UuidModel[]
 }
 
-export class KnowledgeSource implements KnowledgeSourceModel{
+export class KnowledgeSource implements KnowledgeSourceModel {
     id!: UuidModel;
     source!: FileSourceModel | WebSourceModel;
     title!: string;

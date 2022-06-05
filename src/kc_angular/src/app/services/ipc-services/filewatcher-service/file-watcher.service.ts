@@ -15,7 +15,7 @@
  */
 import {Injectable, NgZone} from '@angular/core';
 import {BehaviorSubject, Observable} from "rxjs";
-import {IpcMessage} from "kc_electron/src/app/models/electron.ipc.model";
+import {IpcMessage} from "../../../../../../kc_shared/models/electron.ipc.model";
 import {FileSourceModel, FileWatcherUpdate} from "../../../../../../kc_shared/models/file.source.model";
 import {UUID} from "../../../models/uuid";
 import {NotificationsService} from "../../user-services/notification-service/notifications.service";

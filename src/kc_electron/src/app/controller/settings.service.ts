@@ -15,113 +15,310 @@
  */
 
 import * as fs from 'fs';
-import {EnvironmentModel} from "../models/environment.model";
-import {BehaviorSubject} from 'rxjs';
-import {IngestSettingsModel} from "../../../../kc_shared/models/settings.model";
+import {BehaviorSubject, Observable} from 'rxjs';
+import {EnvironmentSettingsModel, SettingsModel, SystemSettingsModel} from "../../../../kc_shared/models/settings.model";
+import * as dotenv from 'dotenv';
+import path from "path";
+import os from "os";
 
+import * as lodash from 'lodash';
+
+const {app, BrowserWindow, ipcMain} = require('electron');
 
 const RET_OK = 0;
 const RET_FAIL = -1;
+const RET_ERR = -1;
 
 let GLOBAL_ERROR = '';
 
-const ApplicationEnvironment = require('./environment');
-let appEnv: EnvironmentModel;
-appEnv = new ApplicationEnvironment().getEnvironment();
-
-
+/**
+ * The general workflow for SettingsService is as follows:
+ *
+ *      1. Load optimal default settings on every startup
+ *      2. Instantiate the `all` settings Observable for Electron-side usage
+ *      3. Read settings from file or create a new file if one does not exist
+ *      4. Make sure all necessary local paths exist
+ *      5. Listen to IPC channels for incoming requests
+ *      6. Broadcast settings via IPC whenever settings are changed or requested
+ */
 class SettingsService {
-    private ingestSubject = new BehaviorSubject<IngestSettingsModel>({autoscan: false, managed: false});
-    ingest = this.ingestSubject.asObservable();
+    all: Observable<SettingsModel>;
+    private ipcChannels = {
+        getSettings: 'A2E:Settings:Get',
+        getDefaults: 'A2E:Settings:Defaults',
+        setSettings: 'A2E:Settings:Set',
+        sendAll: 'E2A:Settings:All',
+        sendDefaults: 'E2A:Settings:Defaults'
+    }
+    private _all: BehaviorSubject<SettingsModel>;
 
     constructor() {
+        // 1. Load optimal default settings on every startup
+        const resources = path.join(process.cwd(), 'Resources');
+        const envPath = path.resolve(resources, 'app.env');
+        const defaults = this.defaults(envPath);
+
+        // 2. Instantiate the `all` settings Observable for Electron-side usage
+        this._all = new BehaviorSubject<SettingsModel>(defaults);
+        this.all = this._all.asObservable();
+
+        // 3. Read settings from file or create a new file if one does not exist
+        this.loadFile();
+
+        // 4. Make sure all necessary local paths exist
+        checkPaths([this._all.value.system.appPath])
+
+        // 5. Listen to IPC channels for incoming requests
+        ipcMain.on(this.ipcChannels.setSettings, (_: any, settings: SettingsModel) => {
+            let next: SettingsModel = lodash.merge(this._all.value, settings);
+            this.writeSettings(next).then(() => {});
+            this._all.next(next);
+        });
+        ipcMain.on(this.ipcChannels.getSettings, (_: any) => {
+            let kcMainWindow = BrowserWindow.getAllWindows()[0];
+            kcMainWindow.webContents.send(this.ipcChannels.sendAll, this._all.value);
+        })
+        ipcMain.on(this.ipcChannels.getDefaults, (_: any) => {
+            const defaultSettings = this.defaults(envPath);
+            let kcMainWindow = BrowserWindow.getAllWindows()[0];
+            kcMainWindow.webContents.send(this.ipcChannels.sendDefaults, defaultSettings);
+        })
+
+        // 6. Broadcast settings via IPC whenever settings are changed or requested
+        setTimeout(() => {
+            this.all.subscribe((settings: SettingsModel) => {
+                let kcMainWindow = BrowserWindow.getAllWindows()[0];
+                kcMainWindow.webContents.send(this.ipcChannels.sendAll, settings);
+            });
+        }, 2500);
     }
 
-    getSettings() {
-        let settings;
+    private static getEnvironment(envPath: string): EnvironmentSettingsModel {
+        let env = dotenv.config({path: envPath});
+        if (env.error || !env.parsed) {
+            return {
+                appTitle: 'Knowledge-Canvas',
+                settingsFilename: 'knowledge-canvas.settings.json',
+                DEFAULT_WINDOW_HEIGHT: 1280,
+                DEFAULT_WINDOW_WIDTH: 1000,
+                STARTUP_WINDOW_HEIGHT: 1280,
+                STARTUP_WINDOW_WIDTH: 1000
+            }
+        } else {
+            return {
+                appTitle: env.parsed.appTitle ?? 'Knowledge-Canvas',
+                settingsFilename: env.parsed.settingsFilename ?? 'knowledge-canvas.settings.json',
+                DEFAULT_WINDOW_HEIGHT: parseInt(env.parsed.DEFAULT_WINDOW_HEIGHT) ?? 1280,
+                DEFAULT_WINDOW_WIDTH: parseInt(env.parsed.DEFAULT_WINDOW_WIDTH) ?? 1000,
+                STARTUP_WINDOW_HEIGHT: parseInt(env.parsed.STARTUP_WINDOW_HEIGHT) ?? 1280,
+                STARTUP_WINDOW_WIDTH: parseInt(env.parsed.STARTUP_WINDOW_WIDTH) ?? 1000
+            }
+        }
+    }
 
-        try {
-            let raw = fs.readFileSync(appEnv.settingsFilePath, 'utf8');
-            settings = JSON.parse(raw.toString());
-        } catch (e) {
-            console.error('SettingsService: File IO error occurred on read.');
-            console.error(e);
+    defaults(envPath: string): SettingsModel {
+        const env = SettingsService.getEnvironment(envPath);
+
+        const system: SystemSettingsModel = {
+            appPath: path.join(os.homedir(), '.' + env.appTitle),
+            appVersion: app.getVersion(),
+            cwd: process.cwd(),
+            downloadPath: path.join(os.homedir(), 'Downloads'),
+            electronVersion: process.versions.electron,
+            envPath: envPath,
+            firstRun: true,
+            homePath: os.homedir(),
+            nodeVersion: process.versions.node,
+            osPlatform: process.platform,
+            osVersion: process.getSystemVersion(),
+            pathSep: path.sep,
+            resourcesPath: path.join(process.cwd(), 'Resources'),
+            settingsPath: '',
+            settingsFilePath: ''
         }
 
-        appEnv = {
-            ...appEnv,
-            ...settings
-        };
+        /**
+         * TODO: Run fstat on these directories to make sure they exist before setting them as settings path
+         *       Fallback on appPath as settings directory if these paths do not exist...
+         */
+        switch (process.platform) {
+            case "darwin": // MacOS -- /Users/username/Library/Preferences/KnowledgeCanvas
+                system.settingsPath = path.join(os.homedir(), 'Library', 'Preferences', env.appTitle);
+                break;
+            case "linux": // Linux -- ~/.local/share/KnowledgeCanvas
+                system.settingsPath = path.join(os.homedir(), '.local', 'share', env.appTitle);
+                break;
+            case "win32": // Windows -- C: Users\username\AppData\Local\KnowledgeCanvas
+                system.settingsPath = path.join(os.homedir(), 'AppData', 'Roaming', env.appTitle);
+                break;
+            default:
+                console.error('Settings directory not configured properly. Shutting down.');
+                process.exit(-1);
+        }
+        system.settingsFilePath = path.resolve(system.settingsPath, env.settingsFilename);
 
-        // TODO: only update observable if the ingest settings have changed.. otherwise this call is pointless
-        this.ingestSubject.next(appEnv.ingest);
-
-        return appEnv;
-    }
-
-    /**
-     *
-     * @param settings : Object
-     * @returns {number | error}
-     */
-    async setSettings(settings: EnvironmentModel): Promise<any> {
-        return new Promise((resolve, reject) => {
-            if (this.verifySettings(settings) === RET_OK) {
-                let oldIngestSettings = appEnv.ingest;
-                let newIngestSettings = settings.ingest;
-
-                appEnv = {
-                    ...appEnv,
-                    ...settings
-                };
-
-                this.writeSettings();
-
-
-                if (settings.ingest && (oldIngestSettings.autoscan !== newIngestSettings.autoscan
-                    || oldIngestSettings.autoscanLocation !== newIngestSettings.autoscanLocation
-                    || oldIngestSettings.interval !== newIngestSettings.interval)) {
-                    this.ingestSubject.next(appEnv.ingest);
+        return {
+            env: env,
+            system: system,
+            app: {
+                table: {
+                    showSubProjects: true,
+                    showCountdown: true
+                },
+                grid: {
+                    size: 'auto',
+                    sorter: 'title-a',
+                },
+                calendar: {}
+            },
+            display: {
+                theme: {
+                    name: 'Lara Light Indigo',
+                    code: 'lara-light-indigo',
+                    isDark: false,
+                    isDual: true
+                },
+                logging: {
+                    warn: false,
+                    debug: false,
+                    error: false
                 }
-
-                resolve(appEnv);
-            } else {
-                GLOBAL_ERROR = 'Invalid startup settings. Be sure to include the minimum set of settings (see documentation).';
-                console.error(GLOBAL_ERROR);
-                reject(GLOBAL_ERROR);
+            },
+            docker: {
+                enabled: false,
+                dockerPath: ''
+            },
+            ingest: {
+                manager: {
+                    enabled: false,
+                    storageLocation: path.resolve(system.appPath, 'files'),
+                    target: 'autoscan'
+                },
+                extensions: {
+                    enabled: false,
+                    port: 9000,
+                    path: __dirname
+                },
+                autoscan: {
+                    enabled: false,
+                    path: path.resolve(system.downloadPath, 'KnowledgeCanvas'),
+                    interval: 15
+                }
+            },
+            search: {
+                provider: 'google'
+            },
+            user: {
+                firstName: '',
+                lastName: '',
+                userName: '',
+                birthdate: ''
             }
-        });
+        };
     }
 
-    async writeSettings(): Promise<any> {
+    error(summary: string, description: string) {
+        console.error(`ElectronSettingsService: ${summary} - ${description}`);
+    }
+
+    warn(summary: string, description: string) {
+        console.warn(`ElectronSettingsService: ${summary} - ${description}`);
+    }
+
+    getSettings(): SettingsModel {
+        return this._all.value;
+    }
+
+    async writeSettings(settings: SettingsModel): Promise<any> {
         // First attempt to create the settings directory.
         // Ignore if it already exists and return error if creation fails.
         return new Promise((resolve, reject) => {
             try {
-                fs.mkdirSync(appEnv.settingsPath, {recursive: true});
+                fs.mkdirSync(settings.system.settingsPath, {recursive: true});
             } catch (e) {
-                console.error('Unable to create: ', appEnv.settingsPath, e);
-                GLOBAL_ERROR = 'Could not create settings directory: ' + appEnv.settingsPath;
+                console.error('Unable to create: ', settings.system.settingsPath, e);
+                GLOBAL_ERROR = 'Could not create settings directory: ' + settings.system.settingsPath;
                 reject({GLOBAL_ERROR});
             }
 
             try {
-                let settings = JSON.stringify(appEnv);
-                fs.writeFileSync(appEnv.settingsFilePath, settings);
+                let str = JSON.stringify(settings);
+                fs.writeFileSync(settings.system.settingsFilePath, str);
                 return RET_OK;
             } catch (e) {
-                GLOBAL_ERROR = 'Could not write startup settings: ' + appEnv.settingsFilePath;
+                GLOBAL_ERROR = 'Could not write startup settings: ' + settings.system.settingsFilePath;
                 return RET_FAIL;
             }
         });
     }
 
-    verifySettings(_: EnvironmentModel) {
-        // TODO: figure out a better verification scheme... define what constitutes "required" settings
-        return RET_OK;
+    private loadFile() {
+        let filePath = this._all.value.system.settingsFilePath;
+        let settings: SettingsModel;
+        let raw;
+
+        try {
+            raw = fs.readFileSync(filePath);
+            settings = JSON.parse(raw.toString());
+
+            // settings.system.appVersion was added in >=0.5.5. If it does not exist, we do not want to include the file
+            if (settings && settings.system.appVersion) {
+                const merged = lodash.merge(this._all.value, settings);
+                this._all.next(merged);
+            } else {
+                this.warn('Deprecated Settings File Found', 'Replacing with new schema.');
+                this.writeSettings(this._all.value).then(() => {
+                    this._all.next(this._all.value);
+                });
+            }
+        } catch (e) {
+            console.log('SettingsService - Error - ', e);
+            this.warn('Settings File Does Not Exist', 'Creating new settings file.');
+            if (makeDirectory(this._all.value.system.settingsPath) !== RET_OK) {
+                console.error('Exiting with code ', -1);
+                process.exit(-1);
+            }
+            let data = JSON.stringify(this._all.value);
+            if (writeFile(filePath, data) !== RET_OK) {
+                console.error('Exiting with code ', -1);
+                process.exit(-1);
+            }
+        }
     }
 
 }
+
+function checkPaths(paths: string[]) {
+    for (let pathToCheck of paths) {
+        if (makeDirectory(pathToCheck) !== RET_OK) {
+            console.error('Unexpected error while attempting to create directory: ', pathToCheck);
+        }
+    }
+}
+
+function writeFile(dir: string, data: any) {
+    dir = path.join(dir);
+    try {
+        fs.writeFileSync(dir, data);
+        return RET_OK;
+    } catch (e) {
+        console.error('Could not write settings file: ', dir);
+        console.error(e);
+        return RET_ERR;
+    }
+}
+
+function makeDirectory(dir: string) {
+    dir = path.resolve(dir);
+    try {
+        fs.mkdirSync(dir, {recursive: true});
+        return RET_OK;
+    } catch (e) {
+        console.error(e);
+        return RET_ERR;
+    }
+}
+
 
 let settingsService = new SettingsService();
 module.exports = settingsService;

@@ -14,7 +14,7 @@
  limitations under the License.
  */
 
-import {IpcMessage, KsThumbnailRequest, PromptForDirectoryRequest} from "../models/electron.ipc.model";
+import {IpcMessage, KsThumbnailRequest, PromptForDirectoryRequest} from "../../../../kc_shared/models/electron.ipc.model";
 
 const share: any = (global as any).share;
 const ipcMain: any = share.ipcMain;

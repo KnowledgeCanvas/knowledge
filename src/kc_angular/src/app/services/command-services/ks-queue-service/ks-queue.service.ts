@@ -34,7 +34,7 @@ export class KsQueueService {
   constructor(private faviconService: FaviconExtractorService,
               private settingsService: SettingsService,
               private externalIngestService: ExternalIngestService,
-              private notificationsService: NotificationsService) {
+              private notifications: NotificationsService) {
 
     this.externalIngestService.ks.subscribe((ksList) => {
       this.enqueue(ksList);
@@ -42,7 +42,7 @@ export class KsQueueService {
   }
 
   clearResults() {
-    this.notificationsService.debug('Up Next', `Clearing Results`, `Removing ${this.ksQueueSubject.value.length} Knowledge Sources`);
+    this.notifications.debug('Up Next', `Clearing Results`, `Removing ${this.ksQueueSubject.value.length} Knowledge Sources`);
     for (let ks of this.ksQueueSubject.value) {
       this.externalIngestService.finalize(ks, 'remove');
     }
@@ -58,12 +58,7 @@ export class KsQueueService {
       return;
     }
 
-    this.notificationsService.toast({
-      severity: 'success',
-      summary: 'Up Next',
-      detail: `${ksList.length} Knowledge Source${ksList.length > 1 ? 's' : ''} added!`,
-      life: 3000
-    });
+    this.notifications.success('KsQueueService', 'Up Next', `${ksList.length} Knowledge Source${ksList.length > 1 ? 's' : ''} added.`)
   }
 
   add(ks: KnowledgeSource) {

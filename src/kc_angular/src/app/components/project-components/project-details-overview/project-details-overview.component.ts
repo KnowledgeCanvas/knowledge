@@ -83,7 +83,7 @@ export class ProjectDetailsOverviewComponent implements OnInit {
       this.setupBreadcrumbs(kcProject.id);
     })
     settingsService.app.subscribe((settings) => {
-      this.showSubProjects = settings.ks?.table?.showSubProjects ?? false;
+      this.showSubProjects = settings.table?.showSubProjects;
       this.generateKsList(this.showSubProjects);
     });
   }

@@ -14,57 +14,107 @@
  limitations under the License.
  */
 
-import {Injectable} from '@angular/core';
+import {Injectable, NgZone} from '@angular/core';
 import {BehaviorSubject} from 'rxjs';
 import {ElectronIpcService} from "../electron-ipc/electron-ipc.service";
-import {ApplicationSettingsModel, IngestSettingsModel, SearchSettingsModel, SettingsModel} from "../../../../../../kc_shared/models/settings.model";
+import {ApplicationSettingsModel, DisplaySettingsModel, IngestSettingsModel, SearchSettingsModel, SettingsModel} from "../../../../../../kc_shared/models/settings.model";
 
 @Injectable({
   providedIn: 'root'
 })
 export class SettingsService {
-  private _settings = new BehaviorSubject<SettingsModel>({});
+  private _settings = new BehaviorSubject<SettingsModel>({} as any);
   all = this._settings.asObservable();
 
-  private _search = new BehaviorSubject<SearchSettingsModel>({})
+  private _search = new BehaviorSubject<SearchSettingsModel>({} as any)
   search = this._search.asObservable();
 
-  private _app = new BehaviorSubject<ApplicationSettingsModel>({});
+  private _app = new BehaviorSubject<ApplicationSettingsModel>({} as any);
   app = this._app.asObservable();
 
-  private _ingest = new BehaviorSubject<IngestSettingsModel>({});
+  private _ingest = new BehaviorSubject<IngestSettingsModel>({} as any);
   ingest = this._ingest.asObservable();
 
-  constructor(private ipcService: ElectronIpcService) {
-    this.ipcService.getSettingsFile().subscribe((settings) => {
-      this.updateSettings(settings);
-    });
+  private _display = new BehaviorSubject<DisplaySettingsModel>({} as any);
+  display = this._display.asObservable();
+  private send = window.api.send;
+  private receive = window.api.receive;
+  private receiveOnce = window.api.receiveOnce;
+  private settingsChannels = {
+    getSettings: 'A2E:Settings:Get',
+    getDefaults: 'A2E:Settings:Defaults',
+    receiveAll: 'E2A:Settings:All',
+    receiveDefaults: 'E2A:Settings:Defaults',
+    setSettings: 'A2E:Settings:Set'
   }
 
-  getSettings(): SettingsModel {
+  constructor(private ipcService: ElectronIpcService, private zone: NgZone) {
+    /**
+     * Keep a copy of default settings to allow other components and services to instantiate
+     */
+    this.receiveOnce(this.settingsChannels.receiveDefaults, (settings: SettingsModel) => {
+      this.zone.run(() => {
+        this._defaults = settings;
+      })
+    });
+
+    this.send(this.settingsChannels.getDefaults);
+
+    /**
+     * Settings are stored in a JSON file via Electron and kept consistent through IPC messages
+     */
+    this.receive(this.settingsChannels.receiveAll, (settings: SettingsModel) => {
+      this.zone.run(() => {
+        console.debug(`[Debug]-[${new Date().toLocaleString()}]-[SettingsService]: Settings Updated: `, settings);
+        this._settings.next(settings);
+
+        if (settings.search) {
+          this._search.next(settings.search);
+        } else {
+          console.error('SettingsService - Search Settings not found...');
+        }
+
+        if (settings.app) {
+          this._app.next(settings.app);
+        } else {
+          console.error('SettingsService - Application Settings not found...');
+        }
+
+        if (settings.ingest) {
+          this._ingest.next(settings.ingest);
+        } else {
+          console.error('SettingsService - Ingest Settings not found...');
+        }
+
+        if (settings.display) {
+          this._display.next(settings.display);
+        } else {
+          console.error('SettingsService - Display Settings not found...');
+        }
+      })
+    })
+
+    this.send(this.settingsChannels.getSettings);
+  }
+
+  private _defaults!: SettingsModel;
+
+  get defaults() {
+    return this._defaults;
+  }
+
+  get(): SettingsModel {
     return this._settings.value;
   }
 
-  updateSettings(settings: SettingsModel) {
-    this._settings.next(settings);
-
-    if (settings.search) {
-      this._search.next(settings.search);
-    }
-
-    if (settings.app) {
-      this._app.next(settings.app);
-    }
-
-    if (settings.ingest) {
-      this._ingest.next(settings.ingest);
-    }
+  /**
+   * If `settings` is an Object, make sure it conforms to the root level SettingsModel
+   * i.e. if updating ingest, the parameter should contain {ingest: {...}}
+   * @param settings
+   */
+  set(settings: SettingsModel | Object) {
+    this.send(this.settingsChannels.setSettings, settings);
   }
 
-  saveSettings(data: SettingsModel) {
-    let newSettings = {...this._settings.value, ...data};
-    return this.ipcService.saveSettingsFile(newSettings).subscribe((settings) => {
-      this.updateSettings(settings);
-    });
-  }
+
 }

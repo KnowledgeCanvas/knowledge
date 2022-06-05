@@ -36,7 +36,7 @@ import {ProjectCreationDialogComponent} from "./components/project-components/pr
 import {BrowserViewDialogService} from "./services/ipc-services/browser-service/browser-view-dialog.service";
 import {ThemeService} from "./services/user-services/theme-service/theme.service";
 import {DisplaySettingsComponent} from "./components/settings-components/display-settings/display-settings.component";
-import {KcDialogRequest} from "kc_electron/src/app/models/electron.ipc.model";
+import {KcDialogRequest} from "../../../kc_shared/models/electron.ipc.model";
 import {SearchSettingsComponent} from "./components/settings-components/search-settings/search-settings.component";
 import {ProjectTreeFactoryService} from "./services/factory-services/project-tree-factory/project-tree-factory.service";
 import {DragAndDropService} from "./services/ingest-services/external-drag-and-drop/drag-and-drop.service";
@@ -88,14 +88,14 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private _subKsQueue: Subscription;
 
-  constructor(private dialogService: DialogService, private confirmationService: ConfirmationService,
-              private primengConfig: PrimeNGConfig, private settingsService: SettingsService,
+  constructor(private settingsService: SettingsService, private notifications: NotificationsService,
+              private dialogService: DialogService, private primengConfig: PrimeNGConfig,
               private ksQueueService: KsQueueService, private ksFactory: KsFactoryService,
               private projectService: ProjectService, private ksCommandService: KsCommandService,
               private ipcService: ElectronIpcService, private clipboard: Clipboard,
               private browserViewDialogService: BrowserViewDialogService, private themeService: ThemeService,
               private projectTreeFactory: ProjectTreeFactoryService, private dragAndDropService: DragAndDropService,
-              private notificationService: NotificationsService) {
+              private confirmationService: ConfirmationService,) {
     // Subscribe to changes in project tree
     this._subProjectTree = this.projectService.projectTree.subscribe((projectNodes: ProjectTreeNode[]) => {
       this._projectNodes = projectNodes;
@@ -105,7 +105,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Subscribe to active project
     this._subCurrentProject = this.projectService.currentProject.subscribe(current => {
-      this.notificationService.debug('App', 'Project Changed', current?.name ?? current?.id.value ?? '');
+      this.notifications.debug('App', 'Project Changed', current?.name ?? current?.id.value ?? '');
       this.confirmationService.close();
       this.currentProject = current;
     });
@@ -113,7 +113,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     // Subscribe to changes in Up Next
     this._subKsQueue = this.ksQueueService.ksQueue.subscribe((queue) => {
       if (queue.length > 0) {
-        this.notificationService.debug('App', 'Up Next Changed', `${queue.length} Knowledge Sources available.`);
+        this.notifications.debug('App', 'Up Next Changed', `${queue.length} Knowledge Sources available.`);
       }
       this.ksQueue = queue;
     });
@@ -171,14 +171,14 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     this.dragAndDropService.parseDragEvent(event).then((requests) => {
       if (requests === undefined) {
-        this.notificationService.warn('App', 'Unsupported Drag-and-Drop', 'Unable to find data transfer handlers for that type.')
+        this.notifications.warn('App', 'Unsupported Drag-and-Drop', 'Unable to find data transfer handlers for that type.')
         return;
       }
       this.ksFactory.many(requests).then((ksList) => {
         this.onImport(ksList);
       });
     }).catch((reason) => {
-      this.notificationService.error('App', 'Drag-and-Drop Failed', `Unable to parse drag-and-drop event: ${reason}`);
+      this.notifications.error('App', 'Drag-and-Drop Failed', `Unable to parse drag-and-drop event: ${reason}`);
     });
   }
 
@@ -208,7 +208,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           }
           this.projectService.updateProjects([update]);
         }
-        this.notificationService.success('App', `Knowledge Source${ksList.length > 1 ? 's' : ''} Added`, ksList.map(ks => ks.title).join(', '));
+        this.notifications.success('App', `Knowledge Source${ksList.length > 1 ? 's' : ''} Added`, ksList.map(ks => ks.title).join(', '));
       }
     });
 
@@ -260,7 +260,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           {
             label: 'Search', icon: 'pi pi-fw pi-search', command: () => {
               this.dialogService.open(SearchSettingsComponent, {
-                data: this.settingsService.getSettings().search,
+                data: this.settingsService.get().search,
                 header: 'Search Settings',
                 width: '64rem',
                 dismissableMask: true,
@@ -286,7 +286,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   confirmExit(event: any) {
     if (!event.originalEvent.target && !event.target) {
-      this.notificationService.error('Knowledge Canvas', 'Unable to Exit', `Something prevented Knowledge Canvas from closing.`);
+      this.notifications.error('Knowledge Canvas', 'Unable to Exit', `Something prevented Knowledge Canvas from closing.`);
       return;
     }
 
@@ -339,7 +339,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       ksList: [this.currentProject?.knowledgeSource]
     }
     this.ipcService.openKcDialog(req).catch((reason) => {
-      this.notificationService.error('Knowledge Canvas', 'Error Opening Graph', `Something prevented Knowledge Canvas from opening graph view.`);
+      this.notifications.error('Knowledge Canvas', 'Error Opening Graph', `Something prevented Knowledge Canvas from opening graph view.`);
     });
   }
 
@@ -353,9 +353,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     dialogref.onClose.subscribe((creationRequest: ProjectCreationRequest) => {
       if (creationRequest) {
         this.projectService.newProject(creationRequest).catch((reason) => {
-          this.notificationService.error('App', 'Unable to Create Project', reason);
+          this.notifications.error('App', 'Unable to Create Project', reason);
         }).then((_) => {
-          this.notificationService.success('App', 'Project Created', creationRequest.name);
+          this.notifications.success('App', 'Project Created', creationRequest.name);
         });
       }
     });
@@ -379,7 +379,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       message: `Are you sure you want to remove ${subprojects.length} Projects?`,
       accept: () => {
         let details: string = subprojects.map((p) => p.title).join(', ');
-        this.notificationService.warn('App', 'Project(s) Deleted', details);
+        this.notifications.warn('App', 'Project(s) Deleted', details);
         this.projectService.deleteProject(id)
       }
     })

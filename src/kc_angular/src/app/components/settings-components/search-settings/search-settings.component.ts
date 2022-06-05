@@ -65,7 +65,7 @@ export class SearchSettingsComponent implements OnInit, OnDestroy {
     }
     let provider = this.providers.find(p => p.code === $event.value.code);
     if (provider) {
-      this.settingsService.saveSettings({search: {provider: $event.value.code}});
+      this.settingsService.set({search: {provider: $event.value.code}});
     } else {
       console.warn('SearchSettings: provider change unsuccessful, invalid value');
     }

@@ -16,7 +16,7 @@
 
 import {Injectable} from '@angular/core';
 import {BehaviorSubject} from "rxjs";
-import {KnowledgeSource} from "kc_knowledge/src/knowledge/knowledge-canvas";
+import {KnowledgeSource} from "../../../models/knowledge.source.model";
 
 @Injectable({
   providedIn: 'root'
@@ -50,7 +50,7 @@ export class KsCommandService {
   private _ksUpdateEvent = new BehaviorSubject<KnowledgeSource[]>([]);
   ksUpdateEvent = this._ksUpdateEvent.asObservable();
 
-  private _ksShowInFilesEvent = new BehaviorSubject<KnowledgeSource>([]);
+  private _ksShowInFilesEvent = new BehaviorSubject<KnowledgeSource>({} as any);
   ksShowInFilesEvent = this._ksShowInFilesEvent.asObservable();
 
   constructor() {

@@ -16,94 +16,120 @@
 
 import {Injectable} from '@angular/core';
 import {Message, MessageService} from "primeng/api";
+import {SettingsService} from "../../ipc-services/settings-service/settings.service";
+import {DisplaySettingsModel, LoggingSettingsModel} from "../../../../../../kc_shared/models/settings.model";
+
+export type KcNotificationPresentation = 'banner' | 'none' | 'toast'
 
 export interface KcNotification extends Message {
-
+  presentation: KcNotificationPresentation
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class NotificationsService {
+  logSettings: LoggingSettingsModel = {
+    warn: false,
+    error: false,
+    debug: false
+  }
 
-  constructor(private messageService: MessageService) {
+  constructor(private messageService: MessageService, private settingsService: SettingsService) {
+    settingsService.display.subscribe((displaySettings: DisplaySettingsModel) => {
+      this.logSettings = displaySettings.logging;
+    })
   }
 
   toast(msg: KcNotification) {
     msg.key = 'app-toast';
-    msg.life = msg.life ?? 10000;
+    msg.life = msg.life ?? 5000;
     this.messageService.add(msg);
   }
 
   banner(msg: KcNotification) {
     msg.key = 'app-banner'
-    msg.life = msg.life ?? 10000;
+    msg.life = msg.life ?? 5000;
+    msg.sticky = msg.sticky ? msg.sticky : false
     this.messageService.add(msg);
   }
 
-  debug(component: string, summary: string, detail: string, presentation: 'banner' | 'none' | 'toast' = 'none') {
-    console.debug(`[Debug]-[${Date.now()}]-[${component}]: ${summary} - ${detail}`);
+  datetime = (): string => {
+    return new Date().toLocaleString()
+  }
+
+  debug(component: string, summary: string, detail: string | any, presentation: KcNotificationPresentation = 'none') {
+    console.debug(`[Debug]-[${this.datetime()}]-[${component}]: ${summary} - `, detail);
     const msg: KcNotification = {
       severity: 'info',
       summary: summary,
-      detail: detail
+      detail: detail,
+      closable: true,
+      life: 3000,
+      presentation: presentation
     }
-
-    if (presentation === 'toast') {
-      this.toast(msg);
-    } else if (presentation === 'banner') {
-      this.banner(msg);
-    }
+    this.broadcast(msg);
   }
 
-  error(component: string, summary: string, detail: string, presentation: 'banner' | 'none' | 'toast' = 'toast') {
-    console.error(`[Error]-[${Date.now()}]-[${component}]: ${summary} - ${detail}`);
+  error(component: string, summary: string, detail: string, presentation: KcNotificationPresentation = 'none') {
+    console.error(`[Error]-[${this.datetime()}]-[${component}]: ${summary} - ${detail}`);
     const msg: KcNotification = {
       severity: 'error',
       summary: summary,
       detail: detail,
-      sticky: true
+      life: 5000,
+      closable: true,
+      presentation: presentation
     }
-
-    if (presentation === 'toast') {
-      this.toast(msg);
-    } else if (presentation === 'banner') {
-      this.banner(msg);
-    }
+    this.broadcast(msg);
   }
 
   log(component: string, summary: string, detail: string) {
-    console.log(`[Info ]-[${Date.now()}]-[${component}]: ${summary} - ${detail}`);
+    console.log(`[Info ]-[${this.datetime()}]-[${component}]: ${summary} - ${detail}`);
   }
 
-  success(component: string, summary: string, detail: string, presentation: 'banner' | 'none' | 'toast' = 'toast') {
-    console.log(`[Info ]-[${Date.now()}]-[${component}]: ${summary} - ${detail}`);
+  success(component: string, summary: string, detail: string, presentation: KcNotificationPresentation = 'toast') {
+    console.log(`[Info ]-[${this.datetime()}]-[${component}]: ${summary} - ${detail}`);
     const msg: KcNotification = {
       severity: 'success',
       summary: summary,
-      detail: detail
+      detail: detail,
+      closable: true,
+      presentation: presentation
     }
-
-    if (presentation === 'toast') {
-      this.toast(msg);
-    } else if (presentation === 'banner') {
-      this.banner(msg);
-    }
+    this.broadcast(msg);
   }
 
-  warn(component: string, summary: string, detail: string, presentation: 'banner' | 'none' | 'toast' = 'toast') {
-    console.warn(`[Warn ]-[${Date.now()}]-[${component}]: ${summary} - ${detail}`);
+  warn(component: string, summary: string, detail: string, presentation: KcNotificationPresentation = 'none') {
+    console.warn(`[Warn ]-[${this.datetime()}]-[${component}]: ${summary} - ${detail}`);
     const msg: KcNotification = {
       severity: 'warn',
       summary: summary,
       detail: detail,
-      sticky: true
+      life: 10000,
+      closable: true,
+      presentation: presentation
     }
+    this.broadcast(msg);
+  }
 
-    if (presentation === 'toast') {
-      this.toast(msg);
-    } else if (presentation === 'banner') {
-      this.banner(msg);
+  broadcast(msg: KcNotification) {
+    switch (msg.presentation) {
+      case "none":
+        if (this.logSettings?.debug) {
+          this.toast(msg);
+        }
+        break;
+      case "toast":
+        this.toast(msg);
+        break;
+      case "banner":
+        // this.banner(msg);
+        // TODO: the banner is broken with the current layout (in apps.component), it sticks to the top and looks bad.
+        this.toast(msg);
+        break;
+      default:
+        this.error('NotificationsService', 'Invalid Presentation Type', msg.presentation, 'none');
     }
   }
 }

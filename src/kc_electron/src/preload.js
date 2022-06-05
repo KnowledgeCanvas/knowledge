@@ -47,6 +47,7 @@ const ipcSendChannels = [
     "A2E:KnowledgeCanvas:Close",
     "A2E:KnowledgeCanvas:GetSources",
     "A2E:KnowledgeCanvas:Open",
+    "A2E:Settings:Defaults",
     "A2E:Settings:Get",
     "A2E:Settings:Set",
     "A2E:Uuid:Generate",
@@ -64,10 +65,10 @@ const ipcReceiveOnceChannels = [
     "E2A:FileSystem:OpenFile",
     "E2A:KnowledgeCanvas:GetSources",
     "E2A:KnowledgeCanvas:Open",
-    "E2A:Settings:Get",
-    "E2A:Settings:Set",
+    "E2A:Settings:Defaults",
     "E2A:Uuid:Generate",
 ];
+
 const ipcReceiveChannels = [
     "E2A:AutoUpdate:Update",
     "E2A:BrowserView:CanGoBack",
@@ -80,49 +81,54 @@ const ipcReceiveChannels = [
     "E2A:FileWatcher:Error",
     "E2A:FileWatcher:NewFiles",
     "E2A:FileWatcher:Warn",
+    "E2A:Settings:All",
     "E2A:Version:Get",
 ]
+
+let datetime = () => {
+    return new Date().toLocaleString()
+}
 
 contextBridge.exposeInMainWorld(
     'api', {
         invoke: (channel, data) => {
             if (ipcInvokeChannels.includes(channel)) {
-                console.debug(`[Debug]-[${Date.now()}]-[Electron IPC]: ${channel} invoked with data: `, data);
+                console.debug(`[Debug]-[${datetime()}]-[Electron IPC]: Invoke - Invoked on ${channel} with data: `, data);
                 ipcRenderer.invoke(channel, data);
             } else {
-                console.error(`[Error]-[${Date.now()}]-[Electron IPC]: Invalid Invoke Channel -- ${channel}`);
+                console.error(`[Error]-[${datetime()}]-[Electron IPC]: Invalid Invoke Channel -- ${channel}`);
             }
         },
         send: (channel, data) => {
             if (ipcSendChannels.includes(channel)) {
-                console.debug(`[Debug]-[${Date.now()}]-[Electron IPC]: ${channel} invoked with data: `, data);
+                console.debug(`[Debug]-[${datetime()}]-[Electron IPC]: Send - Invoked on ${channel} with data: `, data);
                 ipcRenderer.send(channel, data);
             } else {
-                console.error(`[Error]-[${Date.now()}]-[Electron IPC]: Invalid Send Channel -- ${channel}`);
+                console.error(`[Error]-[${datetime()}]-[Electron IPC]: Invalid Send Channel -- ${channel}`);
             }
         },
         receive: (channel, func) => {
             if (ipcReceiveChannels.includes(channel)) {
                 if (func) {
-                    console.debug(`[Debug]-[${Date.now()}]-[Electron IPC]: Receive - Invoked on ${channel}.`);
+                    console.debug(`[Debug]-[${datetime()}]-[Electron IPC]: Receive - Invoked on ${channel}.`);
                     ipcRenderer.on(channel, (event, ...args) => func(...args));
                 }
             } else {
-                console.error(`[Error]-[${Date.now()}]-[Electron IPC]: Invalid Receive -- ${channel}`);
+                console.error(`[Error]-[${datetime()}]-[Electron IPC]: Invalid Receive -- ${channel}`);
             }
         },
         receiveOnce: (channel, func) => {
             if (ipcReceiveOnceChannels.includes(channel)) {
                 if (func) {
-                    console.debug(`[Debug]-[${Date.now()}]-[Electron IPC]: Receive Once - Invoked on ${channel}.`);
+                    console.debug(`[Debug]-[${datetime()}]-[Electron IPC]: Receive Once - Invoked on ${channel}.`);
                     ipcRenderer.once(channel, (event, ...args) => func(...args));
                 }
             } else {
-                console.error(`[Error]-[${Date.now()}]-[Electron IPC]: Invalid Receive Once -- ${channel}`);
+                console.error(`[Error]-[${datetime()}]-[Electron IPC]: Invalid Receive Once -- ${channel}`);
             }
         },
         removeAllListeners: (channel) => {
-            console.debug(`[Debug]-[${Date.now()}]-[Electron IPC]: Remove All Listeners - Invoked on ${channel}`);
+            console.debug(`[Debug]-[${datetime()}]-[Electron IPC]: Remove All Listeners - Invoked on ${channel}`);
             ipcRenderer.removeAllListeners(channel);
         }
     }

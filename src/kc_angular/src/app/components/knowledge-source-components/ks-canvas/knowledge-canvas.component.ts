@@ -91,7 +91,7 @@ export class KnowledgeCanvasComponent implements OnInit, OnDestroy {
 
   constructor(private ksCommandService: KsCommandService, private browserViewDialogService: BrowserViewDialogService,
               private projectService: ProjectService, private confirmationService: ConfirmationService,
-              private ipcService: ElectronIpcService, private notificationService: NotificationsService,
+              private ipcService: ElectronIpcService, private notifications: NotificationsService,
               private clipboard: Clipboard) {
     this._subKsCommandDetail = this.ksCommandService.ksDetailEvent.subscribe((ks) => {
       if (ks) {
@@ -266,13 +266,7 @@ export class KnowledgeCanvasComponent implements OnInit, OnDestroy {
     const dialogRef = this.browserViewDialogService.open({ks: ks});
 
     if (dialogRef === undefined) {
-      this.notificationService.toast({
-        severity: 'warn',
-        summary: 'Preview',
-        detail: `Oops! It looks like we can't generate a preview for that.`,
-        life: 5000
-      });
-
+      this.notifications.warn('KsPreview', 'Unsupported File Type', 'Opening with default application instead.');
       this.ksCommandService.open(ks);
       return;
     }
@@ -308,14 +302,14 @@ export class KnowledgeCanvasComponent implements OnInit, OnDestroy {
     if (ks.ingestType === 'file' && typeof ks.accessLink === 'string') {
       this.ipcService.openLocalFile(ks.accessLink).then((result) => {
         if (result) {
-          this.notificationService.success('KnowledgeCanvas', 'File Opened', ks.title);
+          this.notifications.success('KnowledgeCanvas', 'File Opened', ks.title);
         } else {
-          this.notificationService.error('KnowledgeCanvas', 'Failed to Open', ks.title);
+          this.notifications.error('KnowledgeCanvas', 'Failed to Open', ks.title);
         }
       });
     } else {
       window.open(typeof ks.accessLink === 'string' ? ks.accessLink : ks.accessLink.href);
-      this.notificationService.success('KnowledgeCanvas', 'Link Opened', ks.title);
+      this.notifications.success('KnowledgeCanvas', 'Link Opened', ks.title);
     }
 
     if (!ks.events) {

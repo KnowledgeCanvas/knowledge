@@ -51,7 +51,7 @@ export class KsIngestComponent implements OnInit {
 
   importToProject: boolean = false;
 
-  constructor(private notificationService: NotificationsService,
+  constructor(private notifications: NotificationsService,
               private extractionService: ExtractionService,
               private uuidService: UuidService,
               private dragAndDropService: DragAndDropService,
@@ -102,11 +102,7 @@ export class KsIngestComponent implements OnInit {
     });
 
     if (foundLink || foundKs) {
-      this.notificationService.toast({
-        severity: 'info',
-        detail: 'Link already being processed...',
-        life: 3000,
-      })
+      this.notifications.debug('KsIngest', 'Link Already Pending', value);
       return;
     }
 

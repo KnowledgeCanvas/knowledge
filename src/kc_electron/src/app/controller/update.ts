@@ -18,7 +18,7 @@ const share: any = (global as any).share;
 const http: any = share.http;
 const autoUpdater = share.autoUpdater;
 
-import {IpcMessage} from "../models/electron.ipc.model";
+import {IpcMessage} from "../../../../kc_shared/models/electron.ipc.model";
 
 console.log(`AutoUpdate - Knowledge Canvas Version ${autoUpdater.currentVersion.version} - Initializing...`);
 

@@ -18,7 +18,7 @@ const share: any = (global as any).share;
 const ipcMain = share.ipcMain;
 const autoUpdater = share.autoUpdater;
 
-import {IpcMessage} from "../models/electron.ipc.model";
+import {IpcMessage} from "../../../../kc_shared/models/electron.ipc.model";
 
 let checkForUpdate = ipcMain.on('A2E:AutoUpdate:Check', (_: any) => {
     autoUpdater.checkForUpdates().then((result: any) => {

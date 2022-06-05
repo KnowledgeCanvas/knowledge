@@ -14,38 +14,15 @@
  limitations under the License.
  */
 
-import {IpcMessage, KcUuidRequest} from "../models/electron.ipc.model";
-import {EnvironmentModel} from "../models/environment.model";
+import {IpcMessage, KcUuidRequest} from "../../../../kc_shared/models/electron.ipc.model";
 
 const share: any = (global as any).share;
 const ipcMain: any = share.ipcMain;
 const http: any = share.http;
-const settingsService: any = share.settingsService;
 const uuid: any = share.uuid;
 
-let generateUuid, getSettings, setSettings;
+let generateUuid;
 
-/**
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- */
 generateUuid = ipcMain.on("A2E:Uuid:Generate", (event: any, args: any) => {
     let kcMainWindow: any = share.BrowserWindow.getAllWindows()[0];
     let response: IpcMessage = {
@@ -72,88 +49,6 @@ generateUuid = ipcMain.on("A2E:Uuid:Generate", (event: any, args: any) => {
 });
 
 
-/**
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- */
-getSettings = ipcMain.on("A2E:Settings:Get", (_: any) => {
-    let kcMainWindow: any = share.BrowserWindow.getAllWindows()[0];
-    let appEnv = settingsService.getSettings();
-
-    kcMainWindow.webContents.send("E2A:Settings:Get", appEnv);
-});
-
-
-/**
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- */
-setSettings = ipcMain.on("A2E:Settings:Set", (event: any, args: any) => {
-    let kcMainWindow: any = share.BrowserWindow.getAllWindows()[0];
-    let appEnv = settingsService.getSettings();
-    appEnv = {...appEnv, ...args};
-    settingsService.setSettings(appEnv).then((settings: EnvironmentModel) => {
-        appEnv = settings;
-    });
-    kcMainWindow.webContents.send("E2A:Settings:Set", appEnv);
-});
-
-
-/**
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- */
 function isKcUuidRequest(args: any): args is KcUuidRequest {
     const containsQuantity = args && args.quantity;
     const correctType = typeof (args.quantity) === 'number';
@@ -162,4 +57,4 @@ function isKcUuidRequest(args: any): args is KcUuidRequest {
 }
 
 
-module.exports = {generateUuid, getSettings, setSettings}
+module.exports = {generateUuid}

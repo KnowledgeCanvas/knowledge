@@ -16,9 +16,7 @@
 
 import {Injectable, NgZone} from '@angular/core';
 import {BehaviorSubject, Observable} from 'rxjs';
-import {IpcMessage, KcDialogRequest, KsBrowserViewRequest, KsThumbnailRequest} from "kc_electron/src/app/models/electron.ipc.model";
-import {SettingsModel} from "../../../../../../kc_shared/models/settings.model";
-import {FileSourceModel} from "../../../../../../kc_shared/models/file.source.model";
+import {IpcMessage, KcDialogRequest, KsBrowserViewRequest, KsThumbnailRequest} from "../../../../../../kc_shared/models/electron.ipc.model";
 import {UUID} from "../../../models/uuid";
 
 export interface ElectronNavEvent {
@@ -42,6 +40,9 @@ export type PromptForDirectoryProperties = 'openFile' | 'openDirectory' | 'multi
   providedIn: 'root'
 })
 export class ElectronIpcService {
+  receiveChannels = {
+    browserViewExtractText: 'E2A:BrowserView:ExtractedText'
+  }
   private ClassName = 'ElectronIpcService';
   private send = window.api.send;
   private receive = window.api.receive;
@@ -74,25 +75,15 @@ export class ElectronIpcService {
     getFileIconResults: 'E2A:FileSystem:FileIcon',
     getFileThumbnail: 'A2E:FileSystem:FileThumbnail',
     getFileThumbnailResults: 'E2A:FileSystem:FileThumbnail',
-    getSettings: 'A2E:Settings:Get',
-    getSettingsResults: 'E2A:Settings:Get',
-    ingestWatcherResults: 'E2A:FileWatcher:NewFiles',
     openLocalFile: 'A2E:FileSystem:OpenFile',
     openLocalFileResults: 'E2A:FileSystem:OpenFile',
     openKcDialog: 'A2E:KnowledgeCanvas:Open',
     openKcDialogResults: 'E2A:KnowledgeCanvas:Open',
     promptForDirectory: 'A2E:FileSystem:DirectoryPrompt',
     promptForDirectoryResults: 'E2A:FileSystem:DirectoryPrompt',
-    saveSettings: 'A2E:Settings:Set',
-    saveSettingsResults: 'E2A:Settings:Set',
     showItemInFolder: 'A2E:FileSystem:ShowFile',
     showItemInFolderResults: 'E2A:FileSystem:ShowFile'
   }
-
-  receiveChannels = {
-    browserViewExtractText: 'E2A:BrowserView:ExtractedText'
-  }
-
   // Subscribers will be alerted when the browser view navigates to a new URL
   private browserViewNavEvent = new BehaviorSubject<string>('');
   navEvent = this.browserViewNavEvent.asObservable();
@@ -134,7 +125,7 @@ export class ElectronIpcService {
      * Listen for incoming browser extension results
      */
     this.receive(this.channels.browserViewNavEvents, (response: IpcMessage) => {
-      this.zone.run(() => {
+      this.run(() => {
         if (response.error) {
           console.error(response.error);
           return;
@@ -151,21 +142,21 @@ export class ElectronIpcService {
      *
      */
     this.receive(this.channels.browserViewCanGoBackResults, (response: IpcMessage) => {
-      this.zone.run(() => {
+      this.run(() => {
         if (response.success)
           this._bvCanGoBack.next(response.success.data);
       });
     });
 
     this.receive(this.channels.browserViewCanGoForwardResults, (response: IpcMessage) => {
-      this.zone.run(() => {
+      this.run(() => {
         if (response.success)
           this._bvCanGoForward.next(response.success.data);
       });
     });
 
     this.receive(this.channels.browserViewCurrentUrlResults, (response: IpcMessage) => {
-      this.zone.run(() => {
+      this.run(() => {
         if (response.success)
           this._bvUrl.next(response.success.data);
       });
@@ -177,7 +168,7 @@ export class ElectronIpcService {
 
     this.receive(this.channels.getFileThumbnailResults, (response: IpcMessage[]) => {
       for (let res of response) {
-        this.zone.run(() => {
+        this.run(() => {
           if (res.success?.data) {
             this._thumbnails.next(res.success.data);
           }
@@ -226,7 +217,7 @@ export class ElectronIpcService {
 
     this.receiveOnce(this.channels.closeBrowserViewResults, (response: IpcMessage) => {
       this.removeAllListeners(this.channels.closeBrowserViewResults);
-      this.zone.run(() => {
+      this.run(() => {
         if (response.success) {
           return response.success.data;
         } else {
@@ -237,33 +228,44 @@ export class ElectronIpcService {
     this.send(this.channels.closeBrowserView);
   }
 
+  run = (fn: () => void) => {
+    this.zone.run(fn);
+  }
+
   getFileIcon(paths: string[]): Promise<any[]> {
     return new Promise<any[]>((resolve) => {
       this.receiveOnce(this.channels.getFileIconResults, (responses: IpcMessage[]) => {
-        this.removeAllListeners(this.channels.getFileIconResults);
+        if (paths.length <= 0) {
+          this.run(() => {
+            resolve([]);
+          })
+        }
+
         let icons: any[] = [];
         for (let response of responses) {
           if (response.success?.data)
             icons.push(response.success.data);
         }
 
-        this.zone.run(() => {
+        this.run(() => {
           resolve(icons);
-        });
+        })
       });
       this.send(this.channels.getFileIcon, paths);
     });
   }
 
   getFileThumbnail(requests: KsThumbnailRequest[]) {
-    this.send(this.channels.getFileThumbnail, requests);
+    if (requests.length > 0) {
+      this.send(this.channels.getFileThumbnail, requests);
+    }
   }
 
   promptForDirectory(request: PromptForDirectoryRequest): Promise<string> {
     return new Promise<string>((resolve, reject) => {
       this.receiveOnce(this.channels.promptForDirectoryResults, (response: IpcMessage) => {
         this.removeAllListeners(this.channels.promptForDirectoryResults);
-        this.zone.run(() => {
+        this.run(() => {
           if (response.error) {
             console.error(response.error);
             reject(response.error);
@@ -281,7 +283,7 @@ export class ElectronIpcService {
     return new Promise<IpcMessage>((resolve) => {
       this.receiveOnce(this.channels.browserViewResults, (response: IpcMessage) => {
         this.removeAllListeners(this.channels.browserViewResults);
-        this.zone.run(() => {
+        this.run(() => {
 
           // Create a new stack with the current browser view URL
           // this.browserViewNavEvent.next(request.url);
@@ -294,9 +296,13 @@ export class ElectronIpcService {
 
   openLocalFile(path: string): Promise<boolean> {
     return new Promise<boolean>((resolve) => {
+      if (path.length === 0 || path.trim() === '') {
+        resolve(false);
+      }
+
       this.receiveOnce(this.channels.openLocalFileResults, (response: IpcMessage) => {
         this.removeAllListeners(this.channels.openLocalFileResults);
-        this.zone.run(() => {
+        this.run(() => {
           if (response.success?.data) {
             resolve(true);
           } else {
@@ -318,35 +324,15 @@ export class ElectronIpcService {
     });
   }
 
-  getSettingsFile(): Observable<SettingsModel> {
-    return new Observable<SettingsModel>(subscriber => {
-      this.receiveOnce(this.channels.getSettingsResults, (data: any) => {
-        this.removeAllListeners(this.channels.getSettingsResults);
-        this.zone.run(() => {
-          subscriber.next(data);
-        });
-      });
-      this.send(this.channels.getSettings, {});
-    });
-  }
-
-  saveSettingsFile(settings: SettingsModel): Observable<SettingsModel> {
-    return new Observable<SettingsModel>(subscriber => {
-      this.receiveOnce(this.channels.saveSettingsResults, (data: any) => {
-        this.removeAllListeners(this.channels.saveSettingsResults);
-        this.zone.run(() => {
-          subscriber.next(data);
-        });
-      });
-      this.send(this.channels.saveSettings, settings);
-    });
-  }
-
   generateUuid(quantity: number): Promise<UUID[]> {
     return new Promise<UUID[]>((resolve, reject) => {
+      if (quantity <= 0) {
+        resolve([]);
+      }
+
       this.receiveOnce(this.channels.generateUuidResults, (response: IpcMessage) => {
         this.removeAllListeners(this.channels.generateUuidResults);
-        this.zone.run(() => {
+        this.run(() => {
           if (response.success?.data) {
             let uuids: UUID[] = [];
             for (let id of response.success.data) {
@@ -364,31 +350,10 @@ export class ElectronIpcService {
     });
   }
 
-  fileWatcher(): Observable<FileSourceModel[]> {
-    return new Observable<FileSourceModel[]>((subscriber) => {
-      this.receive(this.channels.ingestWatcherResults, (responses: IpcMessage[]) => {
-        this.zone.run(() => {
-          let files: FileSourceModel[] = [];
-
-          for (let response of responses) {
-            if (response.error) {
-              console.error('Ignoring invalid file from ingest-watcher...');
-              console.error(response.error);
-            }
-            if (response.success) {
-              files.push(response.success.data);
-            }
-          }
-          subscriber.next(files);
-        });
-      });
-    });
-  }
-
   browserWatcher(): Observable<string> {
     return new Observable<string>((subscriber) => {
       this.receive(this.channels.browserExtensionResults, (response: IpcMessage) => {
-        this.zone.run(() => {
+        this.run(() => {
           if (response.success?.data && typeof response.success.data === 'string') {
             subscriber.next(response.success.data);
           } else {

@@ -34,6 +34,8 @@ limitations under the License.-->
   <ng-template pTemplate="header">
     <div class="w-full flex-row-center-start">
       <app-ks-icon [ks]="currentKs" class="mr-3"></app-ks-icon>
+      <p-breadcrumb [model]="breadcrumbs" styleClass="surface-100" [home]="breadcrumbHeader"
+                    (onItemClick)="onBreadcrumbClick($event)"></p-breadcrumb>
     </div>
   </ng-template>
 
@@ -42,8 +44,7 @@ limitations under the License.-->
   </ng-template>
 
   <ng-template pTemplate="footer">
-    <p-breadcrumb [model]="breadcrumbs" styleClass="surface-100" [home]="breadcrumbHeader"
-                  (onItemClick)="onBreadcrumbClick($event)"></p-breadcrumb>
+
   </ng-template>
 </p-dialog>
 

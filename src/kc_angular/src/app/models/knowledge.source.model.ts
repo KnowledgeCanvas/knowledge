@@ -21,10 +21,7 @@ import {UUID} from "./uuid";
 
 
 
-export type IngestType = 'google' | 'file' | 'website' | 'generic' | 'topic' | 'search' | 'note' | 'message';
-
-// TODO: turn this into RDF type (Open graph)
-export type SourceType = 'article'
+export type IngestType = 'file' | 'website' | 'generic' | 'topic' | 'search' | 'note' | 'message';
 
 export class SourceModel {
   file: FileSourceModel | undefined;

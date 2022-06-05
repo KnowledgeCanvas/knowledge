@@ -16,7 +16,7 @@
 
 import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SecurityContext, SimpleChanges} from '@angular/core';
 import {ElectronIpcService} from "../../../../services/ipc-services/electron-ipc/electron-ipc.service";
-import {IpcMessage, KsBrowserViewRequest} from "kc_electron/src/app/models/electron.ipc.model";
+import {IpcMessage, KsBrowserViewRequest} from "../../../../../../../kc_shared/models/electron.ipc.model";
 import {DomSanitizer} from "@angular/platform-browser";
 import {KcViewportHeaderConfig, KcViewportHeaderEvent} from "../viewport-header/viewport-header.component";
 import {Subscription} from "rxjs";

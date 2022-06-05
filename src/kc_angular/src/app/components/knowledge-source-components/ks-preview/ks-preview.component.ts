@@ -69,7 +69,7 @@ export class KsPreviewComponent implements OnInit, OnDestroy {
               private ksCommandService: KsCommandService,
               private ksQueue: KsQueueService,
               private clipboard: Clipboard,
-              private notificationsService: NotificationsService) {
+              private notifications: NotificationsService) {
     this.ks = config.data.ks;
   }
 
@@ -96,12 +96,7 @@ export class KsPreviewComponent implements OnInit, OnDestroy {
 
   copy(text: string) {
     this.clipboard.copy(text);
-
-    this.notificationsService.toast({
-      summary: 'Copied!',
-      severity: 'success',
-      life: 3000
-    });
+    this.notifications.success('KsPreview', 'Copied to Clipboard!', '📋')
   }
 
   onFileViewClickEvent(clickEvent: KcFileViewClickEvent) {
@@ -184,12 +179,7 @@ export class KsPreviewComponent implements OnInit, OnDestroy {
 
     if (!supported) {
       console.warn('This file type is not supported!');
-      this.notificationsService.toast({
-        severity: 'warn',
-        summary: 'Oops!',
-        detail: `Knowledge Canvas currently does not support previewing files of that type.`,
-        life: 5000
-      });
+      this.notifications.warn('KsPreview', 'Unsupported File Type', 'Knowledge Canvas does not currently support previewing files of that type.');
       this.ref.close();
     }
   }
@@ -257,11 +247,7 @@ export class KsPreviewComponent implements OnInit, OnDestroy {
       }
       this.ksQueue.enqueue([ks]);
     }).catch((reason) => {
-      this.notificationsService.toast({
-        severity: 'error',
-        summary: 'Preview',
-        detail: `Unable to save page.\n\n${reason.toString()}`
-      });
+      this.notifications.error('KsPreview', 'Invalid Import', reason);
     });
   }
 
@@ -270,11 +256,7 @@ export class KsPreviewComponent implements OnInit, OnDestroy {
   }
 
   onError(error: string) {
-    this.notificationsService.toast({
-      severity: 'error',
-      summary: 'Preview',
-      detail: error
-    });
+    this.notifications.error('KsPreview', 'File Preview Error', error);
     this.ksCommandService.open(this.ks);
     this.ref.close();
   }
