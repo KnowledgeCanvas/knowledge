@@ -2438,6 +2438,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/lodash@npm:^4":
+  version: 4.14.182
+  resolution: "@types/lodash@npm:4.14.182"
+  checksum: 7dd137aa9dbabd632408bd37009d984655164fa1ecc3f2b6eb94afe35bf0a5852cbab6183148d883e9c73a958b7fec9a9bcf7c8e45d41195add6a18c34958209
+  languageName: node
+  linkType: hard
+
 "@types/minimatch@npm:*":
   version: 3.0.5
   resolution: "@types/minimatch@npm:3.0.5"
@@ -8185,11 +8192,13 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "kc_electron@workspace:src/kc_electron"
   dependencies:
+    "@types/lodash": ^4
     chokidar: ^3.5.2
     dotenv: ^10.0.0
     electron: ^16.0.6
     electron-builder: ^23.0.3
     electron-updater: ^4.3.9
+    lodash: ^4.17.21
     mime-types: ^2.1.32
     rxjs: ^7.4.0
     ts-loader: ^9.2.3

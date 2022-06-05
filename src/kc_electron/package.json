@@ -19,11 +19,13 @@
     "chokidar": "^3.5.2",
     "dotenv": "^10.0.0",
     "electron-updater": "^4.3.9",
+    "lodash": "^4.17.21",
     "mime-types": "^2.1.32",
     "rxjs": "^7.4.0",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "@types/lodash": "^4",
     "electron": "^16.0.6",
     "electron-builder": "^23.0.3",
     "ts-loader": "^9.2.3",
