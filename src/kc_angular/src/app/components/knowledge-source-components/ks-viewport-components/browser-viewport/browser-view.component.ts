@@ -13,27 +13,18 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-
 import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SecurityContext, SimpleChanges} from '@angular/core';
 import {ElectronIpcService} from "../../../../services/ipc-services/electron-ipc/electron-ipc.service";
-import {IpcMessage, KsBrowserViewRequest} from "../../../../../../../kc_shared/models/electron.ipc.model";
+import {BrowserViewRequest, IpcMessage} from "../../../../../../../kc_shared/models/electron.ipc.model";
 import {DomSanitizer} from "@angular/platform-browser";
-import {KcViewportHeaderConfig, KcViewportHeaderEvent} from "../viewport-header/viewport-header.component";
+import {
+  BrowserViewClickEvent,
+  BrowserViewConfig,
+  BrowserViewHeaderConfig,
+  BrowserViewHeaderEvent,
+  BrowserViewNavEvent
+} from "../../../../../../../kc_shared/models/browser.view.model";
 import {Subscription} from "rxjs";
-
-export interface KcBrowserViewConfig {
-  url: URL,
-  isDialog?: true,
-  canSave?: true
-}
-
-export interface KcBrowserViewNavEvent {
-  urlChanged?: true,
-  url?: URL
-}
-
-export interface KcBrowserViewClickEvent extends KcViewportHeaderEvent {
-}
 
 
 @Component({
@@ -42,13 +33,13 @@ export interface KcBrowserViewClickEvent extends KcViewportHeaderEvent {
   styleUrls: ['./browser-view.component.css']
 })
 export class BrowserViewComponent implements OnInit, OnChanges, OnDestroy {
-  @Input() kcBrowserViewConfig!: KcBrowserViewConfig;
+  @Input() kcBrowserViewConfig!: BrowserViewConfig;
   @Output() viewReady = new EventEmitter<boolean>();
   @Output() onIpcResponse = new EventEmitter<IpcMessage>();
-  @Output() navEvent = new EventEmitter<KcBrowserViewNavEvent>();
-  @Output() clickEvent = new EventEmitter<KcBrowserViewClickEvent>();
+  @Output() navEvent = new EventEmitter<BrowserViewNavEvent>();
+  @Output() clickEvent = new EventEmitter<BrowserViewClickEvent>();
   @Output() selectEvent = new EventEmitter();
-  headerConfig: KcViewportHeaderConfig | undefined;
+  headerConfig: BrowserViewHeaderConfig | undefined;
   private stateCheckInterval: any;
   private navEventSubscription: Subscription = new Subscription();
   private goBackSubscription: Subscription = new Subscription();
@@ -91,7 +82,7 @@ export class BrowserViewComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    let kcBrowserViewConfig: KcBrowserViewConfig = changes.kcBrowserViewConfig.currentValue;
+    let kcBrowserViewConfig: BrowserViewConfig = changes.kcBrowserViewConfig.currentValue;
 
     // Only load browser view once (on first change, i.e. when the input first arrives)
     if (changes.kcBrowserViewConfig.isFirstChange()) {
@@ -128,7 +119,7 @@ export class BrowserViewComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     let position = this.getBrowserViewDimensions('browser-view');
-    let request: KsBrowserViewRequest = {
+    let request: BrowserViewRequest = {
       url: sanitizedUrl,
       x: Math.floor(position.x),
       y: Math.floor(position.y + 48),
@@ -148,7 +139,7 @@ export class BrowserViewComponent implements OnInit, OnChanges, OnDestroy {
         return;
       }
 
-      let navEvent: KcBrowserViewNavEvent = {
+      let navEvent: BrowserViewNavEvent = {
         urlChanged: true,
         url: new URL(url)
       }
@@ -172,7 +163,7 @@ export class BrowserViewComponent implements OnInit, OnChanges, OnDestroy {
     this.ipcService.triggerBrowserViewStateUpdate();
   }
 
-  headerEvents(headerEvent: KcViewportHeaderEvent) {
+  headerEvents(headerEvent: BrowserViewHeaderEvent) {
     if (headerEvent.refreshClicked) {
       this.ipcService.browserViewRefresh();
     }

@@ -13,10 +13,19 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-import {EventModel} from "../../../../kc_shared/models/event.model";
+import {TestBed} from '@angular/core/testing';
 
-export interface KcCalendar {
-  events: EventModel[];
-  end: Date | string | null;
-  start: Date | string | null;
-}
+import {DragAndDropService} from './drag-and-drop.service';
+
+describe('DragAndDropService', () => {
+  let service: DragAndDropService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({});
+    service = TestBed.inject(DragAndDropService);
+  });
+
+  it('should be created', () => {
+    expect(service).toBeTruthy();
+  });
+});

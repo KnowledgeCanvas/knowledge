@@ -13,7 +13,6 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-
 import {A11yModule} from "@angular/cdk/a11y";
 import {AppComponent} from './app.component';
 import {AutoCompleteModule} from "primeng/autocomplete";
@@ -54,7 +53,7 @@ import {KsInfoComponent} from './components/knowledge-source-components/ks-info/
 import {KsIngestTypeIconPipe} from './pipes/image-pipes/ks-ingest-type-icon/ks-ingest-type-icon.pipe';
 import {KsPreviewComponent} from './components/knowledge-source-components/ks-preview/ks-preview.component';
 import {KsUpNextComponent} from './components/knowledge-source-components/ks-queue/ks-up-next.component';
-import {KsQueueService} from "./services/command-services/ks-queue-service/ks-queue.service";
+import {IngestService} from "./services/ingest-services/ingest-service/ingest.service";
 import {MenuModule} from "primeng/menu";
 import {MenubarModule} from "primeng/menubar";
 import {MultiSelectModule} from "primeng/multiselect";
@@ -230,7 +229,7 @@ import {KsThumbnailComponent} from './components/knowledge-source-components/ks-
   providers: [
     SettingsService,
     ProjectService,
-    KsQueueService,
+    IngestService,
     TreeDragDropService,
     MessageService,
     ConfirmationService,

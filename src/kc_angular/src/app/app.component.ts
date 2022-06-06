@@ -20,7 +20,7 @@ import {SettingsService} from "./services/ipc-services/settings-service/settings
 import {ConfirmationService, MenuItem, PrimeIcons, PrimeNGConfig, TreeNode} from "primeng/api";
 import {DialogService} from "primeng/dynamicdialog";
 import {ProjectService} from "./services/factory-services/project-service/project.service";
-import {KsQueueService} from "./services/command-services/ks-queue-service/ks-queue.service";
+import {IngestService} from "./services/ingest-services/ingest-service/ingest.service";
 import {KnowledgeSource} from "./models/knowledge.source.model";
 import {OverlayPanel} from "primeng/overlaypanel";
 import {ProjectTreeNode} from "./models/project.tree.model";
@@ -39,7 +39,7 @@ import {DisplaySettingsComponent} from "./components/settings-components/display
 import {KcDialogRequest} from "../../../kc_shared/models/electron.ipc.model";
 import {SearchSettingsComponent} from "./components/settings-components/search-settings/search-settings.component";
 import {ProjectTreeFactoryService} from "./services/factory-services/project-tree-factory/project-tree-factory.service";
-import {DragAndDropService} from "./services/ingest-services/external-drag-and-drop/drag-and-drop.service";
+import {DragAndDropService} from "./services/ingest-services/drag-and-drop-service/drag-and-drop.service";
 import {IngestSettingsComponent} from "./components/settings-components/ingest-settings/ingest-settings.component";
 import {NotificationsService} from "./services/user-services/notification-service/notifications.service";
 import {UUID} from "./models/uuid";
@@ -88,30 +88,30 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private _subKsQueue: Subscription;
 
-  constructor(private settingsService: SettingsService, private notifications: NotificationsService,
-              private dialogService: DialogService, private primengConfig: PrimeNGConfig,
-              private ksQueueService: KsQueueService, private ksFactory: KsFactoryService,
-              private projectService: ProjectService, private ksCommandService: KsCommandService,
-              private ipcService: ElectronIpcService, private clipboard: Clipboard,
-              private browserViewDialogService: BrowserViewDialogService, private themeService: ThemeService,
-              private projectTreeFactory: ProjectTreeFactoryService, private dragAndDropService: DragAndDropService,
-              private confirmationService: ConfirmationService,) {
+  constructor(private settings: SettingsService, private notifications: NotificationsService,
+              private dialog: DialogService, private prime: PrimeNGConfig,
+              private ingest: IngestService, private factory: KsFactoryService,
+              private projects: ProjectService, private command: KsCommandService,
+              private ipc: ElectronIpcService, private clipboard: Clipboard,
+              private browserView: BrowserViewDialogService, private themes: ThemeService,
+              private projectTree: ProjectTreeFactoryService, private dnd: DragAndDropService,
+              private confirmation: ConfirmationService,) {
     // Subscribe to changes in project tree
-    this._subProjectTree = this.projectService.projectTree.subscribe((projectNodes: ProjectTreeNode[]) => {
+    this._subProjectTree = this.projects.projectTree.subscribe((projectNodes: ProjectTreeNode[]) => {
       this._projectNodes = projectNodes;
-      this.treeNodes = this.projectTreeFactory.constructTreeNodes(projectNodes, false);
-      this.ksQueueTreeNodes = this.projectTreeFactory.constructTreeNodes(projectNodes, true);
+      this.treeNodes = this.projectTree.constructTreeNodes(projectNodes, false);
+      this.ksQueueTreeNodes = this.projectTree.constructTreeNodes(projectNodes, true);
     });
 
     // Subscribe to active project
-    this._subCurrentProject = this.projectService.currentProject.subscribe(current => {
+    this._subCurrentProject = this.projects.currentProject.subscribe(current => {
       this.notifications.debug('App', 'Project Changed', current?.name ?? current?.id.value ?? '');
-      this.confirmationService.close();
+      this.confirmation.close();
       this.currentProject = current;
     });
 
     // Subscribe to changes in Up Next
-    this._subKsQueue = this.ksQueueService.ksQueue.subscribe((queue) => {
+    this._subKsQueue = this.ingest.queue.subscribe((queue) => {
       if (queue.length > 0) {
         this.notifications.debug('App', 'Up Next Changed', `${queue.length} Knowledge Sources available.`);
       }
@@ -119,7 +119,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     // When the app starts, we want to ensure the theme has been completed loaded
-    themeService.setLocal().then((_: any) => {
+    themes.setLocal().then((_: any) => {
       setTimeout(() => {
         this.readyToShow = true;
       }, Math.floor(Math.random() * 2000));
@@ -127,11 +127,11 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   get ksQueueSelectedNode() {
-    return this.projectTreeFactory.findTreeNode(this.treeNodes, this.currentProject?.id.value ?? '') ?? {};
+    return this.projectTree.findTreeNode(this.treeNodes, this.currentProject?.id.value ?? '') ?? {};
   }
 
   get selectedNode() {
-    return this.projectTreeFactory.findTreeNode(this.treeNodes, this.currentProject?.id.value ?? '') ?? {};
+    return this.projectTree.findTreeNode(this.treeNodes, this.currentProject?.id.value ?? '') ?? {};
   }
 
   @HostListener('document:keydown.Control.n')
@@ -169,12 +169,12 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.ksIngestVisible) {
       return;
     }
-    this.dragAndDropService.parseDragEvent(event).then((requests) => {
+    this.dnd.parseDragEvent(event).then((requests) => {
       if (requests === undefined) {
         this.notifications.warn('App', 'Unsupported Drag-and-Drop', 'Unable to find data transfer handlers for that type.')
         return;
       }
-      this.ksFactory.many(requests).then((ksList) => {
+      this.factory.many(requests).then((ksList) => {
         this.onImport(ksList);
       });
     }).catch((reason) => {
@@ -183,7 +183,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onImport(ksList: KnowledgeSource[]) {
-    let ref = this.dialogService.open(KsImportConfirmComponent, {
+    let ref = this.dialog.open(KsImportConfirmComponent, {
       header: 'Import Knowledge Source',
       dismissableMask: true,
       modal: true,
@@ -196,7 +196,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
     ref.onClose.subscribe((result) => {
       if (!result || result === 'queue' || result === '' || !this.currentProject) {
-        this.ksQueueService.enqueue(ksList);
+        this.ingest.enqueue(ksList);
       } else {
         if (this.currentProject) {
           for (let ks of ksList) {
@@ -206,7 +206,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
             id: this.currentProject.id,
             addKnowledgeSource: ksList
           }
-          this.projectService.updateProjects([update]);
+          this.projects.updateProjects([update]);
         }
         this.notifications.success('App', `Knowledge Source${ksList.length > 1 ? 's' : ''} Added`, ksList.map(ks => ks.title).join(', '));
       }
@@ -215,7 +215,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.primengConfig.ripple = true;
     this.configureToolbar();
   }
 
@@ -239,7 +238,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
         label: 'Settings', icon: 'pi pi-fw pi-cog', items: [
           {
             label: 'Display', icon: 'pi pi-fw pi-image', command: () => {
-              this.dialogService.open(DisplaySettingsComponent, {
+              this.dialog.open(DisplaySettingsComponent, {
                 header: 'Display Settings',
                 width: '64rem',
                 dismissableMask: true,
@@ -249,7 +248,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           },
           {
             label: 'Up Next', icon: 'pi pi-fw pi-arrow-circle-down', command: () => {
-              this.dialogService.open(IngestSettingsComponent, {
+              this.dialog.open(IngestSettingsComponent, {
                 header: 'Up Next Settings',
                 width: '64rem',
                 dismissableMask: true,
@@ -259,8 +258,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
           },
           {
             label: 'Search', icon: 'pi pi-fw pi-search', command: () => {
-              this.dialogService.open(SearchSettingsComponent, {
-                data: this.settingsService.get().search,
+              this.dialog.open(SearchSettingsComponent, {
+                data: this.settings.get().search,
                 header: 'Search Settings',
                 width: '64rem',
                 dismissableMask: true,
@@ -281,7 +280,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   clearQueue() {
-    this.ksQueueService.clearResults();
+    this.ingest.clearResults();
   }
 
   confirmExit(event: any) {
@@ -290,7 +289,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    this.confirmationService.confirm({
+    this.confirmation.confirm({
       target: event.originalEvent.target ?? event.target,
       message: 'Are you sure that you want to close Knowledge Canvas?',
       icon: 'pi pi-exclamation-triangle',
@@ -320,10 +319,10 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     }
     if (updates.length > 0) {
-      this.projectService.updateProjects(updates).then(() => {
+      this.projects.updateProjects(updates).then(() => {
         for (let update of updates) {
           for (let ks of update.addKnowledgeSource ?? []) {
-            this.ksQueueService.add(ks);
+            this.ingest.add(ks);
           }
         }
       });
@@ -331,20 +330,20 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ksQueueRemove(ks: KnowledgeSource) {
-    this.ksQueueService.remove(ks);
+    this.ingest.remove(ks);
   }
 
   onKcClick() {
     let req: KcDialogRequest = {
       ksList: [this.currentProject?.knowledgeSource]
     }
-    this.ipcService.openKcDialog(req).catch((reason) => {
+    this.ipc.openKcDialog(req).catch((reason) => {
       this.notifications.error('Knowledge Canvas', 'Error Opening Graph', `Something prevented Knowledge Canvas from opening graph view.`);
     });
   }
 
   createProject(parentId?: UUID) {
-    const dialogref = this.dialogService.open(ProjectCreationDialogComponent, {
+    const dialogref = this.dialog.open(ProjectCreationDialogComponent, {
       width: '90%',
       modal: true,
       data: {parentId: parentId ?? undefined}
@@ -352,7 +351,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
     dialogref.onClose.subscribe((creationRequest: ProjectCreationRequest) => {
       if (creationRequest) {
-        this.projectService.newProject(creationRequest).catch((reason) => {
+        this.projects.newProject(creationRequest).catch((reason) => {
           this.notifications.error('App', 'Unable to Create Project', reason);
         }).then((_) => {
           this.notifications.success('App', 'Project Created', creationRequest.name);
@@ -362,8 +361,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   searchTopic(topic: string) {
-    let ks = this.ksFactory.searchKS(topic);
-    this.browserViewDialogService.open({ks: ks});
+    let ks = this.factory.searchKS(topic);
+    this.browserView.open({ks: ks});
   }
 
   search(term: string) {
@@ -373,14 +372,14 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   deleteProject(id: UUID) {
-    let project = this.projectService.getProject(id);
-    let subprojects = this.projectService.getSubTree(id)
-    this.confirmationService.confirm({
+    let project = this.projects.getProject(id);
+    let subprojects = this.projects.getSubTree(id)
+    this.confirmation.confirm({
       message: `Are you sure you want to remove ${subprojects.length} Projects?`,
       accept: () => {
         let details: string = subprojects.map((p) => p.title).join(', ');
         this.notifications.warn('App', 'Project(s) Deleted', details);
-        this.projectService.deleteProject(id)
+        this.projects.deleteProject(id)
       }
     })
   }

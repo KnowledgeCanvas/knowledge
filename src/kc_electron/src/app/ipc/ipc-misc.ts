@@ -13,8 +13,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-
-import {IpcMessage, KcUuidRequest} from "../../../../kc_shared/models/electron.ipc.model";
+import {IpcMessage, UuidRequest} from "../../../../kc_shared/models/electron.ipc.model";
 
 const share: any = (global as any).share;
 const ipcMain: any = share.ipcMain;
@@ -49,7 +48,7 @@ generateUuid = ipcMain.on("A2E:Uuid:Generate", (event: any, args: any) => {
 });
 
 
-function isKcUuidRequest(args: any): args is KcUuidRequest {
+function isKcUuidRequest(args: any): args is UuidRequest {
     const containsQuantity = args && args.quantity;
     const correctType = typeof (args.quantity) === 'number';
     const correctRange = 0 < args.quantity && args.quantity <= 128;

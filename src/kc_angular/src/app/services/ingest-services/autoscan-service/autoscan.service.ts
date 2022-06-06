@@ -24,7 +24,7 @@ import {NotificationsService} from "../../user-services/notification-service/not
 @Injectable({
   providedIn: 'root'
 })
-export class FileWatcherService {
+export class AutoscanService {
   private send = window.api.send;
   private receive = window.api.receive;
   private channels = {

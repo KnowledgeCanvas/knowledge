@@ -17,12 +17,12 @@ import {Component, EventEmitter, HostListener, OnInit, Output} from '@angular/co
 import {KnowledgeSource} from "../../../models/knowledge.source.model";
 import {KnowledgeSourceFactoryRequest, KsFactoryService} from "../../../services/factory-services/ks-factory-service/ks-factory.service";
 import {NotificationsService} from "../../../services/user-services/notification-service/notifications.service";
-import {ExtractionService} from "../../../services/ingest-services/web-extraction-service/extraction.service";
+import {ExtractorService} from "../../../services/ingest-services/extractor-service/extractor.service";
 import {ElectronIpcService} from "../../../services/ipc-services/electron-ipc/electron-ipc.service";
-import {KsQueueService} from "../../../services/command-services/ks-queue-service/ks-queue.service";
+import {IngestService} from "../../../services/ingest-services/ingest-service/ingest.service";
 import {UuidService} from "../../../services/ipc-services/uuid-service/uuid.service";
-import {FaviconExtractorService} from "../../../services/ingest-services/favicon-extraction-service/favicon-extractor.service";
-import {DragAndDropService} from "../../../services/ingest-services/external-drag-and-drop/drag-and-drop.service";
+import {FaviconService} from "../../../services/ingest-services/favicon-service/favicon.service";
+import {DragAndDropService} from "../../../services/ingest-services/drag-and-drop-service/drag-and-drop.service";
 import {KsCommandService} from "../../../services/command-services/ks-command/ks-command.service";
 import {ProjectService} from "../../../services/factory-services/project-service/project.service";
 
@@ -52,16 +52,16 @@ export class KsIngestComponent implements OnInit {
   importToProject: boolean = false;
 
   constructor(private notifications: NotificationsService,
-              private extractionService: ExtractionService,
-              private uuidService: UuidService,
-              private dragAndDropService: DragAndDropService,
-              private faviconService: FaviconExtractorService,
-              private upNextService: KsQueueService,
-              private ksCommandService: KsCommandService,
-              private ipcService: ElectronIpcService,
-              private projectService: ProjectService,
-              private ksFactory: KsFactoryService) {
-    this.supportedTypes = dragAndDropService.supportedTypes;
+              private extractor: ExtractorService,
+              private uuid: UuidService,
+              private dnd: DragAndDropService,
+              private favicon: FaviconService,
+              private ingest: IngestService,
+              private command: KsCommandService,
+              private ipc: ElectronIpcService,
+              private projects: ProjectService,
+              private factory: KsFactoryService) {
+    this.supportedTypes = dnd.supportedTypes;
   }
 
   ngOnInit(): void {
@@ -72,13 +72,13 @@ export class KsIngestComponent implements OnInit {
   }
 
   @HostListener('drop', ['$event']) handleDrop(event: DragEvent) {
-    this.dragAndDropService.parseDragEvent(event).then((result) => {
+    this.dnd.parseDragEvent(event).then((result) => {
       if (result === undefined) {
         console.warn('Drag/Drop could not be handled...');
         return;
       }
 
-      this.ksFactory.many(result).then((ksList) => {
+      this.factory.many(result).then((ksList) => {
         let pendingLinks: string[] = this.ksList.map(k => typeof k.accessLink === 'string' ? k.accessLink : k.accessLink.href);
         ksList = ksList.filter(ks =>
           typeof ks.accessLink === 'string' && !pendingLinks.includes(ks.accessLink)
@@ -117,7 +117,7 @@ export class KsIngestComponent implements OnInit {
       ingestType: 'website',
       links: [new URL(value)]
     }
-    this.ksFactory.many(req).then((ksList) => {
+    this.factory.many(req).then((ksList) => {
       if (!ksList || !ksList.length) {
         console.warn('Did not receive ks from list...');
         return;
@@ -153,18 +153,18 @@ export class KsIngestComponent implements OnInit {
 
   import() {
     if (this.importToProject) {
-      const projectId = this.projectService.getCurrentProjectId();
+      const projectId = this.projects.getCurrentProjectId();
       if (!projectId) {
         console.warn(`Unable to import Knowledge Source to apparently invalid project id: ${projectId}`);
-        this.upNextService.enqueue(this.ksList);
+        this.ingest.enqueue(this.ksList);
         return;
       }
-      this.projectService.updateProjects([{
+      this.projects.updateProjects([{
         id: projectId,
         addKnowledgeSource: this.ksList
       }]);
     } else {
-      this.upNextService.enqueue(this.ksList);
+      this.ingest.enqueue(this.ksList);
     }
 
     this.close();
@@ -182,7 +182,7 @@ export class KsIngestComponent implements OnInit {
       files: files
     };
 
-    this.ksFactory.many(req).then((ksList) => {
+    this.factory.many(req).then((ksList) => {
       if (!ksList || !ksList.length) {
         console.warn('Did not receive ks from list...');
         return;
@@ -207,14 +207,14 @@ export class KsIngestComponent implements OnInit {
   }
 
   onKsOpened(ks: KnowledgeSource) {
-    this.ksCommandService.open(ks);
+    this.command.open(ks);
   }
 
   onKsPreview(ks: KnowledgeSource) {
-    this.ksCommandService.preview(ks);
+    this.command.preview(ks);
   }
 
   onKsDetail($event: KnowledgeSource) {
-    this.ksCommandService.detail($event);
+    this.command.detail($event);
   }
 }

@@ -15,25 +15,18 @@
  */
 import {UuidModel} from "./uuid.model";
 
+export type EventType = 'create' | 'read' | 'update' | 'delete' | 'reminder' | 'checkPoint' | 'dueDate';
 
 export interface EventModel {
     timestamp: string;
     id: UuidModel;
-    type: 'create' | 'read' | 'update' | 'delete' | 'reminder' | 'checkPoint' | 'dueDate';
+    type: EventType;
     description?: string;
     icon?: string;
 }
 
-export interface ProjectGraphNode {
-    name: string
-    id: string
-    type: string
-    expanded: boolean
-    subprojects: ProjectGraphNode[]
-}
-
-export interface KnowledgeSourceGraphNode {
-    name: string
-    id: string
-    icon: string
+export interface KcCalendar {
+    events: EventModel[];
+    end: Date | string | null;
+    start: Date | string | null;
 }

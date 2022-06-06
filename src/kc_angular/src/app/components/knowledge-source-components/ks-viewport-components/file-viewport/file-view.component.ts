@@ -13,18 +13,9 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {DomSanitizer, SafeUrl} from "@angular/platform-browser";
-import {KcViewportHeaderConfig, KcViewportHeaderEvent} from "../viewport-header/viewport-header.component";
-
-export interface KcFileViewConfig {
-  filePath: string,
-  isDialog?: true
-}
-
-export interface KcFileViewClickEvent extends KcViewportHeaderEvent {
-}
+import {BrowserViewHeaderConfig, BrowserViewHeaderEvent, FileViewClickEvent, FileViewConfig} from "../../../../../../../kc_shared/models/browser.view.model";
 
 @Component({
   selector: 'ks-lib-file-view',
@@ -32,22 +23,19 @@ export interface KcFileViewClickEvent extends KcViewportHeaderEvent {
   styleUrls: ['./file-view.component.css']
 })
 export class FileViewComponent implements OnInit, OnChanges {
-  @Input() config!: KcFileViewConfig;
+  @Input() config!: FileViewConfig;
   @Input() showHeader: boolean = false;
   @Output() viewReady = new EventEmitter<boolean>();
-  @Output() clickEvent = new EventEmitter<KcFileViewClickEvent>();
+  @Output() clickEvent = new EventEmitter<FileViewClickEvent>();
   @Output() fileError = new EventEmitter<string>();
   safeUrl: SafeUrl | undefined;
-  headerConfig: KcViewportHeaderConfig | undefined;
+  headerConfig: BrowserViewHeaderConfig | undefined;
   ready: boolean = false;
-
 
   constructor(private sanitizer: DomSanitizer) {
   }
 
   ngOnInit(): void {
-
-
     this.headerConfig = {
       canCopy: true,
       canClose: this.config.isDialog,
@@ -61,7 +49,7 @@ export class FileViewComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    const config: KcFileViewConfig = changes.config.currentValue;
+    const config: FileViewConfig = changes.config.currentValue;
     // TODO: sanitize file paths to avoid errors (e.g. with # symbol in file path) [should be done when we import files...]
     if (config) {
       if (config.filePath) {
@@ -76,7 +64,7 @@ export class FileViewComponent implements OnInit, OnChanges {
     }
   }
 
-  headerEvents(headerEvent: KcViewportHeaderEvent) {
+  headerEvents(headerEvent: BrowserViewHeaderEvent) {
     this.clickEvent.emit(headerEvent);
   }
 

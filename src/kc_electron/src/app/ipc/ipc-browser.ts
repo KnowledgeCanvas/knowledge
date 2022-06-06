@@ -13,8 +13,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-
-import {IpcMessage, KsBrowserViewRequest, KsBrowserViewResponse} from "../../../../kc_shared/models/electron.ipc.model";
+import {IpcMessage, BrowserViewRequest, BrowserViewResponse} from "../../../../kc_shared/models/electron.ipc.model";
 import {Menu, MenuItem} from "electron";
 
 const share: any = (global as any).share;
@@ -185,7 +184,7 @@ closeBrowserView = ipcMain.on('A2E:BrowserView:Close', () => {
  *
  *
  */
-openBrowserView = ipcMain.on('A2E:BrowserView:Open', (event: any, args: KsBrowserViewRequest) => {
+openBrowserView = ipcMain.on('A2E:BrowserView:Open', (event: any, args: BrowserViewRequest) => {
     let kcMainWindow: any = share.BrowserWindow.getAllWindows()[0];
     let response: IpcMessage = {
         error: undefined,
@@ -227,7 +226,7 @@ openBrowserView = ipcMain.on('A2E:BrowserView:Open', (event: any, args: KsBrowse
                 kcBrowserView.webContents.executeJavaScript('window.getComputedStyle(document.body, null).backgroundColor;')
             ]
             Promise.all(js).then((values) => {
-                let data: KsBrowserViewResponse = {
+                let data: BrowserViewResponse = {
                     html: values[0],
                     backgroundColor: values[1]
                 };
@@ -376,7 +375,7 @@ openBrowserView = ipcMain.on('A2E:BrowserView:Open', (event: any, args: KsBrowse
  *
  *
  */
-function isKsBrowserViewRequest(arg: any): arg is KsBrowserViewRequest {
+function isKsBrowserViewRequest(arg: any): arg is BrowserViewRequest {
     const containsArgs = arg
         && arg.url !== undefined
         && arg.x !== undefined

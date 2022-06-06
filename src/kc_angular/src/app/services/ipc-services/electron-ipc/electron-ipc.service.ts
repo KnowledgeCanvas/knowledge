@@ -13,28 +13,14 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-
 import {Injectable, NgZone} from '@angular/core';
-import {BehaviorSubject, Observable} from 'rxjs';
-import {IpcMessage, KcDialogRequest, KsBrowserViewRequest, KsThumbnailRequest} from "../../../../../../kc_shared/models/electron.ipc.model";
+import {BehaviorSubject} from 'rxjs';
+import {IpcMessage, DialogRequest, BrowserViewRequest, ThumbnailRequest, PromptForDirectoryRequest} from "../../../../../../kc_shared/models/electron.ipc.model";
 import {UUID} from "../../../models/uuid";
 
 export interface ElectronNavEvent {
   stack: string[]
 }
-
-export interface PromptForDirectoryRequest {
-  title?: string;
-  defaultPath?: string;
-  buttonLabel?: string;
-  filters?: any[];
-  properties?: PromptForDirectoryProperties[];
-  macOsMessage?: string;
-  macOsSecurityScopedBookmarks?: boolean;
-}
-
-export type PromptForDirectoryProperties = 'openFile' | 'openDirectory' | 'multiSelections' | 'showHiddenFiles'
-  | 'createDirectory' | 'promptToCreate' | 'noResolveAliases' | 'treatPackageAsDirectory' | 'dontAddToRecent'
 
 @Injectable({
   providedIn: 'root'
@@ -255,7 +241,7 @@ export class ElectronIpcService {
     });
   }
 
-  getFileThumbnail(requests: KsThumbnailRequest[]) {
+  getFileThumbnail(requests: ThumbnailRequest[]) {
     if (requests.length > 0) {
       this.send(this.channels.getFileThumbnail, requests);
     }
@@ -279,7 +265,7 @@ export class ElectronIpcService {
     });
   }
 
-  openBrowserView(request: KsBrowserViewRequest): Promise<IpcMessage> {
+  openBrowserView(request: BrowserViewRequest): Promise<IpcMessage> {
     return new Promise<IpcMessage>((resolve) => {
       this.receiveOnce(this.channels.browserViewResults, (response: IpcMessage) => {
         this.removeAllListeners(this.channels.browserViewResults);
@@ -314,7 +300,7 @@ export class ElectronIpcService {
     });
   }
 
-  openKcDialog(request: KcDialogRequest): Promise<any> {
+  openKcDialog(request: DialogRequest): Promise<any> {
     return new Promise<any>((_: any) => {
       this.receiveOnce(this.channels.openKcDialogResults, (response: IpcMessage) => {
         console.log('Got response from kc dialog: ', response);

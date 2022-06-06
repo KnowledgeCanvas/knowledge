@@ -13,16 +13,13 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-
 import {KnowledgeSource} from "./knowledge.source.model";
-import {KcCalendar} from "./calendar.model";
 import {KcProjectModel, KcProjectType} from "../../../../kc_shared/models/project.model";
-import {EventModel} from "../../../../kc_shared/models/event.model";
+import {EventModel, KcCalendar} from "../../../../kc_shared/models/event.model";
 import {UUID} from "./uuid";
 
 
-
-export class KcProject implements KcProjectModel{
+export class KcProject implements KcProjectModel {
   name: string = '';
   readonly id: UUID;
   events?: EventModel[] = [];

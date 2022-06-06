@@ -13,7 +13,6 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-
 import {Injectable} from '@angular/core';
 import {Message, MessageService} from "primeng/api";
 import {SettingsService} from "../../ipc-services/settings-service/settings.service";
@@ -101,12 +100,12 @@ export class NotificationsService {
   }
 
   warn(component: string, summary: string, detail: string, presentation: KcNotificationPresentation = 'none') {
-    console.warn(`[Warn ]-[${this.datetime()}]-[${component}]: ${summary} - ${detail}`);
+    console.warn(`[Warn]-[${this.datetime()}]-[${component}]: ${summary} - ${detail}`);
     const msg: KcNotification = {
       severity: 'warn',
       summary: summary,
       detail: detail,
-      life: 10000,
+      life: 5000,
       closable: true,
       presentation: presentation
     }

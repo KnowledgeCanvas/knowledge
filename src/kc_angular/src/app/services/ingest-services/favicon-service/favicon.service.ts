@@ -13,7 +13,6 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-
 import {Injectable, SecurityContext} from '@angular/core';
 import {HttpClient, HttpResponse} from "@angular/common/http";
 import {DomSanitizer, SafeUrl} from "@angular/platform-browser";
@@ -25,7 +24,7 @@ import {NotificationsService} from "../../user-services/notification-service/not
 @Injectable({
   providedIn: 'root'
 })
-export class FaviconExtractorService {
+export class FaviconService {
   private googleFaviconSize = '32'
   private googleFaviconServicePrefix = `https://s2.googleusercontent.com/s2/favicons?domain_url=`;
   private googleFaviconServiceSuffix = `&sz=${this.googleFaviconSize}`;
@@ -155,7 +154,6 @@ export class FaviconExtractorService {
         console.warn('Caught error trying to get KS icon: ', error);
 
 
-
         if (error.error.type === 'image/png') {
 
           const blob = error.error;
@@ -185,7 +183,7 @@ export class FaviconExtractorService {
     }
 
     if (!iconStr) {
-      this.notifications.debug('Favicon Extractor', 'Cache Miss', `Icon not found in local storage - ${ks.title}`);
+      this.notifications.debug('Favicon Extractor', 'Fetching Icon', ks.title);
       return undefined;
     }
 

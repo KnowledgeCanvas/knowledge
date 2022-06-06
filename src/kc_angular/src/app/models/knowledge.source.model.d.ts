@@ -2,8 +2,8 @@ import { WebsiteModel } from "./website.model";
 import { AuthorModel } from "../../../../kc_shared/models/author.model";
 import { FileSourceModel } from "../../../../kc_shared/models/file.source.model";
 import { UUID } from "./uuid";
-export declare type IngestType = 'google' | 'file' | 'website' | 'generic' | 'topic' | 'search' | 'note' | 'message';
-export declare type SourceType = 'article';
+import { ImportMethod } from "../../../../kc_shared/models/knowledge.source.model";
+export declare type IngestType = 'file' | 'website' | 'generic' | 'topic' | 'search' | 'note' | 'message';
 export declare class SourceModel {
     file: FileSourceModel | undefined;
     website: WebsiteModel | undefined;
@@ -45,7 +45,7 @@ export declare class KnowledgeSource {
     note: KnowledgeSourceNote;
     accessLink: URL | string;
     readonly reference: KnowledgeSourceReference;
-    importMethod?: 'autoscan' | 'dnd' | 'extension' | 'manual';
+    importMethod?: ImportMethod;
     constructor(title: string, id: UUID, ingestType: IngestType, reference: KnowledgeSourceReference);
 }
 export declare class KnowledgeSourceNote {

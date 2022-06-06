@@ -13,16 +13,14 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {KnowledgeSource} from "../../../models/knowledge.source.model";
 import {ElectronIpcService} from "../../../services/ipc-services/electron-ipc/electron-ipc.service";
 import {Clipboard} from "@angular/cdk/clipboard";
-import {ExtractionService} from "../../../services/ingest-services/web-extraction-service/extraction.service";
-import {KcFileViewClickEvent, KcFileViewConfig} from "../ks-viewport-components/file-viewport/file-view.component";
-import {KcBrowserViewClickEvent, KcBrowserViewConfig, KcBrowserViewNavEvent} from "../ks-viewport-components/browser-viewport/browser-view.component";
+import {ExtractorService} from "../../../services/ingest-services/extractor-service/extractor.service";
+import {BrowserViewClickEvent, BrowserViewConfig, BrowserViewNavEvent, FileViewClickEvent, FileViewConfig} from "../../../../../../kc_shared/models/browser.view.model";
 import {KsFactoryService} from "../../../services/factory-services/ks-factory-service/ks-factory.service";
-import {KsQueueService} from "../../../services/command-services/ks-queue-service/ks-queue.service";
+import {IngestService} from "../../../services/ingest-services/ingest-service/ingest.service";
 import {DynamicDialogConfig, DynamicDialogRef} from "primeng/dynamicdialog";
 import {NotificationsService} from "../../../services/user-services/notification-service/notifications.service";
 import {KsCommandService} from "../../../services/command-services/ks-command/ks-command.service";
@@ -38,10 +36,10 @@ export interface KsPreviewInput {
 })
 export class KsPreviewComponent implements OnInit, OnDestroy {
   // Must be configured to display file view. Should be undefined when displaying browser view
-  fileViewConfig: KcFileViewConfig | undefined = undefined;
+  fileViewConfig: FileViewConfig | undefined = undefined;
 
   // Must be configured to display browser view. Should be undefined when displaying file view
-  browserViewConfig: KcBrowserViewConfig | undefined = undefined;
+  browserViewConfig: BrowserViewConfig | undefined = undefined;
 
   // Can be set to any color, rgb, rgba, or hex
   backgroundColor: string = 'white'
@@ -61,13 +59,13 @@ export class KsPreviewComponent implements OnInit, OnDestroy {
   // Should be set to file path (if file) or current browser view URL (if website)
   private activeBrowserViewUrl: string = '';
 
-  constructor(private extractionService: ExtractionService,
+  constructor(private extractor: ExtractorService,
               private ref: DynamicDialogRef,
               private config: DynamicDialogConfig,
-              private ipcService: ElectronIpcService,
-              private ksFactory: KsFactoryService,
-              private ksCommandService: KsCommandService,
-              private ksQueue: KsQueueService,
+              private ipc: ElectronIpcService,
+              private factory: KsFactoryService,
+              private command: KsCommandService,
+              private ingest: IngestService,
               private clipboard: Clipboard,
               private notifications: NotificationsService) {
     this.ks = config.data.ks;
@@ -90,7 +88,7 @@ export class KsPreviewComponent implements OnInit, OnDestroy {
   }
 
   close() {
-    this.ipcService.closeBrowserView();
+    this.ipc.closeBrowserView();
     this.ref.close(this.ks);
   }
 
@@ -99,7 +97,7 @@ export class KsPreviewComponent implements OnInit, OnDestroy {
     this.notifications.success('KsPreview', 'Copied to Clipboard!', '📋')
   }
 
-  onFileViewClickEvent(clickEvent: KcFileViewClickEvent) {
+  onFileViewClickEvent(clickEvent: FileViewClickEvent) {
     if (!this.fileViewConfig) {
       console.error('Wires are crossed somewhere. Received KcFileViewClickEvent but FileViewConfig not present...');
       return;
@@ -113,11 +111,11 @@ export class KsPreviewComponent implements OnInit, OnDestroy {
     }
 
     if (clickEvent.openClicked) {
-      this.ipcService.openLocalFile(this.fileViewConfig.filePath);
+      this.ipc.openLocalFile(this.fileViewConfig.filePath);
     }
   }
 
-  onBrowserViewClickEvent(clickEvent: KcBrowserViewClickEvent) {
+  onBrowserViewClickEvent(clickEvent: BrowserViewClickEvent) {
     if (!this.browserViewConfig) {
       console.error('Wires are crossed somewhere. Received KcFileViewClickEvent but FileViewConfig not present...');
       return;
@@ -140,7 +138,7 @@ export class KsPreviewComponent implements OnInit, OnDestroy {
     }
   }
 
-  onBrowserViewNavEvent(navEvent: KcBrowserViewNavEvent) {
+  onBrowserViewNavEvent(navEvent: BrowserViewNavEvent) {
     this.activeBrowserViewUrl = navEvent.url?.href || '';
 
     if (!this.browserViewConfig)
@@ -240,12 +238,12 @@ export class KsPreviewComponent implements OnInit, OnDestroy {
 
 
   save() {
-    this.ksFactory.make('website', this.activeBrowserViewUrl).then((ks) => {
+    this.factory.make('website', this.activeBrowserViewUrl).then((ks) => {
       if (!ks) {
         console.warn('Undefined Knowledge Source on apparent success...');
         return;
       }
-      this.ksQueue.enqueue([ks]);
+      this.ingest.enqueue([ks]);
     }).catch((reason) => {
       this.notifications.error('KsPreview', 'Invalid Import', reason);
     });
@@ -257,7 +255,7 @@ export class KsPreviewComponent implements OnInit, OnDestroy {
 
   onError(error: string) {
     this.notifications.error('KsPreview', 'File Preview Error', error);
-    this.ksCommandService.open(this.ks);
+    this.command.open(this.ks);
     this.ref.close();
   }
 }

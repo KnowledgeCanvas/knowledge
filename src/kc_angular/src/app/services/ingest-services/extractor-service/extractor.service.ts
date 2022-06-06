@@ -13,25 +13,24 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-
-
 import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {ArticleModel, CodeModel, WebsiteContentModel, WebsiteMetadataModel, WebsiteModel} from "src/app/models/website.model";
+import {NotificationsService} from "../../user-services/notification-service/notifications.service";
+import {ArticleModel, CodeModel, WebsiteContentModel, WebsiteMetadataModel, WebSourceModel} from "../../../../../../kc_shared/models/web.source.model";
 
 @Injectable({
   providedIn: 'root'
 })
-export class ExtractionService {
+export class ExtractorService {
   private MIN_CODE_LENGTH: number = 64;
 
-  constructor(private httpClient: HttpClient) {
+  constructor(private httpClient: HttpClient, private notifications: NotificationsService) {
   }
 
   websiteToPdf(url: string, outFileName?: string) {
     // TODO: move this to ipc service...
     window.api.receive("E2A:Extraction:Website", (data: any) => {
-      console.info(`E2A:Extraction:Website not implemented...`);
+      this.notifications.debug('ExtractorService', 'E2A:Extraction:Website', 'Not implemented yet.');
     });
 
     // Send message to Electron ipcMain
@@ -42,8 +41,8 @@ export class ExtractionService {
     window.api.send("A2E:Extraction:Website", args);
   }
 
-  extractWebsite(url: string): Promise<WebsiteModel> {
-    return new Promise<WebsiteModel>((resolve, reject) => {
+  extractWebsite(url: string): Promise<WebSourceModel> {
+    return new Promise<WebSourceModel>((resolve, reject) => {
 
     });
   }
@@ -55,8 +54,8 @@ export class ExtractionService {
   }
 
   // Specific-purpose extractions such as Wikipedia, StackOverflow, etc.
-  extractWikipedia(url: string): Promise<WebsiteModel> {
-    return new Promise<WebsiteModel>((resolve, reject) => {
+  extractWikipedia(url: string): Promise<WebSourceModel> {
+    return new Promise<WebSourceModel>((resolve, reject) => {
 
     });
   }
@@ -72,7 +71,7 @@ export class ExtractionService {
       }
 
       if (articles.length > 1) {
-        console.debug('ExtractionService.extractWebsiteMetadata() | More than one article detected, returning first instance')
+        this.notifications.debug('ExtractorService', 'Multiple Articles Detected', 'Returning first instance only.');
       }
 
       let article = articles[0];
@@ -134,8 +133,7 @@ export class ExtractionService {
       // Answers (StackOverflow)
       let answers = htmlDoc.getElementById('answers');
       if (answers) {
-        console.debug('ExtractionService.extractWebsiteMetadata() | "answers" element detected')
-        console.warn('Answer extraction not implemented but an answer field was detected...');
+        this.notifications.debug('ExtractorService', '"Answers" Detected', 'Not implemented yet.')
       }
     })
   }
@@ -215,7 +213,10 @@ export class ExtractionService {
             resolve(raw);
           })
         })
-        .catch(error => reject(error));
+        .catch(error => {
+          this.notifications.error('ExtractorService', 'Tika Error', error);
+          reject(error)
+        });
     })
   }
 }

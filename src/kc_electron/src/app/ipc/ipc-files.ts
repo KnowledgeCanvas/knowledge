@@ -13,8 +13,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-
-import {IpcMessage, KsThumbnailRequest, PromptForDirectoryRequest} from "../../../../kc_shared/models/electron.ipc.model";
+import {IpcMessage, PromptForDirectoryRequest, ThumbnailRequest} from "../../../../kc_shared/models/electron.ipc.model";
 
 const share: any = (global as any).share;
 const ipcMain: any = share.ipcMain;
@@ -105,7 +104,7 @@ openLocalFile = ipcMain.on('A2E:FileSystem:OpenFile', (event: any, filePath: str
  * @callback E2A:FileSystem:FileThumbnail [IpcResponse[]]
  * @description requests thumbnails for files in each request and returns them in an array
  */
-getFileThumbnail = ipcMain.on('A2E:FileSystem:FileThumbnail', (event: any, requests: KsThumbnailRequest[]) => {
+getFileThumbnail = ipcMain.on('A2E:FileSystem:FileThumbnail', (event: any, requests: ThumbnailRequest[]) => {
     let kcMainWindow: any = share.BrowserWindow.getAllWindows()[0];
     let responses: IpcMessage[] = [];
     let actions: any[] = [];

@@ -13,7 +13,6 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-
 import {Injectable} from '@angular/core';
 import {KnowledgeSourceFactoryRequest} from "../../factory-services/ks-factory-service/ks-factory.service";
 import {NotificationsService} from "../../user-services/notification-service/notifications.service";

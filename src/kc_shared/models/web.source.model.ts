@@ -13,8 +13,40 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-
 export interface WebSourceModel {
-    url?: string,
+    url: string,
     title?: string,
+    favIconUrl?: string,
+    topics?: string[],
+    metadata?: WebsiteMetadataModel
+}
+
+export interface WebsiteMetadataModel {
+    title?: string,
+    meta?: WebsiteMetaTagsModel[],
+    icon?: any,
+    article?: ArticleModel,
+    code?: CodeModel[],
+    links?: string[]
+}
+
+export interface WebsiteMetaTagsModel {
+    key?: string | null,
+    value?: string | null,
+    property?: string | null
+}
+
+export interface WebsiteContentModel {
+    title?: string,
+    type?: string,
+    text?: string,
+    html?: string
+}
+
+export interface ArticleModel extends WebsiteContentModel {
+
+}
+
+export interface CodeModel extends WebsiteContentModel {
+
 }

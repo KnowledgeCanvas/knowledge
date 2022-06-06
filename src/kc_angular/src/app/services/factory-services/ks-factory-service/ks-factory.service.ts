@@ -13,13 +13,12 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-
 import {Injectable} from '@angular/core';
 import {UuidService} from "../../ipc-services/uuid-service/uuid.service";
 import {IngestType, KnowledgeSource, KnowledgeSourceNote, KnowledgeSourceReference, SourceModel} from "../../../models/knowledge.source.model";
 import {ElectronIpcService} from "../../ipc-services/electron-ipc/electron-ipc.service";
-import {ExtractionService} from "../../ingest-services/web-extraction-service/extraction.service";
-import {FaviconExtractorService} from "../../ingest-services/favicon-extraction-service/favicon-extractor.service";
+import {ExtractorService} from "../../ingest-services/extractor-service/extractor.service";
+import {FaviconService} from "../../ingest-services/favicon-service/favicon.service";
 import {SettingsService} from "../../ipc-services/settings-service/settings.service";
 import {FileSourceModel} from "../../../../../../kc_shared/models/file.source.model";
 import {UUID} from "../../../models/uuid";
@@ -36,12 +35,12 @@ export interface KnowledgeSourceFactoryRequest {
 export class KsFactoryService {
   private provider: string = 'google';
 
-  constructor(private faviconService: FaviconExtractorService,
-              private extractionService: ExtractionService,
-              private settingsService: SettingsService,
-              private ipcService: ElectronIpcService,
-              private uuidService: UuidService,) {
-    this.settingsService.search.subscribe((searchSettings) => {
+  constructor(private favicon: FaviconService,
+              private extractor: ExtractorService,
+              private settings: SettingsService,
+              private ipc: ElectronIpcService,
+              private uuid: UuidService,) {
+    this.settings.search.subscribe((searchSettings) => {
       if (searchSettings.provider) {
         this.provider = searchSettings.provider;
       }
@@ -143,7 +142,7 @@ export class KsFactoryService {
   }
 
   private async extractFileResource(link: string, file: File): Promise<KnowledgeSource> {
-    const uuid: UUID = this.uuidService.generate(1)[0];
+    const uuid: UUID = this.uuid.generate(1)[0];
     let fileModel: FileSourceModel = {
       id: uuid,
       filename: file.name,
@@ -161,7 +160,7 @@ export class KsFactoryService {
 
   private getFileMetadata(ks: KnowledgeSource, file: File): Promise<KnowledgeSource> {
     return new Promise<KnowledgeSource>((resolve) => {
-      this.extractionService.textFromFile(file).then((results) => {
+      this.extractor.textFromFile(file).then((results) => {
         ks.rawText = results;
       }).catch((reason) => {
         console.warn('Could not extract text from file: ', reason);
@@ -173,7 +172,7 @@ export class KsFactoryService {
 
   private getFileIcon(ks: KnowledgeSource): Promise<KnowledgeSource> {
     return new Promise<KnowledgeSource>((resolve) => {
-      this.faviconService.extractFromKsList([ks]).then((ksList) => {
+      this.favicon.extractFromKsList([ks]).then((ksList) => {
         resolve(ksList[0])
       }).catch((_: any) => {
         console.warn('Could not extract icon from file KS...');
@@ -183,7 +182,7 @@ export class KsFactoryService {
 
   private getFileIcons(ksList: KnowledgeSource[]): Promise<KnowledgeSource[]> {
     return new Promise<KnowledgeSource[]>((resolve) => {
-      this.faviconService.extractFromKsList(ksList).then((results) => {
+      this.favicon.extractFromKsList(ksList).then((results) => {
         resolve(results);
       }).catch((_: any) => {
         console.warn('Could not extract icons from file KS list...');
@@ -192,7 +191,7 @@ export class KsFactoryService {
   }
 
   private extractWebResource(link: URL): Promise<KnowledgeSource> {
-    const uuid: UUID = this.uuidService.generate(1)[0];
+    const uuid: UUID = this.uuid.generate(1)[0];
     let source = new SourceModel(undefined, {url: link.href});
     let ref = new KnowledgeSourceReference('website', source, link);
     let ks = new KnowledgeSource('', uuid, 'website', ref);
@@ -206,7 +205,7 @@ export class KsFactoryService {
   private getWebsiteMetadata(ks: KnowledgeSource): Promise<KnowledgeSource> {
     return new Promise<KnowledgeSource>((resolve) => {
       const link = typeof ks.accessLink === 'string' ? ks.accessLink : ks.accessLink.href
-      this.extractionService.extractWebsiteMetadata(link).then((metadata) => {
+      this.extractor.extractWebsiteMetadata(link).then((metadata) => {
         if (metadata.title)
           ks.title = metadata.title;
         if (ks.reference.source.website)
@@ -235,9 +234,9 @@ export class KsFactoryService {
         }
       }
 
-      ks.icon = this.faviconService.generic();
+      ks.icon = this.favicon.generic();
 
-      this.faviconService.extract([ks.iconUrl]).then((icons) => {
+      this.favicon.extract([ks.iconUrl]).then((icons) => {
         ks.icon = icons[0];
       }).catch((reason) => {
         console.warn('Unable to extract website icon because: ', reason);

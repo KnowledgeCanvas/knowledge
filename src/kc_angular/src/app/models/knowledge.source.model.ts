@@ -13,21 +13,19 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-
-import {WebsiteModel} from "./website.model";
 import {AuthorModel} from "../../../../kc_shared/models/author.model";
 import {FileSourceModel} from "../../../../kc_shared/models/file.source.model";
 import {UUID} from "./uuid";
-
-
+import {ImportMethod} from "../../../../kc_shared/models/knowledge.source.model";
+import {WebSourceModel} from "../../../../kc_shared/models/web.source.model";
 
 export type IngestType = 'file' | 'website' | 'generic' | 'topic' | 'search' | 'note' | 'message';
 
 export class SourceModel {
   file: FileSourceModel | undefined;
-  website: WebsiteModel | undefined;
+  website: WebSourceModel | undefined;
 
-  constructor(file?: FileSourceModel, website?: WebsiteModel) {
+  constructor(file?: FileSourceModel, website?: WebSourceModel) {
     if (!file && !website) {
       throw new Error('SourceModel must contain at lesat one valid source.');
     }
@@ -79,7 +77,7 @@ export class KnowledgeSource {
   note: KnowledgeSourceNote;
   accessLink: URL | string;
   readonly reference: KnowledgeSourceReference;
-  importMethod?: 'autoscan' | 'dnd' | 'extension' | 'manual' = 'manual';
+  importMethod?: ImportMethod = 'manual';
 
   constructor(title: string, id: UUID, ingestType: IngestType, reference: KnowledgeSourceReference) {
     this.title = title;

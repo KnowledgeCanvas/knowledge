@@ -13,37 +13,8 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
-
-export interface KcViewportHeaderConfig {
-  showOpenButton?: boolean;
-  canClose?: boolean,
-  canCopy?: boolean,
-  canGoBack?: boolean,
-  canGoForward?: boolean,
-  canRefresh?: boolean,
-  canSave?: boolean,
-  displayText?: string,
-  displayTextReadOnly?: boolean,
-  customClass?: string | string[],
-  backgroundColor?: string,
-  showSaveButton?: boolean,
-  showNavButtons?: boolean,
-  showActionButtons?: boolean,
-  showDisplayText?: boolean,
-  showCloseButton?: boolean
-}
-
-export interface KcViewportHeaderEvent {
-  backClicked?: boolean,
-  forwardClicked?: boolean,
-  refreshClicked?: boolean,
-  closeClicked?: boolean,
-  copyClicked?: boolean,
-  saveClicked?: boolean,
-  openClicked?: boolean
-}
+import {BrowserViewHeaderConfig, BrowserViewHeaderEvent} from "../../../../../../../kc_shared/models/browser.view.model";
 
 @Component({
   selector: 'ks-lib-viewport-header',
@@ -51,8 +22,8 @@ export interface KcViewportHeaderEvent {
   styleUrls: ['./viewport-header.component.scss']
 })
 export class ViewportHeaderComponent implements OnInit, OnChanges {
-  @Input() config!: KcViewportHeaderConfig;
-  @Output() headerEvents = new EventEmitter<KcViewportHeaderEvent>();
+  @Input() config!: BrowserViewHeaderConfig;
+  @Output() headerEvents = new EventEmitter<BrowserViewHeaderEvent>();
   customClass: string = '';
 
   // Default tooltip strings

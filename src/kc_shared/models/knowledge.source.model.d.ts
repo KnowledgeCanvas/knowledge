@@ -34,7 +34,8 @@ export interface KnowledgeSourceThumbnail extends KnowledgeSourceImage {
     link?: string;
 }
 export interface KnowledgeSourceIngestTask {
-    method: 'manual' | 'extension' | 'autoscan' | 'dnd';
+    method: ImportMethod;
     callback: (method: 'add' | 'remove' | 'delay') => void;
     id: string;
 }
+export declare type ImportMethod = 'autoscan' | 'dnd' | 'extension' | 'manual';

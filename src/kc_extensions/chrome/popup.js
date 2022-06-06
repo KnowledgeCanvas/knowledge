@@ -13,12 +13,15 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-
 let extractPage = document.getElementById("extractPage");
 
 extractPage.addEventListener("click", async () => {
     let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    let url = `http://localhost:9000/external?link=${tab.url}&title=${tab.title}`;
+    console.log('Chrome Tab: ', tab);
+    let url = `http://localhost:9000/external?`
+        + `link=${tab.url}`
+        + `&title=${tab.title}`
+        + `&faviconUrl=${tab.favIconUrl}`;
     await fetch(url).then((_) => {
        window.close();
     });

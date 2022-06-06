@@ -17,7 +17,7 @@
 import {Injectable} from '@angular/core';
 import {KcProject} from "src/app/models/project.model";
 import {KnowledgeSource} from "src/app/models/knowledge.source.model";
-import {FileWatcherService} from "../filewatcher-service/file-watcher.service";
+import {AutoscanService} from "../../ingest-services/autoscan-service/autoscan.service";
 
 @Injectable({
   providedIn: 'root'
@@ -29,7 +29,7 @@ export class StorageService {
   private knowledgeSources: KnowledgeSource[] | null = null;
   private projectList: KcProject[] | null = null;
 
-  constructor(private fileWatcher: FileWatcherService) {
+  constructor(private autoscan: AutoscanService) {
   }
 
   get projects(): KcProject[] {
@@ -262,7 +262,7 @@ export class StorageService {
       return;
     } else {
       if (ks.importMethod === 'autoscan' && typeof ks.accessLink === 'string') {
-        this.fileWatcher.delete(ks.accessLink);
+        this.autoscan.delete(ks.accessLink);
       }
     }
   }

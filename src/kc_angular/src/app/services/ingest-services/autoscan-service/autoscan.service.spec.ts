@@ -13,17 +13,16 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
+import {TestBed} from '@angular/core/testing';
 
-import { TestBed } from '@angular/core/testing';
+import {AutoscanService} from './autoscan.service';
 
-import { FaviconExtractorService } from './favicon-extractor.service';
-
-describe('FaviconExtractorService', () => {
-  let service: FaviconExtractorService;
+describe('AutoscanService', () => {
+  let service: AutoscanService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(FaviconExtractorService);
+    service = TestBed.inject(AutoscanService);
   });
 
   it('should be created', () => {

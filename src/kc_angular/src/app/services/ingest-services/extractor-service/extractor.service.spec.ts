@@ -13,17 +13,20 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
+import {TestBed} from '@angular/core/testing';
+import {ExtractorService} from './extractor.service';
+import {HttpClientTestingModule} from "@angular/common/http/testing";
 
-import { TestBed } from '@angular/core/testing';
-
-import { KsQueueService } from './ks-queue.service';
-
-describe('KsQueueService', () => {
-  let service: KsQueueService;
+describe('ExtractionService', () => {
+  let service: ExtractorService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(KsQueueService);
+    TestBed.configureTestingModule({
+      imports: [
+        HttpClientTestingModule
+      ]
+    });
+    service = TestBed.inject(ExtractorService);
   });
 
   it('should be created', () => {

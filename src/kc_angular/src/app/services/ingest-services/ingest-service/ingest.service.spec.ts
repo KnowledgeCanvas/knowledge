@@ -13,17 +13,15 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-
 import { TestBed } from '@angular/core/testing';
+import { IngestService } from './ingest.service';
 
-import { DragAndDropService } from './drag-and-drop.service';
-
-describe('DragAndDropService', () => {
-  let service: DragAndDropService;
+describe('KsQueueService', () => {
+  let service: IngestService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(DragAndDropService);
+    service = TestBed.inject(IngestService);
   });
 
   it('should be created', () => {

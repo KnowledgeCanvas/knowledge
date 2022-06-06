@@ -13,22 +13,15 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
+import { TestBed } from '@angular/core/testing';
+import { FaviconService } from './favicon.service';
 
-import {TestBed} from '@angular/core/testing';
-
-import {ExtractionService} from './extraction.service';
-import {HttpClientTestingModule} from "@angular/common/http/testing";
-
-describe('ExtractionService', () => {
-  let service: ExtractionService;
+describe('FaviconExtractorService', () => {
+  let service: FaviconService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({
-      imports: [
-        HttpClientTestingModule
-      ]
-    });
-    service = TestBed.inject(ExtractionService);
+    TestBed.configureTestingModule({});
+    service = TestBed.inject(FaviconService);
   });
 
   it('should be created', () => {

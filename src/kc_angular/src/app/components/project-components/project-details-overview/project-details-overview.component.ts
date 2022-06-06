@@ -13,13 +13,11 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-
-
 import {Component, ElementRef, EventEmitter, HostListener, OnInit, Output, ViewChild} from '@angular/core';
 import {ProjectService} from "../../../services/factory-services/project-service/project.service";
 import {KcProject} from "src/app/models/project.model";
 import {KnowledgeSource} from "../../../models/knowledge.source.model";
-import {FaviconExtractorService} from "../../../services/ingest-services/favicon-extraction-service/favicon-extractor.service";
+import {FaviconService} from "../../../services/ingest-services/favicon-service/favicon.service";
 import {SettingsService} from "../../../services/ipc-services/settings-service/settings.service";
 import {MenuItem} from "primeng/api";
 import {OverlayPanel} from "primeng/overlaypanel";
@@ -72,9 +70,9 @@ export class ProjectDetailsOverviewComponent implements OnInit {
 
   calendarIndex: number = 2;
 
-  constructor(private projectService: ProjectService, private faviconService: FaviconExtractorService,
-              private settingsService: SettingsService, private ksCommandService: KsCommandService) {
-    projectService.currentProject.subscribe((kcProject) => {
+  constructor(private projects: ProjectService, private favicon: FaviconService,
+              private settings: SettingsService, private command: KsCommandService) {
+    projects.currentProject.subscribe((kcProject) => {
       if (!kcProject) {
         return;
       }
@@ -82,7 +80,7 @@ export class ProjectDetailsOverviewComponent implements OnInit {
       this.generateKsList(this.showSubProjects);
       this.setupBreadcrumbs(kcProject.id);
     })
-    settingsService.app.subscribe((settings) => {
+    settings.app.subscribe((settings) => {
       this.showSubProjects = settings.table?.showSubProjects;
       this.generateKsList(this.showSubProjects);
     });
@@ -117,7 +115,7 @@ export class ProjectDetailsOverviewComponent implements OnInit {
   }
 
   setupBreadcrumbs(id: UUID) {
-    let ancestors = this.projectService.getAncestors(id.value);
+    let ancestors = this.projects.getAncestors(id.value);
     this.breadcrumbs = [];
     for (let ancestor of ancestors) {
       this.breadcrumbs.push({
@@ -132,7 +130,7 @@ export class ProjectDetailsOverviewComponent implements OnInit {
    * @param ksList: A list of Knowledge Sources to be displayed in the KsTable
    */
   changeKsList(ksList: KnowledgeSource[]) {
-    this.faviconService.extractFromKsList(ksList).then((list) => {
+    this.favicon.extractFromKsList(ksList).then((list) => {
       this.ksList = list;
     })
   }
@@ -148,7 +146,7 @@ export class ProjectDetailsOverviewComponent implements OnInit {
       if (this.kcProject?.knowledgeSource) {
         ksList = [...ksList, ...this.kcProject.knowledgeSource];
 
-        const subTrees = this.projectService.getSubTree(this.kcProject.id.value);
+        const subTrees = this.projects.getSubTree(this.kcProject.id.value);
         for (let subTree of subTrees) {
 
           // Ignore current project...
@@ -156,7 +154,7 @@ export class ProjectDetailsOverviewComponent implements OnInit {
             continue;
           }
 
-          let subProject = this.projectService.getProject(subTree.id);
+          let subProject = this.projects.getProject(subTree.id);
 
           if (subProject && subProject.knowledgeSource) {
             ksList = [...ksList, ...subProject.knowledgeSource];
@@ -175,7 +173,7 @@ export class ProjectDetailsOverviewComponent implements OnInit {
 
   navigate(id: UUID) {
     if (id.value !== this.kcProject?.id.value) {
-      this.projectService.projectCommandNavigate(id.value);
+      this.projects.projectCommandNavigate(id.value);
     }
     this.projectInfoOverlay.hide();
   }
@@ -187,7 +185,7 @@ export class ProjectDetailsOverviewComponent implements OnInit {
 
   onBreadcrumbClick($event: any) {
     // Project context will contain the project associated with breadcrumb ID
-    this.projectContext = this.projectService.getProject($event.item.id);
+    this.projectContext = this.projects.getProject($event.item.id);
 
     // Toggle the overlay using the original event to guarantee correct positioning
     this.projectInfoOverlay.toggle($event.originalEvent);
@@ -200,7 +198,7 @@ export class ProjectDetailsOverviewComponent implements OnInit {
     }
 
     if ($event.value && typeof $event.value === 'string') {
-      this.projectService.updateProjects([{
+      this.projects.updateProjects([{
         id: this.kcProject.id
       }]);
     }
@@ -223,15 +221,15 @@ export class ProjectDetailsOverviewComponent implements OnInit {
   }
 
   onKsPreview($event: KnowledgeSource) {
-    this.ksCommandService.preview($event);
+    this.command.preview($event);
   }
 
   onKsOpen($event: KnowledgeSource) {
-    this.ksCommandService.open($event);
+    this.command.open($event);
   }
 
   onKsDetail($event: KnowledgeSource) {
-    this.ksCommandService.detail($event);
+    this.command.detail($event);
   }
 
   onProjectCard(req: KcCardRequest) {
@@ -241,7 +239,7 @@ export class ProjectDetailsOverviewComponent implements OnInit {
       return;
     }
 
-    const selected = this.projectService.getProject(req.projectId);
+    const selected = this.projects.getProject(req.projectId);
     if (selected) {
       this.selectedProject = selected;
       this.projectOverlay.toggle(req.event, req.element);
