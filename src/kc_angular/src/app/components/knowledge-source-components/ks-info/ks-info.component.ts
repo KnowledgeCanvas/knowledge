@@ -73,6 +73,10 @@ export class KsInfoComponent implements OnInit {
     let ks: KnowledgeSource = this.ks;
     this.populateCalendar(ks);
 
+    if (!ks.importMethod) {
+      ks.importMethod = 'manual';
+    }
+
     if (ks.ingestType === 'website') {
       ks.accessLink = new URL(ks.accessLink);
       let urlParam = ks.accessLink.searchParams.get('v');
