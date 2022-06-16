@@ -20,7 +20,7 @@
     "cytoscape-cxtmenu": "^3.4.0",
     "cytoscape-dagre": "^2.3.2",
     "cytoscape-edgehandles": "^4.0.1",
-    "electron": "^16.0.6",
+    "electron": "^16.2.6",
     "lodash": "^4.17.21",
     "ts-loader": "^9.2.6",
     "typescript": "^4.5.4",
