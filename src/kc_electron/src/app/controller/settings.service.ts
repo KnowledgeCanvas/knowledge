@@ -42,7 +42,6 @@ let GLOBAL_ERROR = '';
  *      6. Broadcast settings via IPC whenever settings are changed or requested
  */
 class SettingsService {
-    all: Observable<SettingsModel>;
     private ipcChannels = {
         getSettings: 'A2E:Settings:Get',
         getDefaults: 'A2E:Settings:Defaults',
@@ -50,7 +49,9 @@ class SettingsService {
         sendAll: 'E2A:Settings:All',
         sendDefaults: 'E2A:Settings:Defaults'
     }
+
     private _all: BehaviorSubject<SettingsModel>;
+    all: Observable<SettingsModel>;
 
     constructor() {
         // 1. Load optimal default settings on every startup
@@ -191,7 +192,7 @@ class SettingsService {
             ingest: {
                 manager: {
                     enabled: false,
-                    storageLocation: path.resolve(system.appPath, 'files'),
+                    storageLocation: path.resolve(system.appPath),
                     target: 'autoscan'
                 },
                 extensions: {
