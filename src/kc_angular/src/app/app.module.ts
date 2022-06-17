@@ -48,12 +48,10 @@ import {InputTextModule} from "primeng/inputtext";
 import {InputTextareaModule} from "primeng/inputtextarea";
 import {KnowledgeCanvasComponent} from './components/knowledge-source-components/ks-canvas/knowledge-canvas.component';
 import {KnowledgeSourceTableComponent} from './components/knowledge-source-components/ks-table/knowledge-source-table.component';
-import {KsImportConfirmComponent} from './components/knowledge-source-components/ks-import-confirm/ks-import-confirm.component';
 import {KsInfoComponent} from './components/knowledge-source-components/ks-info/ks-info.component';
-import {KsIngestTypeIconPipe} from './pipes/image-pipes/ks-ingest-type-icon/ks-ingest-type-icon.pipe';
+import {KsIngestTypeIconPipe} from './pipes/ks-ingest-type-icon.pipe';
 import {KsPreviewComponent} from './components/knowledge-source-components/ks-preview/ks-preview.component';
-import {KsUpNextComponent} from './components/knowledge-source-components/ks-queue/ks-up-next.component';
-import {IngestService} from "./services/ingest-services/ingest-service/ingest.service";
+import {IngestService} from "./services/ingest-services/ingest.service";
 import {MenuModule} from "primeng/menu";
 import {MenubarModule} from "primeng/menubar";
 import {MultiSelectModule} from "primeng/multiselect";
@@ -68,14 +66,14 @@ import {ProjectCreationDialogComponent} from "./components/project-components/pr
 import {ProjectDetailViewportComponent} from "./components/project-components/project-detail-viewport/project-detail-viewport.component";
 import {ProjectDetailsOverviewComponent} from './components/project-components/project-details-overview/project-details-overview.component';
 import {ProjectInfoComponent} from './components/project-components/project-info/project-info.component';
-import {ProjectNamePipe} from './pipes/project-pipes/project-name/project-name.pipe';
-import {ProjectService} from "./services/factory-services/project-service/project.service";
-import {ProjectTypePipe} from './pipes/project-pipes/project-type/project-type.pipe';
+import {ProjectNamePipe} from './pipes/project-name.pipe';
+import {ProjectService} from "./services/factory-services/project.service";
+import {ProjectTypePipe} from './pipes/project-type.pipe';
 import {ProjectsTreeComponent} from "./components/project-components/projects-tree/projects-tree.component";
 import {ScrollingModule} from "@angular/cdk/scrolling";
 import {SearchSettingsComponent} from './components/settings-components/search-settings/search-settings.component';
 import {SelectButtonModule} from "primeng/selectbutton";
-import {SettingsService} from "./services/ipc-services/settings-service/settings.service";
+import {SettingsService} from "./services/ipc-services/settings.service";
 import {SidebarModule} from "primeng/sidebar";
 import {SkeletonModule} from "primeng/skeleton";
 import {SpeedDialModule} from "primeng/speeddial";
@@ -95,8 +93,8 @@ import {YouTubePlayerModule} from "@angular/youtube-player";
 import {ViewportHeaderComponent} from "./components/knowledge-source-components/ks-viewport-components/viewport-header/viewport-header.component";
 import {FileViewComponent} from "./components/knowledge-source-components/ks-viewport-components/file-viewport/file-view.component";
 import {BrowserViewComponent} from "./components/knowledge-source-components/ks-viewport-components/browser-viewport/browser-view.component";
-import {CountdownPipe} from "./pipes/date-pipes/countdown-pipe/countdown.pipe";
-import {TruncatePipe} from "./pipes/text-pipes/truncate-pipe/truncate.pipe";
+import {CountdownPipe} from "./pipes/countdown.pipe";
+import {TruncatePipe} from "./pipes/truncate.pipe";
 import {KsCardComponent} from './components/knowledge-source-components/ks-card/ks-card.component';
 import {KsIconComponent} from './components/knowledge-source-components/ks-icon/ks-icon.component';
 import {KsIngestComponent} from './components/knowledge-source-components/ks-ingest/ks-ingest.component';
@@ -106,7 +104,7 @@ import {InputSwitchModule} from "primeng/inputswitch";
 import {DockModule} from "primeng/dock";
 import {KsDataviewComponent} from './components/knowledge-source-components/ks-dataview/ks-dataview.component';
 import {ProjectCardComponent} from './components/project-components/project-card/project-card.component';
-import {TopicListPipe} from './pipes/text-pipes/topic-list-pipe/topic-list.pipe';
+import {TopicListPipe} from './pipes/topic-list.pipe';
 import {AccordionModule} from "primeng/accordion";
 import {FullCalendarModule} from "@fullcalendar/angular";
 import {TagModule} from "primeng/tag";
@@ -114,7 +112,7 @@ import {ProjectCalendarComponent} from './components/project-components/project-
 import {KsCardListComponent} from './components/knowledge-source-components/ks-card-list/ks-card-list.component';
 import {PaginatorModule} from "primeng/paginator";
 import {CheckboxModule} from "primeng/checkbox";
-import {ProjectBreadcrumbPipe} from './pipes/project-pipes/project-breadcrumb/project-breadcrumb.pipe';
+import {ProjectBreadcrumbPipe} from './pipes/project-breadcrumb.pipe';
 import {ScrollPanelModule} from "primeng/scrollpanel";
 import {KsExportComponent} from "./components/knowledge-source-components/ks-export/ks-export.component";
 import {RadioButtonModule} from "primeng/radiobutton";
@@ -130,7 +128,6 @@ import {KsThumbnailComponent} from './components/knowledge-source-components/ks-
     KnowledgeCanvasComponent,
     KnowledgeSourceTableComponent,
     KsInfoComponent,
-    KsUpNextComponent,
     ProjectCreationDialogComponent,
     ProjectDetailViewportComponent,
     ProjectDetailsOverviewComponent,
@@ -141,7 +138,6 @@ import {KsThumbnailComponent} from './components/knowledge-source-components/ks-
     GeneralSettingsComponent,
     KsPreviewComponent,
     ProjectInfoComponent,
-    KsImportConfirmComponent,
     ProjectNamePipe,
     ProjectTypePipe,
     KsIngestTypeIconPipe,
