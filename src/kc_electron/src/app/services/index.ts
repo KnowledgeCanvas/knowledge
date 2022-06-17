@@ -13,9 +13,10 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-
-const ingestFileWatcher = require('./filewatcher');
+const autoscanService = require('./autoscan.service');
+const extensionService = require('./extension.service');
 
 module.exports = {
-    ingestFileWatcher
+    autoscan: autoscanService,
+    extensions: extensionService
 }

@@ -22,7 +22,7 @@ import {Buffer} from "buffer";
 let share: any = (global as any).share;
 let url: any = share.url;
 
-const settings = require('../controller/settings.service');
+const settings = require('./settings.service');
 
 class ExtensionServer {
     private __server?: http.Server;

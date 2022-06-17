@@ -23,7 +23,7 @@ const http = require('http');
 const url = require('url');
 const fs = require('fs');
 const path = require('path');
-const settingsService = require('./app/controller/settings.service');
+const settingsService = require('./app/services/settings.service');
 const uuid = require('uuid');
 const MAIN_ENTRY: string = path.join(app.getAppPath(), 'src', 'kc_angular', 'dist', 'main', 'index.html');
 
@@ -47,13 +47,13 @@ const MAIN_ENTRY: string = path.join(app.getAppPath(), 'src', 'kc_angular', 'dis
 console.log('Dirname: ', __dirname);
 
 // Setup auto update
-require('./app/controller/update');
+require('./app/services/auto.update.service');
 
 // Setup IPC
 require('./app/ipc');
 
 // Setup knowledge source ingestion
-require('./app/ingest');
+require('./app/services/index');
 
 const browserIpc = require('./app/ipc').browserIpc;
 

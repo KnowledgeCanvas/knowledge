@@ -29,7 +29,7 @@ const path = share.path;
 const shell = share.shell;
 const ipcMain = share.ipcMain;
 const uuid = share.uuid;
-const settingsService = require('../controller/settings.service');
+const settingsService = require('./settings.service');
 
 const PENDING_DIR = () => {
     const appPath = settingsService.getSettings().system.appPath;
