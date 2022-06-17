@@ -20,6 +20,10 @@ import {FileSourceModel, FileWatcherUpdate} from "../../../../../kc_shared/model
 import {UUID} from "../../models/uuid";
 import {NotificationsService} from "../user-services/notifications.service";
 
+type FileManagerMove = {
+  id: string,
+  newPath: string
+}
 
 @Injectable({
   providedIn: 'root'
@@ -28,18 +32,23 @@ export class AutoscanService {
   private send = window.api.send;
   private receive = window.api.receive;
   private channels = {
-    fwNewFiles: 'E2A:FileWatcher:NewFiles',
-    fwError: 'E2A:FileWatcher:Error',
-    fwDelete: 'A2E:FileWatcher:Delete',
-    fwFinalize: `A2E:FileWatcher:Finalize`,
-    fwWarn: 'E2A:FileWatcher:Warn'
+    fmNewFiles: 'E2A:FileManager:NewFiles',
+    fmError: 'E2A:FileManager:Error',
+    fmDelete: 'A2E:Autoscan:Delete',
+    fmFinalize: `A2E:Autoscan:Finalize`,
+    fmWarn: 'E2A:FileManager:Warn',
+    fmConfirmAdd: 'E2A:FileManager:ConfirmAdd'
   }
 
   private __files = new BehaviorSubject<FileSourceModel[]>([]);
   files: Observable<FileSourceModel[]> = this.__files.asObservable();
 
-  constructor(private zone: NgZone, private notifications: NotificationsService) {
-    this.receive(this.channels.fwNewFiles, (responses: IpcMessage[]) => {
+  private __move = new BehaviorSubject<FileManagerMove>({} as any);
+  move = this.__move.asObservable();
+
+  constructor(private zone: NgZone,
+              private notifications: NotificationsService) {
+    this.receive(this.channels.fmNewFiles, (responses: IpcMessage[]) => {
       this.zone.run(() => {
         let files: FileSourceModel[] = [];
 
@@ -56,7 +65,7 @@ export class AutoscanService {
       });
     })
 
-    this.receive(this.channels.fwError, (message: IpcMessage) => {
+    this.receive(this.channels.fmError, (message: IpcMessage) => {
       this.zone.run(() => {
         if (message.error) {
           this.notifications.error('FileWatcher', `${message.error.label}`, `${message.error.message} (${message.error.code})`);
@@ -64,12 +73,19 @@ export class AutoscanService {
       })
     })
 
-    this.receive(this.channels.fwWarn, (message: IpcMessage) => {
+    this.receive(this.channels.fmWarn, (message: IpcMessage) => {
       this.zone.run(() => {
         if (message.error) {
           this.notifications.warn('FileWatcher', `${message.error.label}`, `${message.error.message}`);
         }
       })
+    })
+
+    this.receive(this.channels.fmConfirmAdd, (message: IpcMessage) => {
+      console.log('Confirm add: ', message);
+      if (message.success?.data?.id && message.success.data.newPath) {
+        this.__move.next(message.success.data);
+      }
     })
   }
 
@@ -83,10 +99,10 @@ export class AutoscanService {
       id: id.value,
       method: operation
     }
-    this.send(this.channels.fwFinalize, update);
+    this.send(this.channels.fmFinalize, update);
   }
 
   delete(path: string) {
-    this.send(this.channels.fwDelete, path);
+    this.send(this.channels.fmDelete, path);
   }
 }
