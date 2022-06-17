@@ -35,8 +35,6 @@ import {KsContextMenuService} from "../../../services/factory-services/ks-contex
 export class KnowledgeSourceTableComponent implements OnInit, OnChanges {
   @Input() ksList: KnowledgeSource[] = [];
 
-  @Output() kcSetCurrentProject = new EventEmitter<string>();
-
   @ViewChild('dataTable') dataTable!: Table;
 
   @ViewChild('op') overlayPanel!: OverlayPanel;

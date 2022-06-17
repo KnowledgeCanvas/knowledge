@@ -12,8 +12,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.-->
 
-<kc-project-overview (kcSetCurrentProject)="kcSetCurrentProject.emit($event)"
-                     (kcEditProject)="kcEditProject.emit($event)"
+<kc-project-overview (kcEditProject)="kcEditProject.emit($event)"
                      (onProjectCreation)="onProjectCreation.emit($event)"
                      (onProjectRemove)="onProjectRemove.emit($event)"
                      (onTopicSearch)="onTopicSearch.emit($event)">

@@ -38,12 +38,6 @@ export class KnowledgeCanvasComponent implements OnInit, OnDestroy {
 
   @Input() projectTreeNodes: TreeNode[] = [];
 
-  @Output() ksAdded = new EventEmitter<KnowledgeSource[]>();
-
-  @Output() kcProjectUpdate = new EventEmitter<KcProject>();
-
-  @Output() kcSetCurrentProject = new EventEmitter<string>();
-
   @Output() kcEditProject = new EventEmitter<UUID>();
 
   @Output() onProjectCreation = new EventEmitter<UUID | undefined>();
