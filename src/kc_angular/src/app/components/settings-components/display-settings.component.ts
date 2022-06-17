@@ -15,16 +15,60 @@
  */
 import {Component, OnInit} from '@angular/core';
 import {DynamicDialogConfig, DynamicDialogRef} from "primeng/dynamicdialog";
-import {ThemeService} from "../../../services/user-services/theme.service";
-import {SettingsService} from "../../../services/ipc-services/settings.service";
-import {NotificationsService} from "../../../services/user-services/notifications.service";
-import {KcTheme} from "../../../../../../kc_shared/models/style.model";
-import {DisplaySettingsModel} from "../../../../../../kc_shared/models/settings.model";
+import {ThemeService} from "../../services/user-services/theme.service";
+import {SettingsService} from "../../services/ipc-services/settings.service";
+import {NotificationsService} from "../../services/user-services/notifications.service";
+import {KcTheme} from "../../../../../kc_shared/models/style.model";
+import {DisplaySettingsModel} from "../../../../../kc_shared/models/settings.model";
 
 @Component({
   selector: 'app-display-settings',
-  templateUrl: './display-settings.component.html',
-  styleUrls: ['./display-settings.component.scss']
+  template: `
+    <div class="p-fluid grid">
+      <div class="col-12">
+        <p-panel header="Theme">
+          <ng-template pTemplate="content">
+            <label for="theme-dropdown">Select a theme</label>
+            <div class="p-inputgroup">
+              <button pButton icon="pi pi-replay" pTooltip="Restore default" (click)="restoreDefaultTheme()"></button>
+              <p-dropdown [(ngModel)]="selectedTheme"
+                          [options]="themes"
+                          optionLabel="name"
+                          [filter]="true"
+                          [group]="true"
+                          id="theme-dropdown"
+                          [style]="{'width': '100%'}"
+                          appendTo="body"
+                          (onChange)="onThemeChange($event)">
+                <ng-template pTemplate="group" let-group>
+                  <p-divider></p-divider>
+                  <b>{{group.name}}</b>
+                  <b *ngIf="group.isDark"> (Dark)</b>
+                  <b *ngIf="!group.isDark"> (Light)</b>
+                </ng-template>
+              </p-dropdown>
+            </div>
+          </ng-template>
+        </p-panel>
+      </div>
+
+      <div class="col-12">
+        <p-panel header="Logging">
+          <ng-template pTemplate="content">
+            <p-selectButton [options]="logLevels"
+                            [(ngModel)]="logLevel"
+                            [multiple]="true"
+                            (onChange)="onLoggingChange($event)"
+                            optionLabel="name"
+                            optionValue="value">
+            </p-selectButton>
+          </ng-template>
+        </p-panel>
+      </div>
+    </div>
+
+  `,
+  styles: []
 })
 export class DisplaySettingsComponent implements OnInit {
   displaySettings?: DisplaySettingsModel;

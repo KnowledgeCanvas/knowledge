@@ -15,14 +15,33 @@
  */
 
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {SettingsService} from "../../../services/ipc-services/settings.service";
+import {SettingsService} from "../../services/ipc-services/settings.service";
 import {Subscription} from "rxjs";
 
 
 @Component({
   selector: 'app-search-settings',
-  templateUrl: './search-settings.component.html',
-  styleUrls: ['./search-settings.component.scss']
+  template: `
+    <div class="p-fluid grid">
+      <div class="col-12">
+        <p-panel header="Provider">
+          <ng-template pTemplate="content">
+            <label for="search-dropdown">Select a provider</label>
+            <p-dropdown [(ngModel)]="provider"
+                        [options]="providers"
+                        optionLabel="name"
+                        [filter]="true"
+                        id="search-dropdown"
+                        [style]="{'width': '100%'}"
+                        appendTo="body"
+                        (onChange)="onProviderChange($event)">
+            </p-dropdown>
+          </ng-template>
+        </p-panel>
+      </div>
+    </div>
+  `,
+  styles: []
 })
 export class SearchSettingsComponent implements OnInit, OnDestroy {
   // Search provider (Google by default)

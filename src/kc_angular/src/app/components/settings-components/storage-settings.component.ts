@@ -18,8 +18,8 @@ import {Component, OnInit} from '@angular/core';
 
 @Component({
   selector: 'app-storage-settings',
-  templateUrl: './storage-settings.component.html',
-  styleUrls: ['./storage-settings.component.scss']
+  template: ``,
+  styles: []
 })
 export class StorageSettingsComponent implements OnInit {
 

@@ -17,11 +17,11 @@
 import {Component, OnInit} from '@angular/core';
 
 @Component({
-  selector: 'app-general-settings',
-  templateUrl: './general-settings.component.html',
-  styleUrls: ['./general-settings.component.scss']
+  selector: 'app-settings',
+  template: ``,
+  styles: []
 })
-export class GeneralSettingsComponent implements OnInit {
+export class SettingsComponent implements OnInit {
 
   constructor() {
   }
