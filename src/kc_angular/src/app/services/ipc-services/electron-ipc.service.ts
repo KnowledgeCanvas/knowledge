@@ -36,7 +36,6 @@ export class ElectronIpcService {
   private removeAllListeners = window.api.removeAllListeners;
   private channels = {
     autoUpdateReceive: 'E2A:AutoUpdate:Update',
-    browserExtensionResults: 'E2A:Extension:Import',
     browserView: 'A2E:BrowserView:Open',
     browserViewCanGoBack: 'A2E:BrowserView:CanGoBack',
     browserViewCanGoBackResults: 'E2A:BrowserView:CanGoBack',
@@ -333,21 +332,6 @@ export class ElectronIpcService {
         });
       });
       this.send(this.channels.generateUuid, {quantity: quantity});
-    });
-  }
-
-  browserWatcher(): Observable<string> {
-    return new Observable<string>((subscriber) => {
-      this.receive(this.channels.browserExtensionResults, (response: IpcMessage) => {
-        this.run(() => {
-          if (response.success?.data && typeof response.success.data === 'string') {
-            subscriber.next(response.success.data);
-          } else {
-            console.error(`${this.ClassName} error generating UUIDs: `, response.error);
-            subscriber.error(response.error);
-          }
-        });
-      });
     });
   }
 

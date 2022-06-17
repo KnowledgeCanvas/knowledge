@@ -47,9 +47,9 @@ let getKnowledgeSourceList = ipcMain.on('A2E:KnowledgeCanvas:Open', (_: any, arg
         show: false,
         width: width,
         height: height,
-        modal: true,
+        modal: false,
         backgroundColor: '#FFF',
-        title: 'Knowledge Canvas',
+        title: 'Knowledge',
         parent: kcMainWindow,
         webPreferences: {
             nodeIntegration: false, // is default value after Electron v5
