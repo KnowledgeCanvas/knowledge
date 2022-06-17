@@ -55,8 +55,7 @@ export class ProjectDetailViewportComponent implements OnInit {
 
   @Output() onShow = new EventEmitter();
 
-  constructor(private browserViewDialogService: BrowserViewDialogService,
-              private dialogService: DialogService,
+  constructor(private dialogService: DialogService,
               private projectService: ProjectService) {
   }
 
@@ -75,27 +74,6 @@ export class ProjectDetailViewportComponent implements OnInit {
   }
 
   ngOnInit(): void {
-  }
-
-  ksAdded(_: KnowledgeSource[]) {
-    if (!this.kcProject) {
-      return;
-    }
-    // Since the KS has already been added to the project ks list, perform simple update
-    let update: ProjectUpdateRequest = {
-      id: this.kcProject.id
-    }
-    this.projectService.updateProjects([update]);
-  }
-
-  kcProjectUpdate(project: KcProject) {
-    this.projectService.updateProjects([{
-      id: project.id
-    }])
-  }
-
-  kcSetCurrentProject($event: string) {
-    this.projectService.setCurrentProject($event);
   }
 
   kcEditProject(id: UUID) {

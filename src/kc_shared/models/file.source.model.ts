@@ -35,6 +35,7 @@ export interface FileWatcherUpdate {
 
 export interface PendingFileTransfer {
     id: string
+    filename: string
     oldPath: string
     newPath: string
 }

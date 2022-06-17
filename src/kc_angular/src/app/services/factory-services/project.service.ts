@@ -56,7 +56,8 @@ export class ProjectService {
   private _projectCommandIndex: number = 0;
 
   constructor(private storageService: StorageService,
-              private uuidService: UuidService) {
+              private uuidService: UuidService,
+              private notifications: NotificationsService) {
     this.allProjects = new BehaviorSubject<ProjectTreeNode[]>([]);
     this.projectTree = this.allProjects.asObservable();
     this.tree = new ProjectTree();
@@ -272,113 +273,129 @@ export class ProjectService {
 
   /**
    *
-   * @param projectUpdates: ProjectUpdateRequest list that contains one or more project updates
+   * @param updates: ProjectUpdateRequest list that contains one or more project updates
    *
    * To update a project that was already modified, submit an update with only the ID.
    *
    * Otherwise, include any of the valid ProjectUpdateRequest fields.
    * e.g. create an update with ID (required) and an array removeKnowledgeSource[], etc.
    */
-  async updateProjects(projectUpdates: ProjectUpdateRequest[]) {
-    for (let projectUpdate of projectUpdates) {
+  async updateProjects(updates: ProjectUpdateRequest[]) {
+    for (let update of updates) {
       // Make sure the target project exists
-      let projectToUpdate = this.projectSource.find(p => p.id.value === projectUpdate.id.value);
-
-      if (!projectToUpdate) {
-        console.error(`Attempting to update non-existant project with ID:`, projectUpdate.id.value);
+      let target = this.projectSource.find(p => p.id.value === update.id.value);
+      if (!target) {
+        console.error(`Attempting to update non-existant project with ID:`, update.id.value);
         return;
       }
 
-      if (projectUpdate.name && projectUpdate.name !== projectToUpdate.name) {
-        projectToUpdate.name = projectUpdate.name;
+      // Description accumulator, used by each operation to describe what actions occured in a meaningful way.
+      // TODO: make sure all operations are accounted for before commiting this...
+      let description: string = '';
+      let setDescription = (operation: string, summary: string) => {
+        this.notifications.debug('ProjectService', `Update Operation: ${operation}`, summary);
+        description += `${operation}: ${summary}, `;
       }
 
-      projectToUpdate.expanded = projectUpdate.expanded ?? false;
+      if (update.name && update.name !== target.name) {
+        setDescription('Name', `from ${target.name} to ${update.name}`);
+        target.name = update.name;
+      }
+
+      // TODO: why is this here?
+      target.expanded = update.expanded ?? false;
 
       // Handle parentId update
-      if (projectUpdate.parentId) {
-        projectToUpdate.parentId = new UUID(projectUpdate.parentId);
+      if (update.parentId) {
+        const next = this.projectSource.find(p => p.id.value === update.parentId);
+        const current = target?.parentId ? this.projectSource.find(p => p.id.value === target!.parentId.value) : undefined;
+        if (next) {
+          if (!current) { // Parent
+            // TODO: finish this after working on getting the app to work properly again
+          }
+          setDescription('Move', `from ${current?.name ?? ''} to ${next.name}`);
+          target.parentId = new UUID(update.parentId);
+        }
       }
 
       // Handle add subproject update
-      if (projectUpdate.addSubprojects && projectUpdate.addSubprojects.length) {
-        if (projectToUpdate.subprojects) {
-          for (let subp of projectUpdate.addSubprojects) {
-            projectToUpdate.subprojects.push(subp);
+      if (update.addSubprojects && update.addSubprojects.length) {
+        if (target.subprojects) {
+          for (let subp of update.addSubprojects) {
+            target.subprojects.push(subp);
           }
         }
       }
 
       // Handle remove subproject update
-      if (projectUpdate.removeSubprojects && projectUpdate.removeSubprojects.length) {
-        for (let subp of projectUpdate.removeSubprojects) {
-          if (projectToUpdate.subprojects)
-            projectToUpdate.subprojects = projectToUpdate.subprojects.filter(s => s !== subp);
+      if (update.removeSubprojects && update.removeSubprojects.length) {
+        for (let subp of update.removeSubprojects) {
+          if (target.subprojects)
+            target.subprojects = target.subprojects.filter(s => s !== subp);
         }
       }
 
       // Handle knowledge source removal
-      if (projectUpdate.removeKnowledgeSource && projectUpdate.removeKnowledgeSource.length) {
-        projectToUpdate = this.removeKnowledgeSource(projectToUpdate, projectUpdate.removeKnowledgeSource);
+      if (update.removeKnowledgeSource && update.removeKnowledgeSource.length) {
+        target = this.removeKnowledgeSource(target, update.removeKnowledgeSource);
       }
 
       // Handle moving knowledge source from project to project
-      if (projectUpdate.moveKnowledgeSource) {
-        projectToUpdate = this.moveKnowledgeSource(projectToUpdate, projectUpdate.moveKnowledgeSource);
+      if (update.moveKnowledgeSource) {
+        target = this.moveKnowledgeSource(target, update.moveKnowledgeSource);
       }
 
       // Handle knowledge source insertion
-      if (projectUpdate.addKnowledgeSource && projectUpdate.addKnowledgeSource.length) {
-        projectToUpdate = this.addKnowledgeSource(projectToUpdate, projectUpdate.addKnowledgeSource);
+      if (update.addKnowledgeSource && update.addKnowledgeSource.length) {
+        target = this.addKnowledgeSource(target, update.addKnowledgeSource);
       }
 
       // Handle knowledge source update
-      if (projectUpdate.updateKnowledgeSource && projectUpdate.updateKnowledgeSource.length > 0) {
-        projectToUpdate = this.updateKnowledgeSource(projectToUpdate, projectUpdate.updateKnowledgeSource);
+      if (update.updateKnowledgeSource && update.updateKnowledgeSource.length > 0) {
+        target = this.updateKnowledgeSource(target, update.updateKnowledgeSource);
       }
 
       // Handle topic insertion
-      if (projectUpdate.addTopic && projectUpdate.addTopic.length > 0) {
-        if (!projectToUpdate.topics)
-          projectToUpdate.topics = [];
-        for (let topic of projectUpdate.addTopic)
-          projectToUpdate.topics.push(topic);
+      if (update.addTopic && update.addTopic.length > 0) {
+        if (!target.topics)
+          target.topics = [];
+        for (let topic of update.addTopic)
+          target.topics.push(topic);
       }
 
       // Handle topic removal
-      if (projectUpdate.removeTopic && projectUpdate.removeTopic.length > 0) {
-        if (projectToUpdate.topics) {
-          let removeTopics: string[] = projectUpdate.removeTopic;
+      if (update.removeTopic && update.removeTopic.length > 0) {
+        if (target.topics) {
+          let removeTopics: string[] = update.removeTopic;
           for (let topic of removeTopics) {
-            projectToUpdate.topics = projectToUpdate.topics.filter(t => t !== topic);
+            target.topics = target.topics.filter(t => t !== topic);
           }
         }
       }
 
-      if (projectUpdate.overWriteTopics && projectUpdate.overWriteTopics.length > 0) {
-        projectToUpdate.topics = projectUpdate.overWriteTopics;
+      if (update.overWriteTopics && update.overWriteTopics.length > 0) {
+        target.topics = update.overWriteTopics;
       }
 
       let event: EventModel = {
         description: "",
-        id: projectToUpdate.id,
         type: 'update',
         timestamp: Date()
       }
-      projectToUpdate.calendar.events.push(event);
-      projectToUpdate.dateModified = new Date();
+      target.calendar.events.push(event);
+      target.dateModified = new Date();
 
-      if (projectToUpdate.knowledgeSource) {
-        for (let ks of projectToUpdate.knowledgeSource) {
-          ks.associatedProject = projectToUpdate.id;
+      if (target.knowledgeSource) {
+        for (let ks of target.knowledgeSource) {
+          ks.associatedProject = target.id;
         }
       }
 
       // Persist project to storage system
-      await this.storageService.updateProject(projectToUpdate);
+      await this.storageService.updateProject(target);
 
-      this.projectSource = this.projectSource.filter(p => p.id.value !== projectUpdate.id.value);
-      this.projectSource.push(projectToUpdate);
+      this.projectSource = this.projectSource.filter(p => p.id.value !== update.id.value);
+      this.projectSource.push(target);
     }
 
     this.refreshTree();

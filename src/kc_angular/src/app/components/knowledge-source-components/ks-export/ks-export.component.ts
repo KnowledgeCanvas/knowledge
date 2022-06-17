@@ -14,7 +14,7 @@
  limitations under the License.
  */
 
-import {Component, Input} from '@angular/core';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {KnowledgeSource} from "../../../models/knowledge.source.model";
 import {ObjectUtils} from "primeng/utils";
 
@@ -31,6 +31,8 @@ interface ExportType {
 })
 export class KsExportComponent {
   @Input() data: KnowledgeSource[] = [];
+
+  @Output() onClose = new EventEmitter<boolean>();
 
   exportDialogVisible: boolean = false;
 
@@ -98,6 +100,8 @@ export class KsExportComponent {
       window.open(encodeURI(encoding));
     }
     document.body.removeChild(link);
+    this.onClose.emit(true)
+    this.exportDialogVisible = false;
   }
 
   export() {

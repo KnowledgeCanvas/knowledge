@@ -34,7 +34,7 @@ export class KcProject implements KcProjectModel {
   type: KcProjectType;
   expanded: boolean = false;
   knowledgeSource: KnowledgeSource[] = [];
-  calendar: KcCalendar;
+  calendar: ProjectCalendar;
 
 
   constructor(name: string, id: UUID, type?: KcProjectType, parentId?: UUID) {
@@ -59,7 +59,7 @@ export interface ProjectCreationRequest {
   topics: string[];
   type: KcProjectType;
   subProjects: ProjectCreationRequest[];
-  calendar: KcCalendar;
+  calendar: ProjectCalendar;
 }
 
 export interface ProjectUpdateRequest {

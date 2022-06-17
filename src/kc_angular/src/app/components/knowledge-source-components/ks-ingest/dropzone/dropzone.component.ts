@@ -11,7 +11,7 @@ import {animate, state, style, transition, trigger} from "@angular/animations";
         style({height: '35vh', top: 0, left: 0})
       ),
       state('dropzone-sm',
-        style({height: '10vh', top: 0, left: 0})
+        style({height: '4rem', top: 0, left: 0})
       ),
       transition('dropzone-lg => dropzone-sm', [
         animate('0.1s')

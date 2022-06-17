@@ -19,13 +19,12 @@ export type EventType = 'create' | 'read' | 'update' | 'delete' | 'reminder' | '
 
 export interface EventModel {
     timestamp: string;
-    id: UuidModel;
     type: EventType;
     description?: string;
     icon?: string;
 }
 
-export interface KcCalendar {
+export interface ProjectCalendar {
     events: EventModel[];
     end: Date | string | null;
     start: Date | string | null;

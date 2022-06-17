@@ -8210,18 +8210,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"kc_extensions@workspace:src/kc_extensions":
-  version: 0.0.0-use.local
-  resolution: "kc_extensions@workspace:src/kc_extensions"
-  dependencies:
-    ts-loader: ^9.2.6
-    typescript: ^4.5.4
-    webpack: ^5.65.0
-    webpack-cli: ^4.9.1
-    webpack-merge: ^5.8.0
-  languageName: unknown
-  linkType: soft
-
 "kc_knowledge@workspace:src/kc_knowledge":
   version: 0.0.0-use.local
   resolution: "kc_knowledge@workspace:src/kc_knowledge"

@@ -14,12 +14,12 @@
  limitations under the License.
  */
 import {EventModel} from "./event.model";
-import {UuidModel} from "./uuid.model";
+
+export type MarkupType = 'note' | 'highlight' | 'underline' | 'sticker';
 
 export interface KnowledgeSourceMarkup {
-    id: UuidModel
-    pos: { x: Number, y: Number, width: Number, height: Number }
-    events?: EventModel
+    type: MarkupType
+    event: EventModel
 }
 
 export interface MarkupColor {
@@ -35,7 +35,7 @@ export interface MarkupData {
 }
 
 export interface MarkupNote extends KnowledgeSourceMarkup {
-    title: string
+    title?: string
     body: string
 }
 
@@ -43,8 +43,19 @@ export interface MarkupSticker extends KnowledgeSourceMarkup, MarkupData {
     link?: string
 }
 
-export interface MarkupUnderline extends KnowledgeSourceMarkup, MarkupColor, MarkupFont, Partial<MarkupData> {}
+export interface MarkupUnderline extends KnowledgeSourceMarkup, MarkupColor, MarkupFont, Partial<MarkupData> {
+}
 
 export interface MarkupHighlight extends KnowledgeSourceMarkup, MarkupColor, MarkupFont, Partial<MarkupData> {
     opacity: number
+}
+
+export interface FileSourceMarkup extends KnowledgeSourceMarkup {
+    pos?: { x: Number, y: Number, width: Number, height: Number }
+}
+
+export interface WebSourceMarkup {
+    notes?: MarkupNote[]
+    highlights?: MarkupHighlight[]
+    stickers?: MarkupSticker[]
 }

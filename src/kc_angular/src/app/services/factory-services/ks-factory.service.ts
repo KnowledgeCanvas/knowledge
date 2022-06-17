@@ -80,6 +80,10 @@ export class KsFactoryService {
         }
         Promise.all(actions).then((results) => {
           this.getFileIcons(results).then((finalList) => {
+            if (this.settings.get().ingest.manager.target === 'all') {
+              // TODO: move file to managed location...
+              console.log('Need to move file to new location...');
+            }
             resolve(finalList);
           })
         })
@@ -119,7 +123,7 @@ export class KsFactoryService {
         source: {
           file: undefined,
           website: {
-            url: "",
+            accessLink: "",
             metadata: {
               title: "Knowledge Canvas Search",
               icon: ''
@@ -192,7 +196,7 @@ export class KsFactoryService {
 
   private extractWebResource(link: URL): Promise<KnowledgeSource> {
     const uuid: UUID = this.uuid.generate(1)[0];
-    let source = new SourceModel(undefined, {url: link.href});
+    let source = new SourceModel(undefined, {accessLink: link.href});
     let ref = new KnowledgeSourceReference('website', source, link);
     let ks = new KnowledgeSource('', uuid, 'website', ref);
     return this.getWebsiteMetadata(ks)

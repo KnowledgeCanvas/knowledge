@@ -13,12 +13,19 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
+import {WebSourceMarkup} from "./markup.model";
+
 export interface WebSourceModel {
-    url: string,
-    title?: string,
-    favIconUrl?: string,
+    accessLink: string,
+    iconUrl?: string,
     topics?: string[],
-    metadata?: WebsiteMetadataModel
+    metadata?: WebsiteMetadataModel,
+    markup?: WebSourceMarkup,
+    flagged?: boolean,
+    rawText?: string,
+    thumbnail?: string,
+    title?: string,
+    description?: string
 }
 
 export interface WebsiteMetadataModel {

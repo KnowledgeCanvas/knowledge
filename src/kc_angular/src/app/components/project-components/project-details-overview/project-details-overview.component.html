@@ -68,9 +68,7 @@ limitations under the License.-->
         </ng-template>
 
         <ng-template pTemplate="content">
-          <ks-table (kcSetCurrentProject)="kcSetCurrentProject.emit($event)"
-                    [ksList]="ksList">
-          </ks-table>
+          <ks-table [ksList]="ksList"></ks-table>
         </ng-template>
       </p-tabPanel>
 
@@ -82,6 +80,7 @@ limitations under the License.-->
 
         <ng-template pTemplate="content">
           <app-ks-card-list [ksList]="ksList"
+                            (onKsRemove)="onKsRemove($event)"
                             (onTopicSearch)="topicsOnClick($event)">
           </app-ks-card-list>
         </ng-template>

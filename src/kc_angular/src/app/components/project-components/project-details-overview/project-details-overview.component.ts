@@ -42,8 +42,6 @@ export class ProjectDetailsOverviewComponent implements OnInit {
 
   kcProject: KcProject | null = null;
 
-  @Output() kcSetCurrentProject = new EventEmitter<string>();
-
   @Output() kcEditProject = new EventEmitter<UUID>();
 
   @Output() onProjectCreation = new EventEmitter<UUID | undefined>();
@@ -265,5 +263,9 @@ export class ProjectDetailsOverviewComponent implements OnInit {
       return;
     }
     localStorage.setItem('project-view-index', JSON.stringify(index));
+  }
+
+  onKsRemove($event: KnowledgeSource) {
+    this.command.remove([$event]);
   }
 }
