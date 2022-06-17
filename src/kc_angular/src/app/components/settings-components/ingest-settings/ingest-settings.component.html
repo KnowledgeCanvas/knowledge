@@ -14,53 +14,40 @@ limitations under the License.-->
 
 <div class="p-fluid grid">
   <div class="col-12">
-    <p-panel #fileManager>
-      <ng-template pTemplate="header">
-        <div class="flex-row-center-between w-full">
-          <b>File Manager</b>
-          <p-inputSwitch [(ngModel)]="ingestSettings.managed"
-                         (onChange)="onFileManagerChange($event)"></p-inputSwitch>
-        </div>
-      </ng-template>
-
-      <ng-template pTemplate="content">
-        <div class="p-fluid grid mt-4">
-          <div class="col-12 p-fluid p-inputgroup p-float-label">
-            <button pButton
-                    icon="pi pi-folder"
-                    (click)="getStoragePath()">
-            </button>
-            <input pInputText type="text"
-                   #filestorage
-                   id="filestorage"
-                   disabled
-                   style="width: calc(100% - 10rem)"
-                   [(ngModel)]="ingestSettings.storageLocation">
-            <button pButton label="Show" (click)="show(filestorage.value)"></button>
-            <label for="filestorage">Local Storage Location</label>
-          </div>
-          <div class="col-12 p-fluid">
-            When enabled, files will be moved from their original location to the directory listed above.
-          </div>
-        </div>
-      </ng-template>
-    </p-panel>
-  </div>
-  <div class="col-12">
     <p-panel #autoscanPanel>
       <ng-template pTemplate="header">
         <div class="flex-row-center-between w-full">
           <b>Autoscan</b>
-          <p-inputSwitch [(ngModel)]="ingestSettings.autoscan"
+          <p-inputSwitch [(ngModel)]="ingestSettings.autoscan.enabled"
                          (onChange)="onAutoscanChange($event)">
           </p-inputSwitch>
         </div>
       </ng-template>
 
-      <ng-template pTemplate="content" #autoscanPanel>
-        <div class="p-fluid grid mt-4">
+      <ng-template pTemplate="content">
+        <div class="p-fluid grid m-4">
+          <div class="col-12">
+            <b>Interval</b>
+          </div>
+          <div class="col-4 p-fluid">
+            <p-inputNumber [(ngModel)]="ingestSettings.autoscan.interval"
+                           [suffix]="' seconds'"
+                           [disabled]="!ingestSettings.autoscan.enabled"
+                           (ngModelChange)="onAutoscanInterval($event)"
+                           [showButtons]="true"
+                           [useGrouping]="false"
+                           [allowEmpty]="false"
+                           [min]="10"
+                           [max]="600">
+            </p-inputNumber>
+          </div>
+
+          <div class="col-12">
+            <b>Autoscan Location</b>
+          </div>
           <div class="col-12 p-fluid p-inputgroup p-float-label">
             <button pButton
+                    [disabled]="!ingestSettings.autoscan.enabled"
                     icon="pi pi-folder"
                     (click)="getAutoscanPath()">
             </button>
@@ -69,15 +56,91 @@ limitations under the License.-->
                    disabled
                    id="autoscanLocation"
                    style="width: calc(100% - 10rem)"
-                   [(ngModel)]="ingestSettings.autoscanLocation">
+                   [(ngModel)]="ingestSettings.autoscan.path">
             <button pButton
                     label="Show"
                     (click)="show(autoscanLocation.value)">
             </button>
-            <label for="autoscanLocation">Autoscan Location</label>
+            <br>
+            <small class="text-gray-500">Files saved to this location will automatically be added to Up Next.</small>
           </div>
-          <div class="col-12 p-fluid">
-            When enabled, files saved to the directory listed above will automatically be added to Up Next.
+        </div>
+      </ng-template>
+    </p-panel>
+  </div>
+  <div class="col-12">
+    <p-panel #fileManager>
+      <ng-template pTemplate="header">
+        <div class="flex-row-center-between w-full">
+          <b>File Manager</b>
+        </div>
+      </ng-template>
+
+      <ng-template pTemplate="content">
+        <div class="p-fluid grid m-4">
+          <div class="col-12">
+            <b>Managed Files</b>
+          </div>
+          <div class="col-6">
+            <p-selectButton [options]="fileManagerStates"
+                            [(ngModel)]="ingestSettings.manager.target"
+                            (onChange)="onFileManagerTargetChange($event)"
+                            optionLabel="name"
+                            optionValue="value"
+                            optionDisabled="disabled">
+            </p-selectButton>
+          </div>
+
+          <div class="col-12 mt-4">
+            <b>Storage Location</b>
+          </div>
+          <div class="col-12 p-fluid p-inputgroup p-float-label">
+            <button pButton
+                    icon="pi pi-folder"
+                    disabled
+                    (click)="getStoragePath()">
+            </button>
+            <input pInputText type="text"
+                   #filestorage
+                   disabled
+                   style="width: calc(100% - 10rem)"
+                   [(ngModel)]="ingestSettings.manager.storageLocation">
+            <button pButton label="Show"
+                    (click)="show(filestorage.value)">
+            </button>
+            <br>
+            <small class="text-gray-500">Files will be moved from their original location to this location.</small>
+          </div>
+        </div>
+      </ng-template>
+    </p-panel>
+  </div>
+  <div class="col-12">
+    <p-panel #extensionpanel>
+      <ng-template pTemplate="header">
+        <div class="flex-row-center-between w-full">
+          <b>Browser Extensions</b>
+          <p-inputSwitch [(ngModel)]="ingestSettings.extensions.enabled"
+                         (onChange)="onExtensionChange($event)">
+          </p-inputSwitch>
+        </div>
+      </ng-template>
+
+      <ng-template pTemplate="content">
+        <div class="p-fluid grid m-4">
+          <div class="col-12">
+            <b>Port</b>
+          </div>
+          <div class="col-4 p-fluid">
+            <p-inputNumber [(ngModel)]="ingestSettings.extensions.port"
+                           [disabled]="!ingestSettings.extensions.enabled"
+                           (ngModelChange)="onExtensionPort($event)"
+                           [showButtons]="true"
+                           [useGrouping]="false"
+                           [allowEmpty]="false"
+                           [min]="1025"
+                           [max]="65535">
+            </p-inputNumber>
           </div>
         </div>
       </ng-template>
