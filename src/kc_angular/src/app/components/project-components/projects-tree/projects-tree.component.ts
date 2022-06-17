@@ -15,7 +15,7 @@
  */
 
 import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
-import {ProjectService} from "../../../services/factory-services/project-service/project.service";
+import {ProjectService} from "../../../services/factory-services/project.service";
 import {ProjectUpdateRequest} from "src/app/models/project.model";
 import {PrimeIcons, TreeNode} from "primeng/api";
 import {TreeModule} from "primeng/tree";

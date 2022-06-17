@@ -16,10 +16,9 @@
 
 
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {KcProject, ProjectUpdateRequest} from "src/app/models/project.model";
-import {ProjectService} from "../../../services/factory-services/project-service/project.service";
+import {KcProject} from "src/app/models/project.model";
+import {ProjectService} from "../../../services/factory-services/project.service";
 import {KnowledgeSource} from "../../../models/knowledge.source.model";
-import {BrowserViewDialogService} from "../../../services/ipc-services/browser-service/browser-view-dialog.service";
 import {DialogService} from "primeng/dynamicdialog";
 import {ProjectInfoComponent} from "../project-info/project-info.component";
 import {TreeNode} from "primeng/api";

@@ -17,7 +17,7 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {KnowledgeSource} from "../../../models/knowledge.source.model";
 import {Subscription} from "rxjs";
-import {ElectronIpcService} from "../../../services/ipc-services/electron-ipc/electron-ipc.service";
+import {ElectronIpcService} from "../../../services/ipc-services/electron-ipc.service";
 
 @Component({
   selector: 'app-ks-thumbnail',

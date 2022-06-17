@@ -17,7 +17,7 @@
 
 import {Component, Input, OnInit} from '@angular/core';
 import {KnowledgeSource} from "../../../models/knowledge.source.model";
-import {KsCommandService} from "../../../services/command-services/ks-command/ks-command.service";
+import {KsCommandService} from "../../../services/command-services/ks-command.service";
 
 @Component({
   selector: 'app-ks-dataview',

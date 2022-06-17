@@ -19,13 +19,13 @@ import {Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, OnI
 import {KnowledgeSource} from "src/app/models/knowledge.source.model";
 import {MenuItem, SortEvent} from "primeng/api";
 import {Table} from "primeng/table";
-import {KsCommandService} from "../../../services/command-services/ks-command/ks-command.service";
-import {ProjectService} from "../../../services/factory-services/project-service/project.service";
+import {KsCommandService} from "../../../services/command-services/ks-command.service";
+import {ProjectService} from "../../../services/factory-services/project.service";
 import {OverlayPanel} from "primeng/overlaypanel";
-import {BrowserViewDialogService} from "../../../services/ipc-services/browser-service/browser-view-dialog.service";
-import {KsFactoryService} from "../../../services/factory-services/ks-factory-service/ks-factory.service";
-import {SettingsService} from "../../../services/ipc-services/settings-service/settings.service";
-import {KsContextMenuService} from "../../../services/factory-services/ks-context-menu/ks-context-menu.service";
+import {BrowserViewDialogService} from "../../../services/ipc-services/browser-view-dialog.service";
+import {KsFactoryService} from "../../../services/factory-services/ks-factory.service";
+import {SettingsService} from "../../../services/ipc-services/settings.service";
+import {KsContextMenuService} from "../../../services/factory-services/ks-context-menu.service";
 
 @Component({
   selector: 'ks-table',

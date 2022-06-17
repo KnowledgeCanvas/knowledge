@@ -18,14 +18,14 @@
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {KcProject, ProjectUpdateRequest} from "src/app/models/project.model";
 import {KnowledgeSource} from "../../../models/knowledge.source.model";
-import {ProjectService} from "../../../services/factory-services/project-service/project.service";
-import {BrowserViewDialogService} from "../../../services/ipc-services/browser-service/browser-view-dialog.service";
-import {ElectronIpcService} from "../../../services/ipc-services/electron-ipc/electron-ipc.service";
+import {ProjectService} from "../../../services/factory-services/project.service";
+import {BrowserViewDialogService} from "../../../services/ipc-services/browser-view-dialog.service";
+import {ElectronIpcService} from "../../../services/ipc-services/electron-ipc.service";
 import {Clipboard} from "@angular/cdk/clipboard";
-import {KsCommandService} from "../../../services/command-services/ks-command/ks-command.service";
+import {KsCommandService} from "../../../services/command-services/ks-command.service";
 import {Subscription} from "rxjs";
 import {ConfirmationService, MenuItem, TreeNode} from "primeng/api";
-import {NotificationsService} from "../../../services/user-services/notification-service/notifications.service";
+import {NotificationsService} from "../../../services/user-services/notifications.service";
 import {UUID} from "../../../models/uuid";
 
 @Component({

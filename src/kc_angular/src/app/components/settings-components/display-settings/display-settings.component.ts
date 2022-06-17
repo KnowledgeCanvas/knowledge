@@ -13,12 +13,11 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-
 import {Component, OnInit} from '@angular/core';
 import {DynamicDialogConfig, DynamicDialogRef} from "primeng/dynamicdialog";
-import {ThemeService} from "../../../services/user-services/theme-service/theme.service";
-import {SettingsService} from "../../../services/ipc-services/settings-service/settings.service";
-import {NotificationsService} from "../../../services/user-services/notification-service/notifications.service";
+import {ThemeService} from "../../../services/user-services/theme.service";
+import {SettingsService} from "../../../services/ipc-services/settings.service";
+import {NotificationsService} from "../../../services/user-services/notifications.service";
 import {KcTheme} from "../../../../../../kc_shared/models/style.model";
 import {DisplaySettingsModel} from "../../../../../../kc_shared/models/settings.model";
 

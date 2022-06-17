@@ -17,10 +17,10 @@ import {Component, Input, OnInit, SecurityContext, ViewChild} from '@angular/cor
 import {KnowledgeSource} from "src/app/models/knowledge.source.model";
 import {DomSanitizer, SafeUrl} from "@angular/platform-browser";
 import {FileViewConfig} from "../../../../../../kc_shared/models/browser.view.model";
-import {BrowserViewDialogService} from "../../../services/ipc-services/browser-service/browser-view-dialog.service";
-import {KsFactoryService} from "../../../services/factory-services/ks-factory-service/ks-factory.service";
+import {BrowserViewDialogService} from "../../../services/ipc-services/browser-view-dialog.service";
+import {KsFactoryService} from "../../../services/factory-services/ks-factory.service";
 import {WebsiteMetaTagsModel} from "../../../../../../kc_shared/models/web.source.model";
-import {KsCommandService} from "../../../services/command-services/ks-command/ks-command.service";
+import {KsCommandService} from "../../../services/command-services/ks-command.service";
 import {YouTubePlayer} from "@angular/youtube-player";
 
 

@@ -13,18 +13,19 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-import {Component, EventEmitter, HostListener, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, HostListener, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
 import {KnowledgeSource} from "../../../models/knowledge.source.model";
-import {KnowledgeSourceFactoryRequest, KsFactoryService} from "../../../services/factory-services/ks-factory-service/ks-factory.service";
-import {NotificationsService} from "../../../services/user-services/notification-service/notifications.service";
-import {ExtractorService} from "../../../services/ingest-services/extractor-service/extractor.service";
-import {ElectronIpcService} from "../../../services/ipc-services/electron-ipc/electron-ipc.service";
-import {IngestService} from "../../../services/ingest-services/ingest-service/ingest.service";
-import {UuidService} from "../../../services/ipc-services/uuid-service/uuid.service";
-import {FaviconService} from "../../../services/ingest-services/favicon-service/favicon.service";
-import {DragAndDropService} from "../../../services/ingest-services/drag-and-drop-service/drag-and-drop.service";
-import {KsCommandService} from "../../../services/command-services/ks-command/ks-command.service";
-import {ProjectService} from "../../../services/factory-services/project-service/project.service";
+import {KnowledgeSourceFactoryRequest, KsFactoryService} from "../../../services/factory-services/ks-factory.service";
+import {NotificationsService} from "../../../services/user-services/notifications.service";
+import {ExtractorService} from "../../../services/ingest-services/extractor.service";
+import {ElectronIpcService} from "../../../services/ipc-services/electron-ipc.service";
+import {IngestService} from "../../../services/ingest-services/ingest.service";
+import {UuidService} from "../../../services/ipc-services/uuid.service";
+import {FaviconService} from "../../../services/ingest-services/favicon.service";
+import {DragAndDropService} from "../../../services/ingest-services/drag-and-drop.service";
+import {KsCommandService} from "../../../services/command-services/ks-command.service";
+import {ProjectService} from "../../../services/factory-services/project.service";
+import {CardOptions} from "../../../../../../kc_shared/models/settings.model";
 
 interface PendingExtraction {
   link: string

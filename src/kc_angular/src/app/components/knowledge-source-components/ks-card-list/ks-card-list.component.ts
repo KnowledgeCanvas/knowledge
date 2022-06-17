@@ -13,14 +13,16 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-
-import {Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
+import {Component, ElementRef, EventEmitter, HostListener, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
 import {KnowledgeSource} from "../../../models/knowledge.source.model";
-import {KsCommandService} from "../../../services/command-services/ks-command/ks-command.service";
+import {KsCommandService} from "../../../services/command-services/ks-command.service";
 import {Paginator} from "primeng/paginator";
-import {KsCardOptions} from "../ks-card/ks-card.component";
 import {MenuItem} from "primeng/api";
-import {KsContextMenuService} from "../../../services/factory-services/ks-context-menu/ks-context-menu.service";
+import {KsContextMenuService} from "../../../services/factory-services/ks-context-menu.service";
+import {ApplicationSettingsModel, CardOptions, CardSizeType, CardSortType} from "../../../../../../kc_shared/models/settings.model";
+import {SettingsService} from "../../../services/ipc-services/settings.service";
+import {NotificationsService} from "../../../services/user-services/notifications.service";
+import {Subscription} from "rxjs";
 
 interface PaginateConfig {
   page: number,

@@ -17,7 +17,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ProjectCreationRequest} from "src/app/models/project.model";
 import {DynamicDialogConfig, DynamicDialogRef} from "primeng/dynamicdialog";
-import {ProjectService} from "../../../services/factory-services/project-service/project.service";
+import {ProjectService} from "../../../services/factory-services/project.service";
 import {KcProjectType} from "../../../../../../kc_shared/models/project.model";
 
 

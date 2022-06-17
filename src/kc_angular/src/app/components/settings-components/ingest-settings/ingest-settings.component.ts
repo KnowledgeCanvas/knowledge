@@ -16,8 +16,8 @@
 
 import {Component, OnInit} from '@angular/core';
 import {DynamicDialogConfig, DynamicDialogRef} from "primeng/dynamicdialog";
-import {SettingsService} from "../../../services/ipc-services/settings-service/settings.service";
-import {ElectronIpcService, PromptForDirectoryRequest} from "../../../services/ipc-services/electron-ipc/electron-ipc.service";
+import {SettingsService} from "../../../services/ipc-services/settings.service";
+import {ElectronIpcService} from "../../../services/ipc-services/electron-ipc.service";
 import {IngestSettingsModel} from "../../../../../../kc_shared/models/settings.model";
 
 @Component({

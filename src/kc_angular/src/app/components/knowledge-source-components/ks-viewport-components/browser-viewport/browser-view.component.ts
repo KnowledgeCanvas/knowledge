@@ -14,7 +14,7 @@
  limitations under the License.
  */
 import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SecurityContext, SimpleChanges} from '@angular/core';
-import {ElectronIpcService} from "../../../../services/ipc-services/electron-ipc/electron-ipc.service";
+import {ElectronIpcService} from "../../../../services/ipc-services/electron-ipc.service";
 import {BrowserViewRequest, IpcMessage} from "../../../../../../../kc_shared/models/electron.ipc.model";
 import {DomSanitizer} from "@angular/platform-browser";
 import {

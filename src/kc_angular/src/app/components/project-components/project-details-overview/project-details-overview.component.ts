@@ -14,14 +14,14 @@
  limitations under the License.
  */
 import {Component, ElementRef, EventEmitter, HostListener, OnInit, Output, ViewChild} from '@angular/core';
-import {ProjectService} from "../../../services/factory-services/project-service/project.service";
+import {ProjectService} from "../../../services/factory-services/project.service";
 import {KcProject} from "src/app/models/project.model";
 import {KnowledgeSource} from "../../../models/knowledge.source.model";
-import {FaviconService} from "../../../services/ingest-services/favicon-service/favicon.service";
-import {SettingsService} from "../../../services/ipc-services/settings-service/settings.service";
+import {FaviconService} from "../../../services/ingest-services/favicon.service";
+import {SettingsService} from "../../../services/ipc-services/settings.service";
 import {MenuItem} from "primeng/api";
 import {OverlayPanel} from "primeng/overlaypanel";
-import {KsCommandService} from "../../../services/command-services/ks-command/ks-command.service";
+import {KsCommandService} from "../../../services/command-services/ks-command.service";
 import {KcCardRequest} from "../project-calendar/project-calendar.component";
 import {UUID} from "../../../models/uuid";
 

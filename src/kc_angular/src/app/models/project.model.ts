@@ -15,7 +15,7 @@
  */
 import {KnowledgeSource} from "./knowledge.source.model";
 import {KcProjectModel, KcProjectType} from "../../../../kc_shared/models/project.model";
-import {EventModel, KcCalendar} from "../../../../kc_shared/models/event.model";
+import {EventModel, ProjectCalendar} from "../../../../kc_shared/models/event.model";
 import {UUID} from "./uuid";
 
 

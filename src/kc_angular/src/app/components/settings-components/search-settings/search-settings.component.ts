@@ -15,7 +15,7 @@
  */
 
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {SettingsService} from "../../../services/ipc-services/settings-service/settings.service";
+import {SettingsService} from "../../../services/ipc-services/settings.service";
 import {Subscription} from "rxjs";
 
 

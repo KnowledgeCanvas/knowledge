@@ -15,15 +15,15 @@
  */
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {KnowledgeSource} from "../../../models/knowledge.source.model";
-import {ElectronIpcService} from "../../../services/ipc-services/electron-ipc/electron-ipc.service";
+import {ElectronIpcService} from "../../../services/ipc-services/electron-ipc.service";
 import {Clipboard} from "@angular/cdk/clipboard";
-import {ExtractorService} from "../../../services/ingest-services/extractor-service/extractor.service";
+import {ExtractorService} from "../../../services/ingest-services/extractor.service";
 import {BrowserViewClickEvent, BrowserViewConfig, BrowserViewNavEvent, FileViewClickEvent, FileViewConfig} from "../../../../../../kc_shared/models/browser.view.model";
-import {KsFactoryService} from "../../../services/factory-services/ks-factory-service/ks-factory.service";
-import {IngestService} from "../../../services/ingest-services/ingest-service/ingest.service";
+import {KsFactoryService} from "../../../services/factory-services/ks-factory.service";
+import {IngestService} from "../../../services/ingest-services/ingest.service";
 import {DynamicDialogConfig, DynamicDialogRef} from "primeng/dynamicdialog";
-import {NotificationsService} from "../../../services/user-services/notification-service/notifications.service";
-import {KsCommandService} from "../../../services/command-services/ks-command/ks-command.service";
+import {NotificationsService} from "../../../services/user-services/notifications.service";
+import {KsCommandService} from "../../../services/command-services/ks-command.service";
 
 export interface KsPreviewInput {
   ks: KnowledgeSource
