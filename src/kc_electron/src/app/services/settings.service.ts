@@ -183,7 +183,8 @@ class SettingsService {
                     warn: false,
                     debug: false,
                     error: false
-                }
+                },
+                zoom: 100
             },
             docker: {
                 enabled: false,

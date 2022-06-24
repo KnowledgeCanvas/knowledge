@@ -112,6 +112,7 @@ export interface SearchSettingsModel {
 export interface DisplaySettingsModel {
     theme: KcTheme
     logging: LoggingSettingsModel
+    zoom: number
 }
 
 export interface LoggingSettingsModel {
