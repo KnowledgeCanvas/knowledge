@@ -14,17 +14,32 @@
  limitations under the License.
  */
 
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {KnowledgeSource} from "../../../models/knowledge.source.model";
+import {Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
+import {KnowledgeSource} from "../../models/knowledge.source.model";
 import {Subscription} from "rxjs";
-import {ElectronIpcService} from "../../../services/ipc-services/electron-ipc.service";
+import {ElectronIpcService} from "../../services/ipc-services/electron-ipc.service";
 
 @Component({
   selector: 'app-ks-thumbnail',
-  templateUrl: './ks-thumbnail.component.html',
-  styleUrls: ['./ks-thumbnail.component.scss']
+  template: `
+    <div *ngIf="!thumbnail"
+         class="flex-col-center-center"
+         style="height: 200px; background-color: var(--surface-300); border-radius: 5px">
+      <app-ks-icon [ks]="ks"></app-ks-icon>
+    </div>
+
+    <div class="w-full p-fluid flex-col-center-center bg-auto">
+      <p-image *ngIf="thumbnail" [src]="thumbnail"
+               class="align-self-center"
+               height="200px"
+               [style]="{'border-radius': '5px', 'max-width': '100%'}"
+               [preview]="true">
+      </p-image>
+    </div>
+  `,
+  styles: []
 })
-export class KsThumbnailComponent implements OnInit, OnDestroy {
+export class KsThumbnailComponent implements OnInit, OnDestroy, OnChanges {
   @Input() ks!: KnowledgeSource;
 
   thumbnail: any;
@@ -36,21 +51,32 @@ export class KsThumbnailComponent implements OnInit, OnDestroy {
   constructor(private ipcService: ElectronIpcService) { }
 
   ngOnInit(): void {
-    if (this.ks.ingestType === 'file') {
-      this._subThumbnail = this.ipcService.thumbnail.subscribe((thumbnail) => {
-        if (thumbnail !== undefined && thumbnail.id && thumbnail.id === this.ks.id.value) {
-          this.thumbnail = thumbnail.thumbnail;
+
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    try {
+      if (changes.ks.currentValue) {
+        this.thumbnail = undefined;
+        if (this.ks.ingestType === 'file') {
+          this._subThumbnail = this.ipcService.thumbnail.subscribe((thumbnail) => {
+            if (thumbnail !== undefined && thumbnail.id && thumbnail.id === this.ks.id.value) {
+              this.thumbnail = thumbnail.thumbnail;
+            }
+          });
         }
-      });
-    }
 
-    this.getThumbnail();
+        this.getThumbnail();
 
-    setTimeout(() => {
-      if (this.thumbnail === undefined) {
-        this.thumbnailUnavailable = true;
+        setTimeout(() => {
+          if (this.thumbnail === undefined) {
+            this.thumbnailUnavailable = true;
+          }
+        }, 1000);
       }
-    }, 1000);
+    } catch (e) {
+
+    }
   }
 
   ngOnDestroy() {
