@@ -15,12 +15,25 @@
  */
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {DomSanitizer, SafeUrl} from "@angular/platform-browser";
-import {BrowserViewHeaderConfig, BrowserViewHeaderEvent, FileViewClickEvent, FileViewConfig} from "../../../../../../../kc_shared/models/browser.view.model";
+import {BrowserViewHeaderConfig, BrowserViewHeaderEvent, FileViewClickEvent, FileViewConfig} from "../../../../../../kc_shared/models/browser.view.model";
 
 @Component({
   selector: 'ks-lib-file-view',
-  templateUrl: './file-view.component.html',
-  styleUrls: ['./file-view.component.css']
+  template: `
+    <ks-lib-viewport-header *ngIf="headerConfig"
+                            [config]="headerConfig"
+                            (headerEvents)="headerEvents($event)">
+    </ks-lib-viewport-header>
+    <embed *ngIf="ready" [src]="safeUrl" class="file-view">
+  `,
+  styles: [
+    `
+      .file-view {
+        height: calc(100vh - 68px);
+        width: 100%;
+      }
+    `
+  ]
 })
 export class FileViewComponent implements OnInit, OnChanges {
   @Input() config!: FileViewConfig;

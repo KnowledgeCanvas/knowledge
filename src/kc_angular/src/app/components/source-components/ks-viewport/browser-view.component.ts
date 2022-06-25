@@ -14,8 +14,8 @@
  limitations under the License.
  */
 import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SecurityContext, SimpleChanges} from '@angular/core';
-import {ElectronIpcService} from "../../../../services/ipc-services/electron-ipc.service";
-import {BrowserViewRequest, IpcMessage} from "../../../../../../../kc_shared/models/electron.ipc.model";
+import {ElectronIpcService} from "../../../services/ipc-services/electron-ipc.service";
+import {BrowserViewRequest, IpcMessage} from "../../../../../../kc_shared/models/electron.ipc.model";
 import {DomSanitizer} from "@angular/platform-browser";
 import {
   BrowserViewClickEvent,
@@ -23,14 +23,32 @@ import {
   BrowserViewHeaderConfig,
   BrowserViewHeaderEvent,
   BrowserViewNavEvent
-} from "../../../../../../../kc_shared/models/browser.view.model";
+} from "../../../../../../kc_shared/models/browser.view.model";
 import {Subscription} from "rxjs";
 
 
 @Component({
   selector: 'ks-lib-browser-view',
-  templateUrl: './browser-view.component.html',
-  styleUrls: ['./browser-view.component.css']
+  template: `
+    <ks-lib-viewport-header
+      *ngIf="headerConfig"
+      [config]="headerConfig"
+      (headerEvents)="headerEvents($event)">
+    </ks-lib-viewport-header>
+
+    <div class="browser-view" id="browser-view">
+      <!--  Electron BrowserView contents will be placed here-->
+    </div>
+  `,
+  styles: [
+    `
+      .browser-view {
+        height: 100%;
+        width: 100%;
+        background-color: var(--surface-a);
+      }
+    `
+  ]
 })
 export class BrowserViewComponent implements OnInit, OnChanges, OnDestroy {
   @Input() kcBrowserViewConfig!: BrowserViewConfig;
