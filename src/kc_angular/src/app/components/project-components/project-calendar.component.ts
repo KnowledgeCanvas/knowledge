@@ -16,13 +16,13 @@
 
 import {Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
 import {CalendarOptions, FullCalendarComponent, FullCalendarModule} from "@fullcalendar/angular";
-import {KcProject} from "../../../models/project.model";
-import {UUID} from "../../../models/uuid";
+import {KcProject} from "../../models/project.model";
+import {UUID} from "../../models/uuid";
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import listPlugin from '@fullcalendar/list';
-import {KnowledgeSource} from "../../../models/knowledge.source.model";
+import {KnowledgeSource} from "../../models/knowledge.source.model";
 
 FullCalendarModule.registerPlugins([
   dayGridPlugin,
@@ -48,15 +48,66 @@ export interface KcCardRequest {
 
 @Component({
   selector: 'app-project-calendar',
-  templateUrl: './project-calendar.component.html',
-  styleUrls: ['./project-calendar.component.scss']
+  template: `
+    <div *ngIf="viewReady">
+      <full-calendar #calendar style="max-height: 70vh;"
+                     [deepChangeDetection]="deepChangeDetection"
+                     [options]="calendarOptions">
+      </full-calendar>
+      <br>
+      <div class="text-right">
+        <span class="calendar-legend-dot green"></span> Created
+        <span class="calendar-legend-dot orange"></span> Modified
+        <span class="calendar-legend-dot blue"></span> Accessed
+        <span class="calendar-legend-dot red"></span> Due Date
+      </div>
+    </div>
+
+    <div *ngIf="!viewReady">
+      <p-skeleton width="100%" height="40px"></p-skeleton>
+      <br>
+      <p-skeleton width="100%" height="65vh"></p-skeleton>
+    </div>
+  `,
+  styles: [
+    `
+      .calendar-legend-dot {
+      height: 1rem;
+      width: 1rem;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .calendar-legend-dot.green {
+      background-color: var(--green-500);
+    }
+
+    .calendar-legend-dot.blue {
+      background-color: var(--blue-500);
+    }
+
+    .calendar-legend-dot.red {
+      background-color: var(--pink-500);
+    }
+
+    .calendar-legend-dot.orange {
+      background-color: var(--yellow-500);
+    }
+
+    ::ng-deep {
+      .fc-theme-standard .fc-list {
+        border: 1px solid var(--surface-100) !important;
+      }
+    }
+    `
+  ]
 })
 export class ProjectCalendarComponent implements OnInit, OnChanges {
   @ViewChild('calendar') calendar!: FullCalendarComponent;
 
   @Input() kcProject!: KcProject | null;
 
-  @Input() ksList!: KnowledgeSource[];
+  @Input() ksList: KnowledgeSource[] | null = [];
 
   @Output() onProjectClick = new EventEmitter<KcCardRequest>();
 
@@ -156,6 +207,7 @@ export class ProjectCalendarComponent implements OnInit, OnChanges {
     if (!this.kcProject) {
       console.warn('Unable to populate calendar due to missing project...');
     } else {
+      // this.ksList = this.kcProject.knowledgeSource;
       if (!this.kcProject?.calendar)
         this.kcProject.calendar = {events: [], start: null, end: null};
 
@@ -168,7 +220,7 @@ export class ProjectCalendarComponent implements OnInit, OnChanges {
   eventsFromProject(project: KcProject): ProjectCalendarEvent[] {
     const projectColor = 'yellow';
     const projectTextColor = 'black'
-    const ksList = this.eventsFromKsList(this.ksList);
+    const ksList = this.eventsFromKsList(this.ksList ?? []);
     return [
       {
         title: `"${project.name}" (Created)`,

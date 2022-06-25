@@ -18,6 +18,8 @@ import {Injectable, NgZone} from '@angular/core';
 import {BehaviorSubject} from 'rxjs';
 import {ElectronIpcService} from "./electron-ipc.service";
 import {ApplicationSettingsModel, DisplaySettingsModel, IngestSettingsModel, SearchSettingsModel, SettingsModel} from "../../../../../kc_shared/models/settings.model";
+import {DialogService} from "primeng/dynamicdialog";
+import {SettingsComponent} from "../../components/settings/settings.component";
 
 @Injectable({
   providedIn: 'root'
@@ -48,7 +50,9 @@ export class SettingsService {
     setSettings: 'A2E:Settings:Set'
   }
 
-  constructor(private ipcService: ElectronIpcService, private zone: NgZone) {
+  constructor(private ipcService: ElectronIpcService,
+              private dialog: DialogService,
+              private zone: NgZone) {
     /**
      * Keep a copy of default settings to allow other components and services to instantiate
      */
@@ -117,4 +121,11 @@ export class SettingsService {
   }
 
 
+  show() {
+    this.dialog.open(SettingsComponent, {
+      header: 'Settings',
+      width: 'min(72rem, 95vw)',
+      height: 'min(72rem, 95vh)'
+    });
+  }
 }

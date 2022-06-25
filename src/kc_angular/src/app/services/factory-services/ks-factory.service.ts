@@ -134,13 +134,12 @@ export class KsFactoryService {
       },
       ingestType: "website",
       associatedProject: new UUID(''),
-      dateCheckpoint: [],
+      // TODO: remove these to align with new model...
       dateAccessed: [new Date()],
       dateModified: [new Date()],
       dateCreated: new Date(),
       accessLink: accessLink,
       iconUrl: "",
-      note: new KnowledgeSourceNote(),
       icon: ''
     };
   }

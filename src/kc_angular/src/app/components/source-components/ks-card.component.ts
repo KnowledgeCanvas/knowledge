@@ -15,19 +15,117 @@
  */
 
 
-import {Component, EventEmitter, HostListener, Input, OnDestroy, OnInit, Output} from '@angular/core';
-import {KnowledgeSource} from "../../../models/knowledge.source.model";
+import {Component, EventEmitter, HostListener, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges} from '@angular/core';
+import {KnowledgeSource} from "../../models/knowledge.source.model";
 import {TreeNode} from "primeng/api";
 import {Subscription} from "rxjs";
-import {UUID} from "../../../models/uuid";
+import {UUID} from "../../models/uuid";
 
 
 @Component({
   selector: 'app-ks-card',
-  templateUrl: './ks-card.component.html',
-  styleUrls: ['./ks-card.component.scss']
+  template: `
+    <div [class]="hovering ? 'shadow-3' : 'shadow-1'"
+         *ngIf="ks"
+         style="border: 1px dotted var(--surface-400); border-radius: 5px;">
+      <p-card (dblclick)="onEdit.emit(ks)" [style]="{'min-height': '12rem'}">
+        <ng-template pTemplate="header">
+          <app-ks-thumbnail *ngIf="showThumbnail" [ks]="ks"></app-ks-thumbnail>
+        </ng-template>
+
+        <!--    TODO: add "Flagged" field (checkbox)-->
+
+        <ng-template pTemplate="content">
+          <div class="flex-row-center-between">
+        <span class="font-bold text-xl cursor-pointer"
+              (click)="onEdit.emit(this.ks)" [pTooltip]="ks.title">
+          {{ks.title |truncate: [truncate ? 28 : 128]}}
+        </span>
+            <i *ngIf="showContentType"
+               class="pi pi-{{ks.ingestType | ksIngestTypeIcon}}"
+               [pTooltip]="ks.ingestType | titlecase">
+            </i>
+          </div>
+
+          <div *ngIf="showProjectBreadcrumbs">
+            {{ks.associatedProject | projectBreadcrumb: 'truncated'}}
+          </div>
+
+          <div *ngIf="showDescription">
+            <div *ngIf="description" style="height: 4rem">
+              {{description | truncate: [truncate ? 32 : 128]}}
+            </div>
+            <div *ngIf="!description" class="text-400" style="height: 4rem">
+              Double-click to add a description
+            </div>
+          </div>
+
+          <div class="col-12" *ngIf="showProjectSelection && projectTreeNodes.length">
+            <p-treeSelect [(ngModel)]="selectedProject"
+                          [options]="projectTreeNodes"
+                          selectionMode="single"
+                          (onNodeSelect)="onProjectSelected($event)"
+                          appendTo="body"
+                          placeholder="Choose a Project">
+            </p-treeSelect>
+
+          </div>
+
+          <div *ngIf="showTopics"
+               [style]="{'height':'5rem', 'overflow-y': 'auto', 'overflow-x': 'hidden'}">
+            <p-chips [(ngModel)]="keywords"
+                     class="p-fluid w-full"
+                     styleClass="ks-topic-chip"
+                     (onChipClick)="onTopicClick.emit({ks: ks, topic: $event.value})"
+                     (onAdd)="onTopicAdd()"
+                     (onRemove)="onTopicRemove()"
+                     [addOnTab]="true"
+                     [addOnBlur]="true"
+                     [allowDuplicate]="false"
+                     placeholder="Add a Topic...">
+            </p-chips>
+          </div>
+
+          <div *ngIf="showIcon || showRemove || showOpen || showEdit || showPreview"
+               class="flex-row-center-between">
+            <div class="col text-left">
+              <app-ks-icon [ks]="ks"
+                           *ngIf="showIcon"
+                           class="cursor-pointer"
+                           (click)="onOpen.emit(this.ks)">
+              </app-ks-icon>
+            </div>
+            <div *ngIf="showRemove || showOpen || showEdit || showPreview || showFlag">
+              <app-action-bar [showEdit]="showEdit"
+                              [showPreview]="showPreview"
+                              [showOpen]="showOpen"
+                              [showRemove]="showRemove"
+                              [showFlag]="showFlag"
+                              [flagged]="ks.flagged"
+                              (onEdit)="onEdit.emit(this.ks)"
+                              (onPreview)="onPreview.emit(this.ks)"
+                              (onOpen)="onOpen.emit(this.ks)"
+                              (onRemove)="onRemove.emit(this.ks)"
+                              (onFlagged)="onFlagged(this.ks, $event.checked)">
+              </app-action-bar>
+            </div>
+          </div>
+        </ng-template>
+      </p-card>
+    </div>
+
+  `,
+  styles: [
+    `
+      ::ng-deep {
+      .p-chips-token {
+        cursor: pointer;
+      }
+    }
+    `
+  ]
 })
-export class KsCardComponent implements OnInit, OnDestroy {
+export class KsCardComponent implements OnInit, OnDestroy, OnChanges {
   /**
    * The Knowledge Source to be displayed on this card
    */
@@ -90,6 +188,11 @@ export class KsCardComponent implements OnInit, OnDestroy {
   @Input() showOpen: boolean = true;
 
   /**
+   * Determines whether to display the "Important" button (default: true)
+   */
+  @Input() showFlag: boolean = true;
+
+  /**
    * Determines whether to show Content Type property (default: true)
    */
   @Input() showContentType: boolean = true;
@@ -98,6 +201,11 @@ export class KsCardComponent implements OnInit, OnDestroy {
    * Determines whether to show KS icon (default: true)
    */
   @Input() showIcon: boolean = true;
+
+  /**
+   * Determines whether to truncate certain fields to avoid spilling text, etc (default: true)
+   */
+  @Input() truncate: boolean = true;
 
   /**
    * Determines whether to show name of the Associated Project (default: false)
@@ -151,25 +259,29 @@ export class KsCardComponent implements OnInit, OnDestroy {
     showDelay: 750,
     tooltipPosition: 'top'
   };
+
   private _subProjectTree?: Subscription;
 
   constructor() {
   }
 
   ngOnInit(): void {
-    this.getContentType().then((result) => {
-      this.contentType = result;
-    });
+  }
 
-    this.getKeywords().then((result) => {
-      this.keywords = result;
-    });
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.ks?.currentValue) {
+      this.getContentType().then((result) => {
+        this.contentType = result;
+      });
 
-    this.getDescription().then((result) => {
-      this.description = result;
-    });
+      this.getKeywords().then((result) => {
+        this.keywords = result;
+      });
 
-
+      this.getDescription().then((result) => {
+        this.description = result;
+      });
+    }
   }
 
   ngOnDestroy() {
@@ -257,6 +369,7 @@ export class KsCardComponent implements OnInit, OnDestroy {
     if (!$event.node.key) {
       return;
     }
+
     this.onProjectChange.emit({ks: this.ks, old: this.ks.associatedProject.value, new: $event.node.key});
   }
 
@@ -268,5 +381,10 @@ export class KsCardComponent implements OnInit, OnDestroy {
   onTopicAdd() {
     this.ks.topics = this.keywords;
     this.onTopicChange.emit(this.ks);
+  }
+
+  onFlagged(ks: KnowledgeSource, flagged: boolean) {
+    // TODO: this flags the KS, but does not necessarily update it.. so the changes might not be saved...
+    this.ks.flagged = flagged;
   }
 }

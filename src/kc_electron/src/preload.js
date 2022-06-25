@@ -16,7 +16,6 @@
 
 const {contextBridge, ipcRenderer} = require('electron');
 
-
 /**
  * IPC Channels must be placed in one of the following lists before it
  * can be invoked.
@@ -52,6 +51,8 @@ const ipcSendChannels = [
     "A2E:Settings:Set",
     "A2E:Uuid:Generate",
     "A2E:Version:Get",
+    "A2E:Window:Minimize",
+    "A2E:Window:Maximize"
 ];
 
 const ipcInvokeChannels = [];

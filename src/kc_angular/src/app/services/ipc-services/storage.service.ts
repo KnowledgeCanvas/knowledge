@@ -141,7 +141,10 @@ export class StorageService {
     this.db.setItem(this.KC_CURRENT_PROJECT, id);
   }
 
-  get ksList(): KnowledgeSource[] {
+  /**
+   * Returns a list of all Knowledge Sources stored in the application
+   */
+  async ksList() {
     let projectIdsStr: string | null = this.db.getItem(this.KC_ALL_PROJECT_IDS);
 
     if (projectIdsStr === null) {
@@ -260,6 +263,7 @@ export class StorageService {
     if (!ks.importMethod) {
       return;
     } else {
+      // TODO: autoscan service is only used in this one place here.. should consider moving elsewhere...
       if (ks.importMethod === 'autoscan' && typeof ks.accessLink === 'string') {
         this.autoscan.delete(ks.accessLink);
       }

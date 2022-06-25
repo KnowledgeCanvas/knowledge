@@ -14,16 +14,16 @@
  limitations under the License.
  */
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {KnowledgeSource} from "../../../models/knowledge.source.model";
-import {ElectronIpcService} from "../../../services/ipc-services/electron-ipc.service";
+import {KnowledgeSource} from "../../models/knowledge.source.model";
+import {ElectronIpcService} from "../../services/ipc-services/electron-ipc.service";
 import {Clipboard} from "@angular/cdk/clipboard";
-import {ExtractorService} from "../../../services/ingest-services/extractor.service";
-import {BrowserViewClickEvent, BrowserViewConfig, BrowserViewNavEvent, FileViewClickEvent, FileViewConfig} from "../../../../../../kc_shared/models/browser.view.model";
-import {KsFactoryService} from "../../../services/factory-services/ks-factory.service";
-import {IngestService} from "../../../services/ingest-services/ingest.service";
+import {ExtractorService} from "../../services/ingest-services/extractor.service";
+import {BrowserViewClickEvent, BrowserViewConfig, BrowserViewNavEvent, FileViewClickEvent, FileViewConfig} from "../../../../../kc_shared/models/browser.view.model";
+import {KsFactoryService} from "../../services/factory-services/ks-factory.service";
+import {IngestService} from "../../services/ingest-services/ingest.service";
 import {DynamicDialogConfig, DynamicDialogRef} from "primeng/dynamicdialog";
-import {NotificationsService} from "../../../services/user-services/notifications.service";
-import {KsCommandService} from "../../../services/command-services/ks-command.service";
+import {NotificationsService} from "../../services/user-services/notifications.service";
+import {KsCommandService} from "../../services/command-services/ks-command.service";
 
 export interface KsPreviewInput {
   ks: KnowledgeSource
@@ -31,8 +31,58 @@ export interface KsPreviewInput {
 
 @Component({
   selector: 'app-ks-preview',
-  templateUrl: './ks-preview.component.html',
-  styleUrls: ['./ks-preview.component.scss']
+  template: `
+    <div class="ks-preview-viewport">
+      <div class="ks-preview-body" [ngStyle]="{'background-color' : backgroundColor}">
+        <ks-lib-browser-view
+          (clickEvent)="onBrowserViewClickEvent($event)"
+          (navEvent)="onBrowserViewNavEvent($event)"
+          (viewReady)="setViewReady($event)"
+          [kcBrowserViewConfig]="browserViewConfig"
+          *ngIf="browserViewConfig">
+        </ks-lib-browser-view>
+
+        <ks-lib-file-view (clickEvent)="onFileViewClickEvent($event)"
+                          (fileError)="onError($event)"
+                          (viewReady)="setViewReady($event)"
+                          [config]="fileViewConfig"
+                          *ngIf="fileViewConfig">
+        </ks-lib-file-view>
+      </div>
+
+      <div class="ks-preview-footer">
+        <p-progressBar *ngIf="!viewReady" mode="indeterminate" id="progress-bar" class="p-fluid w-full"></p-progressBar>
+      </div>
+    </div>
+  `,
+  styles: [`
+    .ks-preview-viewport {
+      //background-color: black;
+      min-height: calc(100vh - 48px);
+      max-height: calc(100vh - 48px);
+      min-width: 100%;
+      max-width: 100%;
+    }
+
+    .ks-preview-body {
+      // The dialog itself should be opened with a height of 100vh, the footer should be 8px, and the header should be 32px
+      height: calc(100vh - 48px);
+    }
+
+    .ks-preview-footer {
+      height: 8px;
+      display: flex;
+      flex-direction: column;
+      flex-wrap: nowrap;
+      justify-content: flex-end;
+    }
+
+    ::ng-deep {
+      .p-dialog {
+        max-height: unset;
+      }
+    }
+  `]
 })
 export class KsPreviewComponent implements OnInit, OnDestroy {
   // Must be configured to display file view. Should be undefined when displaying browser view

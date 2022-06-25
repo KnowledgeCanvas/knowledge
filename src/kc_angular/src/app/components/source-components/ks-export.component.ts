@@ -15,7 +15,7 @@
  */
 
 import {Component, EventEmitter, Input, Output} from '@angular/core';
-import {KnowledgeSource} from "../../../models/knowledge.source.model";
+import {KnowledgeSource} from "../../models/knowledge.source.model";
 import {ObjectUtils} from "primeng/utils";
 
 interface ExportType {
@@ -26,8 +26,52 @@ interface ExportType {
 
 @Component({
   selector: 'app-ks-export',
-  templateUrl: './ks-export.component.html',
-  styleUrls: ['./ks-export.component.scss']
+  template: `
+    <p-button icon="pi pi-download"
+              styleClass="p-button-secondary p-mb-2"
+              (onClick)="exportDialogVisible = true">
+    </p-button>
+
+    <p-dialog [(visible)]="exportDialogVisible"
+              header="Export"
+              [modal]="true">
+      <div>
+        <h3>Features</h3>
+        <p-multiSelect [options]="EXPORT_COLUMNS"
+                       [(ngModel)]="selectedFeatures"
+                       appendTo="body"
+                       defaultLabel="Select features"
+                       selectedItemsLabel="{0} items selected"
+                       optionLabel="header"
+                       optionValue="field">
+        </p-multiSelect>
+      </div>
+
+      <div>
+        <h3>Format</h3>
+        <p-selectButton [options]="exportTypes"
+                        [(ngModel)]="selectedExportType"
+                        optionLabel="name"
+                        optionValue="value">
+        </p-selectButton>
+      </div>
+      <p-divider></p-divider>
+      <div style="width: 240px">
+        <b>Number of Records: {{data.length}}</b>
+      </div>
+
+      <ng-template pTemplate="footer">
+        <div class="w-full flex-row-center-between">
+          <p-button icon="pi pi-export"
+                    [disabled]="selectedFeatures.length === 0"
+                    label="Export"
+                    (onClick)="export()">
+          </p-button>
+        </div>
+      </ng-template>
+    </p-dialog>
+  `,
+  styles: []
 })
 export class KsExportComponent {
   @Input() data: KnowledgeSource[] = [];

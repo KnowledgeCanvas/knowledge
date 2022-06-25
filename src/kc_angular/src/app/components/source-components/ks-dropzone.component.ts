@@ -18,8 +18,35 @@ import {animate, state, style, transition, trigger} from "@angular/animations";
 
 @Component({
   selector: 'app-dropzone',
-  templateUrl: './dropzone.component.html',
-  styleUrls: ['./dropzone.component.scss'],
+  template: `
+    <div [@dropzone-shorten]="shouldShorten ? 'dropzone-sm' : 'dropzone-lg'" class="dropzone" style="min-height: 6rem">
+      <span>
+        <b class="text-2xl text-500">{{emptyMessage}}</b>
+      </span>
+      <blockquote class="text-400">{{hintMessage}}</blockquote>
+    </div>
+  `,
+  styles: [
+    `
+      .dropzone {
+        width: 100%;
+        color: var(--text-color);
+        border-radius: 5px;
+        background-image: linear-gradient(225deg,
+          var(--surface-b) 25%, var(--surface-c) 25%,
+          var(--surface-c) 50%, var(--surface-b) 50%,
+          var(--surface-b) 75%, var(--surface-c) 75%,
+          var(--surface-c) 100%);
+        background-size: 64.00px 64.00px;
+        display: flex;
+        flex-direction: column;
+        flex-wrap: nowrap;
+        align-items: center;
+        justify-content: center;
+        align-content: center;
+      }
+    `
+  ],
   animations: [
     trigger('dropzone-shorten', [
       state('dropzone-lg',
@@ -37,7 +64,7 @@ import {animate, state, style, transition, trigger} from "@angular/animations";
     ])
   ]
 })
-export class DropzoneComponent implements OnInit {
+export class KsDropzoneComponent implements OnInit {
   @Input() shouldShorten: boolean = false;
 
   @Input() supportedTypes: string[] = [];

@@ -17,15 +17,32 @@
 import {Component, OnInit} from '@angular/core';
 
 @Component({
-  selector: 'app-settings',
-  template: ``,
+  selector: 'app-storage-settings',
+  template: `
+    <div class="p-fluid grid">
+      <div class="col-12">
+        <p-panel header="Storage">
+          <ng-template pTemplate="content">
+            <ul>
+              <li>Local Storage</li>
+              <li>MongoDB (eventually)</li>
+              <li>Elasticsearch/OpenSearch (eventually)</li>
+              <li>Backups (eventually)</li>
+              <li>Clean up dangling objects in localStorage</li>
+            </ul>
+          </ng-template>
+        </p-panel>
+      </div>
+    </div>
+  `,
   styles: []
 })
-export class SettingsComponent implements OnInit {
+export class StorageSettingsComponent implements OnInit {
 
   constructor() {
   }
 
   ngOnInit(): void {
   }
+
 }

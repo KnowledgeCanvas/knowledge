@@ -270,7 +270,7 @@ export class ElectronIpcService {
         this.removeAllListeners(this.channels.browserViewResults);
         this.run(() => {
 
-          // Create a new stack with the current browser view URL
+          // TODO: Create a new stack with the current browser view URL
           // this.browserViewNavEvent.next(request.url);
           resolve(response);
         });

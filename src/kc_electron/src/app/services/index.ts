@@ -15,8 +15,10 @@
  */
 const autoscanService = require('./autoscan.service');
 const extensionService = require('./extension.service');
+const windowService = require('./window.service');
 
 module.exports = {
     autoscan: autoscanService,
-    extensions: extensionService
+    extensions: extensionService,
+    window: windowService
 }

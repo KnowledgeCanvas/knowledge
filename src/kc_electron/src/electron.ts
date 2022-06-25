@@ -82,6 +82,7 @@ function createMainWindow() {
         minWidth: 800,
         minHeight: 800,
         center: true,
+        frame: false,
         show: false,
         webPreferences: {
             nodeIntegration: false, // is default value after Electron v5
@@ -142,6 +143,7 @@ app.on('ready', function () {
 
     autoUpdater.checkForUpdatesAndNotify().then((update: UpdateCheckResult | null) => {
         if (update) {
+            // TODO: take action on new versions, such as an "Updating" window or compatibility checks
             console.log('Update Check Results: ', update);
         }
     }).catch((reason: any) => {

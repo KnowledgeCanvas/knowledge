@@ -16,12 +16,19 @@
 
 
 import {Component, Input, OnInit} from '@angular/core';
-import {KnowledgeSource} from "../../../models/knowledge.source.model";
+import {KnowledgeSource} from "../../models/knowledge.source.model";
 
 @Component({
   selector: 'app-ks-icon',
-  templateUrl: './ks-icon.component.html',
-  styleUrls: ['./ks-icon.component.scss']
+  template: `
+    <img [src]="ks.icon"
+         class="knowledge-source-icon"
+         [class.shadow-3]="showShadow"
+         [class.bg-auto]="autoBackgroundColor"
+         width="24"
+         alt="Knowledge Source Icon">
+  `,
+  styles: []
 })
 export class KsIconComponent implements OnInit {
   @Input() ks!: KnowledgeSource;

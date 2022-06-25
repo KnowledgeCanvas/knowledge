@@ -13,105 +13,308 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-import {Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, HostListener, OnInit} from '@angular/core';
 import {SettingsService} from "./services/ipc-services/settings.service";
-import {ConfirmationService, MenuItem, PrimeIcons, TreeNode} from "primeng/api";
 import {DialogService} from "primeng/dynamicdialog";
 import {ProjectService} from "./services/factory-services/project.service";
-import {ProjectTreeNode} from "./models/project.tree.model";
-import {KcProject, ProjectCreationRequest} from "./models/project.model";
-import {Subscription} from "rxjs";
 import {KsFactoryService} from "./services/factory-services/ks-factory.service";
 import {ElectronIpcService} from "./services/ipc-services/electron-ipc.service";
-import {ProjectCreationDialogComponent} from "./components/project-components/project-creation-dialog/project-creation-dialog.component";
-import {BrowserViewDialogService} from "./services/ipc-services/browser-view-dialog.service";
 import {ThemeService} from "./services/user-services/theme.service";
-import {DisplaySettingsComponent} from "./components/settings-components/display-settings/display-settings.component";
 import {DialogRequest} from "../../../kc_shared/models/electron.ipc.model";
-import {SearchSettingsComponent} from "./components/settings-components/search-settings/search-settings.component";
-import {ProjectTreeFactoryService} from "./services/factory-services/project-tree-factory.service";
-import {IngestSettingsComponent} from "./components/settings-components/ingest-settings/ingest-settings.component";
 import {NotificationsService} from "./services/user-services/notifications.service";
-import {UUID} from "./models/uuid";
 import {IngestService} from "./services/ingest-services/ingest.service";
 import {DragAndDropService} from "./services/ingest-services/drag-and-drop.service";
+import {Subscription} from "rxjs";
+import {KsCommandService} from "./services/command-services/ks-command.service";
+import {UUID} from "./models/uuid";
+import {ProjectTreeFactoryService} from "./services/factory-services/project-tree-factory.service";
+import {TreeNode} from "primeng/api";
+import {NavigationEnd, Router} from "@angular/router";
+import {KsDetailsComponent} from "./components/source-components/ks-details.component";
 
+
+type SidebarItem = {
+  label: string,
+  routerLink?: any,
+  command?: any,
+  icon: string
+}
 
 @Component({
   selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  template: `
+    <div id="app-header" class="w-full p-fluid title-bar flex-row-center-between px-2 surface-0 border-bottom-1 surface-border" style="height: 49px; max-width: 100vw">
+      <div class="select-none flex-row-center-start">
+        <div (click)="close($event)" class="macos-window-button window-button-close"></div>
+        <div (click)="minimize($event)" class="macos-window-button window-button-minimize"></div>
+        <div (click)="maximize($event)" class="macos-window-button window-button-maximize"></div>
+      </div>
+      <div class="flex-row-center-between">
+        <app-history></app-history>
+        <app-search></app-search>
+      </div>
+      <div class=""></div>
+    </div>
+
+    <div *ngIf="!readyToShow" class="w-full h-full surface-a flex-col-center-center">
+      <p-image src="assets/img/kc-logo-transparent.svg" class="w-5"></p-image>
+      <p-progressBar mode="indeterminate" class="w-3"></p-progressBar>
+      Getting things ready...
+    </div>
+
+    <div [hidden]="!readyToShow" class="flex relative lg:static" style="height: calc(100vh - 49px); max-width: 100vw">
+      <div id="app-sidebar" class="h-full md:h-auto md:block flex-shrink-0 absolute md:static left-0 top-0 z-1 border-right-1 surface-0 border-primary w-auto">
+        <div class="flex h-full">
+          <div class="flex flex-column h-full flex-shrink-0">
+            <div class="flex align-items-center justify-content-center flex-shrink-0" style="height: 60px; width: 60px">
+              <img src="assets/img/kc-icon-transparent.png" height="30" alt="Knowledge Canvas Logo" (click)="onKcClick()" class="cursor-pointer">
+            </div>
+            <div class="overflow-y-auto mt-3">
+              <ul class="list-none py-3 pl-2 pr-0 m-0">
+                <li *ngFor="let item of sidebarItems" class="mb-2" [pTooltip]="item.label" (click)="onSidebarClick($event, item)">
+                  <a [routerLink]="item.routerLink"
+                     class="p-element flex align-items-center cursor-pointer py-3 pl-0 pr-2 justify-content-center hover:bg-primary text-700 hover:text-0 transition-duration-150 transition-colors no-underline"
+                     [class.bg-primary]="item.label === selectedView"
+                     style="border-top-left-radius: 30px; border-bottom-left-radius: 30px;">
+                    <i *ngIf="item.label === 'Home' && upNextBadge > 0" class="{{item.icon}} text-xl no-underline" pBadge value="{{upNextBadge}}" severity="danger"></i>
+                    <i *ngIf="item.label === 'Home' && upNextBadge === 0" class="{{item.icon}} text-xl no-underline"></i>
+                    <i *ngIf="item.label !== 'Home'" class="{{item.icon}} text-xl no-underline"></i>
+                    <span class="p-ink" style="height: 64px; width: 64px; top: 5px; left: 5px;"></span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <div class="mt-auto">
+              <a class="p-element m-3 flex align-items-center cursor-pointer p-2 justify-content-center border-round bg-primary text-0 transition-duration-150 transition-colors"
+                 (click)="showSettings()">
+                <i class="pi pi-cog text-xl"></i>
+                <span class="p-ink" style="height: 64px; width: 64px; top: 4px; left: -1px;"></span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="app-body" class="w-full flex flex-column relative flex-auto" style="max-height: calc(100vh - 48px)">
+        <div id="app-router-outlet" class="flex-auto overflow-y-auto" style="max-height: calc(100vh - 96px)">
+          <router-outlet></router-outlet>
+        </div>
+        <div id="app-footer">
+          <app-project-breadcrumb class="w-full h-full" [projectId]="projectId" (onShowProjectTree)="projectTreeVisible = $event"></app-project-breadcrumb>
+        </div>
+      </div>
+    </div>
+
+    <p-sidebar [(visible)]="projectTreeVisible"
+               [style]="{height: '100%', width: '30em'}"
+               appendTo="body"
+               [modal]="true"
+               [dismissible]="true">
+      <app-projects-tree [treeNodes]="projectTreeNodes"
+                         [selectedNode]="projectSelectedNode"
+                         (onProjectCreation)="onProjectCreate($event)"
+                         (onProjectDeletion)="onProjectDelete($event)"
+                         (onProjectEdit)="onProjectEdit($event)">
+      </app-projects-tree>
+    </p-sidebar>
+
+    <p-confirmDialog appendTo="body"></p-confirmDialog>
+    <p-messages key="app-banner"></p-messages>
+    <p-toast key="app-toast"></p-toast>
+  `,
+  styles: [
+    `
+      ::ng-deep {
+        .p-submenu-list {
+          z-index: 99 !important;
+        }
+
+        .p-sidebar-content {
+          height: 100%;
+        }
+      }
+
+      .title-bar {
+        -webkit-user-select: none;
+        -webkit-app-region: drag;
+      }
+
+      .macos-window-button {
+        height: 1rem;
+        width: 1rem;
+        margin-right: 0.6rem;
+        border-radius: 50%;
+      }
+
+      .window-button-close {
+        margin-left: 2px;
+        background-color: #FF5F57;
+      }
+
+      .window-button-maximize {
+        background-color: #2BC840;
+      }
+
+      .window-button-minimize {
+        background-color: #FFBC2E;
+      }
+
+      #app-footer {
+        height: 4rem;
+      }
+    `
+  ]
 })
-export class AppComponent implements OnInit, OnDestroy {
-  @ViewChild('searchBar') searchBar!: ElementRef;
-
-  currentProject: KcProject | null = null;
-
-  menuBarItems: MenuItem[] = [];
-
-  ksIngestVisible: boolean = false;
+export class AppComponent implements OnInit {
+  projectId: string = '';
 
   projectTreeVisible: boolean = false;
 
   readyToShow: boolean = false;
 
-  treeNodes: TreeNode[] = [];
+  subscription: Subscription;
 
-  private _projectNodes: ProjectTreeNode[] = [];
+  projectSelectedNode: TreeNode = {};
 
-  private _subProjectTree: Subscription;
+  projectTreeNodes: TreeNode[] = [];
 
-  private _subCurrentProject: Subscription;
+  upNextBadge: number = 0;
+
+  sidebarItems: SidebarItem[] = [
+    {label: 'Home', routerLink: ['app', 'home'], icon: 'pi pi-inbox'},
+  ];
+
+  selectedView: string = this.sidebarItems[0].label;
 
   constructor(private settings: SettingsService,
               private notifications: NotificationsService,
+              private command: KsCommandService,
               private dialog: DialogService,
               private dnd: DragAndDropService,
               private factory: KsFactoryService,
               private projects: ProjectService,
               private ipc: ElectronIpcService,
               private ingest: IngestService,
-              private browserView: BrowserViewDialogService,
-              private themes: ThemeService,
-              private projectTree: ProjectTreeFactoryService,
-              private confirmation: ConfirmationService,) {
-    // Subscribe to changes in project tree
-    this._subProjectTree = this.projects.projectTree.subscribe((projectNodes: ProjectTreeNode[]) => {
-      this._projectNodes = projectNodes;
-      this.treeNodes = this.projectTree.constructTreeNodes(projectNodes, false);
+              private tree: ProjectTreeFactoryService,
+              private router: Router,
+              private themes: ThemeService,) {
+
+    /**
+     * Subscribe to router events in order to manually adjust the current view
+     */
+    router.events.subscribe((events) => {
+      if (events instanceof NavigationEnd) {
+        const segments = events.url.split('/');
+        const visibleRoute = segments[2];
+        console.log(segments)
+
+        switch (visibleRoute) {
+          case 'home':
+          case '(home':
+            this.selectedView = 'Home'
+            break;
+          case 'projects':
+          case '(projects':
+            this.selectedView = 'Projects'
+            break;
+          case 'table':
+          case '(table':
+            this.selectedView = 'Table'
+            break;
+          case 'grid':
+          case '(grid':
+            this.selectedView = 'Grid'
+            break;
+          case 'calendar':
+          case '(calendar':
+            this.selectedView = 'Calendar'
+            break;
+          default:
+            break;
+        }
+      }
     });
 
-    // Subscribe to active project
-    this._subCurrentProject = this.projects.currentProject.subscribe(current => {
-      this.notifications.debug('App', 'Project Changed', current?.name ?? current?.id.value ?? '');
-      this.confirmation.close();
-      this.currentProject = current;
+    this.subscription = this.command.ksDetailEvent.subscribe((ks) => {
+      if (ks) {
+        const ref = this.dialog.open(KsDetailsComponent, {
+          data: {ks: ks},
+          width: 'min(90vw, 92rem)',
+          height: 'min(90vw, 92rem)'
+        });
+      }
     });
 
-    // When the app starts, we want to ensure the theme has been completed loaded
+    // TODO: these all need subscription lifecycle management...
+    ingest.queue.subscribe((upNext) => {
+      this.upNextBadge = upNext.length;
+    })
+
+    projects.projectTree.subscribe((tree) => {
+      this.projectTreeNodes = this.tree.constructTreeNodes(tree, false);
+    })
+
+    projects.currentProject.subscribe((project) => {
+      if (project) {
+        this.projectId = project.id.value;
+        this.sidebarItems = [
+          {label: 'Home', routerLink: ['app', 'home'], icon: 'pi pi-inbox'},
+          {label: 'Projects', routerLink: ['app', 'projects', this.projectId], icon: 'pi pi-list'},
+          {label: 'Table', routerLink: ['app', 'table', this.projectId], icon: 'pi pi-table'},
+          {label: 'Grid', routerLink: ['app', 'grid', this.projectId], icon: 'pi pi-th-large'},
+          {label: 'Calendar', routerLink: ['app', 'calendar', this.projectId], icon: 'pi pi-calendar'},
+        ]
+      }
+    });
+
+    // When the app starts, we want to ensure the theme has been completely loaded
     themes.setLocal().then((_: any) => {
       setTimeout(() => {
         this.readyToShow = true;
-      }, Math.floor(Math.random() * 2000));
+      }, Math.floor(Math.random() * 1000));
     });
   }
 
-  get selectedNode() {
-    return this.projectTree.findTreeNode(this.treeNodes, this.currentProject?.id.value ?? '') ?? {};
-  }
-
-  @HostListener('document:keydown.Control.n')
-  @HostListener('document:keydown.meta.n')
-  keyPressOpenIngest() {
-    this.projectTreeVisible = false;
-    this.onOpenIngest();
-  }
-
+  /* TODO: Create a hotkey service that registers these keys on behalf of each module */
   @HostListener('document:keydown.Control.p')
   @HostListener('document:keydown.meta.p')
   keyPressOpenProjects() {
-    this.ksIngestVisible = false;
     this.projectTreeVisible = !this.projectTreeVisible;
+  }
+
+  @HostListener('document:keydown.Control.1')
+  @HostListener('document:keydown.meta.1')
+  goHome() {
+    this.router.navigate(['app', 'home']);
+  }
+
+  @HostListener('document:keydown.Control.2')
+  @HostListener('document:keydown.meta.2')
+  goProjects() {
+    this.router.navigate(['app', 'projects', this.projectId]);
+  }
+
+  @HostListener('document:keydown.Control.3')
+  @HostListener('document:keydown.meta.3')
+  goTable() {
+    this.router.navigate(['app', 'table', this.projectId]);
+  }
+
+  @HostListener('document:keydown.Control.4')
+  @HostListener('document:keydown.meta.4')
+  goGrid() {
+    this.router.navigate(['app', 'grid', this.projectId]);
+  }
+
+  @HostListener('document:keydown.Control.5')
+  @HostListener('document:keydown.meta.5')
+  goCalendar() {
+    this.router.navigate(['app', 'calendar', this.projectId]);
+  }
+
+  @HostListener('document:keydown.Control.,')
+  @HostListener('document:keydown.meta.,')
+  goSettings() {
+    this.showSettings();
   }
 
   @HostListener("dragover", ["$event"]) onDragOver(evt: any) {
@@ -123,119 +326,62 @@ export class AppComponent implements OnInit, OnDestroy {
     this.dnd.parseDragEvent(event).then((ksReq) => {
       if (ksReq) {
         this.factory.many(ksReq).then((ksList) => {
-          this.ingest.enqueue(ksList);
+          if (ksList.length > 0) {
+            this.ingest.enqueue(ksList);
+          }
         })
       }
     })
-    this.ksIngestVisible = true;
   }
 
   ngOnInit() {
-    this.configureToolbar();
   }
 
-  ngOnDestroy() {
-    this._subCurrentProject.unsubscribe();
-    this._subProjectTree.unsubscribe();
-  }
-
-  configureToolbar() {
-    this.menuBarItems = [
-      {
-        label: 'Projects', icon: PrimeIcons.LIST, command: () => {
-          this.projectTreeVisible = !this.projectTreeVisible;
-        }
-      },
-      {
-        label: 'Settings', icon: 'pi pi-fw pi-cog', items: [
-          {
-            label: 'Display', icon: 'pi pi-fw pi-image', command: () => {
-              this.dialog.open(DisplaySettingsComponent, {
-                header: 'Display Settings',
-                width: '64rem',
-                dismissableMask: true,
-                modal: true
-              });
-            }
-          },
-          {
-            label: 'Up Next', icon: 'pi pi-fw pi-arrow-circle-down', command: () => {
-              this.dialog.open(IngestSettingsComponent, {
-                header: 'Up Next Settings',
-                width: '64rem',
-                dismissableMask: true,
-                modal: true
-              });
-            }
-          },
-          {
-            label: 'Search', icon: 'pi pi-fw pi-search', command: () => {
-              this.dialog.open(SearchSettingsComponent, {
-                data: this.settings.get().search,
-                header: 'Search Settings',
-                width: '64rem',
-                dismissableMask: true,
-                modal: true
-              });
-            }
-          },
-        ]
-      }
-    ];
+  showSettings() {
+    this.settings.show();
   }
 
   onKcClick() {
-    let req: KcDialogRequest = {
-      ksList: [this.currentProject?.knowledgeSource]
+    let req: DialogRequest = {
+      // TODO: revisit this...
+      ksList: []
     }
     this.ipc.openKcDialog(req).catch((reason) => {
       this.notifications.error('Knowledge Canvas', 'Error Opening Graph', `Something prevented Knowledge Canvas from opening graph view.`);
     });
   }
 
-  createProject(parentId?: UUID) {
-    const dialogref = this.dialog.open(ProjectCreationDialogComponent, {
-      width: '90%',
-      modal: true,
-      data: {parentId: parentId ?? undefined}
-    });
-
-    dialogref.onClose.subscribe((creationRequest: ProjectCreationRequest) => {
-      if (creationRequest) {
-        this.projects.newProject(creationRequest).catch((reason) => {
-          this.notifications.error('App', 'Unable to Create Project', reason);
-        }).then((_) => {
-          this.notifications.success('App', 'Project Created', creationRequest.name);
-        });
-      }
-    });
+  close($event: MouseEvent) {
+    window.close()
   }
 
-  searchTopic(topic: string) {
-    let ks = this.factory.searchKS(topic);
-    this.browserView.open({ks: ks});
+  minimize($event: MouseEvent) {
+    window.api.send('A2E:Window:Minimize');
   }
 
-  search(term: string) {
-    this.searchTopic(term);
-    if (this.searchBar)
-      this.searchBar.nativeElement.value = ''
+  maximize($event: MouseEvent) {
+    window.api.send('A2E:Window:Maximize');
   }
 
-  deleteProject(id: UUID) {
-    let project = this.projects.getProject(id);
-    let subprojects = this.projects.getSubTree(id)
-    this.confirmation.confirm({
-      message: `Are you sure you want to remove ${subprojects.length} Projects?`,
-      accept: () => {
-        let details: string = subprojects.map((p) => p.title).join(', ');
-        this.notifications.warn('App', 'Project(s) Deleted', details);
-        this.projects.deleteProject(id)
-      }
-    })
+  onProjectEdit($event?: UUID) {
+    // TODO: finish this
+    console.log('project edit ', $event);
   }
 
-  onOpenIngest(_?: any) {
-    this.ksIngestVisible = !this.ksIngestVisible;
+  onProjectDelete($event?: UUID) {
+    // TODO: finish this
+    console.log('project delete ', $event);
+  }
+
+  onProjectCreate($event?: UUID) {
+    // TODO: finish this
+    console.log('project create ', $event);
+  }
+
+  onSidebarClick($event: MouseEvent, item: SidebarItem) {
+    this.selectedView = item.label === 'Settings' ? this.selectedView : item.label;
+    if (item.command) {
+      item.command();
+    }
   }
 }

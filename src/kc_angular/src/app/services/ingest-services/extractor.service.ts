@@ -162,6 +162,29 @@ export class ExtractorService {
               extractedMeta.push({key: 'charset', value: meta[i].attributes[0].textContent, property: ''})
             }
 
+            // TODO: consildate this with open graph, etc. process should be more automatic...
+            // Dublin Core tags
+            if (meta[i]?.attributes[0]?.textContent?.startsWith('dc:')) {
+              let val = '';
+              if (!meta[i].attributes[1]?.textContent?.startsWith('dc:')) {
+                val = meta[i].attributes[1].textContent ?? '';
+              } else {
+                val = meta[i].attributes[2].textContent ?? '';
+              }
+
+              if (val !== '') {
+                let attr = {
+                  key: meta[i].attributes[0]?.textContent,
+                  value: val,
+                  property: ''
+                };
+                extractedMeta.push(attr);
+                if (attr.key === 'dc:title' && attr.value) {
+                  metadata.title = attr.value;
+                }
+              }
+            }
+
             // Open Graph tags
             if (meta[i]?.attributes[0]?.textContent?.startsWith('og:')) {
               let val = '';
@@ -181,6 +204,25 @@ export class ExtractorService {
                 if (attr.key === 'og:title' && attr.value) {
                   metadata.title = attr.value;
                 }
+              }
+            }
+
+            // Keyword tags
+            if (meta[i]?.attributes[0]?.textContent?.startsWith('keywords')) {
+              let val = '';
+              if (!meta[i].attributes[1]?.textContent?.startsWith('keywords')) {
+                val = meta[i].attributes[1].textContent ?? '';
+              } else {
+                val = meta[i].attributes[2].textContent ?? '';
+              }
+
+              if (val !== '') {
+                let attr = {
+                  key: meta[i].attributes[0]?.textContent,
+                  value: val,
+                  property: ''
+                };
+                extractedMeta.push(attr);
               }
             }
           }

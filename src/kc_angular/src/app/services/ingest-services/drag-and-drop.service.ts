@@ -170,6 +170,12 @@ export class DragAndDropService {
     let dths_no_prefix = this.__data_transfer_handlers.filter(dth => dth.accepts({text: textData, html: htmlData, uri: uriData, event: event}));
 
     let details = `${dths_prefix.map(a => a.HANDLER_TYPE).join(', ')}` + `${dths_no_prefix.map(a => a.HANDLER_TYPE).join(', ')}`
+
+    if (dths_no_prefix.length === 0 && dths_prefix.length === 0) {
+      this.notifications.debug('Drag And Drop', 'No Handlers Found', 'Knowledge Canvas does not know how to handle that drag and drop!');
+      return;
+    }
+
     this.notifications.debug('Drag And Drop', 'Handlers Found', details);
 
     let req: KnowledgeSourceFactoryRequest | undefined;

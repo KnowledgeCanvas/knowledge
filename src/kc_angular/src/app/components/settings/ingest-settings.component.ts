@@ -46,7 +46,7 @@ export type SelectButtonOption = {
           </ng-template>
 
           <ng-template pTemplate="content">
-            <div class="p-fluid grid m-4">
+            <div class="p-fluid grid mt-1">
               <div class="col-12">
                 <b>Interval</b>
               </div>
@@ -98,11 +98,11 @@ export type SelectButtonOption = {
           </ng-template>
 
           <ng-template pTemplate="content">
-            <div class="p-fluid grid m-4">
+            <div class="p-fluid grid mt-1">
               <div class="col-12">
                 <b>Managed Files</b>
               </div>
-              <div class="col-6">
+              <div class="col-12">
                 <p-selectButton [options]="fileManagerStates"
                                 [(ngModel)]="ingestSettings.manager.target"
                                 (onChange)="onFileManagerTargetChange($event)"
@@ -112,7 +112,7 @@ export type SelectButtonOption = {
                 </p-selectButton>
               </div>
 
-              <div class="col-12 mt-4">
+              <div class="col-12 mt-1">
                 <b>Storage Location</b>
               </div>
               <div class="col-12 p-fluid p-inputgroup p-float-label">
@@ -148,7 +148,7 @@ export type SelectButtonOption = {
           </ng-template>
 
           <ng-template pTemplate="content">
-            <div class="p-fluid grid m-4">
+            <div class="p-fluid grid mt-1">
               <div class="col-12">
                 <b>Port</b>
               </div>

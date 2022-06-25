@@ -85,6 +85,7 @@ export class IngestService implements OnDestroy {
 
   add(ks: KnowledgeSource) {
     this.finalize(ks, 'add');
+    this._queue.next(this._queue.value.filter(k => k.id.value !== ks.id.value));
   }
 
   remove(ks: KnowledgeSource) {
@@ -209,7 +210,6 @@ export class IngestService implements OnDestroy {
   private finalize(ks: KnowledgeSource, operation: 'add' | 'remove' | 'delay') {
     // TODO: Files added using file manager should not be checked either (not that checking hurts, but still)...
     if (ks.ingestType !== 'file') {
-      this.notifications.debug('IngestService', 'Cannot Finalize','Refusing to finalize KS because it is not a file...');
       return;
     }
     if (this.settings.get().ingest.manager.target !== 'all' && ks.importMethod !== 'autoscan') {

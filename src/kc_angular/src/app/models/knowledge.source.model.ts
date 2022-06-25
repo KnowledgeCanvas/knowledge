@@ -59,7 +59,6 @@ export class KnowledgeSource {
   associatedProject: UUID;
   authors: AuthorModel[];
   dateDue?: Date;
-  dateCheckpoint: Date[];
   dateCreated: Date;
   dateAccessed: Date[];
   dateModified: Date[];
@@ -69,12 +68,10 @@ export class KnowledgeSource {
   iconUrl?: string;
   id: UUID;
   ingestType: IngestType;
-  snippet?: string;
   rawText?: string;
   flagged?: boolean;
   title: string;
   topics?: string[];
-  note: KnowledgeSourceNote;
   accessLink: URL | string;
   readonly reference: KnowledgeSourceReference;
   importMethod?: ImportMethod = 'manual';
@@ -87,13 +84,12 @@ export class KnowledgeSource {
     this.reference = reference;
     this.ingestType = ingestType;
     this.dateCreated = new Date();
-    this.dateCheckpoint = [];
     this.dateModified = [];
     this.dateAccessed = []
     this.accessLink = reference.link;
-    this.note = new KnowledgeSourceNote();
     this.flagged = false;
     this.topics = [];
+    // TODO: this should be replaced with the new EventModel
     this.events = [{
       date: new Date(),
       label: 'Created'

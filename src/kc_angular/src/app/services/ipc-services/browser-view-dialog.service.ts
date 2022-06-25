@@ -16,7 +16,7 @@
 
 import {Injectable} from '@angular/core';
 import {KnowledgeSource} from "../../models/knowledge.source.model";
-import {KsPreviewComponent, KsPreviewInput} from "../../components/knowledge-source-components/ks-preview/ks-preview.component";
+import {KsPreviewComponent, KsPreviewInput} from "../../components/source-components/ks-preview.component";
 import {DialogService, DynamicDialogRef} from "primeng/dynamicdialog";
 
 export interface BrowserViewDialogConfig {

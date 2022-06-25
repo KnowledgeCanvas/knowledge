@@ -70,9 +70,14 @@ export interface SystemSettingsModel {
 }
 
 export interface ApplicationSettingsModel {
+    projects: ProjectSettingsModel
     table: TableSettingsModel
     grid: GridSettingsModel
     calendar: CalendarSettingsModel
+}
+
+export interface ProjectSettingsModel {
+    ksInherit: boolean
 }
 
 export interface TableSettingsModel {

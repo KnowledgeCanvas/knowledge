@@ -170,7 +170,10 @@ class SettingsService {
                     size: 'auto',
                     sorter: 'title-a',
                 },
-                calendar: {}
+                calendar: {},
+                projects: {
+                    ksInherit: true
+                }
             },
             display: {
                 theme: {

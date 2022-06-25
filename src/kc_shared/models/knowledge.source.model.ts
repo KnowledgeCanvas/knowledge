@@ -17,6 +17,7 @@ import {Hashable} from "./hashable.model";
 import {WebSourceModel} from "./web.source.model";
 import {FileSourceModel} from "./file.source.model";
 import {UuidModel} from "./uuid.model";
+import {EventModel} from "./event.model";
 
 export interface KnowledgeSourceModel {
     title: string
@@ -24,7 +25,7 @@ export interface KnowledgeSourceModel {
     type: 'file' | 'web'
     source: FileSourceModel | WebSourceModel
     associatedProjects?: UuidModel[]
-    events?: UuidModel[]
+    events?: EventModel[]
     icon?: UuidModel
     thumbnail?: UuidModel
     markup?: UuidModel[]

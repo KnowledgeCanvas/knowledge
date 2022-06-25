@@ -66,6 +66,7 @@ extractWebsite = ipcMain.on("A2E:Extraction:Website", (event: any, args: any) =>
 
     let appEnv = settingsService.getSettings();
 
+    // TODO: pdfPath has been removed from the settings model... this should be changed to storage path...
     const pdfPath = path.join(appEnv.pdfPath, args.filename + '.pdf');
     const options = {
         width: 1280,
