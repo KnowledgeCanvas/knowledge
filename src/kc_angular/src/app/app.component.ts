@@ -26,7 +26,7 @@ import {IngestService} from "./services/ingest-services/ingest.service";
 import {DragAndDropService} from "./services/ingest-services/drag-and-drop.service";
 import {Subscription} from "rxjs";
 import {KsCommandService} from "./services/command-services/ks-command.service";
-import {UUID} from "./models/uuid";
+import {UUID} from "../../../kc_shared/models/uuid.model";
 import {ProjectTreeFactoryService} from "./services/factory-services/project-tree-factory.service";
 import {TreeNode} from "primeng/api";
 import {NavigationEnd, Router} from "@angular/router";

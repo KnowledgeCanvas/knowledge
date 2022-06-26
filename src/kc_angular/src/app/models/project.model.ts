@@ -16,7 +16,7 @@
 import {KnowledgeSource} from "./knowledge.source.model";
 import {KcProjectModel, KcProjectType} from "../../../../kc_shared/models/project.model";
 import {EventModel, ProjectCalendar} from "../../../../kc_shared/models/event.model";
-import {UUID} from "./uuid";
+import {UUID} from "../../../../kc_shared/models/uuid.model";
 
 
 export class KcProject implements KcProjectModel {
@@ -25,10 +25,7 @@ export class KcProject implements KcProjectModel {
   events?: EventModel[] = [];
   authors: string[] = [];
   description: string = '';
-  readonly dateCreated: Date;
-  dateModified: Date;
-  dateAccessed: Date;
-  parentId: UUID = new UUID('');
+  parentId: UUID = {value: ''};
   subprojects: string[] = [];
   topics: string[] = [];
   type: KcProjectType;
@@ -41,7 +38,7 @@ export class KcProject implements KcProjectModel {
     this.name = name;
     this.id = id;
     this.type = type ? type : 'default';
-    this.parentId = parentId ?? new UUID('');
+    this.parentId = parentId ?? {value: ''};
     this.dateCreated = new Date();
     this.dateModified = new Date();
     this.dateAccessed = new Date();

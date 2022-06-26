@@ -17,7 +17,7 @@
 
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {KcProject} from "../../models/project.model";
-import {UUID} from "../../models/uuid";
+import {UUID} from "../../../../../kc_shared/models/uuid.model";
 import {DataService} from "../../services/user-services/data.service";
 
 @Component({
@@ -228,6 +228,6 @@ export class ProjectCardComponent implements OnInit {
    * @param id
    */
   navigate(id: string) {
-    this.onNavigateToProject.emit(new UUID(id));
+    this.onNavigateToProject.emit({value: id});
   }
 }

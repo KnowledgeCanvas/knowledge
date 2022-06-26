@@ -17,7 +17,7 @@
 import {Component, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
 import {CalendarOptions, FullCalendarComponent, FullCalendarModule} from "@fullcalendar/angular";
 import {KcProject} from "../../models/project.model";
-import {UUID} from "../../models/uuid";
+import {UUID} from "../../../../../kc_shared/models/uuid.model";
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
@@ -189,14 +189,14 @@ export class ProjectCalendarComponent implements OnInit, OnChanges {
         this.onProjectClick.emit({
           event: args.jsEvent,
           element: args.el,
-          projectId: this.kcProject?.id ?? new UUID('')
+          projectId: this.kcProject?.id ?? {value: ''}
         });
       } else {
         if (args.event._def.url) {
           this.onKsClick.emit({
             event: args.jsEvent,
             element: args.el,
-            ksId: new UUID(args.event._def.url)
+            ksId: {value: args.event._def.url}
           })
         }
       }

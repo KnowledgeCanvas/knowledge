@@ -15,7 +15,7 @@
  */
 import {AuthorModel} from "../../../../kc_shared/models/author.model";
 import {FileSourceModel} from "../../../../kc_shared/models/file.source.model";
-import {UUID} from "./uuid";
+import {UUID} from "../../../../kc_shared/models/uuid.model";
 import {ImportMethod} from "../../../../kc_shared/models/knowledge.source.model";
 import {WebSourceModel} from "../../../../kc_shared/models/web.source.model";
 
@@ -79,7 +79,7 @@ export class KnowledgeSource {
   constructor(title: string, id: UUID, ingestType: IngestType, reference: KnowledgeSourceReference) {
     this.title = title;
     this.id = id;
-    this.associatedProject = new UUID('');
+    this.associatedProject = {value: ''};
     this.authors = [];
     this.reference = reference;
     this.ingestType = ingestType;

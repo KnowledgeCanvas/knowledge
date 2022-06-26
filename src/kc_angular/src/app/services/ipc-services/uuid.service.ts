@@ -16,7 +16,7 @@
 
 import {Injectable} from '@angular/core';
 import {ElectronIpcService} from "./electron-ipc.service";
-import {UUID} from "../../models/uuid";
+import {UUID} from "../../../../../kc_shared/models/uuid.model";
 
 
 declare global {

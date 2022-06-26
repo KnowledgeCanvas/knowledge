@@ -17,3 +17,5 @@
 export type UuidModel = {
     value: string
 }
+
+export interface UUID extends UuidModel {}

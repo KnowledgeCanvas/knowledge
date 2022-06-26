@@ -23,7 +23,7 @@ import {UuidService} from "../ipc-services/uuid.service";
 import {StorageService} from "../ipc-services/storage.service";
 import {KcProjectType} from "../../../../../kc_shared/models/project.model";
 import {EventModel} from "../../../../../kc_shared/models/event.model";
-import {UUID} from "../../models/uuid";
+import {UUID} from "../../../../../kc_shared/models/uuid.model";
 import {NotificationsService} from "../user-services/notifications.service";
 
 export interface ProjectIdentifiers {
@@ -314,7 +314,7 @@ export class ProjectService {
             // TODO: finish this after working on getting the app to work properly again
           }
           setDescription('Move', `from ${current?.name ?? ''} to ${next.name}`);
-          target.parentId = new UUID(update.parentId);
+          target.parentId = {value: update.parentId};
         }
       }
 

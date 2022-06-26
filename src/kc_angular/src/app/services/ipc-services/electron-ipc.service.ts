@@ -16,7 +16,7 @@
 import {Injectable, NgZone} from '@angular/core';
 import {BehaviorSubject} from 'rxjs';
 import {IpcMessage, DialogRequest, BrowserViewRequest, ThumbnailRequest, PromptForDirectoryRequest} from "../../../../../kc_shared/models/electron.ipc.model";
-import {UUID} from "../../models/uuid";
+import {UUID} from "../../../../../kc_shared/models/uuid.model";
 
 export interface ElectronNavEvent {
   stack: string[]
@@ -321,7 +321,7 @@ export class ElectronIpcService {
           if (response.success?.data) {
             let uuids: UUID[] = [];
             for (let id of response.success.data) {
-              let uuid = new UUID(id);
+              let uuid = {value: id};
               uuids.push(uuid);
             }
             resolve(uuids);

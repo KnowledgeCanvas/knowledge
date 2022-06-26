@@ -19,7 +19,7 @@ import {ProjectService} from "../../services/factory-services/project.service";
 import {ProjectUpdateRequest} from "src/app/models/project.model";
 import {PrimeIcons, TreeNode} from "primeng/api";
 import {TreeModule} from "primeng/tree";
-import {UUID} from "../../models/uuid";
+import {UUID} from "../../../../../kc_shared/models/uuid.model";
 
 @Component({
   selector: 'app-projects-tree',
@@ -171,7 +171,7 @@ export class ProjectsTreeComponent implements OnInit {
 
   setExpand(id: string, expand: boolean) {
     this.projectService.updateProjects([{
-      id: new UUID(id),
+      id: {value: id},
       expanded: expand
     }]);
   }
@@ -179,19 +179,19 @@ export class ProjectsTreeComponent implements OnInit {
   delete(projectId?: string, _?: any): void {
     let id = projectId ?? this.selectedNode.key ?? '';
 
-    this.onProjectDeletion.emit(new UUID(id));
+    this.onProjectDeletion.emit({value: id});
     this.onHide.emit();
   }
 
   newProject(parentId?: string): void {
     this.onHide.emit();
-    this.onProjectCreation.emit(parentId ? new UUID(parentId) : undefined);
+    this.onProjectCreation.emit(parentId ? {value: parentId} : undefined);
   }
 
 
   editProject() {
     let id = this.selectedNode.key ?? '';
-    this.onProjectEdit.emit(new UUID(id));
+    this.onProjectEdit.emit({value: id});
     this.onHide.emit(true);
   }
 

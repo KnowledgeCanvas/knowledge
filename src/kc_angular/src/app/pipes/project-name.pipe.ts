@@ -16,7 +16,7 @@
 
 import { Pipe, PipeTransform } from '@angular/core';
 import {ProjectService} from "../services/factory-services/project.service";
-import {UUID} from "../models/uuid";
+import {UUID} from "../../../../kc_shared/models/uuid.model";
 
 
 @Pipe({
@@ -27,7 +27,7 @@ export class ProjectNamePipe implements PipeTransform {
   }
 
   transform(id: UUID | string): string {
-    const pid: UUID = typeof id === 'string' ? new UUID(id) : id;
+    const pid: UUID = typeof id === 'string' ? {value: id} : id;
 
     if (!id) {
       return 'None'

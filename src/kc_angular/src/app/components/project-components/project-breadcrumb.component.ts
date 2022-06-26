@@ -16,7 +16,7 @@
 import {Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
 import {ProjectService} from "../../services/factory-services/project.service";
 import {MenuItem} from "primeng/api";
-import {UUID} from "../../models/uuid";
+import {UUID} from "../../../../../kc_shared/models/uuid.model";
 
 @Component({
   selector: 'app-project-breadcrumb',

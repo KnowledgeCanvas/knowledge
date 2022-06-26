@@ -19,7 +19,7 @@ import {Component, EventEmitter, HostListener, Input, OnChanges, OnDestroy, OnIn
 import {KnowledgeSource} from "../../models/knowledge.source.model";
 import {TreeNode} from "primeng/api";
 import {Subscription} from "rxjs";
-import {UUID} from "../../models/uuid";
+import {UUID} from "../../../../../kc_shared/models/uuid.model";
 
 
 @Component({

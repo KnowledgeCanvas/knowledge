@@ -15,6 +15,7 @@
  */
 
 import {Injectable} from '@angular/core';
+import {UUID} from "../../../../../kc_shared/models/uuid.model";
 import {BehaviorSubject} from "rxjs";
 import {KcProject, ProjectUpdateRequest} from "../../models/project.model";
 

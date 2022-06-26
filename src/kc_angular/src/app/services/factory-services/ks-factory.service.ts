@@ -21,7 +21,7 @@ import {ExtractorService} from "../ingest-services/extractor.service";
 import {FaviconService} from "../ingest-services/favicon.service";
 import {SettingsService} from "../ipc-services/settings.service";
 import {FileSourceModel} from "../../../../../kc_shared/models/file.source.model";
-import {UUID} from "../../models/uuid";
+import {UUID} from "../../../../../kc_shared/models/uuid.model";
 
 export interface KnowledgeSourceFactoryRequest {
   ingestType: IngestType,
@@ -117,7 +117,7 @@ export class KsFactoryService {
 
     return {
       authors: [], description: "",
-      title: "Knowledge Canvas Search", id: new UUID('kc-search-ks'),
+      title: "Knowledge Canvas Search", id: {value: 'kc-search-ks'},
       reference: {
         ingestType: "website",
         source: {
@@ -133,7 +133,7 @@ export class KsFactoryService {
         link: ""
       },
       ingestType: "website",
-      associatedProject: new UUID(''),
+      associatedProject: {value: ''},
       // TODO: remove these to align with new model...
       dateAccessed: [new Date()],
       dateModified: [new Date()],

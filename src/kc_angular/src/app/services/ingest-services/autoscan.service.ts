@@ -17,7 +17,7 @@ import {Injectable, NgZone} from '@angular/core';
 import {BehaviorSubject, Observable} from "rxjs";
 import {IpcMessage} from "../../../../../kc_shared/models/electron.ipc.model";
 import {FileSourceModel, FileWatcherUpdate} from "../../../../../kc_shared/models/file.source.model";
-import {UUID} from "../../models/uuid";
+import {UUID} from "../../../../../kc_shared/models/uuid.model";
 import {NotificationsService} from "../user-services/notifications.service";
 
 type FileManagerMove = {
