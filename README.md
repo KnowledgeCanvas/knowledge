@@ -1,5 +1,5 @@
 # Description
-Knowledge is a replacement for bookmark managers, file explorers, and complex workflows. With Knowledge, you can: create your own personal knowledge base, import/export nearly any type of digital resource, view your progress with the built-in calendar, and much more.
+Knowledge is an open-source bookmark manager, file explorer, calendar, and project management tool. Knowledge allows users to import, organize, filter, and search nearly any digital resource, including files, web links, calendar entries, and more. Create your own personal knowledge base, visualize connections between projects and resources, easily extract content from documents, and review a timeline of your progress and activity.
 
 # Download
 - [Latest Release](https://github.com/KnowledgeCanvas/knowledge-canvas/releases/latest)
