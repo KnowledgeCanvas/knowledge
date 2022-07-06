@@ -27,44 +27,50 @@ import {NotificationsService} from "../services/user-services/notifications.serv
   selector: 'app-home',
   template: `
     <div class="h-full w-full flex-col-center-center">
-      <div class="w-full h-full flex-col-center-between surface-section px-4 py-4" [style]="{'max-width': 'min(100%, 96rem)'}">
+      <div class="w-full h-full flex-col-center-between surface-section p-4" [style]="{'max-width': 'min(100%, 96rem)'}">
         <div class="w-full flex flex-row flex-shrink-1 mb-2">
-          <app-ks-ingest class="w-full border-1 border-300 border-round p-4 surface-section" [ksList]="upNext" [currentProject]="kcProject | async"></app-ks-ingest>
+          <app-ks-ingest class="w-full border-1 border-300 border-round p-4 surface-section select-none"
+                         [ksList]="upNext"
+                         [currentProject]="kcProject | async">
+          </app-ks-ingest>
         </div>
         <div class="w-full flex flex-row flex-grow-1 border-round border-1 border-300">
           <div class="flex flex-column flex-auto surface-ground">
-            <div class="pt-7 flex-col-center-start overflow-y-auto overflow-x-hidden">
-              <div class="w-full flex-col-center-start">
-                <div *ngFor="let ks of upNext"
-                     [class.surface-300]="ks.id.value === active?.id?.value"
-                     [class.border-right-1]="ks.id.value === active?.id?.value"
-                     class="flex-row-center-center border-round-left">
-                  <app-ks-icon [ks]="ks"
-                               (click)="setActive(ks)"
-                               class="p-2 cursor-pointer">
-                  </app-ks-icon>
-                </div>
+            <div class="pt-7 flex-col-center-start overflow-y-auto overflow-x-hidden"
+                 style="max-height: calc(100vh - 25rem)">
+              <div *ngFor="let ks of upNext"
+                   [class.border-right-2]="ks.id.value === active?.id?.value"
+                   [class.border-primary]="ks.id.value === active?.id?.value"
+                   [pTooltip]="ks.title"
+                   class="flex-row-center-center border-round-left">
+                <app-ks-icon [ks]="ks"
+                             (click)="setActive(ks)"
+                             class="p-2 cursor-pointer">
+                </app-ks-icon>
               </div>
             </div>
           </div>
 
           <div *ngIf="!active" class="h-full w-full flex-row-center-center surface-section select-none border-round-bottom" style="height: 20rem">
             <div class="h-full flex-col-center-center">
-              <div>
-                <img src="assets/img/kc-icon-greyscale.png" alt="Knowledge Canvas Logo">
+              <div (dragstart)="$event.preventDefault()">
+                <img src="assets/img/kc-icon-greyscale.png"
+                     alt="Knowledge Canvas Logo"
+                     class="pulsate-fwd"
+                     style="filter: drop-shadow(0 0 1px var(--primary-color)); height: 8rem">
               </div>
-              <div class="text-2xl text-600">
-                You're all caught up!
+              <div class="text-2xl text-600 mt-4">
+                You're all caught up.
               </div>
               <div class="text-400">
-                Imported sources will appear here as soon as they are ready.
+                Imported sources will appear here as soon as they are ready
               </div>
             </div>
           </div>
 
           <div *ngIf="active" class="flex flex-col flex-auto border-left-1 border-400 surface-section">
             <div class="flex-col-center-start">
-              <div class="w-full flex-row-center-between mb-4 py-2 shadow-2">
+              <div class="w-full flex-row-center-between mb-4 py-2 border-bottom-1 border-300">
                 <div>
                   <button pButton icon="pi pi-arrow-left" [disabled]="upNext.length <= 1" class="p-button-rounded p-button-text" (click)="onLeftClick($event)"></button>
                   <button pButton icon="pi pi-arrow-right" [disabled]="upNext.length <= 1" class="p-button-rounded p-button-text" (click)="onRightClick($event)"></button>
@@ -72,12 +78,12 @@ import {NotificationsService} from "../services/user-services/notifications.serv
                 <div class="flex-row-center-center">
                   <div class="flex-row-center-center" style="width: 100%">
                     <button pButton
-                            icon="pi pi-arrow-up"
+                            icon="pi pi-arrow-down"
                             label="Expand All"
                             (click)="expandAll()"
                             class="p-button-rounded p-button-text"></button>
                     <button pButton
-                            icon="pi pi-arrow-down"
+                            icon="pi pi-arrow-up"
                             label="Collapse All"
                             (click)="collapseAll()"
                             class="p-button-rounded p-button-text"></button>
@@ -94,6 +100,7 @@ import {NotificationsService} from "../services/user-services/notifications.serv
                                 [(ngModel)]="selectedProject"
                                 class="text-primary"
                                 selectionMode="single"
+                                [filter]="true"
                                 appendTo="body">
                   </p-treeSelect>
                   <button pButton
@@ -118,7 +125,38 @@ import {NotificationsService} from "../services/user-services/notifications.serv
       </div>
     </div>
   `,
-  styles: []
+  styles: [
+    `
+      .pulsate-fwd {
+        -webkit-animation: pulsate-fwd 3s ease-in-out infinite forwards;
+        animation: pulsate-fwd 3s ease-in-out infinite forwards;
+      }
+
+      @-webkit-keyframes pulsate-fwd {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.1);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      @keyframes pulsate-fwd {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.1);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+    `
+  ]
 })
 export class HomeComponent implements OnInit, OnDestroy {
   upNext: KnowledgeSource[] = [];

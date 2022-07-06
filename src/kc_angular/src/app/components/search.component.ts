@@ -33,18 +33,21 @@ import {KcProject} from "../models/project.model";
                     [suggestions]="suggestions"
                     [field]="'title'"
                     #searchBar
+                    placeholder="🔍 Search"
+                    prefix="search"
                     (completeMethod)="search(query, $event)"
                     (onSelect)="onSelect($event)"
                     (onClear)="onClear($event)"
                     (onDropdownClick)="onDropdownClick($event)"
-                    styleClass="w-30rem">
-      Something else
+                    styleClass="w-30rem text-center">
+
       <ng-template let-item pTemplate="item">
         <div class="flex-row-center-start border-200" [class.border-bottom-1]="item.id.value === 'search'">
           <app-ks-icon [ks]="item"></app-ks-icon>
           <div class="m-4">{{item.title}}</div>
         </div>
       </ng-template>
+
     </p-autoComplete>
   `,
   styles: [

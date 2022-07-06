@@ -24,8 +24,8 @@ import {KsCommandService} from "../services/command-services/ks-command.service"
 @Component({
   selector: 'app-grid',
   template: `
-    <div class="h-full surface-0">
-      <div class="h-full w-full">
+    <div class="h-full w-full flex-col-center-center">
+      <div class="w-full h-full flex-col-center-between surface-section p-4" [style]="{'max-width': 'min(100%, 96rem)'}">
         <app-ks-card-list class="h-full flex flex-row flex-grow-1"
                           [ksList]="ksList"
                           (onKsRemove)="onKsRemove($event)"

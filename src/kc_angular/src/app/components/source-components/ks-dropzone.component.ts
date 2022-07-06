@@ -19,11 +19,14 @@ import {animate, state, style, transition, trigger} from "@angular/animations";
 @Component({
   selector: 'app-dropzone',
   template: `
-    <div [@dropzone-shorten]="shouldShorten ? 'dropzone-sm' : 'dropzone-lg'" class="dropzone" style="min-height: 6rem">
-      <span>
-        <b class="text-2xl text-500">{{emptyMessage}}</b>
-      </span>
-      <blockquote class="text-400">{{hintMessage}}</blockquote>
+    <div [@dropzone-shorten]="shouldShorten ? 'dropzone-sm' : 'dropzone-lg'"
+         class="dropzone select-none flex-row-center-center">
+      <div class="flex-col-center-center">
+        <b class="text-xl text-600">{{emptyMessage}}</b>
+      </div>
+      <div class="flex-col-center-center">
+        <div class="text-500">{{hintMessage}}</div>
+      </div>
     </div>
   `,
   styles: [
@@ -53,7 +56,7 @@ import {animate, state, style, transition, trigger} from "@angular/animations";
         style({height: '20vh', top: 0, left: 0})
       ),
       state('dropzone-sm',
-        style({height: '4rem', top: 0, left: 0})
+        style({height: '2rem', top: 0, left: 0})
       ),
       transition('dropzone-lg => dropzone-sm', [
         animate('0.1s')
@@ -75,6 +78,7 @@ export class KsDropzoneComponent implements OnInit {
 
   constructor() {
   }
+
   ngOnInit(): void {
   }
 }

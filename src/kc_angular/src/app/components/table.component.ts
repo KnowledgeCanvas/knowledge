@@ -22,9 +22,9 @@ import {DataService} from "../services/user-services/data.service";
 @Component({
   selector: 'app-table',
   template: `
-    <div class="h-full surface-0">
-      <div class="h-full w-full">
-        <ks-table [ksList]="ksList"></ks-table>
+    <div class="h-full w-full flex-col-center-center">
+      <div class="w-full h-full flex-col-center-between surface-section p-4" [style]="{'max-width': 'min(100%, 96rem)'}">
+        <ks-table class="w-full h-full" [ksList]="ksList"></ks-table>
       </div>
     </div>
   `,

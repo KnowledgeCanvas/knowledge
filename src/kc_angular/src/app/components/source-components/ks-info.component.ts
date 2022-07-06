@@ -22,6 +22,7 @@ import {KsFactoryService} from "../../services/factory-services/ks-factory.servi
 import {WebsiteMetaTagsModel} from "../../../../../kc_shared/models/web.source.model";
 import {KsCommandService} from "../../services/command-services/ks-command.service";
 import {YouTubePlayer} from "@angular/youtube-player";
+import {Router} from "@angular/router";
 
 
 @Component({
@@ -65,7 +66,7 @@ import {YouTubePlayer} from "@angular/youtube-player";
                       [autoResize]="true"
                       class="p-fluid"
                       style="max-height: 12rem"
-                      placeholder="Description / Notes"
+                      placeholder="Description"
                       [(ngModel)]="ks.description">
               </textarea>
               </div>
@@ -80,7 +81,31 @@ import {YouTubePlayer} from "@angular/youtube-player";
                 </p-chips>
               </div>
             </div>
+          </div>
+        </p-panel>
 
+        <p-panel header="Project"
+                 *ngIf="ks.associatedProject && ks.associatedProject.value.length"
+                 class="col-12"
+                 [toggleable]="true"
+                 [collapsed]="collapseProject">
+          <!--          TODO: finish this...-->
+          <div class="h-full w-full">
+            <div class="w-full flex flex-row flex-auto">
+              <div class="p-fluid grid w-full">
+                <div class="field p-float-label col-6 mt-5 flex-row-center-between">
+                  <button pButton class="p-button-text" icon="pi pi-arrow-circle-right" (click)="onGoToProject($event)"></button>
+                  <input id="projectName" type="text" pInputText disabled
+                         [ngModel]="ks.associatedProject.value | projectName">
+                  <label for="projectName">Project Name</label>
+                </div>
+                <div class="field p-float-label col-6 mt-5">
+                  <input id="projectName" type="text" pInputText disabled
+                         [ngModel]="ks.associatedProject.value">
+                  <label for="projectName">Project Id</label>
+                </div>
+              </div>
+            </div>
           </div>
         </p-panel>
 
@@ -111,31 +136,7 @@ import {YouTubePlayer} from "@angular/youtube-player";
               </div>
             </div>
 
-            <p-scrollPanel class="w-full h-full border-1 border-round border-300">
-              <p-timeline [value]="events" layout="horizontal" styleClass="w-full ml-4 my-2">
-                <ng-template pTemplate="opposite" let-event>
-                  <div class="w-full flex-row-center-start" style="min-width: 16rem">
-                    <small class="p-text-secondary">
-                      {{event.status}}
-                    </small>
-                  </div>
-                </ng-template>
-                <ng-template pTemplate="marker" let-event>
-                  <!--                TODO: add custom icons for different types of events-->
-                  <div class="flex-shrink-0">
-                    <div class="border-circle border-1 border-primary" style="width: 1rem; height: 1rem;"></div>
-                  </div>
-                </ng-template>
-                <ng-template pTemplate="content" let-event>
-                  <div class="w-full flex-row-center-start">
-                    <small class="p-text-secondary">
-                      {{event.date | date: 'short'}}
-                    </small>
-                  </div>
-                </ng-template>
-
-              </p-timeline>
-            </p-scrollPanel>
+            <app-timeline [events]="events" class="w-full h-full"></app-timeline>
           </div>
         </p-panel>
 
@@ -185,19 +186,18 @@ import {YouTubePlayer} from "@angular/youtube-player";
                  *ngIf="ksMetadata.length > 0"
                  [toggleable]="true"
                  [collapsed]="collapseExtraction">
-    <textarea pInputTextarea id="_ksRawText"
-              [autoResize]="true"
-              class="p-fluid w-full"
-              [rows]="10"
-              placeholder="Extracted Text"
-              [(ngModel)]="ks.rawText">
-              </textarea>
+          <textarea pInputTextarea id="_ksRawText"
+                    [autoResize]="true"
+                    class="p-fluid w-full"
+                    [rows]="10"
+                    placeholder="Extracted Text"
+                    [(ngModel)]="ks.rawText">
+          </textarea>
           <p-table *ngIf="this.allowCollapsedContent"
                    [value]="ksMetadata"
-                   [autoLayout]="true"
+                   [autoLayout]="false"
                    [paginator]="true"
                    [responsive]="false"
-                   [responsiveLayout]="'false'"
                    [rows]="10">
             <ng-template pTemplate="header">
               <tr>
@@ -283,13 +283,13 @@ import {YouTubePlayer} from "@angular/youtube-player";
 export class KsInfoComponent implements OnInit, OnChanges {
   @Input() ks!: KnowledgeSource;
 
-  @Input() maximized?: boolean;
-
   @Input() collapseAll: boolean = false;
 
   @Output() onEdit = new EventEmitter<KnowledgeSource>();
 
   @Output() onRemove = new EventEmitter<KnowledgeSource>();
+
+  @Output() shouldClose = new EventEmitter<KnowledgeSource>();
 
   @ViewChild('youtubePlayer') ksYoutubePlayer!: YouTubePlayer;
 
@@ -319,10 +319,13 @@ export class KsInfoComponent implements OnInit, OnChanges {
 
   collapseSource: boolean = true;
 
+  collapseProject: boolean = false;
+
   constructor(private sanitizer: DomSanitizer,
-              private browserService: BrowserViewDialogService,
-              private ksCommandService: KsCommandService,
-              private ksFactory: KsFactoryService) {
+              private browser: BrowserViewDialogService,
+              private router: Router,
+              private command: KsCommandService,
+              private factory: KsFactoryService) {
   }
 
   get ksIsPdf() {
@@ -344,6 +347,7 @@ export class KsInfoComponent implements OnInit, OnChanges {
     this.collapsePdf = true;
     this.collapseExtraction = true;
     this.collapseSource = true;
+    this.collapseProject = false;
   }
 
   onExpandAll() {
@@ -353,6 +357,7 @@ export class KsInfoComponent implements OnInit, OnChanges {
     this.collapseYouTube = false;
     this.collapseSource = false;
     this.collapseExtraction = false;
+    this.collapseProject = false;
   }
 
   onCollapseAll() {
@@ -362,6 +367,7 @@ export class KsInfoComponent implements OnInit, OnChanges {
     this.collapseYouTube = true;
     this.collapseSource = true;
     this.collapseExtraction = true;
+    this.collapseProject = true;
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -492,16 +498,16 @@ export class KsInfoComponent implements OnInit, OnChanges {
       return;
     }
 
-    const ks = this.ksFactory.searchKS($event.value);
-    this.browserService.open({ks: ks});
+    const ks = this.factory.searchKS($event.value);
+    this.browser.open({ks: ks});
   }
 
   onKsOpen() {
-    this.ksCommandService.open(this.ks);
+    this.command.open(this.ks);
   }
 
   onKsPreview() {
-    this.ksCommandService.preview(this.ks);
+    this.command.preview(this.ks);
   }
 
   onKsEdit() {
@@ -525,5 +531,10 @@ export class KsInfoComponent implements OnInit, OnChanges {
     } catch (e) {
 
     }
+  }
+
+  onGoToProject($event: MouseEvent) {
+    this.router.navigate(['app', 'projects', this.ks.associatedProject.value]);
+    this.shouldClose.emit();
   }
 }

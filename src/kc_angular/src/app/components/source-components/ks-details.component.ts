@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 import {Component, OnInit} from '@angular/core';
-import {DynamicDialogConfig} from "primeng/dynamicdialog";
+import {DynamicDialogConfig, DynamicDialogRef} from "primeng/dynamicdialog";
 import {KnowledgeSource} from "../../models/knowledge.source.model";
 import {NotificationsService} from "../../services/user-services/notifications.service";
 
 @Component({
   selector: 'app-details',
   template: `
-    <app-ks-info [ks]="ks"></app-ks-info>`,
+    <app-ks-info [ks]="ks" (shouldClose)="onClose()"></app-ks-info>`,
   styles: ['']
 })
 export class KsDetailsComponent implements OnInit {
   ks!: KnowledgeSource;
 
-  constructor(private config: DynamicDialogConfig, private notifications: NotificationsService) {
+  constructor(private config: DynamicDialogConfig,
+              private ref: DynamicDialogRef,
+              private notifications: NotificationsService) {
     if (config?.data?.ks) {
       this.ks = config.data.ks;
     } else {
@@ -39,4 +41,7 @@ export class KsDetailsComponent implements OnInit {
 
   }
 
+  onClose() {
+    this.ref.close();
+  }
 }

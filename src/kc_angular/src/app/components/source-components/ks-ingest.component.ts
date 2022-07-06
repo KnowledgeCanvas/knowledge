@@ -26,28 +26,37 @@ import {DragAndDropService} from "../../services/ingest-services/drag-and-drop.s
 import {KsCommandService} from "../../services/command-services/ks-command.service";
 import {ProjectService} from "../../services/factory-services/project.service";
 import {KcProject} from "../../models/project.model";
+import {DialogService} from "primeng/dynamicdialog";
+import {ProjectCreationDialogComponent} from "../project-components/project-creation-dialog.component";
 
 @Component({
   selector: 'app-ks-ingest',
   template: `
     <div class="grid w-full">
-      <div class="col-9 flex-row-center-start">
+      <div class="col-8 flex-row-center-start">
+        <button pButton
+                label="Project"
+                icon="pi pi-plus"
+                class="mr-2 hover:bg-primary"
+                (click)="onAddProject($event)">
+        </button>
         <p-fileUpload #fubauto
                       class="mr-2"
-                      styleClass="p-button-text p-button-lg"
-
+                      styleClass="hover:bg-primary"
                       mode="basic"
                       name="files[]"
                       [multiple]="true"
                       (onSelect)="onAddFile($event); fubauto.clear()"
-                      chooseLabel="Files">
+                      chooseLabel="File">
         </p-fileUpload>
-        <button pButton label="Link" icon="pi pi-plus" class="mr-2 p-button-text p-button-lg hover:bg-primary"
-                (click)="overlayPanel.toggle($event)"></button>
-        <button pButton label="Note" icon="pi pi-plus" class="mr-2 p-button-text p-button-lg hover:bg-primary"
-                (click)="overlayPanel.toggle($event)"></button>
+        <button pButton
+                label="Link"
+                icon="pi pi-plus"
+                class="mr-2 hover:bg-primary"
+                (click)="overlayFunction = 'link'; overlayPanel.toggle($event)">
+        </button>
       </div>
-      <div class="col-3 flex-row-center-end">
+      <div class="col-4 flex-row-center-end">
         <p-checkbox label="Import to '{{currentProject?.name}}'"
                     [(ngModel)]="importToProject"
                     [binary]="true">
@@ -56,6 +65,7 @@ import {KcProject} from "../../models/project.model";
     </div>
 
     <app-dropzone [shouldShorten]="ksList.length > 0"
+                  *ngIf="ksList.length === 0"
                   [supportedTypes]="supportedTypes"
                   hintMessage="Supported types: {{supportedTypes.join(', ')}}">
     </app-dropzone>
@@ -64,7 +74,7 @@ import {KcProject} from "../../models/project.model";
                     styleClass="surface-100 shadow-7"
                     appendTo="body">
       <ng-template pTemplate="content">
-        <div class="p-inputgroup">
+        <div *ngIf="overlayFunction === 'link'" class="p-inputgroup">
           <input pInputText
                  #linkInput
                  [autofocus]="true"
@@ -75,8 +85,8 @@ import {KcProject} from "../../models/project.model";
           <span class="p-inputgroup-addon"
                 [class.cursor-pointer]="linkInput.value.length"
                 (click)="overlayPanel.hide(); extract(linkInput.value)">
-        <i class="pi pi-arrow-circle-right"></i>
-      </span>
+            <i class="pi pi-arrow-circle-right"></i>
+          </span>
         </div>
 
       </ng-template>
@@ -95,7 +105,10 @@ export class KsIngestComponent {
 
   importToProject: boolean = false;
 
+  overlayFunction: 'link' | 'project' | 'note' = 'project';
+
   constructor(private notifications: NotificationsService,
+              private dialog: DialogService,
               private extractor: ExtractorService,
               private uuid: UuidService,
               private dnd: DragAndDropService,
@@ -188,5 +201,12 @@ export class KsIngestComponent {
     }).catch((reason) => {
       console.warn('Unable to create Knowledge Source from ', files, reason);
     });
+  }
+
+  onAddProject(_: MouseEvent) {
+    this.dialog.open(ProjectCreationDialogComponent, {
+      width: `min(90vw, 92rem)`,
+      data: {parentId: undefined}
+    })
   }
 }

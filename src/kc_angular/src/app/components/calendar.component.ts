@@ -27,8 +27,8 @@ import {KsCommandService} from "../services/command-services/ks-command.service"
 @Component({
   selector: 'app-calendar',
   template: `
-    <div class="h-full surface-0 p-3">
-      <div class="h-full w-full">
+    <div class="h-full w-full flex-col-center-center">
+      <div class="w-full h-full flex-col-center-between surface-section p-4" [style]="{'max-width': 'min(100%, 96rem)'}">
         <app-project-calendar [kcProject]="project | async"
                               [ksList]="ksList | async"
                               (onKsClick)="onKsClick($event)"

@@ -42,7 +42,7 @@ import {KsContextMenuService} from "../../services/factory-services/ks-context-m
                  [(first)]="first"
                  [columns]="selectedColumns"
                  [scrollable]="true"
-                 scrollHeight="calc(100vh - 320px)"
+                 scrollHeight="calc(100vh - 350px)"
                  [(contextMenuSelection)]="ksTableContextMenuSelectedKs"
                  [selectionPageOnly]="true"
                  [contextMenu]="cm"

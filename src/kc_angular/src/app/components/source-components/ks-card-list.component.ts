@@ -118,8 +118,7 @@ interface KsCardListConfig {
                 </div>
               </div>
               <div class="grid w-full h-full" style="max-height: calc(100vh - 285px)">
-                <div *ngFor="let ks of displayList"
-                     [class]="selectedSizer.gridColClass">
+                <div *ngFor="let ks of displayList" [class]="selectedSizer.gridColClass">
                   <app-ks-card [ks]="ks"
                                (contextmenu)="setActiveKs(ks); cm.show($event)"
                                [showIcon]="ksCardOptions.showIcon"
@@ -218,7 +217,7 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
   // TODO: subscribe to this from calling components
   @Output() onKsModified = new EventEmitter<KnowledgeSource>();
 
-  @Output() onProjectChange = new EventEmitter<{ks: KnowledgeSource, old: string, new: string}>();
+  @Output() onProjectChange = new EventEmitter<{ ks: KnowledgeSource, old: string, new: string }>();
 
   /**
    * List of Knowledge Sources to be displayed
@@ -542,41 +541,42 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
 
     let colXs: string, colSm: string, colMd: string, colLg: string, colAuto: string;
 
-    if (0 < winWidth && winWidth < 900) {
-      // Up to 1 card per row
+    if (0 < winWidth && winWidth < 825) {
       colXs = 'col-6';
       colSm = 'col-6';
       colMd = 'col-12';
       colLg = 'col-12';
       colAuto = 'col-12';
-    } else if (900 <= winWidth && winWidth < 1200) {
-      // Up to 2 cards per row
+    } else if (825 <= winWidth && winWidth < 1000) {
+      colXs = 'col-4';
+      colSm = 'col-6';
+      colMd = 'col-6';
+      colLg = 'col-12';
+      colAuto = 'col-6';
+    } else if (1000 <= winWidth && winWidth < 1200) {
       colXs = 'col-4';
       colSm = 'col-6';
       colMd = 'col-6';
       colLg = 'col-12';
       colAuto = 'col-6';
     } else if (1200 <= winWidth && winWidth < 1550) {
-      // Up to 3 cards per row
       colXs = 'col-3';
       colSm = 'col-4';
       colMd = 'col-6';
       colLg = 'col-6';
       colAuto = 'col-4';
     } else if (1550 <= winWidth && winWidth < 2200) {
-      // Up to 4 cards per row
-      colXs = 'col-2';
-      colSm = 'col-3';
+      colXs = 'col-3';
+      colSm = 'col-4';
       colMd = 'col-4';
       colLg = 'col-6';
-      colAuto = 'col-3';
+      colAuto = 'col-4';
     } else if (2200 <= winWidth) {
-      // Up to 6 cards per row
-      colXs = 'col-1';
-      colSm = 'col-2';
-      colMd = 'col-3';
+      colXs = 'col-3';
+      colSm = 'col-3';
+      colMd = 'col-4';
       colLg = 'col-4';
-      colAuto = 'col-2';
+      colAuto = 'col-4';
     }
 
     this.sizers.forEach((sizer) => {

@@ -20,12 +20,18 @@ import {Location} from "@angular/common";
 @Component({
   selector: 'app-history',
   template: `
-    <button pButton icon="pi pi-arrow-left" class="p-button-text outline-none" (click)="onBack($event)"></button>
-    <button pButton icon="pi pi-arrow-right" class="p-button-text outline-none" (click)="onForward($event)"></button>
-    <button pButton icon="pi pi-clock" class="p-button-text outline-none" (click)="onHistory($event)"></button>
+    <div class="flex-row-center-center non-header" (dragstart)="$event.preventDefault()">
+      <button pButton icon="pi pi-arrow-left" class="p-button-text outline-none non-header" (click)="onBack($event)"></button>
+      <button pButton icon="pi pi-arrow-right" class="p-button-text outline-none non-header" (click)="onForward($event)"></button>
+      <button pButton icon="pi pi-clock" class="p-button-text outline-none non-header" (click)="onHistory($event)"></button>
+    </div>
   `,
   styles: [
     `
+      .non-header {
+        -webkit-user-select: none;
+        -webkit-app-region: unset !important;
+      }
     `
   ]
 })

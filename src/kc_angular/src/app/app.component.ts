@@ -14,6 +14,7 @@
  limitations under the License.
  */
 import {Component, HostListener, OnInit} from '@angular/core';
+import {environment} from "../environments/environment";
 import {SettingsService} from "./services/ipc-services/settings.service";
 import {DialogService} from "primeng/dynamicdialog";
 import {ProjectService} from "./services/factory-services/project.service";
@@ -31,6 +32,7 @@ import {ProjectTreeFactoryService} from "./services/factory-services/project-tre
 import {TreeNode} from "primeng/api";
 import {NavigationEnd, Router} from "@angular/router";
 import {KsDetailsComponent} from "./components/source-components/ks-details.component";
+import {StartupService} from "./services/ipc-services/startup.service";
 
 
 type SidebarItem = {
@@ -53,7 +55,7 @@ type SidebarItem = {
         <app-history></app-history>
         <app-search></app-search>
       </div>
-      <div class=""></div>
+      <div></div>
     </div>
 
     <div *ngIf="!readyToShow" class="w-full h-full surface-a flex-col-center-center">
@@ -66,12 +68,12 @@ type SidebarItem = {
       <div id="app-sidebar" class="h-full md:h-auto md:block flex-shrink-0 absolute md:static left-0 top-0 z-1 border-right-1 surface-0 border-primary w-auto">
         <div class="flex h-full">
           <div class="flex flex-column h-full flex-shrink-0">
-            <div class="flex align-items-center justify-content-center flex-shrink-0" style="height: 60px; width: 60px">
+            <div class="flex align-items-center justify-content-center select-none flex-shrink-0" style="height: 60px; width: 60px" (dragstart)="$event.preventDefault()">
               <img src="assets/img/kc-icon-transparent.png" height="30" alt="Knowledge Canvas Logo" (click)="onKcClick()" class="cursor-pointer">
             </div>
             <div class="overflow-y-auto mt-3">
               <ul class="list-none py-3 pl-2 pr-0 m-0">
-                <li *ngFor="let item of sidebarItems" class="mb-2" [pTooltip]="item.label" (click)="onSidebarClick($event, item)">
+                <li *ngFor="let item of sidebarItems" class="mb-2" [pTooltip]="item.label" (click)="onSidebarClick($event, item)" (dragstart)="$event.preventDefault()">
                   <a [routerLink]="item.routerLink"
                      class="p-element flex align-items-center cursor-pointer py-3 pl-0 pr-2 justify-content-center hover:bg-primary text-700 hover:text-0 transition-duration-150 transition-colors no-underline"
                      [class.bg-primary]="item.label === selectedView"
@@ -94,12 +96,12 @@ type SidebarItem = {
           </div>
         </div>
       </div>
-      <div id="app-body" class="w-full flex flex-column relative flex-auto" style="max-height: calc(100vh - 48px)">
-        <div id="app-router-outlet" class="flex-auto overflow-y-auto" style="max-height: calc(100vh - 96px)">
+      <div id="app-body" class="w-full flex flex-column relative flex-auto select-none" style="max-height: calc(100vh - 48px)">
+        <div id="app-router-outlet" class="flex-auto overflow-y-auto" style="max-height: calc(100vh - 96px); max-width: calc(100vw - 61px)">
           <router-outlet></router-outlet>
         </div>
         <div id="app-footer">
-          <app-project-breadcrumb class="w-full h-full" [projectId]="projectId" (onShowProjectTree)="projectTreeVisible = $event"></app-project-breadcrumb>
+          <app-project-breadcrumb (dragstart)="$event.preventDefault()" class="w-full h-full select-none" [projectId]="projectId" (onShowProjectTree)="projectTreeVisible = $event"></app-project-breadcrumb>
         </div>
       </div>
     </div>
@@ -187,6 +189,7 @@ export class AppComponent implements OnInit {
 
   constructor(private settings: SettingsService,
               private notifications: NotificationsService,
+              private startup: StartupService,
               private command: KsCommandService,
               private dialog: DialogService,
               private dnd: DragAndDropService,
@@ -203,10 +206,8 @@ export class AppComponent implements OnInit {
      */
     router.events.subscribe((events) => {
       if (events instanceof NavigationEnd) {
-        const segments = events.url.split('/');
-        const visibleRoute = segments[2];
-        console.log(segments)
-
+        const segments = events.url.split('/').filter(f => f.length);
+        const visibleRoute = segments[1];
         switch (visibleRoute) {
           case 'home':
           case '(home':
@@ -256,6 +257,7 @@ export class AppComponent implements OnInit {
     projects.currentProject.subscribe((project) => {
       if (project) {
         this.projectId = project.id.value;
+
         this.sidebarItems = [
           {label: 'Home', routerLink: ['app', 'home'], icon: 'pi pi-inbox'},
           {label: 'Projects', routerLink: ['app', 'projects', this.projectId], icon: 'pi pi-list'},
@@ -263,6 +265,19 @@ export class AppComponent implements OnInit {
           {label: 'Grid', routerLink: ['app', 'grid', this.projectId], icon: 'pi pi-th-large'},
           {label: 'Calendar', routerLink: ['app', 'calendar', this.projectId], icon: 'pi pi-calendar'},
         ]
+
+        let fragments = this.router.url.split('/')
+          .filter(f => f.length);
+
+        if (fragments.length > 2) {
+          delete fragments[2];
+          fragments[2] = this.projectId;
+          console.log('Navigating to ', fragments);
+          // this.router.navigate(['/' + fragments.join('/')]);
+          this.router.navigateByUrl('/' + fragments.join('/')).then(() => {
+            this.projectId = project.id.value;
+          })
+        }
       }
     });
 
@@ -275,6 +290,28 @@ export class AppComponent implements OnInit {
   }
 
   /* TODO: Create a hotkey service that registers these keys on behalf of each module */
+  @HostListener('document:keydown.Control.r', ["$event"])
+  @HostListener('document:keydown.f5', ["$event"])
+  @HostListener('document:keydown.meta.r', ["$event"])
+  refresh(event: KeyboardEvent) {
+    console.log('Captured refresh...', event);
+
+    if (!event) {
+      this.notifications.warn('App', 'Invalid Keystroke', 'Refresh');
+      return;
+    }
+
+    try {
+      event.preventDefault();
+    } catch (e) {
+      this.notifications.error('App', 'Unexpected Event', 'Host Listener provided an invalid event for refresh command.');
+    }
+
+    if (!environment.production) {
+      location.reload();
+    }
+  }
+
   @HostListener('document:keydown.Control.p')
   @HostListener('document:keydown.meta.p')
   keyPressOpenProjects() {

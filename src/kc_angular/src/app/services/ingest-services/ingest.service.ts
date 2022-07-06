@@ -213,7 +213,6 @@ export class IngestService implements OnDestroy {
       return;
     }
     if (this.settings.get().ingest.manager.target !== 'all' && ks.importMethod !== 'autoscan') {
-      this.notifications.debug('IngestService', 'Cannot Finalize','Refusing to finalize file because it was not imported via autoscan and manager target is not "All"...');
       return;
     }
 

@@ -23,16 +23,17 @@ import {ElectronIpcService} from "../../services/ipc-services/electron-ipc.servi
   selector: 'app-ks-thumbnail',
   template: `
     <div *ngIf="!thumbnail"
-         class="flex-col-center-center"
-         style="height: 200px; background-color: var(--surface-300); border-radius: 5px">
+         class="flex-col-center-center select-none"
+         style="height: 200px; background-color: var(--surface-300); border-radius: 5px;">
       <app-ks-icon [ks]="ks"></app-ks-icon>
+      <div class="text-sm mt-4">Thumbnail Unavailable</div>
     </div>
 
-    <div class="w-full p-fluid flex-col-center-center bg-auto">
+    <div class="w-full flex-col-center-center">
       <p-image *ngIf="thumbnail" [src]="thumbnail"
-               class="align-self-center"
                height="200px"
-               [style]="{'border-radius': '5px', 'max-width': '100%'}"
+               width="100%"
+               [style]="{'border-radius': '5px', 'max-width': 'min(100%, 48rem)'}"
                [preview]="true">
       </p-image>
     </div>
