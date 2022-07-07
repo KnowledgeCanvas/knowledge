@@ -1,8 +1,6 @@
 # Description
 Knowledge is an open-source bookmark manager, file explorer, calendar, and project management tool. Knowledge allows users to import, organize, filter, and search nearly any digital resource, including files, web links, calendar entries, and more. Create your own personal knowledge base, visualize connections between projects and resources, easily extract content from documents, and review a timeline of your progress and activity.
 
-Knowledge was created by [Rob Royce](https://github.com/RobRoyce) and inspired by his years of experience with online learning and research. Rob is currently a Data Scientist at NASA’s Jet Propulsion Laboratory and holds an advanced degree in Computer Science & Engineering from University of California, Los Angeles (UCLA).
-
 # Download
 - [Latest Release](https://github.com/KnowledgeCanvas/knowledge-canvas/releases/latest)
 - [All Versions](https://github.com/KnowledgeCanvas/knowledge-canvas/releases)
@@ -29,3 +27,5 @@ The app relies exclusively on local storage and local processes. There are no se
 This software is not a finished product and provides no warranty of any kind. You are welcome to open an issue or a pull request. Contributors are welcome.
 
 As of Feb 2022, there is a good chance that _something_ in the app is not working properly, simply because it has not been fully implemented yet. No extensive testing has been conducted on Windows or Linux. It is very likely that something is broken on one or both of those platforms. Testing and verification on either platform is welcome.
+
+Knowledge was created by [Rob Royce](https://github.com/RobRoyce) and inspired by his years of experience with online learning and research. Rob is currently a Data Scientist at NASA’s Jet Propulsion Laboratory and holds a degree in Computer Science & Engineering from University of California, Los Angeles.
