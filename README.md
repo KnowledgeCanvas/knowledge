@@ -21,7 +21,25 @@ The app relies exclusively on local storage and local processes. There are no se
 **Knowledge was recently redesigned. More screenshots coming soon!**
 
 **Inbox**
-![image](https://user-images.githubusercontent.com/19367848/176006140-fc998ff7-a279-484c-b4d3-f320b41809f2.png)
+<img width="1082" alt="image" src="https://user-images.githubusercontent.com/19367848/178119660-a43117ad-b1f7-4f4a-9b54-9c6a611195ed.png">
+
+**Projects**
+<img width="1082" alt="image" src="https://user-images.githubusercontent.com/19367848/178119683-8458b24e-8561-45c9-828d-9403b38ec9df.png">
+
+**Table**
+<img width="1082" alt="image" src="https://user-images.githubusercontent.com/19367848/178119688-237353be-5fde-4d7b-8b9a-39cca6eb8866.png">
+
+**Grid**
+<img width="1082" alt="image" src="https://user-images.githubusercontent.com/19367848/178119705-24eb55c9-cf03-43fc-a143-b789751346ef.png">
+
+**Calendar**
+<img width="1082" alt="image" src="https://user-images.githubusercontent.com/19367848/178119721-473fcacf-9cec-41d4-b7bc-fd3de87183b6.png">
+
+**Knowledge Graph**
+![Screen Recording 2022-07-09 at 11 55 38 AM 2](https://user-images.githubusercontent.com/19367848/178119590-fcfff8c5-afb7-44b1-aa7f-c4f4730d26d7.gif)
+
+**Import Settings**
+<img width="1082" alt="image" src="https://user-images.githubusercontent.com/19367848/178119731-a6a27b33-42de-4a73-ba3c-f36c0601402b.png">
 
 # Disclaimer
 This software is not a finished product and provides no warranty of any kind. You are welcome to open an issue or a pull request. Contributors are welcome.
