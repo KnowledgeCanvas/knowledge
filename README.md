@@ -16,6 +16,9 @@ The app relies exclusively on local storage and local processes. There are no se
 # Documentation
 
 **Note:** the following resources are outdated and need to be reworked.
+- [Documentation/Wiki Home](https://github.com/KnowledgeCanvas/knowledge/wiki)
+- [Basics](https://github.com/KnowledgeCanvas/knowledge/wiki/Basics)
+- [Shortcut Keys](https://github.com/KnowledgeCanvas/knowledge/wiki/Shortcut-Keys)
 - [Development and Build Instructions](https://github.com/KnowledgeCanvas/knowledge-canvas/wiki/Development)
 - [Debugging](https://github.com/KnowledgeCanvas/knowledge-canvas/wiki/Debugging)
 
