@@ -1,6 +1,8 @@
 # Description
 Knowledge is an open-source bookmark manager, file explorer, calendar, and project management tool. Knowledge allows users to import, organize, filter, and search nearly any digital resource, including files, web links, calendar entries, and more. Create your own personal knowledge base, visualize connections between projects and resources, easily extract content from documents, and review a timeline of your progress and activity.
 
+**Note:** `v0.6.0` is on the way! The screenshots below show the new design and some of the awesome new features. You can still try `v0.5.4`, but we recommend checking back in the coming days/weeks for a much better, cleaner looking, experience!
+
 # Download
 - [Latest Release](https://github.com/KnowledgeCanvas/knowledge-canvas/releases/latest)
 - [All Versions](https://github.com/KnowledgeCanvas/knowledge-canvas/releases)
