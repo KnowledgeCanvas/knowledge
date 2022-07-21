@@ -57,10 +57,20 @@ import {ProjectCreationDialogComponent} from "../project-components/project-crea
         </button>
       </div>
       <div class="col-4 flex-row-center-end">
-        <p-checkbox label="Import to '{{currentProject?.name}}'"
+        <p-checkbox *ngIf="currentProject && currentProject.name && currentProject.name.length > 0"
+                    label="Import to '{{currentProject?.name}}'"
                     [(ngModel)]="importToProject"
                     [binary]="true">
         </p-checkbox>
+
+        <div class="h-full flex-row-center-center ml-4">
+          <div class="pi pi-sliders-h cursor-pointer flex-col-center-center"
+               #importSettings
+               [hidden]="true"
+               style="height: 28px"
+               (click)="onImportSettings($event)">
+          </div>
+        </div>
       </div>
     </div>
 
@@ -176,7 +186,7 @@ export class KsIngestComponent {
     });
 
     // TODO: setup web workers to extract website info asynchronously
-    // TODO: make it so these things can be enqueued in Up Next even while they are still loading
+    // TODO: make it so these things can be enqueued in Inbox even while they are still loading
   }
 
   onAddFile($event: any) {
@@ -206,7 +216,15 @@ export class KsIngestComponent {
   onAddProject(_: MouseEvent) {
     this.dialog.open(ProjectCreationDialogComponent, {
       width: `min(90vw, 92rem)`,
-      data: {parentId: undefined}
+      data: {parentId: undefined},
+      contentStyle: {
+        'border-bottom-left-radius': '6px',
+        'border-bottom-right-radius': '6px'
+      }
     })
+  }
+
+  onImportSettings($event: MouseEvent) {
+    this.ingest.show();
   }
 }

@@ -14,7 +14,7 @@
  limitations under the License.
  */
 
-import { Pipe, PipeTransform } from '@angular/core';
+import {Pipe, PipeTransform} from '@angular/core';
 import {ProjectService} from "../services/factory-services/project.service";
 import {UUID} from "../../../../kc_shared/models/uuid.model";
 

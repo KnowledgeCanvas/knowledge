@@ -47,7 +47,7 @@ let getKnowledgeSourceList = ipcMain.on('A2E:KnowledgeCanvas:Open', (_: any, arg
         show: false,
         width: width,
         height: height,
-        modal: false,
+        modal: true,
         backgroundColor: '#FFF',
         title: 'Knowledge',
         parent: kcMainWindow,

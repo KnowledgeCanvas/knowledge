@@ -16,7 +16,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {NotificationsService} from "../user-services/notifications.service";
-import {ArticleModel, CodeModel, WebsiteContentModel, WebsiteMetadataModel, WebSourceModel} from "../../../../../kc_shared/models/web.source.model";
+import {ArticleModel, CodeModel, WebsiteMetadataModel, WebsiteMetaTagsModel} from "../../../../../kc_shared/models/web.source.model";
 
 @Injectable({
   providedIn: 'root'
@@ -39,25 +39,6 @@ export class ExtractorService {
       filename: outFileName,
     }
     window.api.send("A2E:Extraction:Website", args);
-  }
-
-  extractWebsite(url: string): Promise<WebSourceModel> {
-    return new Promise<WebSourceModel>((resolve, reject) => {
-
-    });
-  }
-
-  extractWebsiteContent(url: string): Promise<WebsiteContentModel> {
-    return new Promise<WebsiteContentModel>((resolve, reject) => {
-
-    });
-  }
-
-  // Specific-purpose extractions such as Wikipedia, StackOverflow, etc.
-  extractWikipedia(url: string): Promise<WebSourceModel> {
-    return new Promise<WebSourceModel>((resolve, reject) => {
-
-    });
   }
 
   async extractWebsiteArticle(url: string) {
@@ -145,89 +126,55 @@ export class ExtractorService {
         let parser = new DOMParser();
         let htmlDoc = parser.parseFromString(htmlString, 'text/html');
 
-        // Title Tag
-        let title = htmlDoc.getElementsByTagName('title')
-        if (title && title.length > 0)
-          metadata.title = title[0].innerText;
-        else
-          metadata.title = url;
+        let extractMetaTags = (doc: any) => {
+          let metatags: WebsiteMetaTagsModel[] = [];
+          let meta = doc.getElementsByTagName('meta');
 
-        // Meta Tags
-        let meta = htmlDoc.getElementsByTagName('meta');
-        if (meta && meta.length) {
-          let extractedMeta = [];
           for (let i = 0; i < meta.length; i++) {
-            // Charset tag
-            if (meta[i].attributes && meta[i].attributes[0].name === 'charset') {
-              extractedMeta.push({key: 'charset', value: meta[i].attributes[0].textContent, property: ''})
-            }
+            let names = [
+              meta[i].name,
+              meta[i].attributes.getNamedItem('property')?.textContent,
+            ].filter(n => n);
 
-            // TODO: consildate this with open graph, etc. process should be more automatic...
-            // Dublin Core tags
-            if (meta[i]?.attributes[0]?.textContent?.startsWith('dc:')) {
-              let val = '';
-              if (!meta[i].attributes[1]?.textContent?.startsWith('dc:')) {
-                val = meta[i].attributes[1].textContent ?? '';
-              } else {
-                val = meta[i].attributes[2].textContent ?? '';
-              }
+            const isTarget = names.some(n => n && (
+              n.startsWith('og:') || /* OpenGraph */
+              n.startsWith('dc:') || /* Dublin Core */
+              (n.startsWith('twitter:') && !n.startsWith('twitter:app:')) || /* Twitter (but not app) */
+              n.startsWith('description') || /* Description */
+              n.startsWith('article:') || /* Articles */
+              n.startsWith('keywords') /* Keywords */
+            ));
 
-              if (val !== '') {
-                let attr = {
-                  key: meta[i].attributes[0]?.textContent,
-                  value: val,
-                  property: ''
-                };
-                extractedMeta.push(attr);
-                if (attr.key === 'dc:title' && attr.value) {
-                  metadata.title = attr.value;
+            if (isTarget) {
+              let contents = [
+                meta[i].content,
+              ].filter(c => c);
+
+              for (let name of names) {
+                for (let content of contents) {
+                  metatags.push({
+                    key: name,
+                    value: content,
+                    property: ''
+                  });
                 }
-              }
-            }
-
-            // Open Graph tags
-            if (meta[i]?.attributes[0]?.textContent?.startsWith('og:')) {
-              let val = '';
-              if (!meta[i].attributes[1]?.textContent?.startsWith('og:')) {
-                val = meta[i].attributes[1].textContent ?? '';
-              } else {
-                val = meta[i].attributes[2].textContent ?? '';
-              }
-
-              if (val !== '') {
-                let attr = {
-                  key: meta[i].attributes[0]?.textContent,
-                  value: val,
-                  property: ''
-                };
-                extractedMeta.push(attr);
-                if (attr.key === 'og:title' && attr.value) {
-                  metadata.title = attr.value;
-                }
-              }
-            }
-
-            // Keyword tags
-            if (meta[i]?.attributes[0]?.textContent?.startsWith('keywords')) {
-              let val = '';
-              if (!meta[i].attributes[1]?.textContent?.startsWith('keywords')) {
-                val = meta[i].attributes[1].textContent ?? '';
-              } else {
-                val = meta[i].attributes[2].textContent ?? '';
-              }
-
-              if (val !== '') {
-                let attr = {
-                  key: meta[i].attributes[0]?.textContent,
-                  value: val,
-                  property: ''
-                };
-                extractedMeta.push(attr);
               }
             }
           }
-          metadata.meta = extractedMeta;
+          return metatags
         }
+
+        // Title Tag
+        let title = htmlDoc.getElementsByTagName('title')
+        if (title && title.length > 0) {
+          metadata.title = title[0].innerText;
+        } else {
+          metadata.title = url;
+        }
+
+        // Meta Tags
+        metadata.meta = extractMetaTags(htmlDoc);
+
         resolve(metadata);
       });
     });

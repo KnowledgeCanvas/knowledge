@@ -23,17 +23,15 @@ import {ProjectsComponent} from "./components/projects.component";
 import {TableComponent} from "./components/table.component";
 import {GridComponent} from "./components/grid.component";
 import {CalendarComponent} from "./components/calendar.component";
-import {AccessibilitySettingsComponent} from "./components/settings/accessibility-settings.component";
-import {ProjectBreadcrumbComponent} from "./components/project-components/project-breadcrumb.component";
 import {StorageSettingsComponent} from "./components/settings/storage-settings.component";
 
 const routes: Routes = [
-  {path: '', redirectTo: '/app/home', pathMatch: 'full'},
+  {path: '', redirectTo: '/app/inbox/undefined', pathMatch: 'full'},
   {
     path: 'app',
     children: [
       {
-        path: 'home',
+        path: 'inbox/:projectId',
         component: HomeComponent,
       },
       {
@@ -73,15 +71,10 @@ const routes: Routes = [
         path: 'storage',
         outlet: 'settings',
         component: StorageSettingsComponent
-      },
-      {
-        path: 'accessibility',
-        outlet: 'settings',
-        component: AccessibilitySettingsComponent,
       }
     ]
   },
-  {path: '**', redirectTo: '/app/home'},
+  {path: '**', redirectTo: '/app/inbox'},
 ]
 
 @NgModule({

@@ -43,14 +43,7 @@ const FILES_DIR = () => {
     return path.resolve(appPath, pendingSuffix);
 }
 
-/* TODO: instead of renaming the file with this prefix, why not just move it to a "pending" directory? */
-export const PENDING_PREFIX = 'pending-'
-
 class FileManagerService {
-    /* A list of filenames that should be ignored when checking for unfinished file transfers */
-    private whitelist = [
-        '.DS_Store'
-    ]
     private static channels = {
         finalize: 'A2E:Autoscan:Finalize',
         delete: 'A2E:Autoscan:Delete',
@@ -65,6 +58,10 @@ class FileManagerService {
     queue: string[] = [];
     state: string = '';
     pending: PendingFileTransfer[] = [];
+    /* A list of filenames that should be ignored when checking for unfinished file transfers */
+    private whitelist = [
+        '.DS_Store'
+    ]
 
     constructor() {
         // Listen for updates from the app (i.e. when KS have been successfully imported)
@@ -425,8 +422,6 @@ class FileManagerService {
     }
 
     private async update(settings: SettingsModel) {
-        console.log('Updating settings...');
-
         /* Make sure ingest settings are available */
         if (!settings.ingest) {
             console.warn('Ingest settings not found in retrieved settings model...');
@@ -437,15 +432,8 @@ class FileManagerService {
         const str = JSON.stringify(settings.ingest);
         if (str && str === this.state) {
             // Means no settings have changed
-            console.debug('No settings have changed after comparing...');
             return;
-        } else {
-            // Means at least one setting has changed
-            console.debug('At least one setting has changed after comparing...');
         }
-
-        console.debug('Old settings: ', this.state);
-        console.debug('New settings: ', str);
 
         /* Create new objects for shallow comparison */
         let prev: IngestSettingsModel | undefined;
@@ -523,7 +511,7 @@ class FileManagerService {
         // TODO: this is currently disabled in the main app until it is fixed
         if (prev.manager.storageLocation !== next.manager.storageLocation) {
             // TODO: should we move everything from the current location to the new location, or let the user worry about that?
-            // TODO: storageLocation current includes the /files suffix, this should be appended manually and the storageLocation should be the base path, not the files path
+            // TODO: storageLocation currently includes the /files suffix, this should be appended manually and the storageLocation should be the base path, not the files path
             //  itself
             console.debug(`Storage path changed, moving to new location: ${next.manager.storageLocation} from ${prev.manager.storageLocation}`,);
 
@@ -535,14 +523,10 @@ class FileManagerService {
             for (let pending of this.pending) {
                 // TODO: make sure the new path is taken into account
                 const pendingFilename = path.basename(pending.newPath);
-                // pending.newPath
             }
 
             this.start(next);
         }
-
-        console.debug('Done checking for cases...');
-
         this.state = str;
     }
 }

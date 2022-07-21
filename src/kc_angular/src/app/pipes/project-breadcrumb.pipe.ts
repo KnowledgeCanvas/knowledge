@@ -36,9 +36,27 @@ export class ProjectBreadcrumbPipe implements PipeTransform {
       return '';
     }
 
-    const start = Math.max(0, ancestors.length - 3);
-    const end = ancestors.length;
+    let start, end, prefix;
 
-    return ancestors.slice(start, end).map(a => a.title).join(' > ')
+    const SEP = '❯';
+    const ELLIPSIS = '⋯'
+
+    if (args && args.length > 0 && args[0] && args[0] == 'no-truncate') {
+      start = 0;
+      end = ancestors.length;
+      prefix = '';
+    } else {
+      start = Math.max(0, ancestors.length - 3);
+      end = ancestors.length;
+
+      if (args && args.length > 0 && args[0] && args[0] == 'no-ellipse') {
+        prefix = '';
+      } else {
+        prefix = start > 0 ? `${ancestors[0].title} ${SEP} ${start > 1 ? ELLIPSIS : ''} ${start > 1 ? SEP : ''} ` : ''
+      }
+
+    }
+
+    return prefix + ancestors.slice(start, end).map(a => a.title).join(` ${SEP} `);
   }
 }

@@ -24,44 +24,42 @@ import {ProjectService} from "../factory-services/project.service";
 import {ProjectUpdateRequest} from "../../models/project.model";
 import {BrowserViewDialogService} from "../ipc-services/browser-view-dialog.service";
 import {ConfirmationService} from "primeng/api";
+import {DataService} from "../user-services/data.service";
+import {DialogService, DynamicDialogRef} from "primeng/dynamicdialog";
+import {KsMoveComponent} from "../../components/source-components/ks-move.component";
 
 @Injectable({
   providedIn: 'root'
 })
 export class KsCommandService {
 
-  private _ksDetailEvent = new BehaviorSubject<KnowledgeSource | undefined>(undefined);
+  private _ksDetailEvent = new BehaviorSubject<KnowledgeSource & { force: boolean } | undefined>(undefined);
   ksDetailEvent = this._ksDetailEvent.asObservable();
-
-  private _ksOpenEvent = new BehaviorSubject<KnowledgeSource | undefined>(undefined);
-  ksOpenEvent = this._ksOpenEvent.asObservable();
-
-  private _ksRemoveEvent = new BehaviorSubject<KnowledgeSource[]>([]);
-  ksRemoveEvent = this._ksRemoveEvent.asObservable();
-
-  private _ksMoveEvent = new BehaviorSubject<KnowledgeSource[]>([]);
-  ksMoveEvent = this._ksMoveEvent.asObservable();
 
   private _ksShareEvent = new BehaviorSubject<KnowledgeSource[]>([]);
   ksShareEvent = this._ksShareEvent.asObservable();
 
-  private _ksUpdateEvent = new BehaviorSubject<KnowledgeSource[]>([]);
-  ksUpdateEvent = this._ksUpdateEvent.asObservable();
-
   private _ksShowInFilesEvent = new BehaviorSubject<KnowledgeSource>({} as any);
   ksShowInFilesEvent = this._ksShowInFilesEvent.asObservable();
 
+  private moveDialogRef?: DynamicDialogRef;
+
   constructor(private ipc: ElectronIpcService,
+              private data: DataService,
               private browser: BrowserViewDialogService,
+              private dialog: DialogService,
               private confirmation: ConfirmationService,
               private clipboard: Clipboard,
               private notifications: NotificationsService,
-              private projects: ProjectService
-  ) {
+              private projects: ProjectService) {
   }
 
-  update(ksList: KnowledgeSource[]) {
-    this._ksUpdateEvent.next(ksList);
+  update(ksList: KnowledgeSource[], notify: boolean = true) {
+    this.data.sources.update(ksList).then(() => {
+      if (notify) {
+        this.notifications.success('Source Command', `Source${ksList.length > 1 ? 's' : ''} Updated`, ksList.map(k => k.title).join(', '));
+      }
+    });
   }
 
   remove(ksList: KnowledgeSource[]) {
@@ -91,20 +89,38 @@ export class KsCommandService {
         this.projects.updateProjects(updates);
       }
     });
-
-    this._ksRemoveEvent.next(ksList);
   }
 
   move(ksList: KnowledgeSource[]) {
-    this._ksMoveEvent.next(ksList);
+    if (this.moveDialogRef) {
+      return;
+    }
+
+    this.moveDialogRef = this.dialog.open(KsMoveComponent, {
+      data: {ksList: ksList},
+      width: 'min(90vw, 92rem)',
+      height: 'min(60vh, 72rem)',
+      showHeader: true,
+      header: 'Move',
+      modal: true,
+      contentStyle: {
+        'border-bottom-left-radius': '6px',
+        'border-bottom-right-radius': '6px'
+      },
+      closeOnEscape: true
+    })
+
+    this.moveDialogRef.onClose.subscribe(() => {
+      this.moveDialogRef = undefined;
+    })
   }
 
   preview(ks: KnowledgeSource) {
     this.onKsPreview(ks);
   }
 
-  detail(ks: KnowledgeSource) {
-    this._ksDetailEvent.next(ks);
+  detail(ks: KnowledgeSource, force: boolean = false) {
+    this._ksDetailEvent.next({...ks, ...{force: force}});
   }
 
   share(ksList: KnowledgeSource[]) {

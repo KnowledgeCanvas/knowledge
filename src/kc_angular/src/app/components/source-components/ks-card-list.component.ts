@@ -23,15 +23,17 @@ import {ApplicationSettingsModel, CardOptions, CardSizeType, CardSortType} from 
 import {SettingsService} from "../../services/ipc-services/settings.service";
 import {NotificationsService} from "../../services/user-services/notifications.service";
 import {Subscription} from "rxjs";
-import {KcProject} from "../../models/project.model";
+import {KcProject, ProjectUpdateRequest} from "../../models/project.model";
 import {ProjectService} from "../../services/factory-services/project.service";
 import {ProjectTreeFactoryService} from "../../services/factory-services/project-tree-factory.service";
+import {ActivatedRoute} from "@angular/router";
 
 interface PaginateConfig {
   page: number,
   first: number,
   rows: number,
-  pageCount: number
+  pageCount: number,
+  projectId?: string
 }
 
 interface KsCardSorter {
@@ -80,10 +82,10 @@ interface KsCardListConfig {
                 </ng-template>
               </p-dropdown>
             </div>
-            <div class="p-inputgroup p-fluid mr-3 ml-3 w-24rem">
-          <span class="p-inputgroup-addon">
-            <i class="pi pi-filter"></i>
-          </span>
+            <div *ngIf="!allowMoveAll" class="p-inputgroup p-fluid mr-3 ml-3 w-24rem">
+              <span class="p-inputgroup-addon">
+                <i class="pi pi-filter"></i>
+              </span>
               <input #tableFilter pInputText
                      [(ngModel)]="filterTerm"
                      type="text"
@@ -92,9 +94,10 @@ interface KsCardListConfig {
               <span class="p-inputgroup-addon"
                     [style.cursor]="tableFilter.value.length ? 'pointer' : 'unset'"
                     (click)="clear()">
-              <i class="pi pi-times"></i>
-        </span>
+                <i class="pi pi-times"></i>
+              </span>
             </div>
+
             <div class="p-fluid flex-row-center-between">
               <app-ks-export *ngIf="allowExport" [data]="ksList"></app-ks-export>
               <button type="button"
@@ -104,6 +107,22 @@ interface KsCardListConfig {
                       style="margin-left: 10px"
                       (click)="settingsOverlay.toggle($event)">
               </button>
+            </div>
+
+            <div *ngIf="allowMoveAll" class="p-fluid mr-3 ml-3 w-24rem flex-row-center-between">
+              <div class="p-fluid flex-grow-1">
+                <p-treeSelect [(ngModel)]="selectedProject"
+                              [options]="treeNodes"
+                              [filter]="true"
+                              selectionMode="single"
+                              class="p-fluid w-full"
+                              appendTo="body"
+                              placeholder="Choose a Project">
+                </p-treeSelect>
+              </div>
+              <div class="flex-shrink-1 ml-4">
+                <button pButton label="Move All" [disabled]="!selectedProject.key || treeNodes.length < 1" (click)="onMoveAll($event)"></button>
+              </div>
             </div>
           </div>
         </ng-template>
@@ -118,7 +137,7 @@ interface KsCardListConfig {
                 </div>
               </div>
               <div class="grid w-full h-full" style="max-height: calc(100vh - 285px)">
-                <div *ngFor="let ks of displayList" [class]="selectedSizer.gridColClass">
+                <div *ngFor="let ks of displayList" [class]="selectedSizer.gridColClass" style="min-width: 24rem">
                   <app-ks-card [ks]="ks"
                                (contextmenu)="setActiveKs(ks); cm.show($event)"
                                [showIcon]="ksCardOptions.showIcon"
@@ -134,20 +153,17 @@ interface KsCardListConfig {
                                [showThumbnail]="ksCardOptions.showThumbnail && !minimal"
                                [showTopics]="ksCardOptions.showTopics && !minimal"
                                [projectTreeNodes]="treeNodes"
+                               [selectedProject]="ks.associatedProject | projectAsTreeNode: treeNodes"
                                (onEdit)="_onKsDetail($event)"
                                (onOpen)="_onKsOpen($event)"
                                (onPreview)="_onKsPreview($event)"
                                (onRemove)="_onKsRemove($event)"
                                (onTopicClick)="onTopicSearch.emit($event.topic)"
-                               (onTopicChange)="_onKsModified($event)"
                                (onProjectChange)="_onProjectChange($event)">
                   </app-ks-card>
                 </div>
               </div>
             </p-scrollPanel>
-            <!--        <div #dataList class="grid p-fluid p-1" style="overflow-y: auto; overflow-x: hidden">-->
-
-            <!--        </div>-->
           </div>
         </ng-template>
 
@@ -214,14 +230,8 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
 
   @Output() onKsRemove = new EventEmitter<KnowledgeSource>();
 
-  // TODO: subscribe to this from calling components
-  @Output() onKsModified = new EventEmitter<KnowledgeSource>();
-
   @Output() onProjectChange = new EventEmitter<{ ks: KnowledgeSource, old: string, new: string }>();
 
-  /**
-   * List of Knowledge Sources to be displayed
-   */
   @Input() ksList: KnowledgeSource[] = [];
 
   @Input() emptyMessage: string = 'Empty'
@@ -247,6 +257,13 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
    * Default: true
    */
   @Input() allowCustomization: boolean = true;
+
+  /**
+   * Enable or disable the ability to move all sources at once.
+   * Automatically disables filtering
+   * Default: false
+   */
+  @Input() allowMoveAll: boolean = false;
 
   /**
    * Emitted when a topic tag is clicked
@@ -374,22 +391,30 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
       gridColClass: 'col-12',
     }
   ];
+
   selectedSorter: KsCardSorter = this.sorters[0];
+
   selectedSizer: KsCardSizer = this.sizers[0];
+
   settingsSubscription: Subscription;
+
   treeNodes: TreeNode[] = [];
 
-  constructor(private ksCommandService: KsCommandService,
-              private ksContextMenuService: KsContextMenuService,
-              private settingsService: SettingsService,
+  selectedProject: TreeNode = {};
+
+  constructor(private command: KsCommandService,
+              private menu: KsContextMenuService,
+              private settings: SettingsService,
               private projects: ProjectService,
               private tree: ProjectTreeFactoryService,
+              private route: ActivatedRoute,
               private notifications: NotificationsService) {
     projects.projectTree.subscribe((tree) => {
       this.treeNodes = this.tree.constructTreeNodes(tree, false);
+      this.selectedProject = this.tree.findTreeNode(this.treeNodes, this.projects.getCurrentProjectId()?.value ?? '') ?? {};
     })
 
-    this.settingsSubscription = settingsService.app.subscribe((appSettings) => {
+    this.settingsSubscription = settings.app.subscribe((appSettings) => {
       if (appSettings && appSettings.grid) {
         this.appSettings = appSettings;
         this.loadSizer();
@@ -479,6 +504,7 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.getPaginator();
     this.loadAllConfig();
     this.assignCopy();
     this.setSizers();
@@ -491,12 +517,14 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnChanges(changes: SimpleChanges) {
 
-    if (changes?.ksCardOptions?.currentValue) {
-      this.configureCardList();
+    if (changes.ksCardOptions?.currentValue) {
+      setTimeout(() => {
+        this.configureCardList();
+      })
     }
 
     try {
-      if (changes.kcProject.currentValue) {
+      if (changes.kcProject?.currentValue) {
         this.filterTerm = '';
         this.ksList = changes.kcProject.currentValue.knowledgeSource ?? [];
         this.assignCopy();
@@ -537,9 +565,15 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   setSizers() {
-    const winWidth = window.innerWidth;
-
     let colXs: string, colSm: string, colMd: string, colLg: string, colAuto: string;
+    let winWidth;
+
+    const gridContainer = document.getElementById('grid-container');
+    if (gridContainer) {
+      winWidth = gridContainer.clientWidth ?? gridContainer.scrollWidth ?? gridContainer.offsetWidth;
+    } else {
+      winWidth = window.innerWidth;
+    }
 
     if (0 < winWidth && winWidth < 825) {
       colXs = 'col-6';
@@ -566,17 +600,17 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
       colLg = 'col-6';
       colAuto = 'col-4';
     } else if (1550 <= winWidth && winWidth < 2200) {
-      colXs = 'col-3';
-      colSm = 'col-4';
-      colMd = 'col-4';
-      colLg = 'col-6';
-      colAuto = 'col-4';
-    } else if (2200 <= winWidth) {
-      colXs = 'col-3';
+      colXs = 'col-2';
       colSm = 'col-3';
-      colMd = 'col-4';
+      colMd = 'col-3';
       colLg = 'col-4';
-      colAuto = 'col-4';
+      colAuto = 'col-3';
+    } else if (2200 <= winWidth) {
+      colXs = 'col-1';
+      colSm = 'col-2';
+      colMd = 'col-3';
+      colLg = 'col-3';
+      colAuto = 'col-2';
     }
 
     this.sizers.forEach((sizer) => {
@@ -621,23 +655,19 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   _onKsPreview($event: KnowledgeSource) {
-    this.ksCommandService.preview($event);
+    this.command.preview($event);
   }
 
   _onKsOpen($event: KnowledgeSource) {
-    this.ksCommandService.open($event)
+    this.command.open($event)
   }
 
   _onKsDetail($event: KnowledgeSource) {
-    this.ksCommandService.detail($event);
+    this.command.detail($event);
   }
 
   _onKsRemove($event: KnowledgeSource) {
     this.onKsRemove.emit($event);
-  }
-
-  _onKsModified($event: KnowledgeSource) {
-    this.onKsModified.emit($event);
   }
 
   filter() {
@@ -654,7 +684,37 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
 
   paginate($event: PaginateConfig) {
     this.paginateConfig = $event;
+    this.savePaginator($event);
+    this.dataListTop.nativeElement.scrollIntoView();
     this.assignCopy();
+  }
+
+  getPaginator() {
+    const paginateStr = localStorage.getItem('grid-paginator');
+    if (paginateStr) {
+      const config = JSON.parse(paginateStr);
+
+      if (config) {
+        this.paginateConfig.rows = config.rows;
+
+        if ((config.projectId && config.projectId !== this.route.snapshot.params.projectId) || this.ksList.length < this.paginateConfig.rows) {
+          this.paginateConfig.page = 0;
+          this.paginateConfig.first = 0;
+        } else {
+          const page = Math.floor(this.ksList.length / this.paginateConfig.rows);
+          this.paginateConfig.page = Math.min(page, config.page);
+        }
+
+        this.paginateConfig.first = this.paginateConfig.page * this.paginateConfig.rows;
+        this.savePaginator(this.paginateConfig);
+      }
+    }
+  }
+
+  savePaginator(config: PaginateConfig) {
+
+    config.projectId = this.route.snapshot.params.projectId ?? '';
+    localStorage.setItem('grid-paginator', JSON.stringify(config));
   }
 
   loadSizer() {
@@ -668,7 +728,7 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
 
   saveSizer(sizerId: CardSizeType) {
     this.appSettings.grid.size = sizerId;
-    this.settingsService.set({app: this.appSettings});
+    this.settings.set({app: this.appSettings});
   }
 
   sizeSelected($event: any) {
@@ -734,7 +794,7 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
 
   saveSorter(sorterId: CardSortType) {
     this.appSettings.grid.sorter = sorterId;
-    this.settingsService.set({app: this.appSettings});
+    this.settings.set({app: this.appSettings});
   }
 
   sortSelected($event: any) {
@@ -746,7 +806,7 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
 
   onKsContextMenu() {
     if (this.ksSelection) {
-      this.ksMenuItems = this.ksContextMenuService.generate(this.ksSelection);
+      this.ksMenuItems = this.menu.generate(this.ksSelection);
     }
   }
 
@@ -756,5 +816,29 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
 
   _onProjectChange($event: { ks: KnowledgeSource; old: string; new: string }) {
     this.onProjectChange.emit($event);
+  }
+
+  onMoveAll($event: MouseEvent) {
+    if (!this.selectedProject || !this.selectedProject.key || this.selectedProject.key.trim() === '') {
+      this.notifications.error('Source Card List', 'Failed to Move', 'No project selected.');
+      return;
+    }
+
+    let updates: ProjectUpdateRequest[] = [];
+
+    for (let ks of this.ksList) {
+      if (this.selectedProject.key !== ks.associatedProject.value) {
+        updates.push({
+          id: ks.associatedProject,
+          moveKnowledgeSource: {ks: ks, new: {value: this.selectedProject.key ?? ''}}
+        });
+      }
+    }
+
+    if (updates.length > 0) {
+      this.projects.updateProjects(updates).then(() => {
+        this.notifications.success('Source Card List', `Source${this.ksList.length > 1 ? 's' : ''} Moved`, this.ksList.map(k => k.title).join(', '));
+      });
+    }
   }
 }

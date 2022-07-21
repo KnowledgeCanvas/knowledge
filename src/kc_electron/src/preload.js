@@ -52,7 +52,9 @@ const ipcSendChannels = [
     "A2E:Uuid:Generate",
     "A2E:Version:Get",
     "A2E:Window:Minimize",
-    "A2E:Window:Maximize"
+    "A2E:Window:Maximize",
+    "A2E:Window:ZoomOut",
+    "A2E:Window:ZoomIn"
 ];
 
 const ipcInvokeChannels = [];
@@ -85,6 +87,7 @@ const ipcReceiveChannels = [
     "E2A:FileManager:Warn",
     "E2A:Settings:All",
     "E2A:Version:Get",
+    "E2A:Window:ZoomLevel"
 ]
 
 let datetime = () => {

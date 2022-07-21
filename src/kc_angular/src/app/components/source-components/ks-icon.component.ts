@@ -21,7 +21,7 @@ import {KnowledgeSource} from "../../models/knowledge.source.model";
 @Component({
   selector: 'app-ks-icon',
   template: `
-    <img [src]="ks.icon"
+    <img [src]="ks && ks.icon ? ks.icon : iconUrl"
          class="knowledge-source-icon"
          [class.shadow-3]="showShadow"
          [class.bg-auto]="autoBackgroundColor"
@@ -31,7 +31,9 @@ import {KnowledgeSource} from "../../models/knowledge.source.model";
   styles: []
 })
 export class KsIconComponent implements OnInit {
-  @Input() ks!: KnowledgeSource;
+  @Input() ks?: Partial<KnowledgeSource>;
+
+  @Input() iconUrl?: string;
 
   @Input() showEditor: boolean = true;
 

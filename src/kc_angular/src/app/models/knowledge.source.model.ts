@@ -75,6 +75,7 @@ export class KnowledgeSource {
   accessLink: URL | string;
   readonly reference: KnowledgeSourceReference;
   importMethod?: ImportMethod = 'manual';
+  thumbnail?: string;
 
   constructor(title: string, id: UUID, ingestType: IngestType, reference: KnowledgeSourceReference) {
     this.title = title;

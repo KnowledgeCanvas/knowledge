@@ -15,7 +15,7 @@
  */
 import {Injectable, NgZone} from '@angular/core';
 import {BehaviorSubject} from 'rxjs';
-import {IpcMessage, DialogRequest, BrowserViewRequest, ThumbnailRequest, PromptForDirectoryRequest} from "../../../../../kc_shared/models/electron.ipc.model";
+import {BrowserViewRequest, DialogRequest, IpcMessage, PromptForDirectoryRequest, ThumbnailRequest} from "../../../../../kc_shared/models/electron.ipc.model";
 import {UUID} from "../../../../../kc_shared/models/uuid.model";
 
 export interface ElectronNavEvent {
@@ -99,7 +99,6 @@ export class ElectronIpcService {
      * Listen for auto update messages
      */
     this.receive(this.channels.autoUpdateReceive, (response: IpcMessage) => {
-      console.log('Received message from auto update: ', response);
     });
 
     this.receive(this.channels.checkCurrentVersionResults, (response: IpcMessage) => {
@@ -269,9 +268,6 @@ export class ElectronIpcService {
       this.receiveOnce(this.channels.browserViewResults, (response: IpcMessage) => {
         this.removeAllListeners(this.channels.browserViewResults);
         this.run(() => {
-
-          // TODO: Create a new stack with the current browser view URL
-          // this.browserViewNavEvent.next(request.url);
           resolve(response);
         });
       });
@@ -301,8 +297,7 @@ export class ElectronIpcService {
 
   openKcDialog(request: DialogRequest): Promise<any> {
     return new Promise<any>((_: any) => {
-      this.receiveOnce(this.channels.openKcDialogResults, (response: IpcMessage) => {
-        console.log('Got response from kc dialog: ', response);
+      this.receiveOnce(this.channels.openKcDialogResults, (_: IpcMessage) => {
       });
 
       this.send(this.channels.openKcDialog, request);

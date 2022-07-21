@@ -27,7 +27,7 @@ import {NotificationsService} from "../services/user-services/notifications.serv
   selector: 'app-home',
   template: `
     <div class="h-full w-full flex-col-center-center">
-      <div class="w-full h-full flex-col-center-between surface-section p-4" [style]="{'max-width': 'min(100%, 96rem)'}">
+      <div class="w-full h-full flex-col-center-between surface-section p-4" [style]="{'max-width': 'min(100%, 150rem)'}">
         <div class="w-full flex flex-row flex-shrink-1 mb-2">
           <app-ks-ingest class="w-full border-1 border-300 border-round p-4 surface-section select-none"
                          [ksList]="upNext"
@@ -75,20 +75,6 @@ import {NotificationsService} from "../services/user-services/notifications.serv
                   <button pButton icon="pi pi-arrow-left" [disabled]="upNext.length <= 1" class="p-button-rounded p-button-text" (click)="onLeftClick($event)"></button>
                   <button pButton icon="pi pi-arrow-right" [disabled]="upNext.length <= 1" class="p-button-rounded p-button-text" (click)="onRightClick($event)"></button>
                 </div>
-                <div class="flex-row-center-center">
-                  <div class="flex-row-center-center" style="width: 100%">
-                    <button pButton
-                            icon="pi pi-arrow-down"
-                            label="Expand All"
-                            (click)="expandAll()"
-                            class="p-button-rounded p-button-text"></button>
-                    <button pButton
-                            icon="pi pi-arrow-up"
-                            label="Collapse All"
-                            (click)="collapseAll()"
-                            class="p-button-rounded p-button-text"></button>
-                  </div>
-                </div>
                 <div class="pr-3 flex-row-center-end">
                   <div class="text-primary pr-3" *ngIf="!selectedProject">
                     Select a project:
@@ -109,8 +95,22 @@ import {NotificationsService} from "../services/user-services/notifications.serv
                           [disabled]="!selectedProject"
                           (click)="onProjectImport($event)"></button>
                 </div>
+                <div class="flex-row-center-center">
+                  <div class="flex-row-center-center" style="width: 100%">
+                    <button pButton
+                            icon="pi pi-arrow-down"
+                            label="Expand All"
+                            (click)="expandAll()"
+                            class="p-button-rounded p-button-text shadow-none"></button>
+                    <button pButton
+                            icon="pi pi-arrow-up"
+                            label="Collapse All"
+                            (click)="collapseAll()"
+                            class="p-button-rounded p-button-text shadow-none"></button>
+                  </div>
+                </div>
               </div>
-              <div class="h-full w-full px-4" style="max-height: calc(100vh - 32rem)">
+              <div class="h-full w-full px-4" style="max-height: calc(100vh - 24rem)">
                 <p-scrollPanel styleClass="w-full h-full">
                   <app-ks-info *ngIf="active"
                                [ks]="active"

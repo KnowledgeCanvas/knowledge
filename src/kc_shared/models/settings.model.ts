@@ -40,6 +40,9 @@ export interface UserSettingsModel {
     lastName: string;
     userName: string;
     birthdate: string;
+    tutorials: {
+        showFirstRunTutorial: boolean;
+    }
 }
 
 export interface EnvironmentSettingsModel {
@@ -57,7 +60,7 @@ export interface SystemSettingsModel {
     cwd: string // The current working directory, dynamically set on App startup
     downloadPath: string // Default downloads location
     electronVersion: string // Current version of Electron, determined by process.versions.electron
-    envPath: string // Location of `.env` file TODO: could this be set to process.resourcesPath?
+    envPath: string // Location of `.env` file
     firstRun: boolean // Set to true if this is the first time the app is run, otherwise false, used for lifecycle
     homePath: string // Depends on OS, equivalent to `~/` in Linux/MacOS
     nodeVersion: string // Current version of node, determined by process.versions.node
@@ -91,7 +94,7 @@ export interface GridSettingsModel {
 }
 
 export type CardSizeType = 'auto' | 'xs' | 'sm' | 'md' | 'lg';
-export type CardSortType = 'title-a' | 'title-d' | 'created-a' | 'created-d' | 'type-a' | 'type-d'
+export type CardSortType = 'title-a' | 'title-d' | 'created-a' | 'created-d' | 'type-a' | 'type-d' | 'accessed-d' | 'accessed-a'
 export type CardOptions = {
     showThumbnail: boolean,
     showDescription: boolean,
@@ -111,7 +114,9 @@ export interface CalendarSettingsModel {
 }
 
 export interface SearchSettingsModel {
-    provider: 'google' | 'bing' | 'duck'
+    provider: 'google' | 'bing' | 'duck',
+    fuzzy: boolean,
+    threshold: number
 }
 
 export interface DisplaySettingsModel {

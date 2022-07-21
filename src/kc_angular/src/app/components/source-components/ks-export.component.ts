@@ -36,6 +36,7 @@ interface ExportType {
               header="Export"
               [modal]="true">
       <div>
+<!--        TODO: selecting "project" does not remove it from the exported file...-->
         <h3>Features</h3>
         <p-multiSelect [options]="EXPORT_COLUMNS"
                        [(ngModel)]="selectedFeatures"

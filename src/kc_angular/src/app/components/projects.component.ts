@@ -13,76 +13,69 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
 import {ProjectService} from "../services/factory-services/project.service";
 import {KcProject} from "../models/project.model";
-import {ProjectTreeFactoryService} from "../services/factory-services/project-tree-factory.service";
-import {Observable, Subscription} from "rxjs";
+import {Subscription} from "rxjs";
+import {ProjectCommandService} from "../services/command-services/project-command.service";
 
 @Component({
   selector: 'app-projects',
   template: `
-    <div class="h-full w-full flex flex-row surface-0" style="max-width: calc(100vw - 60px) !important; max-height: calc(100vh - 100px)">
-      <div class="h-full max-h-screen flex flex-column flex-shrink-0 border-right-1 border-200">
-        <p-tree class="h-full"
-                styleClass="surface-ground"
-                [style]="{'max-height': 'calc(100vh - 100px)'}"
-                [filter]="true"
-                [value]="projectTree"
-                [(selection)]="selectProject"
-                selectionMode="single"
-                (selectionChange)="selectionChange($event)"
-                scrollHeight="flex"></p-tree>
-      </div>
-      <div class="h-full flex flex-column flex-grow-1 overflow-y-auto" style="max-height: calc(100vh - 100px)">
-        <div class="w-full flex flex-row flex-shrink-1">
-          <app-project-card [kcProject]="kcProject | async" style="width: 100%"></app-project-card>
+    <div class="h-full w-full flex-row-center-start">
+      <app-projects-tree class="h-full max-h-screen flex flex-column flex-shrink-0 border-right-1 border-200"></app-projects-tree>
+      <div class="h-full w-full flex-col-center-center">
+        <div class="h-full w-full flex flex-row surface-0 p-4" style="max-width: min(calc(100vw - 60px), 150rem) !important; max-height: calc(100vh - 100px)">
+          <div class="h-full flex flex-column flex-grow-1 align-items-center justify-content-start overflow-y-auto">
+            <div class="h-full w-full flex flex-row px-2 overflow-y-auto align-content-center justify-content-center align-items-start">
+              <div>
+                <app-project-info *ngIf="kcProject" [project]="kcProject"></app-project-info>
+              </div>
+              <div *ngIf="!kcProject" class="w-full h-full">
+                <p-panel class="h-full w-full">
+                  <div class="h-full w-full text-2xl flex-row-center-center">No Projects</div>
+                  <div class="h-full w-full text-500 flex-row-center-center">
+                    Click the
+                    <button pButton disabled class="p-button-text p-button-plain" icon="pi pi-plus" label="Project"></button>
+                    button to create a Project
+                  </div>
+                </p-panel>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   `,
   styles: []
 })
-export class ProjectsComponent implements OnInit {
+export class ProjectsComponent implements OnInit, OnDestroy {
   projectId: string = '';
 
-  projectTree: any[] = [];
+  kcProject: KcProject | null = null;
 
-  selectProject: any;
+  routeSub: Subscription;
 
-  kcProject: Observable<KcProject | null>;
+  constructor(private route: ActivatedRoute,
+              private pCommand: ProjectCommandService,
+              private projects: ProjectService) {
 
-  projectSub: Subscription;
+    this.routeSub = route.params.subscribe((params) => {
+      this.projectId = params.projectId ?? '';
 
-  projectTreeSub: Subscription;
+      this.kcProject = projects.getProject(this.projectId) ?? null;
 
-  constructor(private route: ActivatedRoute, private projects: ProjectService, private tree: ProjectTreeFactoryService) {
-    this.kcProject = projects.currentProject;
-
-    this.projectSub = route.paramMap.subscribe((params) => {
-      this.projectId = params.get('projectId') ?? '';
-      console.log('Project ID changed to: ', this.projectId);
-      this.selectProject = tree.findTreeNode(this.projectTree, this.projectId);
-    })
-
-    this.projectTreeSub = projects.projectTree.subscribe((projectTree) => {
-      this.projectTree = tree.constructTreeNodes(projectTree, true);
-      this.selectProject = tree.findTreeNode(this.projectTree, this.projectId);
-      console.log('Project tree is now: ', this.projectTree, this.selectProject);
-    })
+      if (this.projectId !== projects.getCurrentProjectId()?.value) {
+        this.projects.setCurrentProject(this.projectId);
+      }
+    });
   }
 
   ngOnInit(): void {
-
   }
 
-  onNodeSelect($event: any) {
-    console.log('Project selected: ', $event);
-  }
-
-  selectionChange($event: any) {
-    console.log('Selection change: ', $event);
-    this.projects.setCurrentProject($event.key);
+  ngOnDestroy() {
+    this.routeSub.unsubscribe();
   }
 }

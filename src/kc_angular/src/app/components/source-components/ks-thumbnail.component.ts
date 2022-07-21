@@ -34,7 +34,7 @@ import {ElectronIpcService} from "../../services/ipc-services/electron-ipc.servi
                height="200px"
                width="100%"
                [style]="{'border-radius': '5px', 'max-width': 'min(100%, 48rem)'}"
-               [preview]="true">
+               [preview]="false">
       </p-image>
     </div>
   `,
@@ -59,6 +59,8 @@ export class KsThumbnailComponent implements OnInit, OnDestroy, OnChanges {
     try {
       if (changes.ks.currentValue) {
         this.thumbnail = undefined;
+
+
         if (this.ks.ingestType === 'file') {
           this._subThumbnail = this.ipcService.thumbnail.subscribe((thumbnail) => {
             if (thumbnail !== undefined && thumbnail.id && thumbnail.id === this.ks.id.value) {
@@ -88,6 +90,7 @@ export class KsThumbnailComponent implements OnInit, OnDestroy, OnChanges {
 
   getThumbnail() {
     let link: string = typeof this.ks.accessLink === 'string' ? this.ks.accessLink : this.ks.accessLink.href;
+
     if (this.ks.ingestType === 'file') {
       this.ipcService.getFileThumbnail([{
         path: link,
@@ -95,6 +98,10 @@ export class KsThumbnailComponent implements OnInit, OnDestroy, OnChanges {
       }]);
       return;
     } else {
+      if (this.ks.thumbnail) {
+        this.thumbnail = this.ks.thumbnail;
+      }
+
       let meta = this.ks.reference.source.website?.metadata?.meta;
       if (meta) {
         let ogImage = meta.find(m => m.key === 'og:image');

@@ -14,31 +14,17 @@
  limitations under the License.
  */
 import {Component, OnInit} from '@angular/core';
-import {DynamicDialogConfig, DynamicDialogRef} from "primeng/dynamicdialog";
 import {ThemeService} from "../../services/user-services/theme.service";
 import {SettingsService} from "../../services/ipc-services/settings.service";
 import {NotificationsService} from "../../services/user-services/notifications.service";
 import {KcTheme} from "../../../../../kc_shared/models/style.model";
 import {DisplaySettingsModel} from "../../../../../kc_shared/models/settings.model";
 
+
 @Component({
   selector: 'app-display-settings',
   template: `
     <div class="p-fluid grid">
-      <div class="col-12">
-        <p-panel header="Zoom">
-          <ng-template pTemplate="content">
-            <div class="col-4">
-              <label for="zoom-dropdown">Set zoom level</label>
-              <div class="p-inputgroup">
-                <button pButton icon="pi pi-minus" pTooltip="Zoom Out" (click)="decrementZoom($event)"></button>
-                <p-inputNumber [(ngModel)]="zoomLevel" [suffix]="'%'"></p-inputNumber>
-                <button pButton icon="pi pi-plus" pTooltip="Zoom In" (click)="incrementZoom($event)"></button>
-              </div>
-            </div>
-          </ng-template>
-        </p-panel>
-      </div>
       <div class="col-12">
         <p-panel header="Theme">
           <ng-template pTemplate="content">
@@ -66,11 +52,27 @@ import {DisplaySettingsModel} from "../../../../../kc_shared/models/settings.mod
         </p-panel>
       </div>
       <div class="col-12">
+        <p-panel header="Zoom">
+          <ng-template pTemplate="content">
+            <div class="col-4">
+              <label for="zoom-dropdown">Set zoom level</label>
+              <div class="p-inputgroup">
+                <button pButton icon="pi pi-minus" pTooltip="Zoom Out" (click)="decrementZoom($event)"></button>
+                <p-inputNumber [(ngModel)]="zoomLevel" [disabled]="true" [suffix]="'%'" [min]="50" [max]="300"></p-inputNumber>
+                <button pButton icon="pi pi-plus" pTooltip="Zoom In" (click)="incrementZoom($event)"></button>
+              </div>
+            </div>
+          </ng-template>
+        </p-panel>
+      </div>
+      <div class="col-12">
         <p-panel header="Logging">
           <ng-template pTemplate="content">
+            <label for="log-selector">Enable Log Notifications</label>
             <p-selectButton [options]="logLevels"
                             [(ngModel)]="logLevel"
                             [multiple]="true"
+                            id="log-selector"
                             (onChange)="onLoggingChange($event)"
                             optionLabel="name"
                             optionValue="value">
@@ -83,6 +85,14 @@ import {DisplaySettingsModel} from "../../../../../kc_shared/models/settings.mod
   styles: []
 })
 export class DisplaySettingsComponent implements OnInit {
+  private send = window.api.send;
+  private receive = window.api.receive;
+  private channels = {
+    zoomIn: 'A2E:Window:ZoomIn',
+    zoomOut: 'A2E:Window:ZoomOut',
+    zoomLevel: 'E2A:Window:ZoomLevel'
+  }
+
   displaySettings?: DisplaySettingsModel;
 
   themes: KcTheme[];
@@ -99,8 +109,8 @@ export class DisplaySettingsComponent implements OnInit {
 
   zoomLevel: number = 100;
 
-  constructor(private ref: DynamicDialogRef, private config: DynamicDialogConfig,
-              private themeService: ThemeService, private settingsService: SettingsService,
+  constructor(private themeService: ThemeService,
+              private settingsService: SettingsService,
               private notificationsService: NotificationsService) {
     const displaySettings = settingsService.get().display;
     this.displaySettings = displaySettings;
@@ -117,11 +127,14 @@ export class DisplaySettingsComponent implements OnInit {
       if (displaySettings.logging.warn) {
         this.logLevel.push('warn');
       }
+
       if (!displaySettings.zoom) {
         displaySettings.zoom = 100;
       } else {
         this.zoomLevel = displaySettings.zoom;
       }
+
+      this.send(this.channels.zoomIn, this.zoomLevel);
     }
   }
 
@@ -159,10 +172,6 @@ export class DisplaySettingsComponent implements OnInit {
       this.settingsService.set({display: {theme: this.themeService.currentTheme}});
     })
     this.selectedTheme = this.themeService.restoreDefault();
-  }
-
-  onZoomChange($event: any) {
-    console.log('Change zoom levels here')
   }
 
   onLoggingChange($event: any) {
@@ -205,10 +214,21 @@ export class DisplaySettingsComponent implements OnInit {
   }
 
   decrementZoom($event: MouseEvent) {
-    console.log('decrement zoom...', $event);
+    this.zoomLevel = Math.max(this.zoomLevel - 10, 50);
+    this.send(this.channels.zoomOut, this.zoomLevel);
+    if (this.displaySettings) {
+      this.displaySettings.zoom = this.zoomLevel;
+      this.settingsService.set({display: this.displaySettings});
+    }
   }
 
   incrementZoom($event: MouseEvent) {
-    console.log('increment zoom...', $event);
+    this.zoomLevel = Math.min(this.zoomLevel + 10, 150);
+    this.send(this.channels.zoomIn, this.zoomLevel);
+
+    if (this.displaySettings) {
+      this.displaySettings.zoom = this.zoomLevel;
+      this.settingsService.set({display: this.displaySettings});
+    }
   }
 }

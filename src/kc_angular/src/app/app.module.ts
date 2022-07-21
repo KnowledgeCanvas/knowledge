@@ -119,12 +119,19 @@ import {ProjectsComponent} from './components/projects.component';
 import {TableComponent} from './components/table.component';
 import {GridComponent} from './components/grid.component';
 import {CalendarComponent} from './components/calendar.component';
-import {AccessibilitySettingsComponent} from "./components/settings/accessibility-settings.component";
 import {ProjectBreadcrumbComponent} from "./components/project-components/project-breadcrumb.component";
 import {SearchComponent} from "./components/search.component";
 import {HistoryComponent} from "./components/history.component";
 import {KsDetailsComponent} from './components/source-components/ks-details.component';
 import {KsActionsComponent} from './components/source-components/ks-actions.component';
+import {ChartModule} from "primeng/chart";
+import {TimelineComponent} from './components/shared/timeline.component';
+import {KsMoveComponent} from './components/source-components/ks-move.component';
+import {ProjectAsTreeNodePipe} from './pipes/project-as-tree-node.pipe';
+import {TopicSearchComponent} from './components/shared/topic-search.component';
+import {SearchThresholdPipe} from './pipes/search-threshold.pipe';
+import {TutorialComponent} from './components/shared/tutorial.component';
+import {ViewIconPipe} from './pipes/view-icon.pipe';
 
 @NgModule({
   declarations: [
@@ -133,7 +140,6 @@ import {KsActionsComponent} from './components/source-components/ks-actions.comp
     ViewportHeaderComponent,
     BrowserViewComponent,
     DisplaySettingsComponent,
-    AccessibilitySettingsComponent,
     KsTableComponent,
     KsInfoComponent,
     ProjectCreationDialogComponent,
@@ -169,7 +175,14 @@ import {KsActionsComponent} from './components/source-components/ks-actions.comp
     HistoryComponent,
     ProjectBreadcrumbComponent,
     KsDetailsComponent,
-    KsActionsComponent
+    KsActionsComponent,
+    TimelineComponent,
+    KsMoveComponent,
+    ProjectAsTreeNodePipe,
+    TopicSearchComponent,
+    SearchThresholdPipe,
+    TutorialComponent,
+    ViewIconPipe
   ],
   imports: [
     BrowserAnimationsModule,
@@ -236,7 +249,8 @@ import {KsActionsComponent} from './components/source-components/ks-actions.comp
     PaginatorModule,
     CheckboxModule,
     RadioButtonModule,
-    AppRoutingModule
+    AppRoutingModule,
+    ChartModule
   ],
   providers: [
     SettingsService,

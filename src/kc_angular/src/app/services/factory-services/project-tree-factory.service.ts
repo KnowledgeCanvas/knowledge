@@ -14,7 +14,7 @@
  limitations under the License.
  */
 
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {ProjectTreeNode} from "../../models/project.tree.model";
 import {TreeNode} from "primeng/api";
 import {ProjectService} from "./project.service";
@@ -26,7 +26,7 @@ export class ProjectTreeFactoryService {
 
   constructor(private projectService: ProjectService) { }
 
-  constructTreeNodes(projectNodes: ProjectTreeNode[], collapsed: boolean):  TreeNode[] {
+  constructTreeNodes(projectNodes: ProjectTreeNode[], collapsed: boolean, parent?: TreeNode):  TreeNode[] {
     let treeNodes: TreeNode[] = [];
 
     for (let node of projectNodes) {
@@ -44,10 +44,13 @@ export class ProjectTreeFactoryService {
         leaf: node.subprojects.length === 0,
         selectable: true,
         draggable: true,
+        parent: parent,
         droppable: true,
-        children: node.subprojects.length > 0 ? this.constructTreeNodes(node.subprojects, collapsed) : [],
         key: node.id
       };
+
+      treeNode.children = node.subprojects.length > 0 ? this.constructTreeNodes(node.subprojects, collapsed, treeNode) : [];
+
       treeNodes.push(treeNode);
     }
 
@@ -55,7 +58,7 @@ export class ProjectTreeFactoryService {
   }
 
   findTreeNode(treenodes: TreeNode[], id: string): TreeNode | undefined {
-    let found = treenodes.find(n => n.key === id);
+    let found = treenodes.find(n => n.key == id);
     if (found) {
       return found;
     }

@@ -23,6 +23,7 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import listPlugin from '@fullcalendar/list';
 import {KnowledgeSource} from "../../models/knowledge.source.model";
+import {EventService} from "../../services/user-services/event.service";
 
 FullCalendarModule.registerPlugins([
   dayGridPlugin,
@@ -49,9 +50,11 @@ export interface KcCardRequest {
 @Component({
   selector: 'app-project-calendar',
   template: `
-    <div *ngIf="viewReady">
-      <full-calendar #calendar style="max-height: 70vh;"
+    <div *ngIf="viewReady" class="h-full w-full">
+      <full-calendar #calendar
                      [deepChangeDetection]="deepChangeDetection"
+                     class="h-full w-full"
+                     style="max-height: calc(100vh - 180px)"
                      [options]="calendarOptions">
       </full-calendar>
       <br>
@@ -121,9 +124,9 @@ export class ProjectCalendarComponent implements OnInit, OnChanges {
 
   views = ['dayGridMonth', 'timeGridWeek', 'timeGridDay', 'listYear']
 
-  viewIndex = 3;
+  viewIndex = 2;
 
-  constructor() {
+  constructor(private events: EventService) {
   }
 
   ngOnInit(): void {
@@ -212,80 +215,8 @@ export class ProjectCalendarComponent implements OnInit, OnChanges {
         this.kcProject.calendar = {events: [], start: null, end: null};
 
       // @ts-ignore
-      this.calendarOptions.events = this.eventsFromProject(this.kcProject);
+      this.calendarOptions.events = this.events.fromProject(this.kcProject).concat(this.events.fromSourceList(this.ksList));
       this.viewReady = true;
     }
   }
-
-  eventsFromProject(project: KcProject): ProjectCalendarEvent[] {
-    const projectColor = 'yellow';
-    const projectTextColor = 'black'
-    const ksList = this.eventsFromKsList(this.ksList ?? []);
-    return [
-      {
-        title: `"${project.name}" (Created)`,
-        start: project.dateCreated,
-        color: projectColor,
-        textColor: projectTextColor,
-        url: 'project'
-      },
-      {
-        title: `"${project.name}" (Modified)`,
-        start: project.dateModified,
-        color: projectColor,
-        textColor: projectTextColor,
-        url: 'project'
-      },
-      {
-        title: `"${project.name}" (Accessed)`,
-        start: project.dateAccessed,
-        color: projectColor,
-        textColor: projectTextColor,
-        url: 'project'
-      },
-      ...ksList
-    ];
-
-  }
-
-  eventsFromKsList(ksList: KnowledgeSource[]) {
-    const createdColor = 'var(--green-500)';
-    const modifiedColor = 'var(--yellow-500)';
-    const accessedColor = 'var(--blue-500)';
-    let events: ProjectCalendarEvent[] = [];
-    for (let ks of ksList) {
-      events.push({
-        title: `${ks.title}`,
-        start: ks.dateCreated,
-        url: ks.id.value,
-        color: createdColor
-      });
-      ks.dateModified.forEach((d) => {
-        events.push({
-          title: `${ks.title}`,
-          start: d,
-          url: ks.id.value,
-          color: modifiedColor
-        });
-      });
-      ks.dateAccessed.forEach((d) => {
-        events.push({
-          title: `${ks.title}`,
-          start: d,
-          url: ks.id.value,
-          color: accessedColor
-        });
-      });
-      if (ks.dateDue) {
-        events.push({
-          title: `${ks.title}`,
-          start: ks.dateDue,
-          color: 'var(--pink-500)',
-          url: ks.id.value
-        });
-      }
-    }
-    return events;
-  }
-
 }

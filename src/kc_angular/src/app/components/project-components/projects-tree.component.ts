@@ -13,98 +13,66 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-
-import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ProjectService} from "../../services/factory-services/project.service";
-import {ProjectUpdateRequest} from "src/app/models/project.model";
-import {PrimeIcons, TreeNode} from "primeng/api";
+import {MenuItem, TreeNode} from "primeng/api";
 import {TreeModule} from "primeng/tree";
-import {UUID} from "../../../../../kc_shared/models/uuid.model";
+import {ProjectCommandService} from "../../services/command-services/project-command.service";
+import {ProjectTreeFactoryService} from "../../services/factory-services/project-tree-factory.service";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'app-projects-tree',
   template: `
-    <p-tree #tree
-            [value]="treeNodes" selectionMode="single"
-            [(selection)]="selectedNode"
-            (onNodeSelect)="selectProject($event.node.key)"
-            (onNodeExpand)="setExpand($event.node.key, true)"
-            (onNodeCollapse)="setExpand($event.node.key, false)"
-            (onNodeDrop)="onNodeDrop($event)"
-            [draggableNodes]="true"
-            [droppableNodes]="true"
-            draggableScope="self"
-            droppableScope="self"
-            [filter]="true"
-            filterPlaceholder="Search for Projects..."
-            filterMode="strict"
+    <p-tree class="h-full"
+            styleClass="surface-ground"
+            [style]="{'max-height': '100%'}"
             [contextMenu]="cm"
-            scrollHeight="flex"
-            styleClass="p-fluid">
-
+            (onNodeContextMenuSelect)="onContextMenu($event)"
+            [filter]="true"
+            [value]="projectTree"
+            [(selection)]="currentProject"
+            selectionMode="single"
+            (selectionChange)="selectionChange($event)"
+            scrollHeight="flex">
       <ng-template pTemplate="header">
-    <span class="p-buttonset">
-      <button pButton
-              type="button"
-              label="New Project"
-              icon="pi pi-plus"
-              (click)="newProject()">
-      </button>
-      <button pButton
-              type="button"
-              label="Delete"
-              [disabled]="treeNodes.length === 0"
-              icon="pi pi-trash"
-              class="p-button-danger"
-              (click)="delete()">
-      </button>
-    </span>
+        <div class="flex-row-center-between">
+          <button pButton
+                  icon="pi pi-plus"
+                  label="Project"
+                  (click)="onNewProject()"
+                  class="p-button-text p-button-plain">
+          </button>
+          <button pButton
+                  icon="pi pi-trash"
+                  label="Remove"
+                  (click)="onRemoveProject(currentProject)"
+                  class="p-button-text p-button-plain p-button-danger">
+          </button>
+        </div>
       </ng-template>
-
-      <ng-template let-node pTemplate="default">
-        {{node.label}}
-      </ng-template>
-
-      <ng-template pTemplate="empty"></ng-template>
 
       <ng-template pTemplate="footer">
-    <span class="p-buttonset">
-      <button pButton
-              type="button"
-              class="p-button-secondary"
-              label="Collapse All"
-              [disabled]="treeNodes.length === 0"
-              (click)="collapseAll()"></button>
-
-      <p-divider layout="vertical" type="dashed"></p-divider>
-
-      <button pButton
-              type="button"
-              class="p-button-secondary"
-              [disabled]="treeNodes.length === 0"
-              label="Expand All"
-              (click)="expandAll()"></button>
-    </span>
+        <div class="flex-row-center-between border-top-1 border-400">
+          <button pButton
+                  icon="pi pi-arrow-down"
+                  label="Expand All"
+                  (click)="expandAll(projectTree, true)"
+                  class="p-button-text p-button-plain">
+          </button>
+          <button pButton
+                  icon="pi pi-arrow-up"
+                  label="Collapse All"
+                  (click)="expandAll(projectTree, false)"
+                  class="p-button-text p-button-plain">
+          </button>
+        </div>
       </ng-template>
     </p-tree>
-
-    <p-contextMenu #cm [model]="menuItems" [autoZIndex]="true" appendTo="body" [baseZIndex]="9999"></p-contextMenu>
+    <p-contextMenu #cm [model]="menu" appendTo="body"></p-contextMenu>
   `,
   styles: [
     `
-      .projects-tree-controls-container {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-evenly;
-        align-items: center;
-        flex-wrap: nowrap;
-      }
-
-      .background-highlight {
-        background-color: #8282828f;
-        font-weight: bolder;
-      }
-
       ::ng-deep {
         .p-tree {
           height: 100%;
@@ -114,144 +82,117 @@ import {UUID} from "../../../../../kc_shared/models/uuid.model";
     `
   ]
 })
-export class ProjectsTreeComponent implements OnInit {
+export class ProjectsTreeComponent implements OnInit, OnDestroy {
   @ViewChild('tree') pTree!: TreeModule;
 
-  // Emitted when the parent element should hide the tree
-  @Output() onHide = new EventEmitter<any>();
+  projectId: string = '';
 
-  // Emitted when a project should be created. Value can be string (parent ID) or undefined
-  @Output() onProjectCreation = new EventEmitter<UUID | undefined>();
+  currentProject?: TreeNode;
 
-  // Emitted when a project is to be deleted. Parent element should warn and process
-  // Value: Project ID
-  @Output() onProjectDeletion = new EventEmitter<UUID>();
+  projectTree: TreeNode[] = [];
 
-  // Emitted when a project is to be edited
-  // Value: Project ID
-  @Output() onProjectEdit = new EventEmitter<UUID>();
+  menu: MenuItem[] = [];
 
-  @Input() treeNodes: TreeNode[] = [];
+  projectTreeSub: Subscription;
 
-  @Input() selectedNode: TreeNode = {};
+  projectSub: Subscription;
 
-  menuItems = [
-    {
-      label: 'Add Subproject',
-      icon: PrimeIcons.PLUS,
-      command: () => {
-        this.newProject(this.selectedNode.key);
-        this.onHide.emit();
-      }
-    },
-    {
-      label: 'Edit', icon: PrimeIcons.PENCIL, command: () => {
-        this.editProject();
-        this.onHide.emit();
-      }
-    },
-    {
-      label: 'Delete', icon: PrimeIcons.TRASH, command: () => {
-        this.delete(this.selectedNode.key);
-        this.onHide.emit();
+  constructor(private projects: ProjectService,
+              private pCommand: ProjectCommandService,
+              private tree: ProjectTreeFactoryService) {
+    const expandPath = (node: TreeNode) => {
+      let curr = node.parent;
+      while (curr) {
+        curr.expanded = true;
+        curr = curr.parent;
       }
     }
-  ];
 
-  constructor(private projectService: ProjectService) {
+    this.projectTreeSub = projects.projectTree.subscribe((projectTree) => {
+      this.projectTree = tree.constructTreeNodes(projectTree, true) ?? [];
+      if (this.projectTree.length > 0) {
+        this.currentProject = tree.findTreeNode(this.projectTree, this.projectId) ?? undefined;
+        if (this.currentProject) {
+          expandPath(this.currentProject);
+        }
+      }
+    })
+
+    this.projectSub = this.projects.currentProject.subscribe((project) => {
+      if (project) {
+        this.projectId = project.id.value;
+      }
+      if (this.projectTree.length > 0) {
+        this.currentProject = tree.findTreeNode(this.projectTree, this.projectId) ?? undefined;
+        if (this.currentProject) {
+          expandPath(this.currentProject);
+        }
+      }
+    })
   }
 
   ngOnInit(): void {
   }
 
-  selectProject(id: any): void {
-    this.projectService.setCurrentProject(id);
-    this.onHide.emit();
+  ngOnDestroy() {
+    this.projectTreeSub.unsubscribe();
+    this.projectSub.unsubscribe();
   }
 
-  setExpand(id: string, expand: boolean) {
-    this.projectService.updateProjects([{
-      id: {value: id},
-      expanded: expand
-    }]);
+  selectionChange($event: any) {
+    this.projects.setCurrentProject($event.key);
   }
 
-  delete(projectId?: string, _?: any): void {
-    let id = projectId ?? this.selectedNode.key ?? '';
-
-    this.onProjectDeletion.emit({value: id});
-    this.onHide.emit();
-  }
-
-  newProject(parentId?: string): void {
-    this.onHide.emit();
-    this.onProjectCreation.emit(parentId ? {value: parentId} : undefined);
-  }
-
-
-  editProject() {
-    let id = this.selectedNode.key ?? '';
-    this.onProjectEdit.emit({value: id});
-    this.onHide.emit(true);
-  }
-
-  expandAll() {
-    this.treeNodes.forEach(node => {
-      this.expandRecursive(node, true);
-    });
-    this.projectService.setAllExpanded(true);
-  }
-
-  collapseAll() {
-    this.treeNodes.forEach(node => {
-      this.expandRecursive(node, false);
-    });
-    this.projectService.setAllExpanded(false);
-  }
-
-  onNodeDrop($event: any) {
-    console.debug('ProjectTree.onNodeDrop($event) | $event === ', $event);
-    $event.originalEvent.preventDefault();
-    $event.originalEvent.stopPropagation();
-
-    let dragNode = $event.dragNode;
-    let dropNode = $event.dropNode;
-
-    let dragId = dragNode.key;
-    let dropId = dropNode.key;
-
-    console.debug(`ProjectTree.onNodeDrop($event) | Moving ${dragNode.label} (${dragId}) to ${dropNode.label} (${dropId})...`);
-
-    let dragProject = this.projectService.getProject(dragId);
-    let dropProject = this.projectService.getProject(dropId);
-
-    if (!dragProject || !dropProject) {
-      console.error('Attempting to drag/drop invalid project, aborting...');
-      return;
+  onNewProject(currentProject?: TreeNode) {
+    if (currentProject?.key) {
+      this.pCommand.new({value: currentProject.key});
+    } else {
+      this.pCommand.new();
     }
-
-    let updates: ProjectUpdateRequest[] = [
-      {id: dragProject.id, parentId: dropId},
-      {id: dropProject.id, addSubprojects: [dragId]}
-    ];
-    if (dragProject.parentId?.value.length) {
-      updates.push({
-        id: dragProject.parentId,
-        removeSubprojects: [dragId]
-      })
-    }
-
-    this.projectService.updateProjects(updates).catch((reason) => {
-      console.error('ProjectTree.onNodeDrop($event) | error === ', reason);
-    })
   }
 
-  private expandRecursive(node: TreeNode, isExpand: boolean) {
-    if (node.children) {
-      node.children.forEach(childNode => {
-        this.expandRecursive(childNode, isExpand);
-      });
+  onRemoveProject(currentProject?: TreeNode) {
+    if (currentProject?.key) {
+      const project = this.projects.getProject(currentProject.key);
+      if (project) {
+        this.pCommand.remove([project]);
+      }
     }
-    node.expanded = isExpand;
+  }
+
+  expandAll = (root: TreeNode[], expand: boolean) => {
+    for (let t of root) {
+      t.expanded = expand;
+      if (t.children && t.children.length > 0)
+        this.expandAll(t.children, expand)
+    }
+  }
+
+  onContextMenu($event: any) {
+    if ($event.node) {
+      this.menu = [
+        {
+          label: 'Subproject',
+          icon: 'pi pi-plus',
+          command: (event: any) => {
+            this.pCommand.new({value: $event.node.key});
+          }
+        },
+        {
+          label: 'Remove',
+          icon: 'pi pi-trash',
+          command: () => {
+            const project = this.projects.getProject($event.node.key);
+
+            if (project) {
+              this.pCommand.remove([project]);
+            }
+
+          }
+        }
+      ]
+    } else {
+      this.menu = [];
+    }
   }
 }

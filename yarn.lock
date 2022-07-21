@@ -3941,6 +3941,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"chart.js@npm:^3.8.0":
+  version: 3.8.0
+  resolution: "chart.js@npm:3.8.0"
+  checksum: 0360212bf5d534effc8475a1aa705ba7257a315af368b5e8eecf476f0bd57a6bb80ad740e870d552f2d11e134dd1497ccef02950d7e626c21a400ff00ecf59af
+  languageName: node
+  linkType: hard
+
 "chokidar@npm:>=3.0.0 <4.0.0, chokidar@npm:^3.0.0, chokidar@npm:^3.5.1, chokidar@npm:^3.5.2":
   version: 3.5.2
   resolution: "chokidar@npm:3.5.2"
@@ -6655,6 +6662,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fuse.js@npm:^6.6.2":
+  version: 6.6.2
+  resolution: "fuse.js@npm:6.6.2"
+  checksum: 17ae758ce205276ebd88bd9c9f088a100be0b4896abac9f6b09847151269d1690f41d7f98ff5813d4a58973162dbd99d0072ce807020fee6f9de60170f6b08eb
+  languageName: node
+  linkType: hard
+
 "gauge@npm:^4.0.0":
   version: 4.0.0
   resolution: "gauge@npm:4.0.0"
@@ -8169,8 +8183,10 @@ __metadata:
     "@types/node": ^16.7.2
     "@typescript-eslint/eslint-plugin": 4.28.2
     "@typescript-eslint/parser": 4.28.2
+    chart.js: ^3.8.0
     chokidar: ^3.5.2
     eslint: ^8.5.0
+    fuse.js: ^6.6.2
     jasmine-core: ~3.8.0
     karma: ~6.3.14
     karma-chrome-launcher: ^3.1.0
@@ -8180,7 +8196,7 @@ __metadata:
     ng-packagr: ^13.1.2
     primeflex: ^3.1.2
     primeicons: ^5.0.0
-    primeng: ^13.0.3
+    primeng: ^13.4.1
     rxjs: ~6.6.0
     tslib: ^2.2.0
     typescript: ~4.5.2
@@ -10383,9 +10399,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"primeng@npm:^13.0.3":
-  version: 13.0.3
-  resolution: "primeng@npm:13.0.3"
+"primeng@npm:^13.4.1":
+  version: 13.4.1
+  resolution: "primeng@npm:13.4.1"
   dependencies:
     tslib: ^2.3.0
   peerDependencies:
@@ -10395,7 +10411,7 @@ __metadata:
     primeicons: ^5.0.0
     rxjs: ^6.0.0 || ^7.0.0
     zone.js: ^0.10.2 || ^0.11.0
-  checksum: df77fe4d952eef2d733c5697152caf4a7ef5450cedfdf6885ad598ec351683eea2e195012db0b51b136e920b0a082f252703aad1cd68ffa5c6b5d8370528e5e1
+  checksum: c75a4d7d9f654bab641504e1659f0a124f6cd92b655b5186705a923d693b64185f2df43d936d214191c5f630c5158d40f30c94aca711c0dea795ceea2d01b91b
   languageName: node
   linkType: hard
 

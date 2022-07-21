@@ -23,6 +23,7 @@ export class KnowledgeCanvas {
                             label: label, type: 'project'
                         }
                     }
+
                     data.push(node);
                     if ((project as any).subprojects) {
                         for (let sub of (project as any).subprojects) {

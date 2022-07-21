@@ -138,10 +138,6 @@ class SettingsService {
             settingsFilePath: ''
         }
 
-        /**
-         * TODO: Run fstat on these directories to make sure they exist before setting them as settings path
-         *       Fallback on appPath as settings directory if these paths do not exist...
-         */
         switch (process.platform) {
             case "darwin": // MacOS -- /Users/username/Library/Preferences/KnowledgeCanvas
                 system.settingsPath = path.join(os.homedir(), 'Library', 'Preferences', env.appTitle);
@@ -211,13 +207,18 @@ class SettingsService {
                 }
             },
             search: {
-                provider: 'google'
+                provider: 'google',
+                fuzzy: true,
+                threshold: 0.5
             },
             user: {
                 firstName: '',
                 lastName: '',
                 userName: '',
-                birthdate: ''
+                birthdate: '',
+                tutorials: {
+                    showFirstRunTutorial: true
+                }
             }
         };
     }

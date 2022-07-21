@@ -150,7 +150,7 @@ getFileThumbnail = ipcMain.on('A2E:FileSystem:FileThumbnail', (event: any, reque
         }
         kcMainWindow.webContents.send('E2A:FileSystem:FileThumbnail', responses);
     }).catch((reason) => {
-        console.error('Caught promise exception while getting thumbnail: ', reason);
+        console.error('Caught promise exception while getting thumbnail: ', reason, requests);
         let response: IpcMessage = {
             error: {
                 code: 501,

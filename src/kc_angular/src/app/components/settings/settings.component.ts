@@ -15,7 +15,6 @@
  */
 import {Component, OnInit} from '@angular/core';
 import {MenuItem} from "primeng/api";
-import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-settings',
@@ -23,7 +22,7 @@ import {Router} from "@angular/router";
     <div class="h-full w-full flex flex-column align-items-center justify-content-center">
       <div class="grid h-full w-full">
         <div class="col-3 lg:col-2">
-          <p-menu [model]="modules" class="h-full w-full p-fluid" styleClass="h-full w-full"></p-menu>
+          <p-menu [model]="modules" class="h-full w-full p-fluid"  styleClass="h-full w-full p-0"></p-menu>
         </div>
         <div class="col h-full overflow-y-auto">
           <router-outlet name="settings"></router-outlet>
@@ -33,11 +32,19 @@ import {Router} from "@angular/router";
   `,
   styles: [
     `
+      ::ng-deep {
+        .p-menuitem-link-active {
+          background-color: var(--primary-color) !important;
+
+          .p-menuitem-icon, .p-menuitem-text {
+            color: var(--primary-color-text) !important;
+          }
+        }
+      }
     `
   ]
 })
 export class SettingsComponent implements OnInit {
-  // TODO: add indicator for which settings menu the user is currently viewing
   modules: MenuItem[] = [
     {
       label: 'Display',
@@ -55,20 +62,14 @@ export class SettingsComponent implements OnInit {
       icon: 'pi pi-fw pi-arrow-circle-down',
       routerLink: ['app', {outlets: {settings: ["import"]}}]
     },
-    {
-      label: 'Storage',
-      icon: 'pi pi-fw pi-database',
-      routerLink: ['app', {outlets: {settings: ['storage']}}]
-    },
-    {
-      label: 'Accessibility',
-      icon: 'pi pi-fw pi-heart',
-      routerLink: ['app', {outlets: {settings: ['accessibility']}}]
-    }
+    // { TODO: reinstate once storage settings component is implemented
+    //   label: 'Storage',
+    //   icon: 'pi pi-fw pi-database',
+    //   routerLink: ['app', {outlets: {settings: ['storage']}}]
+    // }
   ]
 
-  constructor(private router: Router) {
-    router.navigate(this.modules[0].routerLink);
+  constructor() {
   }
 
   ngOnInit(): void {

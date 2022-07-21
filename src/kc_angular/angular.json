@@ -141,7 +141,9 @@
                 "./node_modules"
               ]
             },
-            "scripts": []
+            "scripts": [
+              "../../node_modules/chart.js/dist/chart.js"
+            ]
           },
           "configurations": {
             "production": {

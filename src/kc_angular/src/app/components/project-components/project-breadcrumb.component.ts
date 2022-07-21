@@ -17,6 +17,7 @@ import {Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '
 import {ProjectService} from "../../services/factory-services/project.service";
 import {MenuItem} from "primeng/api";
 import {UUID} from "../../../../../kc_shared/models/uuid.model";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-project-breadcrumb',
@@ -24,43 +25,72 @@ import {UUID} from "../../../../../kc_shared/models/uuid.model";
     <p-breadcrumb [model]="breadcrumbs"
                   [home]="breadcrumbHeader"
                   styleClass="surface-ground h-full flex-row-center-start"
-                  (onItemClick)="onBreadcrumbClick($event)"></p-breadcrumb>
+                  (onItemClick)="onBreadcrumbClick($event)">
+    </p-breadcrumb>
   `,
   styles: []
 })
 export class ProjectBreadcrumbComponent implements OnChanges {
   @Input() projectId: string = '';
 
+  @Input() disabled: boolean = false;
+
   @Output() onShowProjectTree = new EventEmitter<boolean>();
 
   breadcrumbs: MenuItem[] = [];
 
-  breadcrumbHeader: MenuItem = {icon: 'pi pi-list', disabled: false, command: () => {
+  breadcrumbHeader: MenuItem = {
+    icon: 'pi pi-fw pi-list',
+    label: '  Projects',
+    disabled: this.disabled,
+    command: () => {
       this.onShowProjectTree.emit(true);
-    }}
+    }
+  }
 
-  constructor(private projects: ProjectService) {
-
+  constructor(private projects: ProjectService, private router: Router) {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.projectId.currentValue) {
+    if (changes.projectId?.currentValue) {
       this.setupBreadcrumbs({value: changes.projectId.currentValue});
+    }
+
+    if (changes.disabled?.currentValue) {
+      this.breadcrumbHeader = {
+        icon: 'pi pi-fw pi-list',
+        label: '  Projects',
+        disabled: this.disabled,
+        command: () => {
+          this.onShowProjectTree.emit(true);
+        }
+      }
     }
   }
 
   onBreadcrumbClick($event: any) {
-
+    if ($event.item.id && $event.item.id) {
+      this.projects.setCurrentProject($event.item.id);
+    }
   }
 
   setupBreadcrumbs(id: UUID) {
     let ancestors = this.projects.getAncestors(id.value);
+
     this.breadcrumbs = [];
-    console.log('Got ancestors: ', ancestors);
+
     for (let ancestor of ancestors) {
       this.breadcrumbs.push({
-        label: ancestor.title, id: ancestor.id, title: ancestor.title,
-        items: [{label: ancestor.title, id: ancestor.id, title: ancestor.title,}]
+        label: ancestor.title,
+        id: ancestor.id,
+        title: ancestor.title,
+        disabled: this.disabled,
+        items: [{
+          label: ancestor.title,
+          disabled: this.disabled,
+          id: ancestor.id,
+          title: ancestor.title,
+        }]
       });
     }
   }

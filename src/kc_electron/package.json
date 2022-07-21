@@ -1,7 +1,7 @@
 {
   "name": "kc_electron",
   "version": "0.2.1",
-  "description": "This package contains the Electron portion of the Knowledge Canvas desktop application.",
+  "description": "This package contains the Electron portion of the Knowledge desktop application.",
   "main": "dist/electron.js",
   "author": "Rob Royce <robertris2@gmail.com> (https://robroyce.dev)",
   "license": "Apache-2.0",

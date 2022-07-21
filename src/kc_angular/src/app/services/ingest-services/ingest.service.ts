@@ -80,7 +80,7 @@ export class IngestService implements OnDestroy {
       return;
     }
 
-    this.notifications.success('IngestService', 'Up Next', `${ksList.length} Knowledge Source${ksList.length > 1 ? 's' : ''} added.`)
+    this.notifications.success('IngestService', 'Source Imported', `Imported ${ksList.length} Source${ksList.length > 1 ? 's' : ''}.`)
   }
 
   add(ks: KnowledgeSource) {
@@ -96,6 +96,10 @@ export class IngestService implements OnDestroy {
   delay(ks: KnowledgeSource) {
     this.finalize(ks, 'delay');
     this._queue.next(this._queue.value.filter(k => k.id.value !== ks.id.value));
+  }
+
+  show() {
+    this.settings.show('import');
   }
 
   /**
@@ -146,7 +150,6 @@ export class IngestService implements OnDestroy {
         for (let project of projects) {
           const ks = project.knowledgeSource.find(k => k.id.value === move.id);
           if (ks) {
-            console.log(`KS link changed from ${ks.accessLink} to ${move.newPath}`);
             ks.accessLink = move.newPath;
             this.projects.updateProjects([{
               id: project.id
@@ -165,7 +168,6 @@ export class IngestService implements OnDestroy {
    */
   private extensionSubscribe() {
     this.extension.links.subscribe((webSource) => {
-      console.log('Web source received: ', webSource);
       if (!webSource || !webSource.accessLink) {
         this.notifications.warn('IngestService', 'Empty Link', `Received empty link: ${webSource.accessLink}`);
         return;
@@ -185,6 +187,9 @@ export class IngestService implements OnDestroy {
         ks.flagged = webSource.flagged;
         ks.description = webSource.description ?? '';
         ks.rawText = webSource.rawText;
+        ks.thumbnail = webSource.thumbnail;
+        if (ks.reference.source.website)
+          ks.reference.source.website.metadata = webSource.metadata;
 
         /* TODO: Move this to ks.markup once it gets implemented after schema changes... */
         if (webSource.markup?.notes && webSource.markup.notes.length > 0) {

@@ -19,7 +19,6 @@ import {NotificationsService} from "../user-services/notifications.service";
 import {BehaviorSubject, Observable} from "rxjs";
 import {WebSourceModel} from "../../../../../kc_shared/models/web.source.model";
 import {KnowledgeSource} from "../../models/knowledge.source.model";
-import {KnowledgeSourceModel} from "../../../../../kc_shared/models/knowledge.source.model";
 
 @Injectable({
   providedIn: 'root'
@@ -39,48 +38,35 @@ export class ExtensionService {
     this.receive(this.channels.import, (msg: IpcMessage) => {
       this.zone.run(() => {
         if (msg.success?.data) {
-          console.log('Received data: ', msg.success.data);
-          let topics, metadata;
-          try {
-            topics = JSON.parse(msg.success.data.topics);
-          } catch (e) {
-            console.log('Error parsing topics...', e);
-          }
+          const data = msg.success.data;
 
-          try {
-            metadata = JSON.parse(msg.success.data.metadata);
-          } catch (e) {
-            console.log('Error parsing metadata...', e);
-          }
-
-          notifications.debug('ExtensionService', 'Extension Import', msg.success.data.title);
-
+          notifications.debug('ExtensionService', 'Extension Import', data.title);
 
           /* TODO: need to copy over other fields, like flagged, rawText, etc... but how? */
           /* TODO: standardize the model so we don't need to do a manual conversion */
           const webSource: Partial<WebSourceModel & KnowledgeSource> = {
-            iconUrl: msg.success.data.iconUrl,
-            title: msg.success.data.title,
-            accessLink: msg.success.data.accessLink,
-            topics: msg.success.data.topics ?? [],
-            metadata: msg.success.data.metadata ?? {},
-            flagged: msg.success.data.flagged,
-            rawText: msg.success.data.rawText,
-            thumbnail: msg.success.data.thumbnail,
-            description: msg.success.data.description,
+            iconUrl: data.iconUrl,
+            title: data.title,
+            accessLink: data.accessLink,
+            topics: data.topics ?? [],
+            metadata: {meta: data.metadata},
+            flagged: data.flagged,
+            rawText: data.rawText,
+            thumbnail: data.thumbnail,
+            description: data.description,
             markup: {notes: [], highlights: [], stickers: []}
           }
 
-          if (msg.success.data.rawText) {
+          if (data.rawText) {
             webSource.markup = {
               notes: [{
                 title: 'Selected Text',
-                body: msg.success.data.rawText,
+                body: data.rawText,
                 type: 'highlight',
                 event: {
                   timestamp: new Date().toLocaleString(),
                   type: 'create',
-                  description: 'On Import.'
+                  description: 'Imported as selected text from browser extension.'
                 }
               }]
             }

@@ -15,7 +15,7 @@
  */
 import {Injectable} from '@angular/core';
 import {UuidService} from "../ipc-services/uuid.service";
-import {IngestType, KnowledgeSource, KnowledgeSourceNote, KnowledgeSourceReference, SourceModel} from "../../models/knowledge.source.model";
+import {IngestType, KnowledgeSource, KnowledgeSourceReference, SourceModel} from "../../models/knowledge.source.model";
 import {ElectronIpcService} from "../ipc-services/electron-ipc.service";
 import {ExtractorService} from "../ingest-services/extractor.service";
 import {FaviconService} from "../ingest-services/favicon.service";
@@ -64,7 +64,7 @@ export class KsFactoryService {
           .then((result) => {
             resolve(result);
           }).catch((reason) => {
-            reject(reason)
+          reject(reason)
           console.warn('Could not create KS from link because: ', reason);
         });
       }
@@ -82,7 +82,6 @@ export class KsFactoryService {
           this.getFileIcons(results).then((finalList) => {
             if (this.settings.get().ingest.manager.target === 'all') {
               // TODO: move file to managed location...
-              console.log('Need to move file to new location...');
             }
             resolve(finalList);
           })
@@ -148,7 +147,7 @@ export class KsFactoryService {
     const uuid: UUID = this.uuid.generate(1)[0];
     let fileModel: FileSourceModel = {
       id: uuid,
-      filename: file.name,
+      filename: file.name.trim(),
       path: (file as any).path,
       size: file.size,
       type: file.type,
@@ -158,7 +157,7 @@ export class KsFactoryService {
     }
     let source = new SourceModel(fileModel, undefined);
     let ref = new KnowledgeSourceReference('file', source, link);
-    return new KnowledgeSource(file.name, uuid, 'file', ref);
+    return new KnowledgeSource(file.name.trim(), uuid, 'file', ref);
   }
 
   private getFileMetadata(ks: KnowledgeSource, file: File): Promise<KnowledgeSource> {
@@ -209,10 +208,28 @@ export class KsFactoryService {
     return new Promise<KnowledgeSource>((resolve) => {
       const link = typeof ks.accessLink === 'string' ? ks.accessLink : ks.accessLink.href
       this.extractor.extractWebsiteMetadata(link).then((metadata) => {
+
         if (metadata.title)
-          ks.title = metadata.title;
+          ks.title = metadata.title.trim();
+
+        if (metadata.meta && metadata.meta.length > 0) {
+          const meta = metadata.meta;
+
+          let description = meta.find(m => m.key === 'og:description' || m.key === 'twitter:description' || m.key === 'description');
+          if (description) {
+            ks.description = description.value ?? description.property ?? '';
+          }
+
+          let topics = meta.find(m => m.key === 'keywords' || m.key === 'tags' || m.key === 'topics');
+          if (topics) {
+            ks.topics = topics.value?.trim().replace(' ', '').split(',') ?? [];
+          }
+        }
+
         if (ks.reference.source.website)
           ks.reference.source.website.metadata = metadata;
+
+
       }).catch((reason) => {
         console.warn('Unable to extract website metadata because: ', reason);
       }).finally(() => {

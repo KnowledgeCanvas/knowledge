@@ -20,9 +20,8 @@ import {UUID} from "../../../../kc_shared/models/uuid.model";
 
 
 export class KcProject implements KcProjectModel {
-  name: string = '';
   readonly id: UUID;
-  events?: EventModel[] = [];
+  name: string = '';
   authors: string[] = [];
   description: string = '';
   parentId: UUID = {value: ''};
@@ -30,8 +29,19 @@ export class KcProject implements KcProjectModel {
   topics: string[] = [];
   type: KcProjectType;
   expanded: boolean = false;
+
+  // TODO: this needs to be changed to an array of UUID instead of KS. The KS should be looked up
+  sources: UUID[];
   knowledgeSource: KnowledgeSource[] = [];
+
+  // TODO: Should we remove calendar, or events?
   calendar: ProjectCalendar;
+  events?: EventModel[] = [];
+
+  // TODO: these should be completely removed and replaced by calendar/events
+  readonly dateCreated: Date;
+  dateModified: Date;
+  dateAccessed: Date;
 
 
   constructor(name: string, id: UUID, type?: KcProjectType, parentId?: UUID) {
@@ -43,6 +53,7 @@ export class KcProject implements KcProjectModel {
     this.dateModified = new Date();
     this.dateAccessed = new Date();
     this.calendar = {events: [], start: null, end: null};
+    this.sources = [];
   }
 }
 
@@ -51,13 +62,18 @@ export interface ProjectCreationRequest {
   name: string;
   parentId: UUID;
   description: string;
+
+  // TODO: this needs to be replaced with UUID[]
   knowledgeSource: KnowledgeSource[];
+  sources: UUID[];
   authors: string[];
   topics: string[];
   type: KcProjectType;
   subProjects: ProjectCreationRequest[];
   calendar: ProjectCalendar;
 }
+
+export type ProjectMoveRequest = { ks: KnowledgeSource, new: UUID };
 
 export interface ProjectUpdateRequest {
   id: UUID;
@@ -76,5 +92,5 @@ export interface ProjectUpdateRequest {
   addKnowledgeSource?: KnowledgeSource[];
   removeKnowledgeSource?: KnowledgeSource[];
   updateKnowledgeSource?: KnowledgeSource[];
-  moveKnowledgeSource?: { ks: KnowledgeSource, new: UUID }
+  moveKnowledgeSource?: ProjectMoveRequest
 }

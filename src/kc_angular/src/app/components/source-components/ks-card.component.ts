@@ -20,6 +20,7 @@ import {KnowledgeSource} from "../../models/knowledge.source.model";
 import {TreeNode} from "primeng/api";
 import {Subscription} from "rxjs";
 import {UUID} from "../../../../../kc_shared/models/uuid.model";
+import {KsCommandService} from "../../services/command-services/ks-command.service";
 
 
 @Component({
@@ -33,8 +34,6 @@ import {UUID} from "../../../../../kc_shared/models/uuid.model";
           <app-ks-thumbnail *ngIf="showThumbnail" [ks]="ks"></app-ks-thumbnail>
         </ng-template>
 
-        <!--    TODO: add "Flagged" field (checkbox)-->
-
         <ng-template pTemplate="content">
           <div class="flex-row-center-between">
         <span class="font-bold text-xl cursor-pointer"
@@ -47,15 +46,15 @@ import {UUID} from "../../../../../kc_shared/models/uuid.model";
             </i>
           </div>
 
-          <div *ngIf="showProjectBreadcrumbs">
+          <div *ngIf="showProjectBreadcrumbs" class="text-500">
             {{ks.associatedProject | projectBreadcrumb: 'truncated'}}
           </div>
 
           <div *ngIf="showDescription">
-            <div *ngIf="description" style="height: 4rem">
+            <div *ngIf="description" class="text-500" style="height: 4rem">
               {{description | truncate: [truncate ? 32 : 128]}}
             </div>
-            <div *ngIf="!description" class="text-400" style="height: 4rem">
+            <div *ngIf="!description" class="text-500" style="height: 4rem">
               Double-click to add a description
             </div>
           </div>
@@ -64,6 +63,7 @@ import {UUID} from "../../../../../kc_shared/models/uuid.model";
             <p-treeSelect [(ngModel)]="selectedProject"
                           [options]="projectTreeNodes"
                           selectionMode="single"
+                          class="p-fluid w-full"
                           (onNodeSelect)="onProjectSelected($event)"
                           appendTo="body"
                           placeholder="Choose a Project">
@@ -242,11 +242,6 @@ export class KsCardComponent implements OnInit, OnDestroy, OnChanges {
    */
   @Output() onTopicClick = new EventEmitter<{ ks: KnowledgeSource, topic: string }>();
 
-  /**
-   * EventEmitter that is triggered when a topic is added or removed
-   */
-  @Output() onTopicChange = new EventEmitter<KnowledgeSource>();
-
   hovering: boolean = false;
 
   contentType?: string;
@@ -262,7 +257,7 @@ export class KsCardComponent implements OnInit, OnDestroy, OnChanges {
 
   private _subProjectTree?: Subscription;
 
-  constructor() {
+  constructor(private command: KsCommandService) {
   }
 
   ngOnInit(): void {
@@ -375,16 +370,16 @@ export class KsCardComponent implements OnInit, OnDestroy, OnChanges {
 
   onTopicRemove() {
     this.ks.topics = this.keywords;
-    this.onTopicChange.emit(this.ks);
+    this.command.update([this.ks]);
   }
 
   onTopicAdd() {
     this.ks.topics = this.keywords;
-    this.onTopicChange.emit(this.ks);
+    this.command.update([this.ks]);
   }
 
   onFlagged(ks: KnowledgeSource, flagged: boolean) {
-    // TODO: this flags the KS, but does not necessarily update it.. so the changes might not be saved...
     this.ks.flagged = flagged;
+    this.command.update([ks]);
   }
 }

@@ -14,16 +14,20 @@
  limitations under the License.
  */
 import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SecurityContext, SimpleChanges, ViewChild} from '@angular/core';
-import {KnowledgeSource} from "src/app/models/knowledge.source.model";
+import {KnowledgeSource, KnowledgeSourceEvent} from "src/app/models/knowledge.source.model";
 import {DomSanitizer, SafeUrl} from "@angular/platform-browser";
 import {FileViewConfig} from "../../../../../kc_shared/models/browser.view.model";
 import {BrowserViewDialogService} from "../../services/ipc-services/browser-view-dialog.service";
-import {KsFactoryService} from "../../services/factory-services/ks-factory.service";
 import {WebsiteMetaTagsModel} from "../../../../../kc_shared/models/web.source.model";
 import {KsCommandService} from "../../services/command-services/ks-command.service";
 import {YouTubePlayer} from "@angular/youtube-player";
 import {Router} from "@angular/router";
-
+import {TopicService} from "../../services/user-services/topic.service";
+import {FormBuilder, FormGroup} from "@angular/forms";
+import {debounceTime, distinctUntilChanged} from "rxjs/operators";
+import {EventModel} from "../../../../../kc_shared/models/event.model";
+import {ElectronIpcService} from "../../services/ipc-services/electron-ipc.service";
+import {NotificationsService} from "../../services/user-services/notifications.service";
 
 @Component({
   selector: 'app-ks-info',
@@ -41,7 +45,7 @@ import {Router} from "@angular/router";
                                 [showEdit]="false"
                                 [showFlag]="true"
                                 [flagged]="ks.flagged"
-                                (onFlagged)="ks.flagged = $event.checked ?? false"
+                                (onFlagged)="onFlagged($event)"
                                 (onOpen)="onKsOpen()"
                                 (onPreview)="onKsPreview()"
                                 (onRemove)="onKsRemove()">
@@ -50,36 +54,41 @@ import {Router} from "@angular/router";
             </div>
 
             <div class="col-12 lg:col-6">
-              <div class="flex-row-center-between col-12">
-                <div class="field p-fluid w-full">
-                  <input id="_ksTitle"
-                         type="text"
-                         class="text-2xl"
-                         pInputText
-                         required
-                         [(ngModel)]="ks.title">
+              <form [formGroup]="form">
+                <div class="p-fluid grid">
+
+                  <div class="field w-full col-12">
+                    <input id="_ksTitle"
+                           type="text"
+                           class="text-2xl"
+                           pInputText
+                           required
+                           minlength="3"
+                           formControlName="title">
+                  </div>
+
+                  <div class="field col-12">
+                    <textarea pInputTextarea id="_ksDescription"
+                              [autoResize]="true"
+                              class="p-fluid"
+                              style="max-height: 8rem"
+                              placeholder="Description"
+                              formControlName="description">
+                    </textarea>
+                  </div>
+
+                  <div class="field col-12">
+                    <p-chips [max]="5"
+                             [allowDuplicate]="false"
+                             [addOnBlur]="true"
+                             [addOnTab]="true"
+                             (onChipClick)="onTopicClick($event)"
+                             formControlName="topics"
+                             placeholder="Start typing to add a topic...">
+                    </p-chips>
+                  </div>
                 </div>
-              </div>
-              <div class="field col-12">
-            <textarea pInputTextarea id="_ksDescription"
-                      [rows]="5"
-                      [autoResize]="true"
-                      class="p-fluid"
-                      style="max-height: 12rem"
-                      placeholder="Description"
-                      [(ngModel)]="ks.description">
-              </textarea>
-              </div>
-              <div class="field col-12">
-                <p-chips [(ngModel)]="ks.topics"
-                         [max]="5"
-                         [allowDuplicate]="false"
-                         [addOnBlur]="true"
-                         [addOnTab]="true"
-                         (onChipClick)="onTopicClick($event)"
-                         placeholder="Start typing to add a topic...">
-                </p-chips>
-              </div>
+              </form>
             </div>
           </div>
         </p-panel>
@@ -89,17 +98,28 @@ import {Router} from "@angular/router";
                  class="col-12"
                  [toggleable]="true"
                  [collapsed]="collapseProject">
-          <!--          TODO: finish this...-->
           <div class="h-full w-full">
             <div class="w-full flex flex-row flex-auto">
               <div class="p-fluid grid w-full">
-                <div class="field p-float-label col-6 mt-5 flex-row-center-between">
-                  <button pButton class="p-button-text" icon="pi pi-arrow-circle-right" (click)="onGoToProject($event)"></button>
-                  <input id="projectName" type="text" pInputText disabled
+                <div class="col-2 lg:col-1 field p-float-label mt-5 flex-row-center-between">
+                  <button pButton class="p-button-text"
+                          icon="pi pi-reply"
+                          label="Move"
+                          (click)="onMove()">
+                  </button>
+                </div>
+                <div class="field p-float-label col mt-5 flex-row-center-between">
+                  <input id="projectName"
+                         type="text"
+                         pInputText
+                         disabled
                          [ngModel]="ks.associatedProject.value | projectName">
                   <label for="projectName">Project Name</label>
                 </div>
-                <div class="field p-float-label col-6 mt-5">
+                <div class="col-1 field p-float-label mt-5 flex-row-center-between">
+                  <button pButton class="p-button-text" icon="pi pi-arrow-circle-right" (click)="onGoToProject($event)"></button>
+                </div>
+                <div class="field p-float-label col mt-5">
                   <input id="projectName" type="text" pInputText disabled
                          [ngModel]="ks.associatedProject.value">
                   <label for="projectName">Project Id</label>
@@ -123,6 +143,7 @@ import {Router} from "@angular/router";
                             #dueDateCal
                             appendTo="body"
                             placeholder="Due Date"
+                            (ngModelChange)="onDueDate($event)"
                             [showOtherMonths]="true"
                             [numberOfMonths]="1"
                             [monthNavigator]="true"
@@ -132,7 +153,7 @@ import {Router} from "@angular/router";
                             [hideOnDateTimeSelect]="false"
                             hourFormat="12">
                 </p-calendar>
-                <button pButton icon="pi pi-times" [disabled]="!ks.dateDue" (click)="ks.dateDue = undefined"></button>
+                <button pButton icon="pi pi-times" [disabled]="!ks.dateDue" (click)="onDueDate(undefined)"></button>
               </div>
             </div>
 
@@ -140,8 +161,7 @@ import {Router} from "@angular/router";
           </div>
         </p-panel>
 
-        <!--    TODO: this is causing the app to crash randomly... might have something to do with filenames but not sure...-->
-        <p-panel *ngIf="this.ksIsPdf"
+        <p-panel *ngIf="ksIsPdf"
                  class="col-12"
                  #pdfPanel
                  header="PDF"
@@ -152,7 +172,7 @@ import {Router} from "@angular/router";
           </ng-template>
 
           <ng-template pTemplate="content">
-            <div *ngIf="this.ksIsPdf" class="flex-col-center-start h-full">
+            <div *ngIf="ksIsPdf" class="flex-col-center-start h-full">
               <embed *ngIf="safeUrl && this.allowCollapsedContent" [src]="safeUrl" class="p-fluid"
                      [style]="{width: '100%', 'height': '65vh'}">
             </div>
@@ -258,9 +278,15 @@ import {Router} from "@angular/router";
                 <label for="iconUrl">Icon URL</label>
               </div>
 
-              <div class="field p-float-label sm:col-12 md:col-12 lg:col-6 mt-4">
-                <input id="accessLink" type="text" pInputText disabled [value]="ks.accessLink">
+              <div class="field p-float-label sm:col-12 md:col-12 lg:col-6 mt-4 p-fluid p-inputgroup">
+                <input id="accessLink" type="text" pInputText disabled [value]="ks.accessLink" style="width: calc(100% - 6rem)">
                 <label for="accessLink">Access Link</label>
+                <button pButton
+                        style="width: 6rem"
+                        *ngIf="ks.ingestType === 'file'"
+                        label="Show"
+                        (click)="show(ks.accessLink)">
+                </button>
               </div>
             </div>
           </ng-template>
@@ -285,9 +311,11 @@ export class KsInfoComponent implements OnInit, OnChanges {
 
   @Input() collapseAll: boolean = false;
 
-  @Output() onEdit = new EventEmitter<KnowledgeSource>();
+  @Input() isDialog: boolean = false;
 
   @Output() onRemove = new EventEmitter<KnowledgeSource>();
+
+  @Output() onSaved = new EventEmitter<KnowledgeSource>();
 
   @Output() shouldClose = new EventEmitter<KnowledgeSource>();
 
@@ -321,16 +349,70 @@ export class KsInfoComponent implements OnInit, OnChanges {
 
   collapseProject: boolean = false;
 
+  form: FormGroup;
+  ksIsPdf: boolean = false;
+  private first: boolean = true;
+
   constructor(private sanitizer: DomSanitizer,
               private browser: BrowserViewDialogService,
+              private ipc: ElectronIpcService,
               private router: Router,
-              private command: KsCommandService,
-              private factory: KsFactoryService) {
-  }
+              private topics: TopicService,
+              private notifications: NotificationsService,
+              private formBuilder: FormBuilder,
+              private command: KsCommandService) {
+    this.form = formBuilder.group({
+      id: '',
+      title: [''],
+      description: [''],
+      topics: []
+    });
 
-  get ksIsPdf() {
-    return this.ks.ingestType === 'file' && this.ks.reference.source.file?.type.includes('pdf');
-  };
+    this.form.valueChanges.pipe(
+      debounceTime(this.isDialog ? 2500 : 1000),
+      distinctUntilChanged((prev, curr) => {
+        if (curr.title.length <= 3) {
+          return true;
+        }
+
+        return (prev.title === curr.title &&
+          prev.description === curr.description &&
+          JSON.stringify(prev.topics) === JSON.stringify(curr.topics)
+        );
+      })
+    ).subscribe((formValue) => {
+      if (this.first) {
+        this.first = false;
+      } else {
+
+        const event: EventModel = {
+          description: '',
+          timestamp: Date(),
+          type: 'update'
+        }
+        // TODO: push update to knowledge source event list (currently, `events` is not the right type...)...
+
+        const ksEvent: KnowledgeSourceEvent = {
+          date: new Date(),
+          label: 'Updated',
+        }
+        if (!this.ks.events) {
+          this.ks.events = [];
+        }
+
+        this.ks.events.push(ksEvent);
+
+        this.ks.title = this.form.get('title')?.value;
+        this.ks.description = this.form.get('description')?.value;
+        this.ks.topics = this.form.get('topics')?.value;
+
+        if (this.ks.associatedProject && this.ks.associatedProject.value.length > 0) {
+          this.command.update([this.ks], !this.isDialog);
+          this.onSaved.emit(this.ks);
+        }
+      }
+    })
+  }
 
   get ksAssociatedProjectId() {
     return this.ks.associatedProject?.value ?? '';
@@ -343,11 +425,13 @@ export class KsInfoComponent implements OnInit, OnChanges {
     this.fileConfig = undefined;
 
     this.collapseTimeline = false;
-    this.collapseYouTube = true;
-    this.collapsePdf = true;
-    this.collapseExtraction = true;
-    this.collapseSource = true;
+    this.collapseYouTube = false;
+    this.collapsePdf = false;
+    this.collapseExtraction = false;
+    this.collapseSource = false;
     this.collapseProject = false;
+
+    this.first = true;
   }
 
   onExpandAll() {
@@ -413,7 +497,16 @@ export class KsInfoComponent implements OnInit, OnChanges {
           }
           if (typeof ks.accessLink === 'string')
             this.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl('file://' + encodeURI(ks.accessLink));
+
+          this.ksIsPdf = this.ks.reference.source.file?.type.includes('pdf') ?? false;
         }
+
+        this.form.patchValue({
+          id: ks.id.value,
+          title: ks.title,
+          description: ks.description,
+          topics: ks.topics
+        })
 
         setTimeout(() => {
           this.allowCollapsedContent = true;
@@ -424,9 +517,6 @@ export class KsInfoComponent implements OnInit, OnChanges {
     }
 
     try {
-      if (changes.collapseAll?.isFirstChange()) {
-        return;
-      }
       if (changes.collapseAll?.currentValue !== undefined) {
         if (changes.collapseAll.currentValue === true) {
           this.onCollapseAll();
@@ -498,8 +588,7 @@ export class KsInfoComponent implements OnInit, OnChanges {
       return;
     }
 
-    const ks = this.factory.searchKS($event.value);
-    this.browser.open({ks: ks});
+    this.topics.search($event.value);
   }
 
   onKsOpen() {
@@ -510,12 +599,12 @@ export class KsInfoComponent implements OnInit, OnChanges {
     this.command.preview(this.ks);
   }
 
-  onKsEdit() {
-    this.onEdit.emit(this.ks);
-  }
-
   onKsRemove() {
+    if (this.ks.associatedProject) {
+      this.command.remove([this.ks]);
+    }
     this.onRemove.emit(this.ks);
+    this.shouldClose.emit();
   }
 
   youtubeToggle($event: any) {
@@ -533,8 +622,36 @@ export class KsInfoComponent implements OnInit, OnChanges {
     }
   }
 
-  onGoToProject($event: MouseEvent) {
+  onGoToProject(_: MouseEvent) {
     this.router.navigate(['app', 'projects', this.ks.associatedProject.value]);
     this.shouldClose.emit();
+  }
+
+  update() {
+    if (this.ks.associatedProject && this.ks.associatedProject.value.length > 0) {
+      this.command.update([this.ks], !this.isDialog);
+      this.onSaved.emit(this.ks);
+    }
+  }
+
+  onFlagged($event: any) {
+    this.ks.flagged = $event.checked ?? false
+    this.update();
+  }
+
+  onDueDate($event: any) {
+    this.ks.dateDue = $event;
+    this.update();
+  }
+
+  onMove() {
+    this.command.move([this.ks]);
+  }
+
+  show(accessLink: URL | string) {
+    if (typeof accessLink === 'string') {
+      this.ipc.showItemInFolder(accessLink);
+      this.notifications.debug('IngestSettings', 'Locating Folder', location, 'toast');
+    }
   }
 }

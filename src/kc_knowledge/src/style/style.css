@@ -1,6 +1,6 @@
 body {
     font-family: helvetica neue, helvetica, liberation sans, arial, sans-serif;
-    font-size: 14px;
+    font-size: 12px;
 }
 
 #cy {
@@ -24,14 +24,6 @@ h1 {
     top: 0;
     z-index: 99999;
     margin: 1em;
-}
-
-.popper-handle {
-    width: 20px;
-    height: 20px;
-    background: red;
-    border-radius: 20px;
-    z-index: 9999;
 }
 
 .cytoscape-container {

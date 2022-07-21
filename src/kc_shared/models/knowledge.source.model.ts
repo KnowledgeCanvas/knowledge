@@ -13,7 +13,6 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-import {Hashable} from "./hashable.model";
 import {WebSourceModel} from "./web.source.model";
 import {FileSourceModel} from "./file.source.model";
 import {UuidModel} from "./uuid.model";
@@ -31,16 +30,14 @@ export interface KnowledgeSourceModel {
     markup?: UuidModel[]
     topics?: UuidModel[]
     authors?: UuidModel[]
+    flagged: boolean
 }
 
-export class KnowledgeSource implements KnowledgeSourceModel {
-    id!: UuidModel;
-    source!: FileSourceModel | WebSourceModel;
-    title!: string;
-    type!: 'file' | 'web';
+export interface KnowledgeSource extends KnowledgeSourceModel {
+
 }
 
-export interface KnowledgeSourceImage extends Hashable {
+export interface KnowledgeSourceImage {
     id: UuidModel
     data: string
 }

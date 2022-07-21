@@ -82,7 +82,6 @@ export class AutoscanService {
     })
 
     this.receive(this.channels.fmConfirmAdd, (message: IpcMessage) => {
-      console.log('Confirm add: ', message);
       if (message.success?.data?.id && message.success.data.newPath) {
         this.__move.next(message.success.data);
       }

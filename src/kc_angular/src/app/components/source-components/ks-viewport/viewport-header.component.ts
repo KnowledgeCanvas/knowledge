@@ -65,7 +65,7 @@ import {BrowserViewHeaderConfig, BrowserViewHeaderEvent} from "../../../../../..
           <button pButton
                   [disabled]="!config.canCopy"
                   (click)="copy()"
-                  icon="pi pi-copy"
+                  [icon]="copyIcon"
                   class="p-button-text"
                   [pTooltip]="copyTooltip"
                   tooltipPosition="left">
@@ -84,7 +84,7 @@ import {BrowserViewHeaderConfig, BrowserViewHeaderEvent} from "../../../../../..
                   *ngIf="config.showSaveButton"
                   [disabled]="!config.canSave"
                   (click)="save()"
-                  icon="pi pi-save"
+                  [icon]="saveIcon"
                   class="p-button-text"
                   [pTooltip]="saveTooltip"
                   tooltipPosition="left">
@@ -160,8 +160,11 @@ export class ViewportHeaderComponent implements OnInit, OnChanges {
   copyTooltip: string = 'Copy to Clipboard';
   forwardTooltip: string = 'Go Forward';
   refreshTooltip: string = 'Reload this page';
-  saveTooltip: string = 'Add to "Up Next"'
+  saveTooltip: string = 'Send to Inbox'
   openTooltip: string = 'Open in...';
+
+  copyIcon: string = 'pi pi-copy';
+  saveIcon: string = 'pi pi-save';
 
   // Putting this here for extensibility, but currently we are not supported letting the user type in a random URL (i.e. this is for display only)
   displayTextDisabled: boolean = true;
@@ -189,6 +192,10 @@ export class ViewportHeaderComponent implements OnInit, OnChanges {
 
   copy() {
     this.headerEvents.emit({copyClicked: true});
+    this.copyIcon = 'pi pi-check';
+    setTimeout(() => {
+      this.copyIcon = 'pi pi-copy'
+    }, 2000)
   }
 
   forward() {
@@ -201,6 +208,10 @@ export class ViewportHeaderComponent implements OnInit, OnChanges {
 
   save() {
     this.headerEvents.emit({saveClicked: true});
+    this.saveIcon = 'pi pi-check';
+    setTimeout(() => {
+      this.saveIcon = 'pi pi-save'
+    }, 2000)
   }
 
   open() {

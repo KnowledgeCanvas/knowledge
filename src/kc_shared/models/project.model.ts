@@ -14,10 +14,10 @@
  limitations under the License.
  */
 import {KnowledgeSource} from "kc_angular/src/app/models/knowledge.source.model";
-import {UUID, UuidModel} from "./uuid.model";
+import {UUID} from "./uuid.model";
 import {EventModel} from "./event.model";
 
-export type KcProjectType = 'school' | 'work' | 'hobby' | 'default' | 'research';
+export type KcProjectType = 'default' | 'school' | 'work' | 'hobby' | 'research';
 
 export interface KcProjectModel {
     readonly id: UUID;
@@ -29,5 +29,8 @@ export interface KcProjectModel {
     parentId: UUID;
     subprojects: string[];
     topics: string[];
+    sources: UUID[];
+
+    // TODO: this needs to be removed
     knowledgeSource: KnowledgeSource[];
 }

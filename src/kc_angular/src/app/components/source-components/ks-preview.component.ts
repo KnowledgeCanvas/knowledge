@@ -144,7 +144,6 @@ export class KsPreviewComponent implements OnInit, OnDestroy {
 
   copy(text: string) {
     this.clipboard.copy(text);
-    this.notifications.success('KsPreview', 'Copied to Clipboard!', '📋')
   }
 
   onFileViewClickEvent(clickEvent: FileViewClickEvent) {
@@ -194,7 +193,6 @@ export class KsPreviewComponent implements OnInit, OnDestroy {
     if (!this.browserViewConfig)
       return;
 
-    // TODO: there should be a more robust check to make sure the KS is not already in the system...
     if (navEvent.url?.href !== this.browserViewConfig.url.href) {
       this.browserViewConfig = {...this.browserViewConfig, ...{canSave: true}};
     } else {

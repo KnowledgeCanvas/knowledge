@@ -206,7 +206,11 @@ export class ProjectService {
       events: [],
       expanded: true,
       id: projectId,
+
+      // TODO: this should be removed
       knowledgeSource: project.knowledgeSource,
+
+      sources: [],
       name: project.name,
       parentId: project.parentId,
       subprojects: [],
@@ -231,7 +235,11 @@ export class ProjectService {
           events: [],
           expanded: true,
           id: uuid[i],
+
+          // TODO: this should be removed
           knowledgeSource: subRequest.knowledgeSource,
+
+          sources: [],
           name: subRequest.name,
           parentId: subRequest.parentId,
           subprojects: [],
@@ -321,18 +329,23 @@ export class ProjectService {
       // Handle add subproject update
       if (update.addSubprojects && update.addSubprojects.length) {
         if (target.subprojects) {
+          let subProjectList = ''
           for (let subp of update.addSubprojects) {
             target.subprojects.push(subp);
+
           }
+          setDescription('Add Subprojects', `${update.addSubprojects.length} subprojects added`);
         }
       }
 
       // Handle remove subproject update
       if (update.removeSubprojects && update.removeSubprojects.length) {
         for (let subp of update.removeSubprojects) {
-          if (target.subprojects)
+          if (target.subprojects) {
             target.subprojects = target.subprojects.filter(s => s !== subp);
+          }
         }
+        setDescription('Remove Subprojects', `${update.removeSubprojects.length} subprojects removed`);
       }
 
       // Handle knowledge source removal
@@ -378,7 +391,7 @@ export class ProjectService {
       }
 
       let event: EventModel = {
-        description: "",
+        description: description,
         type: 'update',
         timestamp: Date()
       }

@@ -13,7 +13,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-import {IpcMessage, BrowserViewRequest, BrowserViewResponse} from "../../../../kc_shared/models/electron.ipc.model";
+import {BrowserViewRequest, BrowserViewResponse, IpcMessage} from "../../../../kc_shared/models/electron.ipc.model";
 import {Menu, MenuItem} from "electron";
 
 const share: any = (global as any).share;

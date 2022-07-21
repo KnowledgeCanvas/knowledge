@@ -14,19 +14,19 @@
  limitations under the License.
  */
 
-
-
 class WindowService {
     constructor() {
         share.ipcMain.on('A2E:Window:Minimize', (_: any) => {
-            // TODO: this is definitely broken... usually the main window is NOT the first in this array when a second window is open...
+            // TODO: this method of finding the main window is definitely broken...
+            //      there is no gaurantee that the main window will be first in this array when a second window is open...
+            //      this is preventing us from opening the Knowledge Graph in its own window
             const kcMainWindow = share.BrowserWindow.getAllWindows()[0];
             if (kcMainWindow) {
                 kcMainWindow.minimize();
             } else {
                 console.log('Unable to get main window...');
             }
-        })
+        });
 
         share.ipcMain.on('A2E:Window:Maximize', (_: any) => {
             const kcMainWindow = share.BrowserWindow.getAllWindows()[0];
@@ -35,7 +35,25 @@ class WindowService {
             } else {
                 console.log('Unable to get main window...');
             }
-        })
+        });
+
+        share.ipcMain.on('A2E:Window:ZoomIn', (_: any, zoomLevel: number) => {
+            const kcMainWindow = share.BrowserWindow.getAllWindows()[0];
+            if (kcMainWindow) {
+                kcMainWindow.webContents.setZoomFactor(zoomLevel / 100);
+            } else {
+                console.log('Unable to get main window...');
+            }
+        });
+
+        share.ipcMain.on('A2E:Window:ZoomOut', (_: any, zoomLevel: number) => {
+            const kcMainWindow = share.BrowserWindow.getAllWindows()[0];
+            if (kcMainWindow) {
+                kcMainWindow.webContents.setZoomFactor(zoomLevel / 100);
+            } else {
+                console.log('Unable to get main window...');
+            }
+        });
     }
 }
 

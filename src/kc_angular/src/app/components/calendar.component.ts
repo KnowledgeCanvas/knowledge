@@ -23,12 +23,13 @@ import {KcCardRequest} from "./project-components/project-calendar.component";
 import {DataService} from "../services/user-services/data.service";
 import {OverlayPanel} from "primeng/overlaypanel";
 import {KsCommandService} from "../services/command-services/ks-command.service";
+import {TopicService} from "../services/user-services/topic.service";
 
 @Component({
   selector: 'app-calendar',
   template: `
     <div class="h-full w-full flex-col-center-center">
-      <div class="w-full h-full flex-col-center-between surface-section p-4" [style]="{'max-width': 'min(100%, 96rem)'}">
+      <div class="w-full h-full flex-col-center-between surface-section p-4" [style]="{'max-width': 'min(100%, 128rem)'}">
         <app-project-calendar [kcProject]="project | async"
                               [ksList]="ksList | async"
                               (onKsClick)="onKsClick($event)"
@@ -45,7 +46,6 @@ import {KsCommandService} from "../services/command-services/ks-command.service"
                    (onOpen)="onOpen($event)"
                    (onPreview)="onPreview($event)"
                    (onTopicClick)="onTopicClick($event)"
-                   (onTopicChange)="onTopicChange($event)"
                    [ks]="selectedKs">
       </app-ks-card>
       <app-project-card *ngIf="selectedProject" [kcProject]="selectedProject"></app-project-card>
@@ -71,14 +71,13 @@ export class CalendarComponent implements OnInit, OnDestroy {
   constructor(private command: KsCommandService,
               private data: DataService,
               private projects: ProjectService,
-              private route: ActivatedRoute) {
+              private route: ActivatedRoute,
+              private topics: TopicService) {
     this.ksList = data.ksList;
     this.subscription = route.paramMap.subscribe((params) => {
-      console.log('Calendar route param update: ', params);
       this.projectId = params.get('projectId') ?? '';
     })
     this.project = projects.currentProject;
-    console.log('Calendar route: ', this.route);
     this.projectId = route.snapshot.params.projectId ?? '';
   }
 
@@ -100,7 +99,7 @@ export class CalendarComponent implements OnInit, OnDestroy {
     this.selectedKs = undefined;
     this.selectedProject = undefined;
 
-    const subscription = this.ksList.pipe().subscribe((ks) => {
+    const subscription = this.ksList.subscribe((ks) => {
       const selected = ks.find(k => k.id.value === $event.ksId?.value);
       if (selected)
         this.selectedKs = selected;
@@ -115,7 +114,6 @@ export class CalendarComponent implements OnInit, OnDestroy {
   }
 
   onProjectClick($event: KcCardRequest) {
-    console.log('Project click: ', $event);
     if (this.calendarOverlay?.overlayVisible) {
       this.calendarOverlay.hide();
     }
@@ -135,20 +133,20 @@ export class CalendarComponent implements OnInit, OnDestroy {
   onRemove(ks: KnowledgeSource) {
     this.command.remove([ks])
   }
+
   onEdit(ks: KnowledgeSource) {
     this.command.detail(ks)
   }
+
   onOpen(ks: KnowledgeSource) {
     this.command.open(ks);
   }
+
   onPreview(ks: KnowledgeSource) {
     this.command.preview(ks);
   }
+
   onTopicClick($event: {ks: KnowledgeSource, topic: string}) {
-    console.log('Need to search for topic: ', $event.topic);
-  }
-  onTopicChange(ks: KnowledgeSource) {
-    // TODO: nothing is currently subscribed to this, so updates go unnoticed...
-    this.command.update([ks]);
+    this.topics.search($event.topic);
   }
 }

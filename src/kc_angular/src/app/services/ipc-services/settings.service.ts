@@ -18,8 +18,9 @@ import {Injectable, NgZone} from '@angular/core';
 import {BehaviorSubject} from 'rxjs';
 import {ElectronIpcService} from "./electron-ipc.service";
 import {ApplicationSettingsModel, DisplaySettingsModel, IngestSettingsModel, SearchSettingsModel, SettingsModel} from "../../../../../kc_shared/models/settings.model";
-import {DialogService} from "primeng/dynamicdialog";
+import {DialogService, DynamicDialogRef} from "primeng/dynamicdialog";
 import {SettingsComponent} from "../../components/settings/settings.component";
+import {Router} from "@angular/router";
 
 @Injectable({
   providedIn: 'root'
@@ -39,9 +40,13 @@ export class SettingsService {
 
   private _display = new BehaviorSubject<DisplaySettingsModel>({} as any);
   display = this._display.asObservable();
+
   private send = window.api.send;
+
   private receive = window.api.receive;
+
   private receiveOnce = window.api.receiveOnce;
+
   private settingsChannels = {
     getSettings: 'A2E:Settings:Get',
     getDefaults: 'A2E:Settings:Defaults',
@@ -50,8 +55,11 @@ export class SettingsService {
     setSettings: 'A2E:Settings:Set'
   }
 
+  private ref?: DynamicDialogRef;
+
   constructor(private ipcService: ElectronIpcService,
               private dialog: DialogService,
+              private router: Router,
               private zone: NgZone) {
     /**
      * Keep a copy of default settings to allow other components and services to instantiate
@@ -92,6 +100,9 @@ export class SettingsService {
 
         if (settings.display) {
           this._display.next(settings.display);
+          setTimeout(() => {
+            this.send('A2E:Window:ZoomIn', settings.display.zoom);
+          })
         } else {
           console.error('SettingsService - Display Settings not found...');
         }
@@ -121,11 +132,38 @@ export class SettingsService {
   }
 
 
-  show() {
-    this.dialog.open(SettingsComponent, {
+  show(category?: 'display' | 'search' | 'import') {
+    this.ref = this.dialog.open(SettingsComponent, {
       header: 'Settings',
       width: 'min(72rem, 95vw)',
-      height: 'min(72rem, 95vh)'
+      height: 'min(72rem, 95vh)',
+      contentStyle: {
+        'border-bottom-left-radius': '6px',
+        'border-bottom-right-radius': '6px'
+      }
     });
+
+    if (!category) {
+      category = 'display';
+    }
+
+    const route = this.router.url;
+    const settingsRoute = route.search(/settings:.*/);
+
+    setTimeout(() => {
+      this.router.navigate(['app', {outlets: {settings: [category]}}]).then((success) => {
+        if (!success) {
+          console.warn('SettingsService - Unable to navigate to ', category);
+        }
+      })
+    });
+
+    this.ref.onClose.subscribe((result) => {
+      this.router.navigateByUrl(route).then((success) => {
+        if (!success) {
+          console.warn('SettingsService - Unable to navigate to ', category);
+        }
+      })
+    })
   }
 }

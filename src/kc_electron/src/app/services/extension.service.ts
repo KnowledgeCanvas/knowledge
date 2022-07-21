@@ -35,6 +35,11 @@ class ExtensionServer {
                 return;
             }
 
+            if (settings.ingest.extensions.port && settings.ingest.extensions.port !== this.__PORT) {
+                this.stop();
+                this.__PORT = settings.ingest.extensions.port;
+            }
+
             if (settings.ingest.extensions.enabled) {
                 this.start(settings.ingest);
             } else {
@@ -93,7 +98,7 @@ class ExtensionServer {
             }
         });
 
-        console.debug('Extensions - Starting server...');
+        console.debug('Extensions - Starting server on port ', this.__PORT);
         this.__server?.listen(this.__PORT);
     }
 

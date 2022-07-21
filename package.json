@@ -1,7 +1,7 @@
 {
   "name": "knowledge-canvas",
   "version": "0.5.4",
-  "description": "Knowledge Canvas is an application for students, researchers, and life-long learners to manage their digital lives.",
+  "description": "Knowledge is an application for students, researchers, and life-long learners to manage their digital lives.",
   "author": "Rob Royce <robertris2@gmail.com> (https://robroyce.dev)",
   "license": "Apache-2.0",
   "private": true,
@@ -35,6 +35,7 @@
     "publish-all": "electron-builder -mwl --x64 --arm64 --publish always",
     "release": "standard-version",
     "start": "electron .",
+    "start-windows": "./node_modules/electron/dist/electron.exe . --platform win --arch x64",
     "start-debug": "electron . --inspect=5858",
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch-main": "cd src/kc_angular && yarn run watch-main",

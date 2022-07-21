@@ -22,10 +22,8 @@ import {Table} from "primeng/table";
 import {KsCommandService} from "../../services/command-services/ks-command.service";
 import {ProjectService} from "../../services/factory-services/project.service";
 import {OverlayPanel} from "primeng/overlaypanel";
-import {BrowserViewDialogService} from "../../services/ipc-services/browser-view-dialog.service";
-import {KsFactoryService} from "../../services/factory-services/ks-factory.service";
-import {SettingsService} from "../../services/ipc-services/settings.service";
 import {KsContextMenuService} from "../../services/factory-services/ks-context-menu.service";
+import {TopicService} from "../../services/user-services/topic.service";
 
 @Component({
   selector: 'ks-table',
@@ -192,16 +190,13 @@ import {KsContextMenuService} from "../../services/factory-services/ks-context-m
           <!--Declare Table Summary Row-->
           <ng-template pTemplate="summary">
             <div *ngIf="ksList.length && ksTopics.length">
-              Knowledge Source Topics
+              Topics
               <div style="max-height: 5rem; overflow-x: hidden; overflow-y: auto">
                 <p-chip *ngFor="let topic of ksTopics"
                         class="cursor-pointer"
-                        [style]="{'margin-top': '5px', 'margin-right': '5px', padding: 0}"
+                        label="{{topic}} ({{ksTableTopicCount(topic)}})"
+                        styleClass="search-chip m-1"
                         (click)="onChipClick(topic)">
-              <span>
-                <button pButton icon="pi pi-search" class="p-button-text p-1"></button>
-              </span>
-                  <span class="pr-3">{{topic}} ({{ksTableTopicCount(topic)}})</span>
                 </p-chip>
               </div>
             </div>
@@ -264,21 +259,9 @@ export class KsTableComponent implements OnInit, OnChanges {
   first: number = 0;
 
   constructor(private command: KsCommandService,
-              private factory: KsFactoryService,
               private projects: ProjectService,
-              private browser: BrowserViewDialogService,
-              private settings: SettingsService,
+              private topics: TopicService,
               private context: KsContextMenuService) {
-
-    // TODO: Settings for showing countdown and subprojects should be moved to the display settings...
-    settings.app.subscribe((appSettings) => {
-      if (appSettings.table?.showCountdown !== undefined) {
-        this.ksTableShowCountdownInsteadOfDates = appSettings.table.showCountdown;
-      }
-      if (appSettings.table?.showSubProjects !== undefined) {
-        this.ksTableAllowSubprojectExpansion = appSettings.table.showSubProjects;
-      }
-    });
   }
 
   private _selectedColumns: any[] = this.KS_TABLE_SUPPORTED_COLUMNS;
@@ -506,8 +489,8 @@ export class KsTableComponent implements OnInit, OnChanges {
       console.warn('Topic appears to have no content.');
       return;
     }
-    let ks = this.factory.searchKS(searchValue);
-    this.browser.open({ks: ks});
+
+    this.topics.search(searchValue);
   }
 
   ksFlagUpdate(event: any, ks: KnowledgeSource) {

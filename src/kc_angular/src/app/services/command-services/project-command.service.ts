@@ -18,6 +18,10 @@ import {Injectable} from '@angular/core';
 import {UUID} from "../../../../../kc_shared/models/uuid.model";
 import {BehaviorSubject} from "rxjs";
 import {KcProject, ProjectUpdateRequest} from "../../models/project.model";
+import {DialogService} from "primeng/dynamicdialog";
+import {ConfirmationService} from "primeng/api";
+import {ProjectService} from "../factory-services/project.service";
+import {ProjectCreationDialogComponent} from "../../components/project-components/project-creation-dialog.component";
 
 @Injectable({
   providedIn: 'root'
@@ -25,21 +29,31 @@ import {KcProject, ProjectUpdateRequest} from "../../models/project.model";
 export class ProjectCommandService {
 
   private _projectDetailEvent = new BehaviorSubject<KcProject | undefined>(undefined);
-  projectDetailEvent = this._projectDetailEvent.asObservable();
+  detailEvent = this._projectDetailEvent.asObservable();
 
   private _projectRemoveEvent = new BehaviorSubject<KcProject[]>([]);
-  projectRemoveEvent = this._projectRemoveEvent.asObservable();
+  removeEvent = this._projectRemoveEvent.asObservable();
 
   private _projectShareEvent = new BehaviorSubject<KcProject[]>([]);
-  projectShareEvent = this._projectShareEvent.asObservable();
+  shareEvent = this._projectShareEvent.asObservable();
 
   private _projectCopyJSONEvent = new BehaviorSubject<KcProject[]>([]);
-  projectCopyJSONEvent = this._projectCopyJSONEvent.asObservable();
+  copyJSONEvent = this._projectCopyJSONEvent.asObservable();
 
   private _projectUpdateEvent = new BehaviorSubject<ProjectUpdateRequest[]>([]);
-  projectUpdateEvent = this._projectUpdateEvent.asObservable();
+  updateEvent = this._projectUpdateEvent.asObservable();
 
-  constructor() {
+  constructor(private dialog: DialogService,
+              private confirmation: ConfirmationService,
+              private projects: ProjectService) {
+  }
+
+  new(parentId?: UUID) {
+    this.dialog.open(ProjectCreationDialogComponent, {
+      width: `min(90vw, 92rem)`,
+      data: {parentId: parentId},
+      style: {'border-radius': '10px'}
+    })
   }
 
   update(projectList: ProjectUpdateRequest[]) {
@@ -47,7 +61,41 @@ export class ProjectCommandService {
   }
 
   remove(projectList: KcProject[]) {
-    this._projectRemoveEvent.next(projectList);
+    if (projectList.length <= 0) {
+      return;
+    }
+
+    const count = (id: string): number => {
+      const project = this.projects.getProject(id);
+      if (!project) {
+        return 0;
+      }
+
+      if (!project.subprojects || project.subprojects.length === 0) {
+        return 1;
+      }
+
+      return 1 + project.subprojects
+        .map(s => count(s))
+        .reduce((prev, curr) => {
+          return prev + curr;
+        });
+    }
+
+    let ids = projectList.map(p => p.id.value);
+    let n = 0;
+    for (let id of ids) {
+      n += count(id);
+    }
+
+    this.confirmation.confirm({
+      message: `Are you sure you want to remove ${n} Projects?`,
+      accept: () => {
+        for (let project of projectList) {
+          this.projects.deleteProject(project.id);
+        }
+      }
+    })
   }
 
   detail(project: KcProject) {

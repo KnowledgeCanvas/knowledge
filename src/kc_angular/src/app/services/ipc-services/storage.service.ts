@@ -17,6 +17,7 @@ import {Injectable} from '@angular/core';
 import {KcProject} from "src/app/models/project.model";
 import {KnowledgeSource} from "src/app/models/knowledge.source.model";
 import {AutoscanService} from "../ingest-services/autoscan.service";
+import {NotificationsService} from "../user-services/notifications.service";
 
 @Injectable({
   providedIn: 'root'
@@ -25,10 +26,10 @@ export class StorageService {
   readonly KC_CURRENT_PROJECT = 'current-project';
   private KC_ALL_PROJECT_IDS = 'kc-projects';
   private db = window.localStorage;
-  private knowledgeSources: KnowledgeSource[] | null = null;
   private projectList: KcProject[] | null = null;
 
-  constructor(private autoscan: AutoscanService) {
+  constructor(private autoscan: AutoscanService,
+              private notifications: NotificationsService) {
   }
 
   get projects(): KcProject[] {
@@ -37,17 +38,19 @@ export class StorageService {
     // Get and parse Project list from local storage
     let projectsStr: string | null = this.db.getItem(this.KC_ALL_PROJECT_IDS);
     if (!projectsStr) {
-      console.warn('Project list does not exist in storage system, creating...');
+      this.notifications.warn('Storage Service', 'Project List Unavailable', 'Project list does not exist in storage system, creating...');
       this.db.setItem(this.KC_ALL_PROJECT_IDS, JSON.stringify([]));
       return projects;
     }
+
     let projectIds: string[] = JSON.parse(projectsStr);
     if (!projectIds) {
-      console.warn('Could not deserialize Project list JSON template... ');
+      this.notifications.warn('Storage Service', 'Invalid Project List', 'Could not deserialize Project list JSON template... ');
       return projects;
     }
+
     if (projectIds.length === 0) {
-      console.warn('No projects available...');
+      this.notifications.warn('Storage Service', 'No Projects Available', '');
       return projects;
     }
 
@@ -58,19 +61,19 @@ export class StorageService {
     for (let pId of projectIds) {
       pStr = this.db.getItem(pId);
       if (!pStr) {
-        console.warn('Got Project ID from storage that did not point to a valid project...');
+        this.notifications.warn('Storage Service', 'Invalid Project Id', pId);
         pStr = null;
         continue;
       }
 
       project = JSON.parse(pStr);
       if (!project) {
-        console.warn('Could not deserialize Project JSON template...');
+        this.notifications.warn('Storage Service', 'Invalid Project Object', 'Could not deserialize Project JSON template...');
         project = null;
         continue;
       }
 
-      this.knowledgeSources = [];
+      // TODO: a fix for refactoring project source list and calendar
 
       // Pre-populate list of Knowledge Sources for later consumption
       if (project.knowledgeSource && project.knowledgeSource.length > 0) {
@@ -103,7 +106,6 @@ export class StorageService {
           ks.dateDue = ks.dateDue ? new Date(ks.dateDue) : ks.dateDue;
           ks.associatedProject = project.id;
           ks.icon = undefined;
-          this.knowledgeSources.push(ks);
         }
       }
       projects.push(project);
@@ -148,13 +150,13 @@ export class StorageService {
     let projectIdsStr: string | null = this.db.getItem(this.KC_ALL_PROJECT_IDS);
 
     if (projectIdsStr === null) {
-      console.warn('Attempted to retrieve project ID list but failed.');
+      this.notifications.warn('Storage Service', 'Project List Unavailable', 'Project list does not exist in storage system when retrieving source list...');
       return [];
     }
 
     let projectIds = JSON.parse(projectIdsStr);
     if (!projectIds) {
-      console.warn('Could not parse project IDs.');
+      this.notifications.warn('Storage Service', 'Invalid Project List', 'Could not deserialize Project list JSON template when retrieving source list...');
       return [];
     }
 
@@ -234,7 +236,7 @@ export class StorageService {
 
   deleteProject(id: string) {
     if (!this.projectList) {
-      console.warn('StorageService: attempting to delete a project that does not exist in memory.');
+      this.notifications.warn('Storage Service', 'Invalid Project', 'Attempting to delete a project that does not exist in memory...');
       return;
     }
 

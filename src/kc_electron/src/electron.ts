@@ -98,12 +98,28 @@ function createMainWindow() {
 }
 
 function setMainWindowListeners() {
-    // TODO: Determine if the following is the best we can do for page load failure
-    // We need to explicitly reload the index upon refresh (note this is only needed in Electron)
-    kcMainWindow.webContents.on('did-fail-load', () => {
-        browserIpc.destroyBrowserViews(kcMainWindow);
-        kcMainWindow.loadFile(MAIN_ENTRY);
-    })
+    kcMainWindow.webContents.on('did-fail-load',
+        (event: any, errorCode: number, errorDescription: string, validatedURL: string, ...other: any) => {
+            event.preventDefault();
+
+            const defaultAction = () => {
+                browserIpc.destroyBrowserViews(kcMainWindow);
+                kcMainWindow.loadFile(MAIN_ENTRY);
+                return;
+            }
+
+            const sender = event.sender;
+
+            if (errorCode === -6 || errorDescription === 'ERR_FILE_NOT_FOUND') {
+                if (validatedURL.includes(process.cwd())) {
+                    defaultAction();
+                }
+            }
+
+            if (!sender || sender.isCrashed() || sender.isDestroyed()) {
+                defaultAction();
+            }
+        })
 
     // Destroy window on close
     kcMainWindow.on('closed', function () {

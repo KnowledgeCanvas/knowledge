@@ -14,7 +14,6 @@
  limitations under the License.
  */
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {DynamicDialogConfig, DynamicDialogRef} from "primeng/dynamicdialog";
 import {SettingsService} from "../../services/ipc-services/settings.service";
 import {ElectronIpcService} from "../../services/ipc-services/electron-ipc.service";
 import {IngestSettingsModel} from "../../../../../kc_shared/models/settings.model";
@@ -33,7 +32,7 @@ export type SelectButtonOption = {
 @Component({
   selector: 'app-ingest-settings',
   template: `
-    <div class="p-fluid grid">
+    <div class="p-fluid grid select-none">
       <div class="col-12">
         <p-panel #autoscanPanel>
           <ng-template pTemplate="header">
@@ -47,14 +46,13 @@ export type SelectButtonOption = {
 
           <ng-template pTemplate="content">
             <div class="p-fluid grid mt-1">
-              <div class="col-12">
-                <b>Interval</b>
-              </div>
               <div class="col-4 p-fluid">
+                <label for="autoscan-interval">Interval</label>
                 <p-inputNumber [(ngModel)]="ingestSettings.autoscan.interval"
                                [suffix]="' seconds'"
                                [disabled]="!ingestSettings.autoscan.enabled"
                                (ngModelChange)="onAutoscanInterval($event)"
+                               inputId="autoscan-interval"
                                [showButtons]="true"
                                [useGrouping]="false"
                                [allowEmpty]="false"
@@ -63,74 +61,28 @@ export type SelectButtonOption = {
                 </p-inputNumber>
               </div>
 
-              <div class="col-12">
-                <b>Autoscan Location</b>
-              </div>
-              <div class="col-12 p-fluid p-inputgroup p-float-label">
-                <button pButton
-                        [disabled]="!ingestSettings.autoscan.enabled"
-                        icon="pi pi-folder"
-                        (click)="getAutoscanPath()">
-                </button>
-                <input pInputText type="text"
-                       #autoscanLocation
-                       disabled
-                       id="autoscanLocation"
-                       style="width: calc(100% - 10rem)"
-                       [(ngModel)]="ingestSettings.autoscan.path">
-                <button pButton
-                        label="Show"
-                        (click)="show(autoscanLocation.value)">
-                </button>
-                <br>
-                <small class="text-gray-500">Files saved to this location will automatically be added to Up Next.</small>
-              </div>
-            </div>
-          </ng-template>
-        </p-panel>
-      </div>
-      <div class="col-12">
-        <p-panel #fileManager>
-          <ng-template pTemplate="header">
-            <div class="flex-row-center-between w-full">
-              <b>File Manager</b>
-            </div>
-          </ng-template>
 
-          <ng-template pTemplate="content">
-            <div class="p-fluid grid mt-1">
-              <div class="col-12">
-                <b>Managed Files</b>
-              </div>
-              <div class="col-12">
-                <p-selectButton [options]="fileManagerStates"
-                                [(ngModel)]="ingestSettings.manager.target"
-                                (onChange)="onFileManagerTargetChange($event)"
-                                optionLabel="name"
-                                optionValue="value"
-                                optionDisabled="disabled">
-                </p-selectButton>
-              </div>
-
-              <div class="col-12 mt-1">
-                <b>Storage Location</b>
-              </div>
-              <div class="col-12 p-fluid p-inputgroup p-float-label">
-                <button pButton
-                        icon="pi pi-folder"
-                        disabled
-                        (click)="getStoragePath()">
-                </button>
-                <input pInputText type="text"
-                       #filestorage
-                       disabled
-                       style="width: calc(100% - 10rem)"
-                       [(ngModel)]="ingestSettings.manager.storageLocation">
-                <button pButton label="Show"
-                        (click)="show(filestorage.value)">
-                </button>
-                <br>
-                <small class="text-gray-500">Files will be moved from their original location to this location.</small>
+              <div class="col-12 p-fluid mt-1">
+                <label for="autoscanLocation">Autoscan Location</label>
+                <div class="p-inputgroup p-float-label">
+                  <button pButton
+                          [disabled]="!ingestSettings.autoscan.enabled"
+                          icon="pi pi-folder"
+                          (click)="getAutoscanPath()">
+                  </button>
+                  <input pInputText type="text"
+                         #autoscanLocation
+                         id="autoscanLocation"
+                         disabled
+                         style="width: calc(100% - 10rem)"
+                         [(ngModel)]="ingestSettings.autoscan.path">
+                  <button pButton
+                          label="Show"
+                          (click)="show(autoscanLocation.value)">
+                  </button>
+                  <br>
+                  <small class="text-gray-500">Files saved to this location will automatically be added to your Inbox.</small>
+                </div>
               </div>
             </div>
           </ng-template>
@@ -149,19 +101,81 @@ export type SelectButtonOption = {
 
           <ng-template pTemplate="content">
             <div class="p-fluid grid mt-1">
-              <div class="col-12">
-                <b>Port</b>
-              </div>
-              <div class="col-4 p-fluid">
+              <div class="col-6 flex flex-column">
+                <!--                TODO: Re-enable port selection once it has been fixed on the Electron side-->
+                <label for="port-number">Port</label>
                 <p-inputNumber [(ngModel)]="ingestSettings.extensions.port"
                                [disabled]="!ingestSettings.extensions.enabled"
                                (ngModelChange)="onExtensionPort($event)"
+                               inputId="port-number"
                                [showButtons]="true"
                                [useGrouping]="false"
                                [allowEmpty]="false"
                                [min]="1025"
                                [max]="65535">
                 </p-inputNumber>
+              </div>
+              <div class="col-6 flex flex-column align-items-center">
+                <div>
+                  <a target="_blank" href="https://github.com/KnowledgeCanvas/extensions">
+                    <app-ks-icon iconUrl="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Google_Chrome_icon_%28September_2014%29.svg/1024px-Google_Chrome_icon_%28September_2014%29.svg.png?20200318094909"></app-ks-icon>
+                  </a>
+                  <a target="_blank" class="pl-4" href="https://github.com/KnowledgeCanvas/extensions">
+                    <app-ks-icon iconUrl="https://design.firefox.com/product-identity/firefox/firefox/firefox-logo.svg"></app-ks-icon>
+                  </a>
+                </div>
+                <div>Download Extensions</div>
+              </div>
+            </div>
+          </ng-template>
+        </p-panel>
+      </div>
+      <div class="col-12">
+        <p-panel #fileManager>
+          <ng-template pTemplate="header">
+            <div class="flex-row-center-between w-full">
+              <b>File Manager</b>
+            </div>
+          </ng-template>
+
+          <ng-template pTemplate="content">
+            <div class="p-fluid grid mt-1">
+<!--              TODO: re-enable this once the feature is fully built out and supported -->
+<!--              <div class="col-12">-->
+<!--                <label for="managed-files">Managed Files</label>-->
+<!--                <p-selectButton [options]="fileManagerStates"-->
+<!--                                [(ngModel)]="ingestSettings.manager.target"-->
+<!--                                (onChange)="onFileManagerTargetChange($event)"-->
+<!--                                [disabled]="true"-->
+<!--                                pTooltip="Knowledge currently only supports managing files that were imported using Autoscan"-->
+<!--                                id="managed-files"-->
+<!--                                optionLabel="name"-->
+<!--                                optionValue="value"-->
+<!--                                optionDisabled="disabled">-->
+<!--                </p-selectButton>-->
+<!--              </div>-->
+
+              <div class="col-12 p-fluid mt-1">
+                <label for="storage-path">Storage Location</label>
+                <div class="p-inputgroup p-float-label">
+                  <button pButton
+                          icon="pi pi-folder"
+                          pTooltip="Changing storage location will be supported in a future version of Knowledge"
+                          disabled
+                          (click)="getStoragePath()">
+                  </button>
+                  <input pInputText type="text"
+                         id="storage-path"
+                         #filestorage
+                         disabled
+                         style="width: calc(100% - 10rem)"
+                         [(ngModel)]="ingestSettings.manager.storageLocation">
+                  <button pButton label="Show"
+                          (click)="show(filestorage.value)">
+                  </button>
+                  <br>
+                  <small class="text-gray-500">Autoscan files will be moved from their original location to this location.</small>
+                </div>
               </div>
             </div>
           </ng-template>
@@ -181,9 +195,7 @@ export class IngestSettingsComponent implements OnInit {
     {name: 'All Imported Files', value: 'all', disabled: false}
   ];
 
-  constructor(private ref: DynamicDialogRef,
-              private config: DynamicDialogConfig,
-              private settingsService: SettingsService,
+  constructor(private settingsService: SettingsService,
               private notifications: NotificationsService,
               private ipcService: ElectronIpcService) {
     this.ingestSettings = settingsService.defaults.ingest;

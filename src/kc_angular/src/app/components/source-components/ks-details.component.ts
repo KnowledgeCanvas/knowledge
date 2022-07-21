@@ -21,11 +21,54 @@ import {NotificationsService} from "../../services/user-services/notifications.s
 @Component({
   selector: 'app-details',
   template: `
-    <app-ks-info [ks]="ks" (shouldClose)="onClose()"></app-ks-info>`,
+    <div class="w-full flex-row-center-between pb-3 pt-3 sticky">
+      <div class="flex-row-center-start">
+        <app-ks-icon [ks]="ks" class="pr-3"></app-ks-icon>
+        <app-project-breadcrumb [disabled]="true"
+                                [projectId]="ks.associatedProject.value">
+        </app-project-breadcrumb>
+      </div>
+      <div class="flex flex-row align-items-center justify-content-center">
+        <button pButton
+                icon="pi pi-arrow-down"
+                label="Expand All"
+                (click)="expandAll()"
+                class="p-button-rounded p-button-text shadow-none"></button>
+        <button pButton
+                icon="pi pi-arrow-up"
+                label="Collapse All"
+                (click)="collapseAll()"
+                class="p-button-rounded p-button-text shadow-none"></button>
+      </div>
+      <div class="flex-row-center-end" style="width: 10rem">
+        <div *ngIf="saved" class="flex-row-center-start text-primary">
+          <div class="pi pi-check"></div>
+          <div class="px-3">Saved</div>
+        </div>
+        <div>
+          <button pButton class="p-button-text p-button-rounded"
+                  icon="pi pi-times" (click)="onClose()">
+          </button>
+        </div>
+      </div>
+    </div>
+    <div style="height: calc(100% - 65px); overflow-y: auto">
+      <app-ks-info [ks]="ks"
+                   [isDialog]="true"
+                   (onSaved)="onSaved($event)"
+                   (shouldClose)="onClose()"
+                   [collapseAll]="collapsed">
+      </app-ks-info>
+    </div>
+  `,
   styles: ['']
 })
 export class KsDetailsComponent implements OnInit {
   ks!: KnowledgeSource;
+
+  collapsed: boolean = false;
+
+  saved: boolean = false;
 
   constructor(private config: DynamicDialogConfig,
               private ref: DynamicDialogRef,
@@ -38,10 +81,30 @@ export class KsDetailsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
   }
 
   onClose() {
     this.ref.close();
+  }
+
+  expandAll() {
+    this.collapsed = true;
+    setTimeout(() => {
+      this.collapsed = false;
+    })
+  }
+
+  collapseAll() {
+    this.collapsed = false;
+    setTimeout(() => {
+      this.collapsed = true;
+    })
+  }
+
+  onSaved(_: KnowledgeSource) {
+    this.saved = true;
+    setTimeout(() => {
+      this.saved = false;
+    }, 5000);
   }
 }
