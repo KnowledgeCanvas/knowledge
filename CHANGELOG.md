@@ -7,31 +7,31 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### ⚠ BREAKING CHANGES
 
+* Various core data structures have been revised.
 * Settings schema has been revised.
 
 ### Features
 
-* Add a new startup service to Angular for performing operations early on in the application lifecycle. ([65fdf88](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/65fdf889921e1aed967c0cfdc4cfbc0b3f540d45))
 * Add a new startup service to Angular for performing operations early on in the application lifecycle. ([1f1c6fe](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/1f1c6fe78d31f34a69b5bb83326635d74c849ceb))
-* Add Grid and Calendar views ([#24](https://github.com/KnowledgeCanvas/knowledge-canvas/issues/24)) ([9367db8](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/9367db80f7801c65c175af7ce93af4bef618407d))
 * **Autoscan:** Implemented full-fledged Autoscan functionality. ([5acbb78](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/5acbb782d761cbaf71c202541a2662b01a236161))
 * **Autoscan:** Made autoscan file handling more robust and provided user notifications for important file life cycle events. ([804149a](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/804149aeb97ab05e774a4d4107292aaabb1d2d04))
 * **Display Settings:** Added options to allow user to receive logging messages as "toasts". ([64b358f](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/64b358fd1bb0c78f4a2cc8a7a28af5bb98a50a5d))
 * **Export:** Adds a dialog for export customization and satisfies roughly half of the request in [[#32](https://github.com/KnowledgeCanvas/knowledge-canvas/issues/32)](https://github.com/KnowledgeCanvas/knowledge-canvas/issues/32) ([#54](https://github.com/KnowledgeCanvas/knowledge-canvas/issues/54)) ([4b65df2](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/4b65df24e4cff19b9289932da5a6c8a9f90c477b))
-* **Extensions:** Implemented browser extension services to correctly receive Knowledge Sources from supported extensions. ([967a62f](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/967a62fdc124d77096025a1c16fdcb0b72f0153a))
-* **File Import:** Reinstate file watcher to automatically detect files stored in a specified directory. ([52533f2](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/52533f2211c5ae5724d409ce534e46528b3dba9d))
+* **Extensions:** Implemented browser extension services to receive Knowledge Sources from supported Chrome and Firefox extensions. ([967a62f](https://github.
+  com/KnowledgeCanvas/knowledge-canvas/commit/967a62fdc124d77096025a1c16fdcb0b72f0153a))
 * **Ingest Settings:** Added autoscan, file manager, and extension server settings. ([d5946bc](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/d5946bcaaa0dc834cd06c560b050f6c0d154a1e2))
-* **Ingest:** Add high-level ingest service to manage resource ingestion. ([42de2f9](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/42de2f980045f12cc693a6fd1f7fab2d7258de2e))
 * **IPC:** Add new channels for communicating with file watcher. ([33b156c](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/33b156c8a5d430df9c521cb9459d861fce7a5683))
 * **Logging:** Add "success" logging method for successful operations. ([2dcce30](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/2dcce305bb40e18a76db0a09df64c238ccd8871a))
 * **Logging:** Created centralized logging service for displaying messages to user and printing to console. ([5a0981b](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/5a0981b3c49b2c43098f954e36f037a1b497487c))
-* Minor tweaks to the way information is presented in the Knowledge Source info/details view. ([bbadb2b](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/bbadb2b7d8b54dc62eab3d1605e9ee1b14d4a627))
+* **Style:** Minor tweaks to the way information is presented in the Knowledge Source info/details view. ([bbadb2b](https://github.
+   com/KnowledgeCanvas/knowledge-canvas/commit/bbadb2b7d8b54dc62eab3d1605e9ee1b14d4a627))
 
 
 ### Bug Fixes
 
-* addresses 5 moderate and 2 high severity vulnerabilities ([47c13cf](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/47c13cf6e7d8d405c06e3bd8e701485e7a1bdabe))
-* addresses multiple dependency vulnerabilities that range from low to critical severity. ([#40](https://github.com/KnowledgeCanvas/knowledge-canvas/issues/40)) ([414bc06](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/414bc0686d685e3b4881ab5b62593fa81a8394d6))
+* Addresses 5 moderate and 2 high severity vulnerabilities ([47c13cf](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/47c13cf6e7d8d405c06e3bd8e701485e7a1bdabe))
+* Addresses multiple dependency vulnerabilities that range from low to critical severity. ([#40](https://github.com/KnowledgeCanvas/knowledge-canvas/issues/40)) ([414bc06]
+  (https://github.com/KnowledgeCanvas/knowledge-canvas/commit/414bc0686d685e3b4881ab5b62593fa81a8394d6))
 * Regression after data structure refactor ([0e25d3b](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/0e25d3bbb1d090a67af7ba7791d1d1219c30e1e5))
 
 
