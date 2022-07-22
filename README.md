@@ -5,7 +5,6 @@ Knowledge is an open-source bookmark manager, file explorer, calendar, and proje
 
 # Download
 - [Latest Stable Release](https://github.com/KnowledgeCanvas/knowledge-canvas/releases/latest)
-- [Latest Beta Release v0.6.0 (complete redesign)](https://github.com/KnowledgeCanvas/knowledge/releases/tag/v0.6.0)
 - [All Versions](https://github.com/KnowledgeCanvas/knowledge-canvas/releases)
 
 # Community
