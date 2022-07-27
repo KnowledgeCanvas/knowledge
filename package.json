@@ -48,13 +48,19 @@
   "packageManager": "yarn@3.1.1",
   "dependencies": {
     "@types/node": "^17.0.2",
+    "async": "^3.2.4",
+    "ejs": "^3.1.8",
     "follow-redirects": "^1.14.8",
+    "got": "^12.1.0",
     "minimist": "^1.2.6",
     "node-forge": "^1.3.0",
-    "plist": "^3.0.5"
+    "plist": "^3.0.5",
+    "terser": "^5.14.2"
   },
   "devDependencies": {
     "@angular/cli": "^13.1.2",
+    "@types/async": "^3",
+    "@types/ejs": "^3",
     "@types/follow-redirects": "^1",
     "@types/minimist": "^1",
     "@types/node-forge": "^1",
@@ -63,8 +69,8 @@
     "standard-version": "^9.3.1"
   },
   "build": {
-    "appId": "com.knowledgecanvas.app",
-    "productName": "Knowledge Canvas",
+    "appId": "com.knowledge.app",
+    "productName": "Knowledge",
     "directories": {
       "buildResources": "Resources"
     },
