@@ -600,7 +600,7 @@ export class KsInfoComponent implements OnInit, OnChanges {
   }
 
   onKsRemove() {
-    if (this.ks.associatedProject) {
+    if (this.ks.associatedProject && this.ks.associatedProject.value.length > 0) {
       this.command.remove([this.ks]);
     }
     this.onRemove.emit(this.ks);

@@ -68,7 +68,14 @@ export class KsCommandService {
     }
 
     this.confirmation.confirm({
-      message: `Are you sure you want to remove ${ksList.length} Knowledge Sources?`,
+      message: `Permanently remove ${ksList.length === 1 ? ksList[0].title : `${ksList.length} Sources`}?`,
+      header: `Remove Source${ksList.length === 1 ? '' : 's'}`,
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Remove',
+      rejectLabel: 'Keep',
+      acceptButtonStyleClass: 'p-button-text p-button-danger',
+      rejectButtonStyleClass: 'p-button-text',
+      acceptIcon: 'pi pi-trash',
       accept: () => {
         // TODO: if the KS points to a local file, ask the user what they want to be done with the file...
         let updates: ProjectUpdateRequest[] = [];

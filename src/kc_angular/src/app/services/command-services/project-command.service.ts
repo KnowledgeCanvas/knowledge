@@ -89,7 +89,14 @@ export class ProjectCommandService {
     }
 
     this.confirmation.confirm({
-      message: `Are you sure you want to remove ${n} Projects?`,
+      message: `Permanently remove ${n === 1 ? 'Project' : n + ' Projects'}?`,
+      header: `Remove Project${n === 1 ? '' : 's'}`,
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Remove',
+      rejectLabel: 'Keep',
+      acceptButtonStyleClass: 'p-button-text p-button-danger',
+      rejectButtonStyleClass: 'p-button-text',
+      acceptIcon: 'pi pi-trash',
       accept: () => {
         for (let project of projectList) {
           this.projects.deleteProject(project.id);

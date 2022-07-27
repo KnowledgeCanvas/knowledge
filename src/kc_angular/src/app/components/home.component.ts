@@ -20,7 +20,7 @@ import {ProjectService} from "../services/factory-services/project.service";
 import {Observable, Subscription} from "rxjs";
 import {KcProject} from "../models/project.model";
 import {ProjectTreeFactoryService} from "../services/factory-services/project-tree-factory.service";
-import {TreeNode} from "primeng/api";
+import {ConfirmationService, TreeNode} from "primeng/api";
 import {NotificationsService} from "../services/user-services/notifications.service";
 
 @Component({
@@ -177,7 +177,8 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   sub2: Subscription;
 
-  constructor(private ingest: IngestService,
+  constructor(private confirm: ConfirmationService,
+              private ingest: IngestService,
               private projects: ProjectService,
               private notifications: NotificationsService,
               private tree: ProjectTreeFactoryService) {
@@ -204,8 +205,20 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   onKsRemove($event: KnowledgeSource) {
-    this.ingest.remove($event);
-    this.activeIndex = this.activeIndex > 0 ? this.activeIndex - 1 : 0;
+    this.confirm.confirm({
+      message: `Permanently remove ${$event.title}?`,
+      header: `Remove Source`,
+      acceptLabel: 'Remove',
+      rejectLabel: 'Keep',
+      acceptButtonStyleClass: 'p-button-text p-button-danger',
+      rejectButtonStyleClass: 'p-button-text',
+      acceptIcon: 'pi pi-trash',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this.ingest.remove($event);
+        this.activeIndex = this.activeIndex > 0 ? this.activeIndex - 1 : 0;
+      }
+    })
   }
 
   setActive(ks: KnowledgeSource) {
