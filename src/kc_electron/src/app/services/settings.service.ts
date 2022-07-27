@@ -117,25 +117,24 @@ class SettingsService {
         }
     }
 
-    defaults(envPath: string): SettingsModel {
+    system(envPath: string): SystemSettingsModel {
         const env = SettingsService.getEnvironment(envPath);
-
         const system: SystemSettingsModel = {
             appPath: path.join(os.homedir(), '.' + env.appTitle),
-            appVersion: app.getVersion(),
             cwd: process.cwd(),
             downloadPath: path.join(os.homedir(), 'Downloads'),
-            electronVersion: process.versions.electron,
             envPath: envPath,
             firstRun: true,
             homePath: os.homedir(),
-            nodeVersion: process.versions.node,
-            osPlatform: process.platform,
-            osVersion: process.getSystemVersion(),
             pathSep: path.sep,
             resourcesPath: path.join(process.cwd(), 'Resources'),
             settingsPath: '',
-            settingsFilePath: ''
+            settingsFilePath: '',
+            appVersion: app.getVersion(),
+            electronVersion: process.versions.electron,
+            nodeVersion: process.versions.node,
+            osPlatform: process.platform,
+            osVersion: process.getSystemVersion()
         }
 
         switch (process.platform) {
@@ -145,7 +144,7 @@ class SettingsService {
             case "linux": // Linux -- ~/.local/share/Knowledge
                 system.settingsPath = path.join(os.homedir(), '.local', 'share', env.appTitle);
                 break;
-            case "win32": // Windows -- C: Users\username\AppData\Local\Knowledge
+            case "win32": // Windows -- C:\Users\username\AppData\Local\Knowledge
                 system.settingsPath = path.join(os.homedir(), 'AppData', 'Roaming', env.appTitle);
                 break;
             default:
@@ -153,7 +152,12 @@ class SettingsService {
                 process.exit(-1);
         }
         system.settingsFilePath = path.resolve(system.settingsPath, env.settingsFilename);
+        return system;
+    }
 
+    defaults(envPath: string): SettingsModel {
+        const env = SettingsService.getEnvironment(envPath);
+        const system: SystemSettingsModel = this.system(envPath);
         return {
             env: env,
             system: system,
@@ -209,7 +213,7 @@ class SettingsService {
             search: {
                 provider: 'google',
                 fuzzy: true,
-                threshold: 0.5
+                threshold: 50
             },
             user: {
                 firstName: '',
@@ -269,7 +273,14 @@ class SettingsService {
 
             // settings.system.appVersion was added in >=0.5.5. If it does not exist, we do not want to include the file
             if (settings && settings.system.appVersion) {
-                const merged = lodash.merge(this._all.value, settings);
+                let merged = lodash.merge(this._all.value, settings);
+
+                // Make sure we always have the latest version numbers (otherwise the versions from the file will overwrite actual values)
+                merged.system.appVersion = app.getVersion();
+                merged.system.electronVersion = process.versions.electron;
+                merged.system.nodeVersion = process.versions.node;
+                merged.system.osPlatform = process.platform;
+                merged.system.osVersion = process.getSystemVersion();
                 this._all.next(merged);
             } else {
                 this.warn('Deprecated Settings File Found', 'Replacing with new schema.');
