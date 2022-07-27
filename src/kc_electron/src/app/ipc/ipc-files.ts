@@ -97,7 +97,6 @@ openLocalFile = ipcMain.on('A2E:FileSystem:OpenFile', (event: any, filePath: str
 });
 
 
-
 /**
  * getFileThumbnail
  * @param requests: [KsThumbnailRequest[]] an array of thumbnail requests

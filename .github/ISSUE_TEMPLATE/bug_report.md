@@ -1,10 +1,6 @@
 ---
-name: Bug report
-about: Create a report to help us improve
-title: 'bug-'
-labels: 'bug'
-assignees: ''
-knowledge-canvas version: ''
+name: Bug report about: Create a report to help us improve title: 'bug-' labels: 'bug' assignees: ''
+knowledge version: ''
 ---
 
 **Describe the bug**

@@ -20,7 +20,7 @@ const autoUpdater = share.autoUpdater;
 
 import {IpcMessage} from "../../../../kc_shared/models/electron.ipc.model";
 
-console.log(`AutoUpdate - Knowledge Canvas Version ${autoUpdater.currentVersion.version} - Initializing...`);
+console.log(`AutoUpdate - Knowledge Version ${autoUpdater.currentVersion.version} - Initializing...`);
 
 autoUpdater.on('checking-for-update', () => {
     let message: IpcMessage = {

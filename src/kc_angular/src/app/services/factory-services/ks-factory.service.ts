@@ -116,7 +116,7 @@ export class KsFactoryService {
 
     return {
       authors: [], description: "",
-      title: "Knowledge Canvas Search", id: {value: 'kc-search-ks'},
+      title: "Knowledge Search", id: {value: 'kc-search-ks'},
       reference: {
         ingestType: "website",
         source: {
@@ -124,7 +124,7 @@ export class KsFactoryService {
           website: {
             accessLink: "",
             metadata: {
-              title: "Knowledge Canvas Search",
+              title: "Knowledge Search",
               icon: ''
             }
           }

@@ -55,7 +55,7 @@ import {NotificationsService} from "../services/user-services/notifications.serv
             <div class="h-full flex-col-center-center">
               <div (dragstart)="$event.preventDefault()">
                 <img src="assets/img/kc-icon-greyscale.png"
-                     alt="Knowledge Canvas Logo"
+                     alt="Knowledge Logo"
                      class="pulsate-fwd"
                      style="filter: drop-shadow(0 0 1px var(--primary-color)); height: 8rem">
               </div>
@@ -250,7 +250,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     if (this.active) {
       project.knowledgeSource.push(this.active);
-      this.projects.updateProjects([{id: project.id}]).then((result) => {
+      this.projects.updateProjects([{id: project.id}]).then((_) => {
         if (this.active) {
           this.ingest.add(this.active);
         }

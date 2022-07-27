@@ -98,8 +98,8 @@ class SettingsService {
         let env = dotenv.config({path: envPath});
         if (env.error || !env.parsed) {
             return {
-                appTitle: 'Knowledge-Canvas',
-                settingsFilename: 'knowledge-canvas.settings.json',
+                appTitle: 'Knowledge',
+                settingsFilename: 'knowledge.settings.json',
                 DEFAULT_WINDOW_HEIGHT: 1280,
                 DEFAULT_WINDOW_WIDTH: 1000,
                 STARTUP_WINDOW_HEIGHT: 1280,
@@ -107,8 +107,8 @@ class SettingsService {
             }
         } else {
             return {
-                appTitle: env.parsed.appTitle ?? 'Knowledge-Canvas',
-                settingsFilename: env.parsed.settingsFilename ?? 'knowledge-canvas.settings.json',
+                appTitle: env.parsed.appTitle ?? 'Knowledge',
+                settingsFilename: env.parsed.settingsFilename ?? 'knowledge.settings.json',
                 DEFAULT_WINDOW_HEIGHT: parseInt(env.parsed.DEFAULT_WINDOW_HEIGHT) ?? 1280,
                 DEFAULT_WINDOW_WIDTH: parseInt(env.parsed.DEFAULT_WINDOW_WIDTH) ?? 1000,
                 STARTUP_WINDOW_HEIGHT: parseInt(env.parsed.STARTUP_WINDOW_HEIGHT) ?? 1280,
@@ -139,13 +139,13 @@ class SettingsService {
         }
 
         switch (process.platform) {
-            case "darwin": // MacOS -- /Users/username/Library/Preferences/KnowledgeCanvas
+            case "darwin": // MacOS -- /Users/username/Library/Preferences/Knowledge
                 system.settingsPath = path.join(os.homedir(), 'Library', 'Preferences', env.appTitle);
                 break;
-            case "linux": // Linux -- ~/.local/share/KnowledgeCanvas
+            case "linux": // Linux -- ~/.local/share/Knowledge
                 system.settingsPath = path.join(os.homedir(), '.local', 'share', env.appTitle);
                 break;
-            case "win32": // Windows -- C: Users\username\AppData\Local\KnowledgeCanvas
+            case "win32": // Windows -- C: Users\username\AppData\Local\Knowledge
                 system.settingsPath = path.join(os.homedir(), 'AppData', 'Roaming', env.appTitle);
                 break;
             default:
@@ -202,7 +202,7 @@ class SettingsService {
                 },
                 autoscan: {
                     enabled: false,
-                    path: path.resolve(system.downloadPath, 'KnowledgeCanvas'),
+                    path: path.resolve(system.downloadPath, 'Knowledge'),
                     interval: 15
                 }
             },

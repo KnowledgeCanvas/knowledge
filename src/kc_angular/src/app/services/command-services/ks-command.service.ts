@@ -131,14 +131,14 @@ export class KsCommandService {
     if (ks.ingestType === 'file' && typeof ks.accessLink === 'string') {
       this.ipc.openLocalFile(ks.accessLink).then((result) => {
         if (result) {
-          this.notifications.success('KnowledgeCanvas', 'File Opened', ks.title);
+          this.notifications.success('Source Command', 'File Opened', ks.title);
         } else {
-          this.notifications.error('KnowledgeCanvas', 'Failed to Open', ks.title);
+          this.notifications.error('Source Command', 'Failed to Open', ks.title);
         }
       });
     } else {
       window.open(typeof ks.accessLink === 'string' ? ks.accessLink : ks.accessLink.href);
-      this.notifications.success('KnowledgeCanvas', 'Link Opened', ks.title);
+      this.notifications.success('Source Command', 'Link Opened', ks.title);
     }
 
     if (!ks.events) {
@@ -160,7 +160,7 @@ export class KsCommandService {
       paths.push(typeof ks.accessLink === 'string' ? ks.accessLink : ks.accessLink.href);
     }
     this.clipboard.copy(paths.join('\n'));
-    this.notifications.success('Source Command Service', 'Copied to Clipboard!', '');
+    this.notifications.success('Source Command', 'Copied to Clipboard!', '');
   }
 
   copyJSON(ksList: KnowledgeSource[]) {
@@ -172,7 +172,7 @@ export class KsCommandService {
     try {
       ksStr = JSON.stringify(ksList)
       this.clipboard.copy(ksStr);
-      this.notifications.success('Source Command Service', 'Copied to Clipboard!', '');
+      this.notifications.success('Source Command', 'Copied to Clipboard!', '');
     } catch (e) {
       return;
     }
@@ -190,7 +190,7 @@ export class KsCommandService {
     const dialogRef = this.browser.open({ks: ks});
 
     if (dialogRef === undefined) {
-      this.notifications.warn('KsPreview', 'Unsupported File Type', 'Opening with default application instead.');
+      this.notifications.warn('Source Command', 'Unsupported File Type', 'Opening with default application instead.');
       this.open(ks);
       return;
     }
@@ -221,7 +221,7 @@ export class KsCommandService {
             this.projects.updateProjects([update]);
           }
         } catch (e) {
-          this.notifications.warn('Source Command Service', 'Invalid Project', 'Unable to update project after closing the preview dialog...');
+          this.notifications.warn('Source Command', 'Invalid Project', 'Unable to update project after closing the preview dialog...');
         }
 
         closed = true;

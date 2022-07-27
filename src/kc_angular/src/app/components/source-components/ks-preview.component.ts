@@ -225,7 +225,7 @@ export class KsPreviewComponent implements OnInit, OnDestroy {
 
     if (!supported) {
       console.warn('This file type is not supported!');
-      this.notifications.warn('KsPreview', 'Unsupported File Type', 'Knowledge Canvas does not currently support previewing files of that type.');
+      this.notifications.warn('KsPreview', 'Unsupported File Type', 'Knowledge does not currently support previewing files of that type.');
       this.ref.close();
     }
   }

@@ -1,7 +1,7 @@
 {
   "name": "kc_knowledge",
   "version": "0.0.0",
-  "description": "A collection of knowledge applications for use with Knowledge Canvas.",
+  "description": "The Knowledge Graph portion of the Knowledge Application.",
   "main": "dist/index.js",
   "author": "Rob Royce <robertris2@gmail.com> (https://robroyce.dev)",
   "license": "Apache-2.0",

@@ -56,7 +56,7 @@ export interface EnvironmentSettingsModel {
 
 export interface SystemSettingsModel {
     appPath: string // Root storage location
-    appVersion: string // Knowledge Canvas version
+    appVersion: string // Knowledge version
     cwd: string // The current working directory, dynamically set on App startup
     downloadPath: string // Default downloads location
     electronVersion: string // Current version of Electron, determined by process.versions.electron

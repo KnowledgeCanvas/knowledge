@@ -172,7 +172,7 @@ export class DragAndDropService {
     let details = `${dths_prefix.map(a => a.HANDLER_TYPE).join(', ')}` + `${dths_no_prefix.map(a => a.HANDLER_TYPE).join(', ')}`
 
     if (dths_no_prefix.length === 0 && dths_prefix.length === 0) {
-      this.notifications.debug('Drag And Drop', 'No Handlers Found', 'Knowledge Canvas does not know how to handle that drag and drop!');
+      this.notifications.debug('Drag And Drop', 'No Handlers Found', 'Knowledge does not know how to handle that drag and drop!');
       return;
     }
 

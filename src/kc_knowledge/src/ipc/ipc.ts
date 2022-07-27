@@ -25,7 +25,7 @@ export class KcIpc {
     getKs(): Promise<any> {
         return new Promise((res) => {
             this.receiveOnce('E2A:KnowledgeCanvas:GetSources', (response: any) => {
-                console.log('Get response from Electron IPC in knowledge canvas: ', response);
+                console.log('Get response from Electron IPC in knowledge: ', response);
                 res(response);
             });
             console.log('Sending kc-get-ks-list...');

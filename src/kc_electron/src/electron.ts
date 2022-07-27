@@ -74,8 +74,10 @@ function createMainWindow() {
     let backgroundColor = darkMode ? '#1E1E1E' : '#F9F9F9';
     console.log('Theme: ', appEnv.display.theme);
 
+    console.log('Knowledge storage path: ', app.getPath('userData'));
+
     const config = {
-        title: 'Knowledge Canvas',
+        title: 'Knowledge',
         backgroundColor: backgroundColor,
         width: WIDTH ? WIDTH : 1280,
         height: HEIGHT ? HEIGHT : 1600,

@@ -14,7 +14,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/KnowledgeCanvas/knowledge-canvas.git"
+    "url": "git+https://github.com/KnowledgeCanvas/knowledge.git"
   },
   "main": "src/kc_electron/dist/electron.js",
   "scripts": {

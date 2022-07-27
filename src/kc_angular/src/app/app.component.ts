@@ -430,8 +430,8 @@ export class AppComponent implements OnInit {
     let req: DialogRequest = {
       ksList: []
     }
-    this.ipc.openKcDialog(req).catch((reason) => {
-      this.notifications.error('Knowledge Canvas', 'Error Opening Graph', `Something prevented Knowledge Canvas from opening graph view.`);
+    this.ipc.openKcDialog(req).catch((_) => {
+      this.notifications.error('App', 'Error Opening Graph', `Something prevented Knowledge from opening graph view.`);
     });
   }
 
