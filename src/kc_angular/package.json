@@ -1,6 +1,6 @@
 {
   "name": "kc_angular",
-  "version": "0.2.0",
+  "version": "0.6.0",
   "description": "This package contains the (core) Angular portion of the Knowledge web-app.",
   "author": "Rob Royce <robertris2@gmail.com> (https://robroyce.dev)",
   "license": "Apache-2.0",

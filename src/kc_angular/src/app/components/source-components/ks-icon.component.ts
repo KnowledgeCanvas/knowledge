@@ -17,18 +17,34 @@
 
 import {Component, Input, OnInit} from '@angular/core';
 import {KnowledgeSource} from "../../models/knowledge.source.model";
+import {DragAndDropService} from "../../services/ingest-services/drag-and-drop.service";
 
 @Component({
   selector: 'app-ks-icon',
   template: `
     <img [src]="ks && ks.icon ? ks.icon : iconUrl"
+         [style.cursor]="ks && ks.ingestType && ks.ingestType === 'file' ? 'grab' : 'pointer'"
+         draggable="true"
+         id="ks-drag"
+         (dragstart)="onDragStart($event, ks)"
          class="knowledge-source-icon"
          [class.shadow-3]="showShadow"
          [class.bg-auto]="autoBackgroundColor"
+         pTooltip="{{ks && ks.ingestType === 'file' ? 'Click to open, drag to copy' : 'Click to open'}}"
+         [tooltipOptions]="{showDelay: 750, tooltipStyleClass: ks && ks.ingestType === 'file' ? 'ks-file-icon-tooltip' : 'ks-icon-tooltip'}"
+         tooltipPosition="bottom"
          width="24"
          alt="Knowledge Source Icon">
   `,
-  styles: []
+  styles: [
+    `
+      ::ng-deep {
+        .ks-file-icon-tooltip {
+          max-width: 15rem !important;
+        }
+      }
+    `
+  ]
 })
 export class KsIconComponent implements OnInit {
   @Input() ks?: Partial<KnowledgeSource>;
@@ -41,9 +57,13 @@ export class KsIconComponent implements OnInit {
 
   @Input() autoBackgroundColor: boolean = true;
 
-  constructor() { }
+  constructor(private dnd: DragAndDropService) {
+  }
 
   ngOnInit(): void {
   }
 
+  onDragStart($event: DragEvent, ks?: Partial<KnowledgeSource>) {
+    this.dnd.dragOut($event, ks);
+  }
 }

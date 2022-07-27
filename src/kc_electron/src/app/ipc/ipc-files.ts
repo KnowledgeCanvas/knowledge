@@ -15,6 +15,9 @@
  */
 import {IpcMessage, PromptForDirectoryRequest, ThumbnailRequest} from "../../../../kc_shared/models/electron.ipc.model";
 
+const fse = require('fs-extra');
+const settingsService = require('../services/settings.service');
+
 const share: any = (global as any).share;
 const ipcMain: any = share.ipcMain;
 const dialog: any = share.dialog;
@@ -23,6 +26,8 @@ const shell: any = share.shell;
 const path: any = share.path;
 const nativeImage: any = share.nativeImage;
 const app: any = share.app;
+const fs: any = share.fs;
+
 
 let promptForDirectory,
     openLocalFile,
@@ -214,13 +219,41 @@ dragFileFromApp = ipcMain.on('A2E:FileSystem:StartDrag', (event: any, args: any)
 
     let options = {size: 'normal'}
 
-    app.getFileIcon(ks.accessLink, options).then((icon: any) => {
+    // First, copy file to centralized location
+    const appPath = settingsService.getSettings().system.appPath;
+    const copyPath = path.join(appPath, 'tmp');
+    const filename = path.basename(ks.accessLink);
+    const filePath = path.join(copyPath, filename);
+
+    // TODO: periodically purge the tmp folder
+    try {
+        fs.mkdirSync(copyPath, {recursive: true});
+    } catch (e) {
+        console.error('File IPC Unable to create temporary directory for drag/drop...');
+    }
+
+    try {
+        fse.cpSync(ks.accessLink, filePath);
+    } catch (e) {
+        console.error('File IPC Unable to copy file to temporary directory for drag/drop...');
+    }
+
+    // Then, use NEW file for drag handler
+
+    app.getFileIcon(filePath, options).then((icon: any) => {
         event.sender.startDrag({
-            file: path.resolve(ks.accessLink),
+            file: path.resolve(filePath),
             icon: icon
-        })
+        });
+
+        setTimeout(() => {
+            try {
+                fse.remove(filePath);
+            } catch (e) {
+            }
+        }, 30000);
     }).catch((reason: any) => {
-        console.error('Error in main proccess, dragging file from app', reason);
+        console.error('Error in main process, dragging file from app', reason);
     });
 });
 

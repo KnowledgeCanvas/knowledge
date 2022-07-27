@@ -116,11 +116,7 @@ import {TopicService} from "../../services/user-services/topic.service";
 
               <td *ngFor="let col of columns" [style.max-width]="getColWidth(col)" style="width: auto">
                 <div *ngIf="col.field === 'icon'">
-                  <app-ks-icon [ks]="rowData"
-                               [style.cursor]="rowData.ingestType === 'file' ? 'grab' : 'default'"
-                               draggable="true" id="ks-drag"
-                               (dragstart)="onDragStart($event, rowData)">
-                  </app-ks-icon>
+                  <app-ks-icon [ks]="rowData"></app-ks-icon>
                 </div>
 
                 <div *ngIf="col.field === 'title'"
@@ -426,13 +422,6 @@ export class KsTableComponent implements OnInit, OnChanges {
   clearFilter(table: Table, filter: HTMLInputElement) {
     table.clear();
     filter.value = '';
-  }
-
-  onDragStart($event: DragEvent, ks: KnowledgeSource) {
-    $event.preventDefault();
-    if (ks.ingestType === 'file') {
-      window.electron.startDrag(ks);
-    }
   }
 
   onKsContextMenu() {

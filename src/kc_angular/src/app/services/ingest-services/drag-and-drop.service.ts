@@ -16,6 +16,7 @@
 import {Injectable} from '@angular/core';
 import {KnowledgeSourceFactoryRequest} from "../factory-services/ks-factory.service";
 import {NotificationsService} from "../user-services/notifications.service";
+import {KnowledgeSource} from "../../models/knowledge.source.model";
 
 export type DragAndDropPacket = {
   text?: string,
@@ -51,6 +52,7 @@ type TransferHandler = {
   providedIn: 'root'
 })
 export class DragAndDropService {
+  private pending?: string;
   private __data_transfer_handlers: TransferHandler[] = [
     {
       HANDLER_TYPE: 'Local Files',
@@ -76,8 +78,14 @@ export class DragAndDropService {
           for (let i = 0; i < data.event.dataTransfer.items.length; i++) {
             if (data.event.dataTransfer.items[i].kind === 'file') {
               let file = data.event.dataTransfer.items[i].getAsFile();
-              if (file)
-                files.push(file);
+              if (file) {
+                if (file.name === this.pending) {
+                  this.notifications.debug('Drag And Drop', `Ignoring ${file.name}`, 'File appears to originate from within Knowledge.');
+                  this.pending = undefined;
+                } else {
+                  files.push(file);
+                }
+              }
             }
           }
           resolve({ingestType: 'file', files: files});
@@ -158,6 +166,8 @@ export class DragAndDropService {
   async parseDragEvent(event: DragEvent): Promise<KnowledgeSourceFactoryRequest | undefined> {
     event.preventDefault();
 
+    this.notifications.debug('Drag And Drop', 'Parsing Drag and Drop', event);
+
     if (!event.dataTransfer?.items) {
       return undefined;
     }
@@ -191,5 +201,16 @@ export class DragAndDropService {
     }
 
     return req;
+  }
+
+  dragOut($event: DragEvent, ks: Partial<KnowledgeSource> | undefined) {
+    $event.preventDefault();
+    $event.stopPropagation();
+
+    if (ks && ks.ingestType === 'file') {
+      this.pending = typeof ks.accessLink === 'string' ? ks.accessLink : ks.accessLink?.href;
+      this.pending = this.pending?.split('\\').pop()?.split('/').pop()
+      window.electron.startDrag(ks);
+    }
   }
 }
