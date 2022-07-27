@@ -116,15 +116,16 @@ export type SelectButtonOption = {
                 </p-inputNumber>
               </div>
               <div class="col-6 flex flex-column align-items-center">
+                <a target="_blank" href="https://github.com/KnowledgeCanvas/extensions">Download Extensions</a>
                 <div>
-                  <a target="_blank" href="https://github.com/KnowledgeCanvas/extensions">
-                    <app-ks-icon iconUrl="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Google_Chrome_icon_%28September_2014%29.svg/1024px-Google_Chrome_icon_%28September_2014%29.svg.png?20200318094909"></app-ks-icon>
-                  </a>
-                  <a target="_blank" class="pl-4" href="https://github.com/KnowledgeCanvas/extensions">
-                    <app-ks-icon iconUrl="https://design.firefox.com/product-identity/firefox/firefox/firefox-logo.svg"></app-ks-icon>
-                  </a>
+                  <!--                  <a target="_blank" href="https://github.com/KnowledgeCanvas/extensions">-->
+                  <!--                    <app-ks-icon iconUrl="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Google_Chrome_icon_%28September_2014%29.svg/1024px-Google_Chrome_icon_%28September_2014%29.svg.png?20200318094909"></app-ks-icon>-->
+                  <!--                  </a>-->
+                  <!--                  TODO: Re-enable once firefox extension is released-->
+                  <!--                  <a target="_blank" class="pl-4" href="https://github.com/KnowledgeCanvas/extensions">-->
+                  <!--                    <app-ks-icon iconUrl="https://design.firefox.com/product-identity/firefox/firefox/firefox-logo.svg"></app-ks-icon>-->
+                  <!--                  </a>-->
                 </div>
-                <div>Download Extensions</div>
               </div>
             </div>
           </ng-template>
@@ -140,20 +141,20 @@ export type SelectButtonOption = {
 
           <ng-template pTemplate="content">
             <div class="p-fluid grid mt-1">
-<!--              TODO: re-enable this once the feature is fully built out and supported -->
-<!--              <div class="col-12">-->
-<!--                <label for="managed-files">Managed Files</label>-->
-<!--                <p-selectButton [options]="fileManagerStates"-->
-<!--                                [(ngModel)]="ingestSettings.manager.target"-->
-<!--                                (onChange)="onFileManagerTargetChange($event)"-->
-<!--                                [disabled]="true"-->
-<!--                                pTooltip="Knowledge currently only supports managing files that were imported using Autoscan"-->
-<!--                                id="managed-files"-->
-<!--                                optionLabel="name"-->
-<!--                                optionValue="value"-->
-<!--                                optionDisabled="disabled">-->
-<!--                </p-selectButton>-->
-<!--              </div>-->
+              <!--              TODO: re-enable this once the feature is fully built out and supported -->
+              <!--              <div class="col-12">-->
+              <!--                <label for="managed-files">Managed Files</label>-->
+              <!--                <p-selectButton [options]="fileManagerStates"-->
+              <!--                                [(ngModel)]="ingestSettings.manager.target"-->
+              <!--                                (onChange)="onFileManagerTargetChange($event)"-->
+              <!--                                [disabled]="true"-->
+              <!--                                pTooltip="Knowledge currently only supports managing files that were imported using Autoscan"-->
+              <!--                                id="managed-files"-->
+              <!--                                optionLabel="name"-->
+              <!--                                optionValue="value"-->
+              <!--                                optionDisabled="disabled">-->
+              <!--                </p-selectButton>-->
+              <!--              </div>-->
 
               <div class="col-12 p-fluid mt-1">
                 <label for="storage-path">Storage Location</label>

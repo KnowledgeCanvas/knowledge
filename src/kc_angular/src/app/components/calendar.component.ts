@@ -113,7 +113,7 @@ export class CalendarComponent implements OnInit, OnDestroy {
 
   }
 
-  onProjectClick($event: KcCardRequest) {
+  onProjectClick(_: KcCardRequest) {
     if (this.calendarOverlay?.overlayVisible) {
       this.calendarOverlay.hide();
     }
@@ -121,13 +121,14 @@ export class CalendarComponent implements OnInit, OnDestroy {
     this.selectedKs = undefined;
     this.selectedProject = undefined;
 
-    setTimeout(() => {
-      this.calendarOverlay.show($event.event, $event.element);
-      const project = this.projects.getProject($event.projectId ?? '')
-      if (project) {
-        this.selectedProject = project;
-      }
-    })
+    // TODO: Re-enable this once the project card is revised
+    // setTimeout(() => {
+    //   this.calendarOverlay.show($event.event, $event.element);
+    //   const project = this.projects.getProject($event.projectId ?? '')
+    //   if (project) {
+    //     this.selectedProject = project;
+    //   }
+    // })
   }
 
   onRemove(ks: KnowledgeSource) {
