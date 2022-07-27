@@ -38,8 +38,8 @@ export class ProjectBreadcrumbPipe implements PipeTransform {
 
     let start, end, prefix;
 
-    const SEP = '❯';
-    const ELLIPSIS = '⋯'
+    const SEP = '>';
+    const ELLIPSIS = '...'
 
     if (args && args.length > 0 && args[0] && args[0] == 'no-truncate') {
       start = 0;
