@@ -227,27 +227,21 @@ export class AppComponent implements OnInit {
     });
 
     // Acquire user settings, start tutorial if necessary
-    // TODO: Re-Enable this once the tutorial is finished
-    // settings.all.pipe(take(2), map(s => s.user)).subscribe((userSettings) => {
-    //   if (!userSettings) {
-    //     return;
-    //   }
-    //
-    //   if (userSettings.tutorials === undefined) {
-    //     settings.set({user: {tutorials: {showFirstRunTutorial: true}}});
-    //   } else if (userSettings.tutorials.showFirstRunTutorial) {
-    //     setTimeout(() => {
-    //       this.startup.tutorial().subscribe(showAgain => {
-    //         settings.set({user: {tutorials: {showFirstRunTutorial: showAgain}}});
-    //       })
-    //     }, 1000)
-    //   }
-    // })
+    settings.all.pipe(take(2), map(s => s.user)).subscribe((userSettings) => {
+      if (!userSettings) {
+        return;
+      }
 
-    // TODO: THIS MUST BE REMOVED
-    // setTimeout(() => {
-    //   settings.set({user: {tutorials: {showFirstRunTutorial: true}}});
-    // }, 1000);
+      if (userSettings.tutorials === undefined) {
+        settings.set({user: {tutorials: {showFirstRunTutorial: true}}});
+      } else if (userSettings.tutorials.showFirstRunTutorial) {
+        setTimeout(() => {
+          this.startup.tutorial().subscribe(showAgain => {
+            settings.set({user: {tutorials: {showFirstRunTutorial: showAgain}}});
+          })
+        }, 1000)
+      }
+    })
 
     /**
      * Subscribe to router events in order to manually adjust the current view

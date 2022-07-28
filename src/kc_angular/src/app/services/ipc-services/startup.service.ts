@@ -70,7 +70,7 @@ export class StartupService {
   tutorial(): Observable<boolean> {
     return new Observable<boolean>(subscriber => {
       let ref = this.dialog.open(TutorialComponent, {
-        width: '64rem',
+        width: 'min(90%, 64rem)',
         showHeader: false,
         contentStyle: {
           'border-radius': '6px'

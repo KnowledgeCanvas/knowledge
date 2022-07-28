@@ -52,13 +52,53 @@ export class TutorialComponent implements OnInit {
       html: `
       <div>
         <div>
-          This tutorial will walk you through some of the basics and help you get started with <code class="text-primary">Knowledge</code>.
-          You can click the <div class="pi pi-times"></div> button at the top of this window to skip the tutorial at any time.
+            This tutorial will cover the basics and help you get started with <b class="text-primary">Knowledge</b>.
+        </div>
+        <br>
+        <div>
+            At a very high level, <b class="text-primary">Knowledge</b> is a system for storing and accessing information.
+            You can use it to save PDF files, Word documents, images, YouTube videos, and full-blown webpages!
+        </div>
+        <br>
+        <div>
+            Click <span class="text-primary">Next</span> to learn more.
         </div>
       </div>
       `,
       image: undefined,
       index: 0
+    },
+    {
+      title: 'Sources',
+      body: '',
+      html: `
+      <div class="mx-3">
+      <h3>About</h3>
+        <p>
+            <b class="text-primary">Knowledge</b> allows you to import and store various digital resources, including PDFs, images, videos, documents, webpages, and more.
+            We refer to these as <b class="text-primary">"Sources"</b>.
+        </p>
+        <p>
+            There are numerous ways to import Sources:
+            <ul>
+                <li>Click <b>+File</b> or <b>+Link</b> on the Inbox page</li>
+                <li>Drag and drop files or links directly into this window</li>
+                <li>Use the built-in browser and click the Save button</li>
+                <li>Download our Chrome browser extension (requires setup)</li>
+                <li>Save a file to a specific directory (requires setup)</li>
+            </ul>
+            For more information on the various import options and how to enable them, visit the <a target="_blank" class="no-underline text-primary" href="https://github.com/KnowledgeCanvas/knowledge/wiki/Basics#sources">Knowledge Wiki</a>
+        </p>
+        <h3>Next Steps</h3>
+        <p>After importing Sources, click the following icons on the navigation bar to explore</p>
+        <ul>
+            <li><span class="text-primary"><span class="pi pi-table"></span> Table</span></li>
+            <li><span class="text-primary"><span class="pi pi-th-large"></span> Grid</span></li>
+            <li><span class="text-primary"><span class="pi pi-calendar"></span> Calendar</span></li>
+        </ul>
+      </div>
+      `,
+      index: 1
     },
     {
       title: 'Projects',
@@ -68,78 +108,44 @@ export class TutorialComponent implements OnInit {
             <div class="mx-5">
             <h3>About</h3>
                 <p>
-                  Without getting too fancy, <code class="text-primary">Knowledge</code> is based on the idea that
-                  we process and store information in a structured and hierarchical manner, both in our brains and on our digital devices.
-                  For instance, there is a good chance that you implicitly understand the structure laid out in the image on the right.
-                  It is very similar to the ways in which you store files and folders on your computer, Google Drive, etc..
+                    <b class="text-primary">Projects</b> are very similar to folders on your computer, except in <b class="text-primary">Knowledge</b>,
+                    they are also a great way to facilitate structured learning.
                 </p>
                 <p>
-                  This structure represents the <code class="text-primary">Knowledge</code> application, as seen from the perspective of its creators.
-                  At the top of the image is the <quote>root</quote> <b><code class="text-primary">Project</code></b> labeled <code>Knowledge</code>.
-                  This project has various Sub-Projects, which are labeled <code>Dependencies</code>, <code>Knowledge Sources</code>, <code>etc.</code>
-                  Every Project in <code class="text-primary">Knowledge</code> may contain any number of Sub-Projects,
-                  meaning there are a virtually unlimited number of ways in which you can structure your Projects.
+                    Think of the image on the right. Each oval shape represents a concept, and each concept can have any number of sub-concepts.
+                    In this case, the top oval represents the field of Mathematics. Within the field of Mathematics are the fields of Arithmetic and Calculus.
+                    Each of those fields contain additional concepts, and so on.
+                </p>
+                <p>
+                    Projects bring structure to the learning process by organizing information into hierarchies.
+                    Just like with our Math example, the hierarchical structure of Projects help to break concepts into small and digestible pieces.
                 </p>
                 <h3>Next Steps</h3>
                 <p>
-                    Once you are done with this tutorial, click the <br><b>+ Project</b> button to create your first project.
+                    Once you are done with this tutorial, click the <b>+Project</b> button to create a project. You can also right-click on a Project inside the <span class="text-primary"><span class="pi pi-list"></span> Projects</span> Tree to create a Sub-Project.
                 </p>
             </div>
         </div>
       `,
-      image: 'https://user-images.githubusercontent.com/19367848/179429544-03c51975-2d33-4048-b05f-febc6db62b38.png',
+      image: 'assets/img/tutorial/tutorial_1.svg',
       imageHeight: 420,
       imagePos: 'right',
-      index: 1
-    },
-    {
-      title: 'Sources',
-      body: '',
-      html: `
-      <div class="mx-3">
-      <h3>About</h3>
-        <p>
-            <code class="text-primary">Knowledge</code> allows you to import and store various digital resources into your Projects, including PDFs, presentations, images, videos, documents, weblinks, and more.
-            We refer to these resources as <code class="text-primary">Knowledge Sources</code> or simply <b><code class="text-primary">Sources</code></b>.
-        </p>
-
-        <p>
-            There are numerous ways to import Sources:
-            <ul>
-                <li>Click <b>+File</b> or <b>+Link</b> on the Inbox page</li>
-                <li>Drag and drop files or links directly into <code class="text-primary">Knowledge</code></li>
-                <li>Download the <code class="text-primary">Knowledge</code> Chrome extension</li>
-                <li>Save a file to a specific directory and <code class="text-primary">Knowledge</code> will automatically import it for you</li>
-                <li>Use the built-in browser and click the <code>Save</code> button</li>
-            </ul>
-            For more information on the various import options and how to enable them, visit the <a target="_blank" href="https://github.com/KnowledgeCanvas/knowledge/wiki/Basics#sources">Knowledge Wiki</a>
-        </p>
-        <h3>Next Steps</h3>
-        <p>After importing sources, click the following icons on the navigation bar to explore</p>
-        <ul>
-            <li><div class="pi pi-table"></div> Table</li>
-            <li><div class="pi pi-th-large"></div> Grid</li>
-            <li><div class="pi pi-calendar"></div> Calendar</li>
-        </ul>
-      </div>
-      `,
       index: 2
     },
     {
       title: 'Inbox',
       body: '',
       html: `
-        <div class="pi pi-inbox"></div>
         <p>
-            No matter how you import sources into <code class="text-primary">Knowledge</code>, they will always appear in your Inbox first.
+            No matter how you import sources into <code class="text-primary">Knowledge</code>, they will always appear in your <span class="text-primary"><span class="pi pi-inbox"></span> Inbox</span> first.
             From there, you can:
         </p>
         <ul>
-          <li>View and change details like title and description</li>
-          <li>Preview PDFs and YouTube videos</li>
+          <li>Assign Sources to Projects</li>
           <li>Add topics</li>
           <li>Set a due date</li>
-          <li>Assign Sources to Projects</li>
+          <li>Preview PDFs and YouTube videos</li>
+          <li>View and change details, like title and description</li>
         </ul>
       `,
       index: 3
@@ -152,35 +158,32 @@ export class TutorialComponent implements OnInit {
         Navigation is easy using the bar on the left-hand side, but even easier using shortcut keys:
         <ul>
         <li>
-          <code>⌘/ctrl + 1</code>: Switch to <code>Inbox</code> view</li>
+          <code>⌘/ctrl + 1</code>: Switch to <span class="text-primary"><span class="pi pi-inbox"></span> Inbox</span></li>
           <li>
-          <code>⌘/ctrl + 2</code>: Switch to <code>Project</code> view</li>
+          <code>⌘/ctrl + 2</code>: Switch to <span class="text-primary"><span class="pi pi-list"></span> Projects</span></li>
           <li>
-          <code>⌘/ctrl + 3</code>: Switch to <code>Table</code> view</li>
+          <code>⌘/ctrl + 3</code>: Switch to <span class="text-primary"><span class="pi pi-table"></span> Table</span></li>
           <li>
-          <code>⌘/ctrl + 4</code>: Switch to <code>Grid</code> view</li>
+          <code>⌘/ctrl + 4</code>: Switch to <span class="text-primary"><span class="pi pi-th-large"></span> Grid</span></li>
           <li>
-          <code>⌘/ctrl + 5</code>: Switch to <code>Calendar</code> view</li>
+          <code>⌘/ctrl + 5</code>: Switch to <span class="text-primary"><span class="pi pi-calendar"></span> Calendar</span></li>
         </ul>
 
-        <div>You can see a complete list of Shortcut Keys in the <a target="_blank" href="https://github.com/KnowledgeCanvas/knowledge/wiki/Shortcut-Keys">Knowledge Wiki</a></div>
+        <div>You can see a complete list of Shortcut Keys in the <a target="_blank" class="no-underline text-primary" href="https://github.com/KnowledgeCanvas/knowledge/wiki/Shortcut-Keys">Knowledge Wiki</a></div>
       </div>
       `,
-      image: 'https://user-images.githubusercontent.com/19367848/179428756-30a93365-f5ce-42ec-b405-41785fc26195.png',
-      imageHeight: 192,
-      imagePos: 'left',
       index: 4
     },
     {
       title: 'Learn More',
       body: '',
       html: `
-      Visit the Knowledge Wiki to find out more:
+      Visit the Knowledge Wiki for more on:
       <ul>
-        <li><a target="_blank" href="https://github.com/KnowledgeCanvas/knowledge/wiki/Basics">Basics</a></li>
-        <li><a target="_blank" href="https://github.com/KnowledgeCanvas/knowledge/wiki/Shortcut-Keys">Shortcut Keys</a></li>
-        <li><a target="_blank" href="https://github.com/KnowledgeCanvas/knowledge/wiki/Development">Development</a></li>
-        <li><a target="_blank" href="https://github.com/KnowledgeCanvas/knowledge/wiki/Debugging">Debugging</a></li>
+        <li><a target="_blank" class="no-underline text-primary" href="https://github.com/KnowledgeCanvas/knowledge/wiki/Basics">Basics</a></li>
+        <li><a target="_blank" class="no-underline text-primary" href="https://github.com/KnowledgeCanvas/knowledge/wiki/Shortcut-Keys">Shortcut Keys</a></li>
+        <li><a target="_blank" class="no-underline text-primary" href="https://github.com/KnowledgeCanvas/knowledge/wiki/Development">Development</a></li>
+        <li><a target="_blank" class="no-underline text-primary" href="https://github.com/KnowledgeCanvas/knowledge/wiki/Debugging">Debugging</a></li>
       </ul>
       `,
       index: 5
