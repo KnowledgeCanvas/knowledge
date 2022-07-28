@@ -86,14 +86,10 @@ import {KsCommandService} from "../../services/command-services/ks-command.servi
             </p-chips>
           </div>
 
-          <div *ngIf="showIcon || showRemove || showOpen || showEdit || showPreview"
+          <div *ngIf="showIcon || showRemove || showOpen || showEdit || showPreview || showFlag"
                class="flex-row-center-between">
             <div class="col text-left">
-              <app-ks-icon [ks]="ks"
-                           *ngIf="showIcon"
-                           class="cursor-pointer"
-                           (click)="onOpen.emit(this.ks)">
-              </app-ks-icon>
+              <app-ks-icon [ks]="ks" *ngIf="showIcon"></app-ks-icon>
             </div>
             <div *ngIf="showRemove || showOpen || showEdit || showPreview || showFlag">
               <app-action-bar [showEdit]="showEdit"

@@ -134,18 +134,18 @@ export class KsCommandService {
     this._ksShareEvent.next(ksList);
   }
 
-  open(ks: KnowledgeSource) {
+  open(ks: Partial<KnowledgeSource>) {
     if (ks.ingestType === 'file' && typeof ks.accessLink === 'string') {
       this.ipc.openLocalFile(ks.accessLink).then((result) => {
         if (result) {
-          this.notifications.success('Source Command', 'File Opened', ks.title);
+          this.notifications.success('Source Command', 'File Opened', ks.title ?? '');
         } else {
-          this.notifications.error('Source Command', 'Failed to Open', ks.title);
+          this.notifications.error('Source Command', 'Failed to Open', ks.title ?? '');
         }
       });
-    } else {
+    } else if (ks && ks.accessLink) {
       window.open(typeof ks.accessLink === 'string' ? ks.accessLink : ks.accessLink.href);
-      this.notifications.success('Source Command', 'Link Opened', ks.title);
+      this.notifications.success('Source Command', 'Link Opened', ks.title ?? '');
     }
 
     if (!ks.events) {
