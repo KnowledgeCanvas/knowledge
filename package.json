@@ -86,6 +86,10 @@
       {
         "from": "Resources/app.env",
         "to": "app.env"
+      },
+      {
+        "from": "Resources/icon.png",
+        "to": "icon.png"
       }
     ],
     "publish": {

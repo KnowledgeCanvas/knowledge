@@ -76,25 +76,25 @@ function createMainWindow() {
 
     console.log('Knowledge storage path: ', app.getPath('userData'));
 
-    const config = {
+    app.setName('Knowledge');
+
+    // kcMainWindow = new BrowserWindow(config);
+    kcMainWindow = new BrowserWindow({
         title: 'Knowledge',
         backgroundColor: backgroundColor,
         width: WIDTH ? WIDTH : 1280,
         height: HEIGHT ? HEIGHT : 1600,
         minWidth: 800,
         minHeight: 800,
-        center: true,
         frame: false,
+        icon: path.resolve(app.getAppPath(), '..', 'icon.png'),
         show: false,
         webPreferences: {
             nodeIntegration: false, // is default value after Electron v5
             contextIsolation: true, // protect against prototype pollution
-            enableRemoteModule: false, // turn off remote
             preload: path.join(app.getAppPath(), 'src', 'kc_electron', 'dist', 'preload.js')
         }
-    };
-
-    kcMainWindow = new BrowserWindow(config);
+    });
 
     setMainWindowListeners();
 }
