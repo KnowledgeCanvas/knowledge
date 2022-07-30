@@ -40,7 +40,7 @@ import {first} from "rxjs/operators";
                       prefix="search"
                       (completeMethod)="search(query)"
                       (onSelect)="onSelect($event)"
-                      styleClass="w-30rem" [style]="{height: '28px'}"
+                      styleClass="lg:w-30rem md:w-24rem sm:w-auto" [style]="{height: '28px'}"
                       panelStyleClass="search-panel shadow-6">
 
         <ng-template let-item pTemplate="item">
