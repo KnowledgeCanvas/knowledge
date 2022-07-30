@@ -15,12 +15,12 @@ export class CytoscapeModel {
         fit: true,
 
         // fit padding
-        padding: 100,
+        padding: 80,
 
-        componentSpacing: 1.5,
+        componentSpacing: 1.2,
 
         // Applies a multiplicative factor (>0) to expand or compress the overall area that the nodes take up
-        spacingFactor: 1,
+        spacingFactor: 0.75,
 
         // Applies a multiplicative factor (>0) to expand or compress the overall area that the nodes take up
         nodeDimensionsIncludeLabels: true,
@@ -34,12 +34,12 @@ export class CytoscapeModel {
         },
 
         nodeRepulsion(node: any): number {
-            return 9999999;
+            return 999999;
         },
 
         initialTemp: 99999,
 
-        gravity: 99,
+        gravity: 50,
 
         // duration of animation in ms if enabled
         animationDuration: 0,
@@ -69,10 +69,10 @@ export class CytoscapeModel {
         style: [{
             selector: 'edge',
             style: {
-                'line-color': 'black',
+                'line-color': '#CACACA',
                 'width': 2,
                 'curve-style': 'bezier',
-                'target-arrow-shape': 'triangle'
+                'background-color': 'white'
             }
         }, {
             selector: 'node',
@@ -86,9 +86,20 @@ export class CytoscapeModel {
         }, {
             selector: 'node[type="project"]',
             style: {
-                'width': '48px',
-                'height': '48px',
-                'background-color': '#64758B'
+                'width': '24px',
+                'height': '24px',
+                "background-width": '41px',
+                "background-height": '33px',
+                'background-color': '#2774ae',
+                // "background-image": './icon.png',
+                "border-width": 1,
+                "border-opacity": 0.7,
+                shape: 'round-rectangle',
+                'text-background-shape': 'roundrectangle',
+                'text-background-color': '#FFFFFF',
+                'text-background-opacity': 0.65,
+                'font-weight': 'bold',
+                'font-size': '14px',
             }
         }, {
             selector: 'node[type="ks"]',
@@ -96,6 +107,21 @@ export class CytoscapeModel {
                 "background-color": '#FFFFFF',
                 'width': '32px',
                 'height': '32px',
+                "border-color": '#CACACA',
+                "border-width": 2,
+                "border-opacity": 0.8,
+                'source-label': 'This is a source',
+                'text-background-shape': 'roundrectangle',
+                'text-background-color': '#FFFFFF',
+                'text-background-opacity': 0.65,
+                "text-wrap": 'ellipsis',
+                "text-max-width": '128px',
+                'font-weight': 'normal',
+                'font-size': '12px',
+                ghost: 'yes',
+                'ghost-opacity': 0.3,
+                'ghost-offset-x': 1,
+                'ghost-offset-y': 1
             }
         },
             {

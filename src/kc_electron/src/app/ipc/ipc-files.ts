@@ -13,8 +13,10 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
+import {IpcMessage, PromptForDirectoryRequest, ThumbnailRequest} from "../../../../kc_shared/models/electron.ipc.model";
 
-import {IpcMessage, KsThumbnailRequest, PromptForDirectoryRequest} from "../models/electron.ipc.model";
+const fse = require('fs-extra');
+const settingsService = require('../services/settings.service');
 
 const share: any = (global as any).share;
 const ipcMain: any = share.ipcMain;
@@ -24,6 +26,8 @@ const shell: any = share.shell;
 const path: any = share.path;
 const nativeImage: any = share.nativeImage;
 const app: any = share.app;
+const fs: any = share.fs;
+
 
 let promptForDirectory,
     openLocalFile,
@@ -38,7 +42,7 @@ let promptForDirectory,
  * @callback none
  * @description shows the file located at <path> in native file explorer
  */
-showItemInFolder = ipcMain.on('app-show-item-in-folder', (_: any, path: string) => {
+showItemInFolder = ipcMain.on('A2E:FileSystem:ShowFile', (_: any, path: string) => {
     shell.showItemInFolder(path);
 });
 
@@ -46,10 +50,10 @@ showItemInFolder = ipcMain.on('app-show-item-in-folder', (_: any, path: string) 
  * promptForDirectory
  * @param request: [PromptForDirectoryRequest] configuration for dialog.showOpenDialogSync
  * @return path: [string] the path selected by user
- * @callback app-prompt-for-directory-results
+ * @callback E2A:FileSystem:DirectoryPrompt
  * @description opens a file chooser dialog that allows the user to select a path
  */
-promptForDirectory = ipcMain.on('app-prompt-for-directory', (event: any, request: PromptForDirectoryRequest) => {
+promptForDirectory = ipcMain.on('A2E:FileSystem:DirectoryPrompt', (event: any, request: PromptForDirectoryRequest) => {
     if (!request) {
         request = {properties: ['openDirectory', "createDirectory"]}
     }
@@ -69,7 +73,7 @@ promptForDirectory = ipcMain.on('app-prompt-for-directory', (event: any, request
             message: 'Invalid or non-existent path or directory chosen.'
         }
     }
-    kcMainWindow.webContents.send('app-prompt-for-directory-results', response);
+    kcMainWindow.webContents.send('E2A:FileSystem:DirectoryPrompt', response);
 })
 
 
@@ -77,10 +81,10 @@ promptForDirectory = ipcMain.on('app-prompt-for-directory', (event: any, request
  * openLocalFile
  * @param filePath: [string] path of file to open
  * @return none
- * @callback electron-open-local-file-results [boolean]
+ * @callback E2A:FileSystem:OpenFile [boolean]
  * @description opens the file located at filePath in the OS-level default application
  */
-openLocalFile = ipcMain.on('electron-open-local-file', (event: any, filePath: string) => {
+openLocalFile = ipcMain.on('A2E:FileSystem:OpenFile', (event: any, filePath: string) => {
     shell.openPath(path.resolve(filePath)).then((outcome: string) => {
         let response: IpcMessage = {error: undefined, success: undefined}
         if (outcome === '') {
@@ -93,7 +97,7 @@ openLocalFile = ipcMain.on('electron-open-local-file', (event: any, filePath: st
             }
         }
         let kcMainWindow: any = share.BrowserWindow.getAllWindows()[0];
-        kcMainWindow.webContents.send('electron-open-local-file-results', response);
+        kcMainWindow.webContents.send('E2A:FileSystem:OpenFile', response);
     });
 });
 
@@ -102,10 +106,10 @@ openLocalFile = ipcMain.on('electron-open-local-file', (event: any, filePath: st
  * getFileThumbnail
  * @param requests: [KsThumbnailRequest[]] an array of thumbnail requests
  * @return thumbnails: [nativeImage[]] an array of thumbnails
- * @callback electron-get-file-thumbnail-results [IpcResponse[]]
+ * @callback E2A:FileSystem:FileThumbnail [IpcResponse[]]
  * @description requests thumbnails for files in each request and returns them in an array
  */
-getFileThumbnail = ipcMain.on('electron-get-file-thumbnail', (event: any, requests: KsThumbnailRequest[]) => {
+getFileThumbnail = ipcMain.on('A2E:FileSystem:FileThumbnail', (event: any, requests: ThumbnailRequest[]) => {
     let kcMainWindow: any = share.BrowserWindow.getAllWindows()[0];
     let responses: IpcMessage[] = [];
     let actions: any[] = [];
@@ -116,7 +120,7 @@ getFileThumbnail = ipcMain.on('electron-get-file-thumbnail', (event: any, reques
             success: undefined
         }]
         let kcMainWindow: any = share.BrowserWindow.getAllWindows()[0];
-        kcMainWindow.webContents.send('electron-get-file-thumbnail-results', responses);
+        kcMainWindow.webContents.send('E2A:FileSystem:FileThumbnail', responses);
         return;
     }
 
@@ -127,7 +131,7 @@ getFileThumbnail = ipcMain.on('electron-get-file-thumbnail', (event: any, reques
             success: undefined
         }]
         let kcMainWindow: any = share.BrowserWindow.getAllWindows()[0];
-        kcMainWindow.webContents.send('electron-get-file-thumbnail-results', responses);
+        kcMainWindow.webContents.send('E2A:FileSystem:FileThumbnail', responses);
         return;
     }
 
@@ -148,9 +152,9 @@ getFileThumbnail = ipcMain.on('electron-get-file-thumbnail', (event: any, reques
             }
             responses.push(response);
         }
-        kcMainWindow.webContents.send('electron-get-file-thumbnail-results', responses);
+        kcMainWindow.webContents.send('E2A:FileSystem:FileThumbnail', responses);
     }).catch((reason) => {
-        console.error('Caught promise exception while getting thumbnail: ', reason);
+        console.error('Caught promise exception while getting thumbnail: ', reason, requests);
         let response: IpcMessage = {
             error: {
                 code: 501,
@@ -160,7 +164,7 @@ getFileThumbnail = ipcMain.on('electron-get-file-thumbnail', (event: any, reques
             success: undefined
         }
         // The caller is expecting an array, so even though we're only sending a single response, we wrap it in array
-        kcMainWindow.webContents.send('electron-get-file-thumbnail-results', [response]);
+        kcMainWindow.webContents.send('E2A:FileSystem:FileThumbnail', [response]);
     });
 });
 
@@ -168,10 +172,10 @@ getFileThumbnail = ipcMain.on('electron-get-file-thumbnail', (event: any, reques
  * getFileIcon
  * @param filePaths: [string] an array of file paths for which to get the icons
  * @return thumbnails: [nativeImage[]] an array of icons
- * @callback electron-get-file-icon-results [IpcResponse[]]
+ * @callback E2A:FileSystem:FileIcon [IpcResponse[]]
  * @description requests icons for files in each request and returns them in an array
  */
-getFileIcon = ipcMain.on('electron-get-file-icon', (event: any, filePaths: string[]) => {
+getFileIcon = ipcMain.on('A2E:FileSystem:FileIcon', (event: any, filePaths: string[]) => {
     if (filePaths.length <= 0) {
         return;
     }
@@ -190,7 +194,7 @@ getFileIcon = ipcMain.on('electron-get-file-icon', (event: any, filePaths: strin
             }
             responses.push(response);
         }
-        kcMainWindow.webContents.send('electron-get-file-icon-results', responses);
+        kcMainWindow.webContents.send('E2A:FileSystem:FileIcon', responses);
     });
 });
 
@@ -201,10 +205,10 @@ getFileIcon = ipcMain.on('electron-get-file-icon', (event: any, filePaths: strin
  * @callback none
  * @description creates a new drag-and-drop event using the actual file pointed to be the KS
  */
-dragFileFromApp = ipcMain.on('ondragstart', (event: any, args: any) => {
+dragFileFromApp = ipcMain.on('A2E:FileSystem:StartDrag', (event: any, args: any) => {
     let ks = args;
     if (!ks) {
-        console.error('Invalid or no Knowledge Source passed to electron IPC ondragstart handler.');
+        console.error('Invalid or no Knowledge Source passed to electron IPC A2E:FileSystem:StartDrag handler.');
         return;
     }
 
@@ -215,13 +219,41 @@ dragFileFromApp = ipcMain.on('ondragstart', (event: any, args: any) => {
 
     let options = {size: 'normal'}
 
-    app.getFileIcon(ks.accessLink, options).then((icon: any) => {
+    // First, copy file to centralized location
+    const appPath = settingsService.getSettings().system.appPath;
+    const copyPath = path.join(appPath, 'tmp');
+    const filename = path.basename(ks.accessLink);
+    const filePath = path.join(copyPath, filename);
+
+    // TODO: periodically purge the tmp folder
+    try {
+        fs.mkdirSync(copyPath, {recursive: true});
+    } catch (e) {
+        console.error('File IPC Unable to create temporary directory for drag/drop...');
+    }
+
+    try {
+        fse.cpSync(ks.accessLink, filePath);
+    } catch (e) {
+        console.error('File IPC Unable to copy file to temporary directory for drag/drop...');
+    }
+
+    // Then, use NEW file for drag handler
+
+    app.getFileIcon(filePath, options).then((icon: any) => {
         event.sender.startDrag({
-            file: path.resolve(ks.accessLink),
+            file: path.resolve(filePath),
             icon: icon
-        })
+        });
+
+        setTimeout(() => {
+            try {
+                fse.remove(filePath);
+            } catch (e) {
+            }
+        }, 30000);
     }).catch((reason: any) => {
-        console.error('Error in main proccess, dragging file from app', reason);
+        console.error('Error in main process, dragging file from app', reason);
     });
 });
 

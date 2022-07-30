@@ -13,29 +13,23 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
+import {AuthorModel} from "../../../../kc_shared/models/author.model";
+import {FileSourceModel} from "../../../../kc_shared/models/file.source.model";
+import {UUID} from "../../../../kc_shared/models/uuid.model";
+import {ImportMethod} from "../../../../kc_shared/models/knowledge.source.model";
+import {WebSourceModel} from "../../../../kc_shared/models/web.source.model";
 
-import {UuidModel} from "./uuid.model";
-import {SearchModel} from "./google.search.results.model";
-import {FileModel} from "./file.model";
-import {WebsiteModel} from "./website.model";
-import {AuthorModel} from "./author.model";
-
-export type IngestType = 'google' | 'file' | 'website' | 'generic' | 'topic' | 'search' | 'note' | 'message';
-
-// TODO: turn this into RDF type (Open graph)
-export type SourceType = 'article'
+export type IngestType = 'file' | 'website' | 'generic' | 'topic' | 'search' | 'note' | 'message';
 
 export class SourceModel {
-  search: SearchModel | undefined;
-  file: FileModel | undefined;
-  website: WebsiteModel | undefined;
+  file: FileSourceModel | undefined;
+  website: WebSourceModel | undefined;
 
-  constructor(file?: FileModel, search?: SearchModel, website?: WebsiteModel) {
-    if (!file && !search && !website) {
+  constructor(file?: FileSourceModel, website?: WebSourceModel) {
+    if (!file && !website) {
       throw new Error('SourceModel must contain at lesat one valid source.');
     }
     this.file = file;
-    this.search = search;
     this.website = website;
   }
 }
@@ -62,10 +56,9 @@ export type KnowledgeSourceEvent = {
 }
 
 export class KnowledgeSource {
-  associatedProject: UuidModel;
+  associatedProject: UUID;
   authors: AuthorModel[];
   dateDue?: Date;
-  dateCheckpoint: Date[];
   dateCreated: Date;
   dateAccessed: Date[];
   dateModified: Date[];
@@ -73,42 +66,35 @@ export class KnowledgeSource {
   events?: KnowledgeSourceEvent[] = [];
   icon?: any;
   iconUrl?: string;
-  id: UuidModel;
+  id: UUID;
   ingestType: IngestType;
-  snippet?: string;
   rawText?: string;
   flagged?: boolean;
   title: string;
   topics?: string[];
-  note: KnowledgeSourceNote;
   accessLink: URL | string;
   readonly reference: KnowledgeSourceReference;
+  importMethod?: ImportMethod = 'manual';
+  thumbnail?: string;
 
-  constructor(title: string, id: UuidModel, ingestType: IngestType, reference: KnowledgeSourceReference) {
+  constructor(title: string, id: UUID, ingestType: IngestType, reference: KnowledgeSourceReference) {
     this.title = title;
     this.id = id;
-    this.associatedProject = new UuidModel('');
+    this.associatedProject = {value: ''};
     this.authors = [];
     this.reference = reference;
     this.ingestType = ingestType;
     this.dateCreated = new Date();
-    this.dateCheckpoint = [];
     this.dateModified = [];
     this.dateAccessed = []
     this.accessLink = reference.link;
-    this.note = new KnowledgeSourceNote();
     this.flagged = false;
     this.topics = [];
-
-    if (!this.events) {
-      this.events = [];
-    }
-
-    this.events.push({
+    // TODO: this should be replaced with the new EventModel
+    this.events = [{
       date: new Date(),
-      label: 'Created',
-      hash: ''
-    });
+      label: 'Created'
+    }];
   }
 }
 

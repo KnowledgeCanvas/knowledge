@@ -1,8 +1,6 @@
 import {CytoscapeOptions} from "cytoscape";
 import {CytoscapeModel} from "./cytoscape.model";
 
-export type KnowledgeSource = any;
-
 export class KnowledgeCanvas {
     private cyContainer: HTMLElement | null = document.getElementById('cy');
     private cyModel: CytoscapeModel;
@@ -25,6 +23,7 @@ export class KnowledgeCanvas {
                             label: label, type: 'project'
                         }
                     }
+
                     data.push(node);
                     if ((project as any).subprojects) {
                         for (let sub of (project as any).subprojects) {

@@ -1,10 +1,7 @@
 ---
-name: Bug report
-about: Create a report to help us improve
-title: '[Bug]: '
-labels: 'bug'
-assignees: ''
-knowledge-canvas version: ''
+name: Bug report about: Create a report to help us improve title: '[Bug]: '
+labels: 'bug' assignees: ''
+knowledge version: ''
 ---
 
 **Describe the bug**
@@ -14,6 +11,7 @@ A clear and concise description of what the bug is.
 
 **To Reproduce**
 Steps to reproduce the behavior:
+
 1. Go to '...'
 2. Click on '....'
 3. Scroll down to '....'
@@ -32,8 +30,9 @@ If applicable, add screenshots to help explain your problem.
 ---
 
 **Operating System (please complete the following information):**
- - OS: [e.g. MacOS /w Apple Slicion (M1), Windows 10, etc.]
- - Version: [e.g. Big Sur, 20.04, etc.]
+
+- OS: [e.g. MacOS /w Apple Slicion (M1), Windows 10, etc.]
+- Version: [e.g. Big Sur, 20.04, etc.]
 
 ---
 

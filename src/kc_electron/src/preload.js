@@ -16,93 +16,124 @@
 
 const {contextBridge, ipcRenderer} = require('electron');
 
-// whitelist channels
-const validSendChannels = [
-    "app-extract-website",
-    "app-generate-uuid",
-    "app-get-settings",
-    "app-prompt-for-directory",
-    "app-save-settings",
-    "app-open-kc-dialog",
-    "electron-check-for-update",
-    "app-get-current-version",
-    "app-show-item-in-folder",
-    "electron-browser-view",
-    "electron-browser-view-can-go-back",
-    "electron-browser-view-can-go-forward",
-    "electron-browser-view-current-url",
-    "electron-browser-view-file",
-    "electron-browser-view-go-back",
-    "electron-browser-view-go-forward",
-    "electron-close-browser-view",
-    'electron-browser-view-refresh',
-    'electron-get-file-icon',
-    'electron-get-file-thumbnail',
-    'electron-open-local-file',
-    'kc-get-knowledge-source-list',
-    'kc-close-modal'
+/**
+ * IPC Channels must be placed in one of the following lists before it
+ * can be invoked.
+ *
+ * Channels take the form <Direction>:<Module>:<Function>
+ *     Direction := A2E | E2A
+ *     A2E: Angular-to-Electron
+ *     E2A: Electron-to-Angular
+ */
+const ipcSendChannels = [
+    "A2E:AutoUpdate:Check",
+    "A2E:BrowserView:CanGoBack",
+    "A2E:BrowserView:CanGoForward",
+    "A2E:BrowserView:Close",
+    "A2E:BrowserView:CurrentUrl",
+    "A2E:BrowserView:GoBack",
+    "A2E:BrowserView:GoForward",
+    "A2E:BrowserView:Open",
+    "A2E:BrowserView:Refresh",
+    "A2E:Extraction:Website",
+    "A2E:FileSystem:DirectoryPrompt",
+    "A2E:FileSystem:FileIcon",
+    "A2E:FileSystem:FileThumbnail",
+    "A2E:FileSystem:OpenFile",
+    "A2E:FileSystem:ShowFile",
+    "A2E:Autoscan:Delete",
+    "A2E:Autoscan:Finalize",
+    "A2E:KnowledgeCanvas:Close",
+    "A2E:KnowledgeCanvas:GetSources",
+    "A2E:KnowledgeCanvas:Open",
+    "A2E:Settings:Defaults",
+    "A2E:Settings:Get",
+    "A2E:Settings:Set",
+    "A2E:Uuid:Generate",
+    "A2E:Version:Get",
+    "A2E:Window:Minimize",
+    "A2E:Window:Maximize",
+    "A2E:Window:ZoomOut",
+    "A2E:Window:ZoomIn"
 ];
-const validInvokeChannels = [
-    'app.local.file.thumbnail',
+
+const ipcInvokeChannels = [];
+
+const ipcReceiveOnceChannels = [
+    "E2A:BrowserView:Close",
+    "E2A:BrowserView:Open",
+    "E2A:Extraction:Website",
+    "E2A:FileSystem:DirectoryPrompt",
+    "E2A:FileSystem:FileIcon",
+    "E2A:FileSystem:OpenFile",
+    "E2A:KnowledgeCanvas:GetSources",
+    "E2A:KnowledgeCanvas:Open",
+    "E2A:Settings:Defaults",
+    "E2A:Uuid:Generate",
 ];
-const validReceiveOnceChannels = [
-    "app-extract-website-results",
-    "app-generate-uuid-results",
-    "app-get-settings-results",
-    "app-prompt-for-directory-results",
-    "app-save-settings-results",
-    "electron-browser-view-file-results",
-    "electron-browser-view-results",
-    "electron-close-browser-view-results",
-    'electron-get-file-icon-results',
-    'electron-open-local-file-results',
-    'kc-get-knowledge-source-list-response',
-    'app-open-kc-dialog-results'
-];
-const validReceiveChannels = [
-    "app-chrome-extension-results",
-    "app-ingest-watcher-results",
-    "electron-auto-update",
-    "app-get-current-version-results",
-    "electron-browser-view-can-go-back-results",
-    "electron-browser-view-can-go-forward-results",
-    "electron-browser-view-current-url-results",
-    "electron-browser-view-nav-events",
-    'electron-get-file-thumbnail-results',
-    'electron-browser-view-extract-text'
+
+const ipcReceiveChannels = [
+    "E2A:AutoUpdate:Update",
+    "E2A:BrowserView:CanGoBack",
+    "E2A:BrowserView:CanGoForward",
+    "E2A:BrowserView:CurrentUrl",
+    "E2A:BrowserView:ExtractedText",
+    "E2A:BrowserView:NavEvent",
+    "E2A:Extension:Import",
+    "E2A:FileSystem:FileThumbnail",
+    "E2A:FileManager:ConfirmAdd",
+    "E2A:FileManager:Error",
+    "E2A:FileManager:NewFiles",
+    "E2A:FileManager:Warn",
+    "E2A:Settings:All",
+    "E2A:Version:Get",
+    "E2A:Window:ZoomLevel"
 ]
+
+let datetime = () => {
+    return new Date().toLocaleString()
+}
 
 contextBridge.exposeInMainWorld(
     'api', {
         invoke: (channel, data) => {
-            if (validInvokeChannels.includes(channel)) {
+            if (ipcInvokeChannels.includes(channel)) {
+                console.debug(`[Debug]-[${datetime()}]-[Electron IPC]: Invoke - Invoked on ${channel} with data: `, data);
                 ipcRenderer.invoke(channel, data);
             } else {
-                console.error('IPC.invoke invalid channel: ', channel);
+                console.error(`[Error]-[${datetime()}]-[Electron IPC]: Invalid Invoke Channel -- ${channel}`);
             }
         },
         send: (channel, data) => {
-            if (validSendChannels.includes(channel)) {
+            if (ipcSendChannels.includes(channel)) {
+                console.debug(`[Debug]-[${datetime()}]-[Electron IPC]: Send - Invoked on ${channel} with data: `, data);
                 ipcRenderer.send(channel, data);
             } else {
-                console.error('IPC.send invalid channel: ', channel);
+                console.error(`[Error]-[${datetime()}]-[Electron IPC]: Invalid Send Channel -- ${channel}`);
             }
         },
         receive: (channel, func) => {
-            if (validReceiveChannels.includes(channel)) {
-                ipcRenderer.on(channel, (event, ...args) => func(...args));
+            if (ipcReceiveChannels.includes(channel)) {
+                if (func) {
+                    console.debug(`[Debug]-[${datetime()}]-[Electron IPC]: Receive - Invoked on ${channel}.`);
+                    ipcRenderer.on(channel, (event, ...args) => func(...args));
+                }
             } else {
-                console.error('IPC.receive invalid channel: ', channel);
+                console.error(`[Error]-[${datetime()}]-[Electron IPC]: Invalid Receive -- ${channel}`);
             }
         },
         receiveOnce: (channel, func) => {
-            if (validReceiveOnceChannels.includes(channel)) {
-                ipcRenderer.once(channel, (event, ...args) => func(...args));
+            if (ipcReceiveOnceChannels.includes(channel)) {
+                if (func) {
+                    console.debug(`[Debug]-[${datetime()}]-[Electron IPC]: Receive Once - Invoked on ${channel}.`);
+                    ipcRenderer.once(channel, (event, ...args) => func(...args));
+                }
             } else {
-                console.error('IPC.receiveOnce invalid channel: ', channel);
+                console.error(`[Error]-[${datetime()}]-[Electron IPC]: Invalid Receive Once -- ${channel}`);
             }
         },
         removeAllListeners: (channel) => {
+            console.debug(`[Debug]-[${datetime()}]-[Electron IPC]: Remove All Listeners - Invoked on ${channel}`);
             ipcRenderer.removeAllListeners(channel);
         }
     }
@@ -111,6 +142,6 @@ contextBridge.exposeInMainWorld(
 
 contextBridge.exposeInMainWorld('electron', {
     startDrag: (ks) => {
-        ipcRenderer.send('ondragstart', ks);
+        ipcRenderer.send('A2E:FileSystem:StartDrag', ks);
     }
 })

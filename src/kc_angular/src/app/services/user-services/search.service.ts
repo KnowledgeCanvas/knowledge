@@ -1,0 +1,124 @@
+/**
+ Copyright 2022 Rob Royce
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
+import {Injectable} from '@angular/core';
+import {SettingsService} from "../ipc-services/settings.service";
+import {DataService} from "./data.service";
+import {BehaviorSubject, Observable} from "rxjs";
+import {KnowledgeSource} from "../../models/knowledge.source.model";
+import {KcProject} from "../../models/project.model";
+import Fuse from "fuse.js";
+import {map} from "rxjs/operators";
+
+export type SearchProvider = {
+  id: string,
+  title: string
+  iconUrl: string
+}
+
+@Injectable({
+  providedIn: 'root'
+})
+export class SearchService {
+  fuzzy: boolean = true;
+  private providers: SearchProvider[] = [
+    {
+      id: 'google',
+      title: 'Google',
+      iconUrl: 'https://www.google.com/favicon.ico'
+    },
+    {
+      id: 'bing',
+      title: 'Bing',
+      iconUrl: 'https://www.bing.com/sa/simg/favicon-trans-bg-blue-mg.ico'
+    },
+    {
+      id: 'duck',
+      title: 'DuckDuckGo',
+      iconUrl: 'https://duckduckgo.com/favicon.ico'
+    }
+  ];
+
+  provider: SearchProvider = this.providers[0];
+
+  private __query = new BehaviorSubject<string>('');
+  query = this.__query.asObservable();
+
+  private searchOptions = {
+    includeScore: true,
+    minMatchCharLength: 3,
+    threshold: 0.2,
+    ignoreLocation: true,
+    findAllMatches: true,
+    useExtendedSearch: true,
+    keys: [
+      {
+        name: 'title',
+        weight: 4
+      },
+      {
+        name: 'topics',
+        weight: 2
+      },
+      {
+        name: 'ingestType',
+        weight: 8
+      },
+      {
+        name: 'description',
+        weight: 1
+      },
+      {
+        name: 'rawText',
+        weight: 0.5
+      }
+    ]
+  }
+
+  constructor(private data: DataService, private settings: SettingsService) {
+    settings.search.subscribe((searchSettings) => {
+      const provider = this.providers.find(s => s.id === searchSettings.provider);
+      if (provider) {
+        this.provider = provider;
+      }
+
+      if (searchSettings.fuzzy !== undefined) {
+        this.fuzzy = searchSettings.fuzzy;
+      }
+
+      if (searchSettings.threshold !== undefined && searchSettings.threshold >= 0 && searchSettings.threshold <= 100) {
+        this.searchOptions.threshold = searchSettings.threshold / 100;
+      }
+    });
+  }
+
+  executeSearch(term: string) {
+    if (term && term.trim() != '') {
+      this.__query.next(term);
+    }
+  }
+
+  forTerm(term: string): Observable<Partial<KnowledgeSource & KcProject & any>[]> {
+    return this.data.allKs.pipe(
+      map(ks => {
+        return new Fuse(ks, this.searchOptions).search(term);
+      })
+    );
+  }
+
+  show() {
+    this.settings.show('search');
+  }
+}

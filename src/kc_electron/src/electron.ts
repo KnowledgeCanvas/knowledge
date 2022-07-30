@@ -21,11 +21,9 @@ const {autoUpdater} = require("electron-updater");
 const nativeImage = require('electron').nativeImage
 const http = require('http');
 const url = require('url');
-const chokidar = require('chokidar');
 const fs = require('fs');
 const path = require('path');
-const mime = require('mime-types');
-const settingsService = require('./app/controller/settings.service');
+const settingsService = require('./app/services/settings.service');
 const uuid = require('uuid');
 const MAIN_ENTRY: string = path.join(app.getAppPath(), 'src', 'kc_angular', 'dist', 'main', 'index.html');
 
@@ -49,13 +47,13 @@ const MAIN_ENTRY: string = path.join(app.getAppPath(), 'src', 'kc_angular', 'dis
 console.log('Dirname: ', __dirname);
 
 // Setup auto update
-require('./app/controller/update');
+require('./app/services/auto.update.service');
 
 // Setup IPC
 require('./app/ipc');
 
 // Setup knowledge source ingestion
-require('./app/ingest');
+require('./app/services/index');
 
 const browserIpc = require('./app/ipc').browserIpc;
 
@@ -66,118 +64,64 @@ let appEnv = settingsService.getSettings();
 // Declare main window for later use
 let kcMainWindow: any;
 
-// Declare window used to display knowledge graphs, etc
-let kcKnowledgeWindow: any;
-
-if (!appEnv.ingest.extensions) {
-    appEnv.ingest.extensions = {
-        httpServerEnabled: false,
-        httpServerPort: 9000
-    }
-    settingsService.setSettings(appEnv);
-}
-
-if (appEnv.ingest.extensions.httpServerEnabled) {
-    // Start browser extension server
-    console.debug('Starting browser extension server...');
-    const browserExtensionServer = require('./app/server/server').kcExtensionServer;
-    browserExtensionServer.start();
-}
-
 /**
- *
- *
- *
- *
- *
- *
- *
- *
  * Main Window Functions
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
  */
 function createMainWindow() {
-    let WIDTH: number = parseInt(appEnv.DEFAULT_WINDOW_WIDTH);
-    let HEIGHT: number = parseInt(appEnv.DEFAULT_WINDOW_HEIGHT);
+    let WIDTH: number = parseInt(appEnv.env.DEFAULT_WINDOW_WIDTH);
+    let HEIGHT: number = parseInt(appEnv.env.DEFAULT_WINDOW_HEIGHT);
     let darkMode = appEnv.display.theme.isDark;
     let backgroundColor = darkMode ? '#1E1E1E' : '#F9F9F9';
     console.log('Theme: ', appEnv.display.theme);
 
-    const config = {
-        title: 'Knowledge Canvas',
+    console.log('Knowledge storage path: ', app.getPath('userData'));
+
+    app.setName('Knowledge');
+
+    // kcMainWindow = new BrowserWindow(config);
+    kcMainWindow = new BrowserWindow({
+        title: 'Knowledge',
         backgroundColor: backgroundColor,
         width: WIDTH ? WIDTH : 1280,
         height: HEIGHT ? HEIGHT : 1600,
         minWidth: 800,
         minHeight: 800,
-        center: true,
+        frame: false,
+        icon: path.resolve(app.getAppPath(), '..', 'icon.png'),
         show: false,
         webPreferences: {
             nodeIntegration: false, // is default value after Electron v5
             contextIsolation: true, // protect against prototype pollution
-            enableRemoteModule: false, // turn off remote
             preload: path.join(app.getAppPath(), 'src', 'kc_electron', 'dist', 'preload.js')
         }
-    };
-
-    kcMainWindow = new BrowserWindow(config);
+    });
 
     setMainWindowListeners();
 }
 
-function createKnowledgeWindow() {
-    let WIDTH: number = parseInt(appEnv.DEFAULT_WINDOW_WIDTH);
-    let HEIGHT: number = parseInt(appEnv.DEFAULT_WINDOW_HEIGHT);
-    let darkMode = appEnv.display.theme === 'app-theme-dark';
-    let backgroundColor = darkMode ? '#2e2c29' : '#F9F9F9';
-
-    const config = {
-        show: false,
-        minWidth: 800,
-        width: WIDTH ? WIDTH : 1280,
-        minHeight: 800,
-        height: HEIGHT ? HEIGHT : 1000,
-        backgroundColor: backgroundColor,
-        title: 'Knowledge Canvas',
-        webPreferences: {
-            nodeIntegration: false, // is default value after Electron v5
-            contextIsolation: true, // protect against prototype pollution
-            enableRemoteModule: false, // turn off remote
-            preload: path.join(app.getAppPath(), 'src', 'kc_electron', 'dist', 'preload.js')
-        }
-    };
-
-    kcKnowledgeWindow = new BrowserWindow(config);
-    setKnowledgeWindowListeners();
-}
-
-function setKnowledgeWindowListeners() {
-    // Destroy window on close
-    kcKnowledgeWindow.on('closed', function () {
-        kcKnowledgeWindow = null;
-    });
-
-    kcKnowledgeWindow.once('ready-to-show', () => {
-        kcKnowledgeWindow.show();
-    });
-}
-
 function setMainWindowListeners() {
-    // TODO: Determine if the following is the best we can do for page load failure
-    // We need to explicitly reload the index upon refresh (note this is only needed in Electron)
-    kcMainWindow.webContents.on('did-fail-load', () => {
-        browserIpc.destroyBrowserViews(kcMainWindow);
-        kcMainWindow.loadFile(MAIN_ENTRY);
-    })
+    kcMainWindow.webContents.on('did-fail-load',
+        (event: any, errorCode: number, errorDescription: string, validatedURL: string, ...other: any) => {
+            event.preventDefault();
+
+            const defaultAction = () => {
+                browserIpc.destroyBrowserViews(kcMainWindow);
+                kcMainWindow.loadFile(MAIN_ENTRY);
+                return;
+            }
+
+            const sender = event.sender;
+
+            if (errorCode === -6 || errorDescription === 'ERR_FILE_NOT_FOUND') {
+                if (validatedURL.includes(process.cwd())) {
+                    defaultAction();
+                }
+            }
+
+            if (!sender || sender.isCrashed() || sender.isDestroyed()) {
+                defaultAction();
+            }
+        })
 
     // Destroy window on close
     kcMainWindow.on('closed', function () {
@@ -198,28 +142,6 @@ function setMainWindowListeners() {
     });
 }
 
-/**
- *
- *
- *
- *
- *
- *
- *
- *
- * Set APP listeners
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- */
-
 app.on('window-all-closed', function () {
     // MacOS apps typically do not quit all the way when a window is closed...
     if (process.platform !== 'darwin')
@@ -239,6 +161,7 @@ app.on('ready', function () {
 
     autoUpdater.checkForUpdatesAndNotify().then((update: UpdateCheckResult | null) => {
         if (update) {
+            // TODO: take action on new versions, such as an "Updating" window or compatibility checks
             console.log('Update Check Results: ', update);
         }
     }).catch((reason: any) => {
@@ -247,192 +170,3 @@ app.on('ready', function () {
         kcMainWindow.loadFile(MAIN_ENTRY);
     })
 });
-
-
-/**
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- */
-let ingestWatcher: any;
-let filesToPush: any[] = [];
-let autoScanInterval: any = undefined;
-
-/**
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- */
-// Subscribes to ingest settings in order to enable/disable file watcher...
-// TODO: move this elsewhere.... IPC perhaps?
-// settingsService.ingest.subscribe((ingest: any) => {
-//     if (!ingest || !ingest.autoscan || !ingest.autoscanLocation) {
-//         if (ingestWatcher)
-//             ingestWatcher.close();
-//         clearInterval(autoScanInterval);
-//         return;
-//     }
-//
-//     // If watcher already exists, close it for now so we can apply new settings
-//     if (ingestWatcher) {
-//         ingestWatcher.close();
-//     }
-//     clearInterval(autoScanInterval);
-//     ingestWatcher = null;
-//     filesToPush = [];
-//
-//     let watchPath = path.resolve(ingest.autoscanLocation);
-//
-//     let fileStat: any;
-//     try {
-//         fileStat = fs.statSync(watchPath);
-//     } catch (e) {
-//         console.warn('Could not find directory: ', watchPath, '... creating now...');
-//         fs.mkdirSync(watchPath, {recursive: true});
-//     }
-//
-//     ingestWatcher = chokidar.watch(watchPath, {
-//         // intended behavior: ignore dotfiles
-//         ignored: /(^|[\/\\])\../,
-//
-//         // intended behavior: keep the file watcher running as long as the user has 'Autoscan' enabled
-//         persistent: true,
-//
-//         // intended behavior: if the user doesn't move the files, then we shouldn't touch them and show them next time
-//         ignoreInitial: false
-//     });
-//
-//     ingestWatcher.on('add', (filePath: string) => {
-//         fileStat = fs.statSync(filePath);
-//
-//         if (!fileStat) {
-//             console.error('Failed to read file: ', filePath);
-//             return;
-//         }
-//
-//         console.log('New file found by watcher: ', filePath);
-//
-//         // Create new file name based on UUID and file type extension, then copy to assigned directory
-//         const contentType = mime.lookup(filePath);
-//
-//         // TODO: this might be set to "false", so we'll have to manually grab the extension if so...
-//         let fileExtension = mime.extension(contentType);
-//         if (!fileExtension) {
-//             console.warn('Could not find file extension for filePath: ', filePath);
-//             fileExtension = path.extname(filePath).split('.')[1];
-//             console.warn('Using path extname instead: ', fileExtension);
-//         }
-//
-//
-//         let newId = uuid.v4();
-//         let newFilePath = path.resolve(appEnv.appPath, 'files', newId) + `.${fileExtension}`;
-//
-//         // copyFileToFolder(filePath, newFilePath);
-//
-//         // Prepare file model to be sent to ingest watcher service in Angular
-//         let fileModel: FileModel = {
-//             accessTime: ingest.preserveTimestamps ? fileStat.atime : Date(),
-//             creationTime: ingest.preserveTimestamps ? fileStat.ctime : Date(),
-//             modificationTime: ingest.preserveTimestamps ? fileStat.mtime : Date(),
-//             filename: path.basename(filePath),
-//             id: {value: newId},
-//             path: newFilePath,
-//             size: fileStat.size,
-//             type: contentType
-//         }
-//
-//         // Add it to the queue
-//         filesToPush.push(fileModel);
-//
-//
-//         // Delete file in watched directory (since it has a new home)
-//         console.warn('Deleting file: ', filePath);
-//         // TODO: file deletion should only occur after we verify that the new KS has been received in the app...
-//         // fs.rmSync(filePath);
-//     });
-//
-//     // Create a new period check for files based on user interval
-//     console.log('Setting interval to ', ingest.interval / 1000, ' seconds...');
-//     autoScanInterval = setInterval(() => {
-//         console.log('Checking filesToPush: ', filesToPush);
-//         if (filesToPush.length > 0 && ingest.autoscan) {
-//             let responses: any[] = [];
-//
-//             for (let fileToPush of filesToPush) {
-//                 let response: IpcMessage = {
-//                     error: undefined,
-//                     success: {
-//                         data: fileToPush
-//                     }
-//                 }
-//                 responses.push(response)
-//             }
-//             try {
-//                 kcMainWindow.webContents.send('app-ingest-watcher-results', responses);
-//                 filesToPush = [];
-//             } catch (e) {
-//                 console.warn('Unable to push files to main window... trying again later...');
-//             }
-//         }
-//
-//     }, appEnv.ingest.interval);
-// });
-
-function copyFileToFolder(filePath: string, newFilePath: string) {
-    fs.copyFileSync(filePath, newFilePath);
-}
-
-
-/**
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- */

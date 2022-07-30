@@ -1,3 +1,5 @@
+import {ProjectGraphNode} from "../../../../kc_shared/models/graph.model";
+
 /**
  Copyright 2022 Rob Royce
 
@@ -14,23 +16,19 @@
  limitations under the License.
  */
 
-export class ProjectTreeNode {
+export class ProjectTreeNode implements ProjectGraphNode {
   name: string;
   id: string;
   type: string;
-  expanded?: boolean = false;
+  expanded: boolean = false;
   subprojects: ProjectTreeNode[];
 
-  constructor(name?: string, id?: string, type?: string, subprojects?: ProjectTreeNode[], expanded?: boolean) {
+  constructor(name: string, id: string, type: string, subprojects: ProjectTreeNode[], expanded: boolean) {
     this.name = name ? name : '';
     this.id = id ? id : '';
     this.type = type ? type : '';
     this.subprojects = subprojects ? subprojects : [];
     this.expanded = expanded;
-  }
-
-  public addSubProject(sub: ProjectTreeNode): void {
-    this.subprojects.push(sub);
   }
 }
 
@@ -38,7 +36,7 @@ export class ProjectTree {
   root: ProjectTreeNode;
 
   constructor() {
-    this.root = new ProjectTreeNode('root', '0', 'root', []);
+    this.root = new ProjectTreeNode('root', '0', 'root', [], true);
   }
 
   asArray(): ProjectTreeNode[] {
@@ -53,7 +51,7 @@ export class ProjectTree {
     if (parentId) {
       this.addChild(node, parentId, this.root);
     } else {
-      this.root.addSubProject(node);
+      this.root.subprojects.push(node);
     }
   }
 
@@ -84,12 +82,4 @@ export class ProjectTree {
       }
     }
   }
-}
-
-export interface ProjectTreeFlatNode {
-  name: string;
-  id: string;
-  level: number;
-  expandable: boolean;
-  expanded?: boolean;
 }

@@ -13,57 +13,70 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-
 import {KnowledgeSource} from "./knowledge.source.model";
-import {UuidModel} from "./uuid.model";
-import {KcCalendar} from "./calendar.model";
+import {KcProjectModel, KcProjectType} from "../../../../kc_shared/models/project.model";
+import {EventModel, ProjectCalendar} from "../../../../kc_shared/models/event.model";
+import {UUID} from "../../../../kc_shared/models/uuid.model";
 
-export type ProjectType = 'school' | 'work' | 'hobby' | 'default' | 'research';
 
-export class ProjectModel {
+export class KcProject implements KcProjectModel {
+  readonly id: UUID;
   name: string = '';
-  readonly id: UuidModel;
   authors: string[] = [];
   description: string = '';
+  parentId: UUID = {value: ''};
+  subprojects: string[] = [];
+  topics: string[] = [];
+  type: KcProjectType;
+  expanded: boolean = false;
+
+  // TODO: this needs to be changed to an array of UUID instead of KS. The KS should be looked up
+  sources: UUID[];
+  knowledgeSource: KnowledgeSource[] = [];
+
+  // TODO: Should we remove calendar, or events?
+  calendar: ProjectCalendar;
+  events?: EventModel[] = [];
+
+  // TODO: these should be completely removed and replaced by calendar/events
   readonly dateCreated: Date;
   dateModified: Date;
   dateAccessed: Date;
-  parentId: UuidModel = new UuidModel('');
-  subprojects: string[] = [];
-  topics: string[] = [];
-  type: ProjectType;
-  notes: string[] = [];
-  expanded: boolean = false;
-  knowledgeSource: KnowledgeSource[] = [];
-  calendar: KcCalendar;
 
-  constructor(name: string, id: UuidModel, type?: ProjectType, parentId?: UuidModel) {
+
+  constructor(name: string, id: UUID, type?: KcProjectType, parentId?: UUID) {
     this.name = name;
     this.id = id;
     this.type = type ? type : 'default';
-    this.parentId = parentId ?? new UuidModel('');
+    this.parentId = parentId ?? {value: ''};
     this.dateCreated = new Date();
     this.dateModified = new Date();
     this.dateAccessed = new Date();
     this.calendar = {events: [], start: null, end: null};
+    this.sources = [];
   }
 }
 
 
 export interface ProjectCreationRequest {
   name: string;
-  parentId: UuidModel;
+  parentId: UUID;
   description: string;
+
+  // TODO: this needs to be replaced with UUID[]
   knowledgeSource: KnowledgeSource[];
+  sources: UUID[];
   authors: string[];
   topics: string[];
-  type: ProjectType;
+  type: KcProjectType;
   subProjects: ProjectCreationRequest[];
-  calendar: KcCalendar;
+  calendar: ProjectCalendar;
 }
 
+export type ProjectMoveRequest = { ks: KnowledgeSource, new: UUID };
+
 export interface ProjectUpdateRequest {
-  id: UuidModel;
+  id: UUID;
   name?: string;
   description?: string;
   notes?: string;
@@ -79,15 +92,5 @@ export interface ProjectUpdateRequest {
   addKnowledgeSource?: KnowledgeSource[];
   removeKnowledgeSource?: KnowledgeSource[];
   updateKnowledgeSource?: KnowledgeSource[];
-  moveKnowledgeSource?: { ks: KnowledgeSource, new: UuidModel }
-}
-
-export interface ProjectEntity {
-  readonly id: UuidModel;
-  parentId: UuidModel;
-  name: string;
-  description: string;
-  lastModified: string;
-  readonly creationDate: string;
-  subprojects: string[];
+  moveKnowledgeSource?: ProjectMoveRequest
 }

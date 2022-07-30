@@ -2,6 +2,41 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.6.0](https://github.com/KnowledgeCanvas/knowledge-canvas/compare/v0.5.0...v0.6.0) (2022-07-21)
+
+
+### ⚠ BREAKING CHANGES
+
+* Various core data structures have been revised.
+* Settings schema has been revised.
+
+### Features
+
+* Add a new startup service to Angular for performing operations early on in the application lifecycle. ([1f1c6fe](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/1f1c6fe78d31f34a69b5bb83326635d74c849ceb))
+* **Autoscan:** Implemented full-fledged Autoscan functionality. ([5acbb78](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/5acbb782d761cbaf71c202541a2662b01a236161))
+* **Autoscan:** Made autoscan file handling more robust and provided user notifications for important file life cycle events. ([804149a](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/804149aeb97ab05e774a4d4107292aaabb1d2d04))
+* **Display Settings:** Added options to allow user to receive logging messages as "toasts". ([64b358f](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/64b358fd1bb0c78f4a2cc8a7a28af5bb98a50a5d))
+* **Export:** Adds a dialog for export customization and satisfies roughly half of the request in [[#32](https://github.com/KnowledgeCanvas/knowledge-canvas/issues/32)](https://github.com/KnowledgeCanvas/knowledge-canvas/issues/32) ([#54](https://github.com/KnowledgeCanvas/knowledge-canvas/issues/54)) ([4b65df2](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/4b65df24e4cff19b9289932da5a6c8a9f90c477b))
+* **Extensions:** Implemented browser extension services to receive Knowledge Sources from supported Chrome and Firefox extensions. ([967a62f](https://github.
+  com/KnowledgeCanvas/knowledge-canvas/commit/967a62fdc124d77096025a1c16fdcb0b72f0153a))
+* **Ingest Settings:** Added autoscan, file manager, and extension server settings. ([d5946bc](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/d5946bcaaa0dc834cd06c560b050f6c0d154a1e2))
+* **IPC:** Add new channels for communicating with file watcher. ([33b156c](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/33b156c8a5d430df9c521cb9459d861fce7a5683))
+* **Logging:** Add "success" logging method for successful operations. ([2dcce30](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/2dcce305bb40e18a76db0a09df64c238ccd8871a))
+* **Logging:** Created centralized logging service for displaying messages to user and printing to console. ([5a0981b](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/5a0981b3c49b2c43098f954e36f037a1b497487c))
+* **Style:** Minor tweaks to the way information is presented in the Knowledge Source info/details view. ([bbadb2b](https://github.
+   com/KnowledgeCanvas/knowledge-canvas/commit/bbadb2b7d8b54dc62eab3d1605e9ee1b14d4a627))
+
+
+### Bug Fixes
+
+* Addresses 5 moderate and 2 high severity vulnerabilities ([47c13cf](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/47c13cf6e7d8d405c06e3bd8e701485e7a1bdabe))
+* Addresses multiple dependency vulnerabilities that range from low to critical severity. ([#40](https://github.com/KnowledgeCanvas/knowledge-canvas/issues/40)) ([414bc06]
+  (https://github.com/KnowledgeCanvas/knowledge-canvas/commit/414bc0686d685e3b4881ab5b62593fa81a8394d6))
+* Regression after data structure refactor ([0e25d3b](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/0e25d3bbb1d090a67af7ba7791d1d1219c30e1e5))
+
+
+* Revised schema for application settings and merged/centralized all settings services and IPC. ([777c6ed](https://github.com/KnowledgeCanvas/knowledge-canvas/commit/777c6ed57cd7cbffe8097999bbe03206a0c8adcf))
+
 ### [0.5.4](https://github.com/KnowledgeCanvas/knowledge-canvas/compare/v0.5.0...v0.5.4) (2022-04-24)
 
 

@@ -13,8 +13,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-
-import {IpcMessage, KsBrowserViewRequest, KsBrowserViewResponse} from "../models/electron.ipc.model";
+import {BrowserViewRequest, BrowserViewResponse, IpcMessage} from "../../../../kc_shared/models/electron.ipc.model";
 import {Menu, MenuItem} from "electron";
 
 const share: any = (global as any).share;
@@ -29,12 +28,12 @@ const BrowserView: any = share.BrowserView;
 let extractWebsite, closeBrowserView, openBrowserView, destroyBrowserViews: (kcMainWindow: any) => void;
 
 let browserViewEventListeners = [
-    'electron-browser-view-can-go-back',
-    'electron-browser-view-can-go-forward',
-    'electron-browser-view-current-url',
-    'electron-browser-view-go-back',
-    'electron-browser-view-go-forward',
-    'electron-browser-view-refresh'
+    'A2E:BrowserView:CanGoBack',
+    'A2E:BrowserView:CanGoForward',
+    'A2E:BrowserView:CurrentUrl',
+    'A2E:BrowserView:GoBack',
+    'A2E:BrowserView:GoForward',
+    'A2E:BrowserView:Refresh'
 ];
 
 /**
@@ -58,15 +57,16 @@ let browserViewEventListeners = [
  *
  *
  */
-extractWebsite = ipcMain.on("app-extract-website", (event: any, args: any) => {
+extractWebsite = ipcMain.on("A2E:Extraction:Website", (event: any, args: any) => {
     let kcMainWindow: any = share.BrowserWindow.getAllWindows()[0];
 
     if (!args.url || !args.filename) {
-        kcMainWindow.webContents.send("app-extract-website-results", false);
+        kcMainWindow.webContents.send("E2A:Extraction:Website", false);
     }
 
     let appEnv = settingsService.getSettings();
 
+    // TODO: pdfPath has been removed from the settings model... this should be changed to storage path...
     const pdfPath = path.join(appEnv.pdfPath, args.filename + '.pdf');
     const options = {
         width: 1280,
@@ -104,11 +104,11 @@ extractWebsite = ipcMain.on("app-extract-website", (event: any, args: any) => {
                     console.log(`Wrote PDF successfully to ${pdfPath}`);
                 });
 
-                kcMainWindow.webContents.send("app-extract-website-results", pdfPath);
+                kcMainWindow.webContents.send("E2A:Extraction:Website", pdfPath);
                 window.close();
             }).catch((error: any) => {
                 console.log(`Failed to write PDF to ${pdfPath}: `, error);
-                kcMainWindow.webContents.send("app-extract-website-results", error);
+                kcMainWindow.webContents.send("E2A:Extraction:Website", error);
                 window.close();
             });
         }, 2000);
@@ -146,7 +146,7 @@ destroyBrowserViews = (kcMainWindow: any) => {
     }
 }
 
-closeBrowserView = ipcMain.on('electron-close-browser-view', () => {
+closeBrowserView = ipcMain.on('A2E:BrowserView:Close', () => {
     let kcMainWindow: any = share.BrowserWindow.getAllWindows()[0];
     destroyBrowserViews(kcMainWindow);
 
@@ -160,7 +160,7 @@ closeBrowserView = ipcMain.on('electron-close-browser-view', () => {
         success: {data: true}
     }
 
-    kcMainWindow.webContents.send('electron-close-browser-view-results', response);
+    kcMainWindow.webContents.send('E2A:BrowserView:Close', response);
 });
 
 
@@ -185,7 +185,7 @@ closeBrowserView = ipcMain.on('electron-close-browser-view', () => {
  *
  *
  */
-openBrowserView = ipcMain.on('electron-browser-view', (event: any, args: KsBrowserViewRequest) => {
+openBrowserView = ipcMain.on('A2E:BrowserView:Open', (event: any, args: BrowserViewRequest) => {
     let kcMainWindow: any = share.BrowserWindow.getAllWindows()[0];
     let response: IpcMessage = {
         error: undefined,
@@ -199,10 +199,10 @@ openBrowserView = ipcMain.on('electron-browser-view', (event: any, args: KsBrows
     // ---------------------------------------------------------------------------
     // Argument validation
     if (!isKsBrowserViewRequest(args)) {
-        const message = `electron-browser-view argument does not conform to KsBrowserViewRequest`;
+        const message = `A2E:BrowserView:Open argument does not conform to KsBrowserViewRequest`;
         response.error = {code: 412, label: http.STATUS_CODES['412'], message: message};
         console.warn(response.error);
-        kcMainWindow.webContents.send('electron-browser-view-results', response);
+        kcMainWindow.webContents.send('E2A:BrowserView:Open', response);
         return;
     }
 
@@ -227,7 +227,7 @@ openBrowserView = ipcMain.on('electron-browser-view', (event: any, args: KsBrows
                 kcBrowserView.webContents.executeJavaScript('window.getComputedStyle(document.body, null).backgroundColor;')
             ]
             Promise.all(js).then((values) => {
-                let data: KsBrowserViewResponse = {
+                let data: BrowserViewResponse = {
                     html: values[0],
                     backgroundColor: values[1]
                 };
@@ -235,7 +235,7 @@ openBrowserView = ipcMain.on('electron-browser-view', (event: any, args: KsBrows
                     message: 'Success. DOM-ready triggered.',
                     data: data
                 }
-                kcMainWindow.webContents.send('electron-browser-view-results', response);
+                kcMainWindow.webContents.send('E2A:BrowserView:Open', response);
 
             }).catch((error) => {
                 console.error(error);
@@ -244,7 +244,7 @@ openBrowserView = ipcMain.on('electron-browser-view', (event: any, args: KsBrows
             response.success = {
                 message: 'Success. DOM-ready triggered.'
             }
-            kcMainWindow.webContents.send('electron-browser-view-results', response);
+            kcMainWindow.webContents.send('E2A:BrowserView:Open', response);
         }
     });
 
@@ -253,7 +253,7 @@ openBrowserView = ipcMain.on('electron-browser-view', (event: any, args: KsBrows
             error: undefined,
             success: {data: url}
         }
-        kcMainWindow.webContents.send('electron-browser-view-nav-events', navEventsResponse);
+        kcMainWindow.webContents.send('E2A:BrowserView:NavEvent', navEventsResponse);
     });
 
     kcBrowserView.webContents.on('did-navigate-in-page', (event: any, url: any) => {
@@ -261,7 +261,7 @@ openBrowserView = ipcMain.on('electron-browser-view', (event: any, args: KsBrows
             error: undefined,
             success: {data: url}
         }
-        kcMainWindow.webContents.send('electron-browser-view-nav-events', navEventsResponse);
+        kcMainWindow.webContents.send('E2A:BrowserView:NavEvent', navEventsResponse);
     });
 
 
@@ -281,7 +281,7 @@ openBrowserView = ipcMain.on('electron-browser-view', (event: any, args: KsBrows
                 url: args.url
             }
 
-            kcMainWindow.webContents.send('electron-browser-view-extract-text', data);
+            kcMainWindow.webContents.send('E2A:BrowserView:ExtractedText', data);
         }
     }))
     menu.append(extractOption)
@@ -299,37 +299,37 @@ openBrowserView = ipcMain.on('electron-browser-view', (event: any, args: KsBrows
      * ipcMain event listeners that rely on having a browserview open
      * These MUST be removed when the browser view is closed (see above function for browser-view-close)
      */
-    ipcMain.on('electron-browser-view-can-go-back', (_: any) => {
+    ipcMain.on('A2E:BrowserView:CanGoBack', (_: any) => {
         if (!kcBrowserView.webContents)
             return;
         let response: IpcMessage = {
             error: undefined,
             success: {data: kcBrowserView.webContents.canGoBack()}
         }
-        kcMainWindow.webContents.send('electron-browser-view-can-go-back-results', response);
+        kcMainWindow.webContents.send('E2A:BrowserView:CanGoBack', response);
     });
 
-    ipcMain.on('electron-browser-view-can-go-forward', (_: any) => {
+    ipcMain.on('A2E:BrowserView:CanGoForward', (_: any) => {
         if (!kcBrowserView.webContents)
             return;
         let response: IpcMessage = {
             error: undefined,
             success: {data: kcBrowserView.webContents.canGoForward()}
         }
-        kcMainWindow.webContents.send('electron-browser-view-can-go-forward-results', response);
+        kcMainWindow.webContents.send('E2A:BrowserView:CanGoForward', response);
     });
 
-    ipcMain.on('electron-browser-view-current-url', (_: any) => {
+    ipcMain.on('A2E:BrowserView:CurrentUrl', (_: any) => {
         if (!kcBrowserView.webContents)
             return;
         let response: IpcMessage = {
             error: undefined,
             success: {data: kcBrowserView.webContents.getURL()}
         }
-        kcMainWindow.webContents.send('electron-browser-view-current-url-results', response);
+        kcMainWindow.webContents.send('E2A:BrowserView:CurrentUrl', response);
     });
 
-    ipcMain.on('electron-browser-view-go-back', (_: any) => {
+    ipcMain.on('A2E:BrowserView:GoBack', (_: any) => {
         if (!kcBrowserView.webContents)
             return;
         if (kcBrowserView.webContents) {
@@ -337,7 +337,7 @@ openBrowserView = ipcMain.on('electron-browser-view', (event: any, args: KsBrows
         }
     });
 
-    ipcMain.on('electron-browser-view-go-forward', (_: any) => {
+    ipcMain.on('A2E:BrowserView:GoForward', (_: any) => {
         if (!kcBrowserView.webContents)
             return;
         if (kcBrowserView.webContents) {
@@ -345,7 +345,7 @@ openBrowserView = ipcMain.on('electron-browser-view', (event: any, args: KsBrows
         }
     });
 
-    ipcMain.on('electron-browser-view-refresh', (_: any) => {
+    ipcMain.on('A2E:BrowserView:Refresh', (_: any) => {
         if (!kcBrowserView.webContents)
             return;
         if (kcBrowserView.webContents) {
@@ -376,7 +376,7 @@ openBrowserView = ipcMain.on('electron-browser-view', (event: any, args: KsBrows
  *
  *
  */
-function isKsBrowserViewRequest(arg: any): arg is KsBrowserViewRequest {
+function isKsBrowserViewRequest(arg: any): arg is BrowserViewRequest {
     const containsArgs = arg
         && arg.url !== undefined
         && arg.x !== undefined

@@ -13,380 +13,438 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
+import {Component, HostListener, OnInit} from '@angular/core';
+import {environment} from "../environments/environment";
+import {SettingsService} from "./services/ipc-services/settings.service";
+import {DialogService, DynamicDialogRef} from "primeng/dynamicdialog";
+import {ProjectService} from "./services/factory-services/project.service";
+import {KsFactoryService} from "./services/factory-services/ks-factory.service";
+import {ElectronIpcService} from "./services/ipc-services/electron-ipc.service";
+import {ThemeService} from "./services/user-services/theme.service";
+import {DialogRequest} from "../../../kc_shared/models/electron.ipc.model";
+import {NotificationsService} from "./services/user-services/notifications.service";
+import {IngestService} from "./services/ingest-services/ingest.service";
+import {DragAndDropService} from "./services/ingest-services/drag-and-drop.service";
+import {KsCommandService} from "./services/command-services/ks-command.service";
+import {ProjectTreeFactoryService} from "./services/factory-services/project-tree-factory.service";
+import {NavigationEnd, Router} from "@angular/router";
+import {KsDetailsComponent} from "./components/source-components/ks-details.component";
+import {map, take} from "rxjs/operators";
+import {StartupService} from "./services/ipc-services/startup.service";
 
 
-import {AfterViewInit, Component, ElementRef, HostListener, OnDestroy, OnInit, TemplateRef, ViewChild} from '@angular/core';
-import {SettingsService} from "./services/ipc-services/settings-service/settings.service";
-import {ConfirmationService, MenuItem, PrimeIcons, PrimeNGConfig, TreeNode} from "primeng/api";
-import {DialogService} from "primeng/dynamicdialog";
-import {ProjectService} from "./services/factory-services/project-service/project.service";
-import {KsQueueService} from "./services/command-services/ks-queue-service/ks-queue.service";
-import {KnowledgeSource} from "./models/knowledge.source.model";
-import {OverlayPanel} from "primeng/overlaypanel";
-import {ProjectTreeNode} from "./models/project.tree.model";
-import {ProjectModel, ProjectUpdateRequest} from "./models/project.model";
-import {Subscription} from "rxjs";
-import {UuidModel} from "./models/uuid.model";
-import {KsFactoryService} from "./services/factory-services/ks-factory-service/ks-factory.service";
-import {Dialog} from "primeng/dialog";
-import {KsCommandService} from "./services/command-services/ks-command/ks-command.service";
-import {KsImportConfirmComponent} from "./components/knowledge-source-components/ks-import-confirm/ks-import-confirm.component";
-import {Clipboard} from "@angular/cdk/clipboard";
-import {ElectronIpcService} from "./services/ipc-services/electron-ipc/electron-ipc.service";
-import {ProjectCreationDialogComponent} from "./components/project-components/project-creation-dialog/project-creation-dialog.component";
-import {BrowserViewDialogService} from "./services/ipc-services/browser-service/browser-view-dialog.service";
-import {ThemeService} from "./services/user-services/theme-service/theme.service";
-import {DisplaySettingsComponent} from "./components/settings-components/display-settings/display-settings.component";
-import {KcDialogRequest} from "kc_electron/src/app/models/electron.ipc.model";
-import {SearchSettingsComponent} from "./components/settings-components/search-settings/search-settings.component";
-import {ProjectTreeFactoryService} from "./services/factory-services/project-tree-factory/project-tree-factory.service";
-import {DragAndDropService} from "./services/ingest-services/external-drag-and-drop/drag-and-drop.service";
-
+type SidebarItem = {
+  label: string,
+  routerLink?: any,
+  command?: any,
+  icon: string
+}
 
 @Component({
   selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  template: `
+    <div id="app-header" class="w-full p-fluid title-bar flex-row-center-between pl-2 surface-ground border-bottom-1 surface-border" style="height: 32px; max-width: 100vw">
+      <div class="select-none title-bar-interactive flex-row-center-start" *ngIf="os && os === 'darwin'">
+        <div (click)="close($event)" class="macos-window-button window-button-close"></div>
+        <div (click)="minimize($event)" class="macos-window-button window-button-minimize"></div>
+        <div (click)="maximize($event)" class="macos-window-button window-button-maximize"></div>
+      </div>
+      <div *ngIf="!os || (os && os !== 'darwin')"></div>
+
+      <div class="title-bar-interactive flex-row-center-between">
+        <app-history class="pr-8"></app-history>
+        <app-search></app-search>
+      </div>
+
+      <div *ngIf="!os || (os && os === 'darwin')"></div>
+      <div class="select-none title-bar-interactive flex flex-row align-items-start h-full" *ngIf="os && os !== 'darwin'">
+        <div (click)="minimize($event)" class="window-button hover:surface-300 flex-col-center-center">
+          <div class="pi">—</div>
+        </div>
+        <div (click)="maximize($event)" class="window-button hover:surface-300 flex-col-center-center">
+          <div class="pi pi-stop"></div>
+        </div>
+        <div (click)="close($event)" class="window-button hover:surface-300 flex-col-center-center">
+          <div class="pi pi-times"></div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="!readyToShow" class="w-full h-full surface-a flex-col-center-center">
+      <p-image src="assets/img/kc-logo-transparent.svg" class="w-5"></p-image>
+      <p-progressBar mode="indeterminate" class="w-3"></p-progressBar>
+      Getting things ready...
+    </div>
+
+    <div [hidden]="!readyToShow" class="flex relative lg:static" style="height: calc(100vh - 32px); max-width: 100vw">
+      <div id="app-sidebar" class="h-full md:h-auto md:block flex-shrink-0 absolute md:static left-0 top-0 z-1 border-right-1 surface-0 border-primary w-auto">
+        <div class="flex h-full">
+          <div class="flex flex-column h-full flex-shrink-0">
+            <div class="flex align-items-center justify-content-center select-none flex-shrink-0" style="height: 60px; width: 60px" (dragstart)="$event.preventDefault()">
+              <img src="assets/img/kc-icon-transparent.png" height="30" alt="Knowledge Logo" (click)="onKcClick()" class="cursor-pointer">
+            </div>
+            <div class="overflow-y-auto mt-3">
+              <ul class="list-none py-3 pl-2 pr-0 m-0">
+                <li *ngFor="let item of sidebarItems" class="mb-2" [pTooltip]="item.label" (click)="onSidebarClick($event, item)" (dragstart)="$event.preventDefault()">
+                  <a [routerLink]="item.routerLink"
+                     class="p-element flex align-items-center cursor-pointer py-3 pl-0 pr-2 justify-content-center hover:surface-200 text-700 hover:text-900 transition-duration-150 transition-colors no-underline"
+                     [class.bg-primary]="item.label === selectedView"
+                     [class.hover:bg-primary]="item.label === selectedView"
+                     style="border-top-left-radius: 30px; border-bottom-left-radius: 30px;">
+                    <i *ngIf="item.label === 'Inbox' && inboxBadge > 0" class="{{item.icon}} text-xl no-underline" pBadge value="{{inboxBadge}}" severity="danger"></i>
+                    <i *ngIf="item.label === 'Inbox' && inboxBadge === 0" class="{{item.icon}} text-xl no-underline"></i>
+                    <i *ngIf="item.label !== 'Inbox'" class="{{item.icon}} text-xl no-underline"></i>
+                    <span class="p-ink" style="height: 64px; width: 64px; top: 5px; left: 5px;"></span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <div class="mt-auto">
+              <a class="p-element m-3 flex align-items-center cursor-pointer p-2 justify-content-center border-round bg-primary text-0 transition-duration-150 transition-colors"
+                 (click)="showSettings()">
+                <i class="pi pi-cog text-xl"></i>
+                <span class="p-ink" style="height: 64px; width: 64px; top: 4px; left: -1px;"></span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="app-body" class="w-full flex flex-column relative flex-auto select-none" style="max-height: calc(100vh - 32px)">
+        <div id="app-router-outlet" class="flex-auto overflow-y-auto" style="max-height: calc(100vh - 80px); max-width: calc(100vw - 61px)">
+          <router-outlet></router-outlet>
+        </div>
+        <div id="app-footer">
+          <app-project-breadcrumb (dragstart)="$event.preventDefault()"
+                                  class="w-full h-full select-none"
+                                  [projectId]="projectId"
+                                  (onShowProjectTree)="projectTreeVisible = $event">
+          </app-project-breadcrumb>
+        </div>
+      </div>
+    </div>
+
+    <p-sidebar [(visible)]="projectTreeVisible"
+               [style]="{height: '100%', width: '30em'}"
+               appendTo="body"
+               [modal]="true"
+               [dismissible]="true">
+      <app-projects-tree *ngIf="projectTreeVisible"></app-projects-tree>
+    </p-sidebar>
+
+    <p-confirmDialog appendTo="body"></p-confirmDialog>
+    <p-messages key="app-banner"></p-messages>
+    <p-toast key="app-toast"></p-toast>
+  `,
+  styles: [
+    `
+      ::ng-deep {
+        .p-submenu-list {
+          z-index: 99 !important;
+        }
+
+        .p-sidebar-content {
+          height: 100%;
+        }
+      }
+
+      .title-bar {
+        -webkit-user-select: none;
+        -webkit-app-region: drag;
+      }
+
+      .title-bar-interactive {
+        -webkit-app-region: no-drag;
+      }
+
+      .macos-window-button {
+        height: 1rem;
+        width: 1rem;
+        margin-right: 0.6rem;
+        border-radius: 50%;
+      }
+
+      .window-button {
+        height: 32px;
+        width: 45px;
+      }
+
+      .window-button-close {
+        margin-left: 2px;
+        background-color: #FF5F57;
+      }
+
+      .window-button-maximize {
+        background-color: #2BC840;
+      }
+
+      .window-button-minimize {
+        background-color: #FFBC2E;
+      }
+
+      #app-footer {
+        height: 4rem;
+      }
+    `
+  ]
 })
-export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild('ksUpNext') ksQueueDialog!: Dialog;
-
-  @ViewChild('ksQueueOverlay') ksQueueOverlay!: OverlayPanel;
-
-  @ViewChild('searchBar') searchBar!: ElementRef;
-
-  @ViewChild('importButton') importButton!: ElementRef;
-
-  @ViewChild('upNextButton') upNextButton!: TemplateRef<any>;
-
-  currentProject: ProjectModel | null = null;
-
-  menuBarItems: MenuItem[] = [];
-
-  ksUpNextVisible: boolean = false;
-
-  ksIngestVisible: boolean = false;
+export class AppComponent implements OnInit {
+  projectId: string = '';
 
   projectTreeVisible: boolean = false;
 
   readyToShow: boolean = false;
 
-  treeNodes: TreeNode[] = [];
+  inboxBadge: number = 0;
 
-  ksQueueTreeNodes: TreeNode[] = [];
+  sourceInfoDialog?: DynamicDialogRef;
 
-  ksQueue: KnowledgeSource[] = [];
+  sidebarItems: SidebarItem[] = [
+    {label: 'Inbox', routerLink: ['app', 'inbox', 'undefined'], icon: 'pi pi-inbox'},
+  ];
 
-  private _projectNodes: ProjectTreeNode[] = [];
+  selectedView: string = this.sidebarItems[0].label;
 
-  private _subProjectTree: Subscription;
+  os: string = '';
 
-  private _subCurrentProject: Subscription;
-
-  private _subKsQueue: Subscription;
-
-  constructor(private dialogService: DialogService, private confirmationService: ConfirmationService,
-              private primengConfig: PrimeNGConfig, private settingsService: SettingsService,
-              private ksQueueService: KsQueueService, private ksFactory: KsFactoryService,
-              private projectService: ProjectService, private ksCommandService: KsCommandService,
-              private ipcService: ElectronIpcService, private clipboard: Clipboard,
-              private browserViewDialogService: BrowserViewDialogService, private themeService: ThemeService,
-              private projectTreeFactory: ProjectTreeFactoryService, private dragAndDropService: DragAndDropService) {
-    // Subscribe to changes in project tree
-    this._subProjectTree = this.projectService.projectTree.subscribe((projectNodes: ProjectTreeNode[]) => {
-      this._projectNodes = projectNodes;
-      this.treeNodes = this.projectTreeFactory.constructTreeNodes(projectNodes, false);
-      this.ksQueueTreeNodes = this.projectTreeFactory.constructTreeNodes(projectNodes, true);
+  constructor(private settings: SettingsService,
+              private notifications: NotificationsService,
+              private startup: StartupService,
+              private command: KsCommandService,
+              private dialog: DialogService,
+              private dnd: DragAndDropService,
+              private factory: KsFactoryService,
+              private projects: ProjectService,
+              private ipc: ElectronIpcService,
+              private ingest: IngestService,
+              private tree: ProjectTreeFactoryService,
+              private router: Router,
+              private themes: ThemeService,) {
+    // Acquire system settings, set window controls based on OS
+    settings.all.pipe(take(2), map(s => s.system)).subscribe((systemSettings) => {
+      if (systemSettings && systemSettings.osPlatform) {
+        this.os = systemSettings.osPlatform;
+      }
     });
 
-    // Subscribe to active project
-    this._subCurrentProject = this.projectService.currentProject.subscribe(current => {
-      console.debug('AppComponent Project Update: ', current);
-      this.confirmationService.close();
-      this.currentProject = current;
+    // Acquire user settings, start tutorial if necessary
+    settings.all.pipe(take(2), map(s => s.user)).subscribe((userSettings) => {
+      if (!userSettings) {
+        return;
+      }
+
+      if (userSettings.tutorials === undefined) {
+        settings.set({user: {tutorials: {showFirstRunTutorial: true}}});
+      } else if (userSettings.tutorials.showFirstRunTutorial) {
+        setTimeout(() => {
+          this.startup.tutorial().subscribe(showAgain => {
+            settings.set({user: {tutorials: {showFirstRunTutorial: showAgain}}});
+          })
+        }, 1000)
+      }
+    })
+
+    /**
+     * Subscribe to router events in order to manually adjust the current view
+     */
+    router.events.subscribe((events) => {
+      if (events instanceof NavigationEnd) {
+        const segments = events.url.split('/').filter(f => f.length);
+        const visibleRoute = segments[1];
+        switch (visibleRoute) {
+          case 'inbox':
+          case '(inbox':
+            this.selectedView = 'Inbox'
+            break;
+          case 'projects':
+          case '(projects':
+            this.selectedView = 'Projects'
+            break;
+          case 'table':
+          case '(table':
+            this.selectedView = 'Table'
+            break;
+          case 'grid':
+          case '(grid':
+            this.selectedView = 'Grid'
+            break;
+          case 'calendar':
+          case '(calendar':
+            this.selectedView = 'Calendar'
+            break;
+          default:
+            break;
+        }
+      }
     });
 
-    // Subscribe to changes in Up Next
-    this._subKsQueue = this.ksQueueService.ksQueue.subscribe((queue) => {
-      console.debug('AppComponent UpNext Update: ', queue);
-      this.ksQueue = queue;
+    this.command.ksDetailEvent.subscribe((ks) => {
+      if (ks?.force && this.sourceInfoDialog) {
+        this.sourceInfoDialog.close();
+      }
+
+      if (ks && !this.sourceInfoDialog) {
+        this.sourceInfoDialog = this.dialog.open(KsDetailsComponent, {
+          data: {ks: ks},
+          width: 'min(90vw, 128rem)',
+          height: 'min(90vh, 128rem)',
+          showHeader: false,
+          contentStyle: {'border-radius': '10px'},
+          closeOnEscape: true
+        });
+
+        this.sourceInfoDialog.onClose.subscribe(() => {
+          this.sourceInfoDialog = undefined;
+        })
+      }
     });
 
-    // When the app starts, we want to ensure the theme has been completed loaded
-    themeService.setLocal().then((_: any) => {
+    ingest.queue.subscribe((upNext) => {
+      this.inboxBadge = upNext.length;
+    })
+
+    projects.currentProject.subscribe((project) => {
+      if (project) {
+        this.projectId = project.id.value;
+        this.sidebarItems = [
+          {label: 'Inbox', routerLink: ['app', 'inbox', this.projectId], icon: 'pi pi-inbox'},
+          {label: 'Projects', routerLink: ['app', 'projects', this.projectId], icon: 'pi pi-list'},
+          {label: 'Table', routerLink: ['app', 'table', this.projectId], icon: 'pi pi-table'},
+          {label: 'Grid', routerLink: ['app', 'grid', this.projectId], icon: 'pi pi-th-large'},
+          {label: 'Calendar', routerLink: ['app', 'calendar', this.projectId], icon: 'pi pi-calendar'},
+        ];
+      } else {
+        this.projectId = '';
+      }
+    });
+
+    // When the app starts, we want to ensure the theme has been completely loaded
+    themes.setLocal().then((_: any) => {
       setTimeout(() => {
         this.readyToShow = true;
-      }, Math.floor(Math.random() * 2000));
+      }, Math.floor(Math.random() * 1000));
     });
   }
 
-  get ksQueueSelectedNode() {
-    return this.projectTreeFactory.findTreeNode(this.treeNodes, this.currentProject?.id.value ?? '') ?? {};
-  }
+  /* TODO: Create a hotkey service that registers these keys on behalf of each module */
+  @HostListener('document:keydown.Control.r', ["$event"])
+  @HostListener('document:keydown.f5', ["$event"])
+  @HostListener('document:keydown.meta.r', ["$event"])
+  refresh(event: KeyboardEvent) {
+    if (!event) {
+      this.notifications.warn('App', 'Invalid Keystroke', 'Refresh');
+      return;
+    }
 
-  get selectedNode() {
-    return this.projectTreeFactory.findTreeNode(this.treeNodes, this.currentProject?.id.value ?? '') ?? {};
-  }
+    try {
+      event.preventDefault();
+    } catch (e) {
+      this.notifications.error('App', 'Unexpected Event', 'Host Listener provided an invalid event for refresh command.');
+    }
 
-  @HostListener('document:keydown.Control.n')
-  @HostListener('document:keydown.meta.n')
-  keyPressOpenIngest() {
-    this.projectTreeVisible = false;
-    this.ksUpNextVisible = false;
-    this.ksQueueOverlay.hide();
-    this.onOpenIngest();
-  }
-
-  @HostListener('document:keydown.Control.u')
-  @HostListener('document:keydown.meta.u')
-  keyPressOpenUpNext() {
-    this.projectTreeVisible = false;
-    this.ksIngestVisible = false;
-    this.onOpenUpNext();
+    if (!environment.production) {
+      location.reload();
+    }
   }
 
   @HostListener('document:keydown.Control.p')
   @HostListener('document:keydown.meta.p')
   keyPressOpenProjects() {
-    this.ksIngestVisible = false;
-    this.ksUpNextVisible = false;
-    this.ksQueueOverlay.hide();
-    this.onOpenProjectTree();
+    this.projectTreeVisible = !this.projectTreeVisible;
+  }
+
+  @HostListener('document:keydown.Control.1')
+  @HostListener('document:keydown.meta.1')
+  goInbox() {
+    this.router.navigate(['app', 'inbox', this.projectId]);
+  }
+
+  @HostListener('document:keydown.Control.2')
+  @HostListener('document:keydown.meta.2')
+  goProjects() {
+    if (this.projectId.length > 0) {
+      this.router.navigate(['app', 'projects', this.projectId]);
+    }
+  }
+
+  @HostListener('document:keydown.Control.3')
+  @HostListener('document:keydown.meta.3')
+  goTable() {
+    if (this.projectId.length > 0) {
+      this.router.navigate(['app', 'table', this.projectId]);
+    }
+  }
+
+  @HostListener('document:keydown.Control.4')
+  @HostListener('document:keydown.meta.4')
+  goGrid() {
+    if (this.projectId.length > 0) {
+      this.router.navigate(['app', 'grid', this.projectId]);
+    }
+  }
+
+  @HostListener('document:keydown.Control.5')
+  @HostListener('document:keydown.meta.5')
+  goCalendar() {
+    if (this.projectId.length > 0) {
+      this.router.navigate(['app', 'calendar', this.projectId]);
+    }
+  }
+
+  @HostListener('document:keydown.Control.,')
+  @HostListener('document:keydown.meta.,')
+  goSettings() {
+    this.showSettings();
   }
 
   @HostListener("dragover", ["$event"]) onDragOver(evt: any) {
     evt.preventDefault()
   }
+
   @HostListener('drop', ['$event']) handleDrop(event: DragEvent) {
     // Drop listener for importing files and links
-    if (this.ksIngestVisible) {
-      return;
-    }
-    this.dragAndDropService.parseDragEvent(event).then((requests) => {
-      if (requests === undefined) {
-        console.warn('Drag/Drop could not be handled...');
-        return;
-      }
-      this.ksFactory.many(requests).then((ksList) => {
-        this.onImport(ksList);
-      });
-    }).catch((reason) => {
-      console.error(reason);
-      return;
-    });
-  }
-
-  onImport(ksList: KnowledgeSource[]) {
-    let ref = this.dialogService.open(KsImportConfirmComponent, {
-      header: 'Import Knowledge Source',
-      dismissableMask: true,
-      modal: true,
-      width: '420px',
-      data: {
-        projectName: this.currentProject?.name ?? '',
-        countdownSeconds: 8
-      }
-    });
-
-    ref.onClose.subscribe((result) => {
-      if (!result || result === 'queue' || result === '' || !this.currentProject) {
-        this.ksQueueService.enqueue(ksList);
-      } else {
-        if (this.currentProject) {
-          for (let ks of ksList) {
-            ks.associatedProject = this.currentProject.id;
+    this.dnd.parseDragEvent(event).then((ksReq) => {
+      if (ksReq) {
+        this.factory.many(ksReq).then((ksList) => {
+          if (ksList.length > 0) {
+            this.ingest.enqueue(ksList);
           }
-          let update: ProjectUpdateRequest = {
-            id: this.currentProject.id,
-            addKnowledgeSource: ksList
-          }
-          this.projectService.updateProjects([update]);
-        }
-      }
-    });
-
-  }
-
-  ngOnInit() {
-    this.primengConfig.ripple = true;
-    this.configureToolbar();
-  }
-
-  ngAfterViewInit() {
-  }
-
-  ngOnDestroy() {
-    this._subCurrentProject.unsubscribe();
-    this._subProjectTree.unsubscribe();
-    this._subKsQueue.unsubscribe();
-  }
-
-  configureToolbar() {
-    this.menuBarItems = [
-      {
-        label: 'Projects', icon: PrimeIcons.LIST, command: () => {
-          this.projectTreeVisible = !this.projectTreeVisible;
-        }
-      },
-      {
-        label: 'Settings', icon: 'pi pi-fw pi-cog', items: [
-          {
-            label: 'Display', icon: 'pi pi-fw pi-image', command: () => {
-              this.dialogService.open(DisplaySettingsComponent, {
-                header: 'Display Settings',
-                width: '64rem',
-                dismissableMask: true,
-                modal: true
-              });
-            }
-          },
-          // {
-          //   label: 'Up Next', icon: 'pi pi-fw pi-arrow-circle-down', command: () => {
-          //     this.dialogService.open(IngestSettingsComponent, {
-          //       header: 'Up Next Settings',
-          //       width: '64rem',
-          //       dismissableMask: true,
-          //       modal: true
-          //     });
-          //   }
-          // },
-          {
-            label: 'Search', icon: 'pi pi-fw pi-search', command: () => {
-              this.dialogService.open(SearchSettingsComponent, {
-                data: this.settingsService.getSettings().search,
-                header: 'Search Settings',
-                width: '64rem',
-                dismissableMask: true,
-                modal: true
-              });
-            }
-          },
-        ]
-      },
-      {
-        label: 'Exit',
-        icon: PrimeIcons.POWER_OFF,
-        command: ($event) => {
-          this.confirmExit($event);
-        }
-      }
-    ];
-  }
-
-  clearQueue() {
-    this.ksQueueService.clearResults();
-  }
-
-  confirmExit(event: any) {
-    if (!event.originalEvent.target && !event.target) {
-      console.error('Confirmation target does not exist.', event);
-      return;
-    }
-
-    this.confirmationService.confirm({
-      target: event.originalEvent.target ?? event.target,
-      message: 'Are you sure that you want to close Knowledge Canvas?',
-      icon: 'pi pi-exclamation-triangle',
-      accept: () => {
-        window.close();
-      }
-    });
-  }
-
-  closeKsQueue() {
-    this.ksUpNextVisible = false;
-  }
-
-  ksQueueUpdate(mappings: { projectId: string; ksList: KnowledgeSource[] }[]) {
-    let updates: ProjectUpdateRequest[] = [];
-
-    for (let map of mappings) {
-      if (map.ksList.length > 0) {
-        for (let ks of map.ksList) {
-          ks.associatedProject = new UuidModel(map.projectId);
-        }
-        let update: ProjectUpdateRequest = {
-          id: new UuidModel(map.projectId),
-          addKnowledgeSource: map.ksList
-        }
-        updates.push(update);
-      }
-    }
-    if (updates.length > 0)
-      this.projectService.updateProjects(updates);
-  }
-
-  ksQueueRemove(ks: KnowledgeSource) {
-    this.ksQueueService.remove(ks);
-  }
-
-  onKcClick() {
-    let req: KcDialogRequest = {
-      ksList: [this.currentProject?.knowledgeSource]
-    }
-    this.ipcService.openKcDialog(req).catch((reason) => {
-      console.error('App.onKcClick() | error === ', reason);
-    });
-  }
-
-  createProject(parentId?: UuidModel) {
-    const dialogref = this.dialogService.open(ProjectCreationDialogComponent, {
-      width: '90%',
-      modal: true,
-      data: {parentId: parentId ?? undefined}
-    });
-
-    dialogref.onClose.subscribe((creationRequest) => {
-      if (creationRequest) {
-        console.debug('AppComponent: submitting project creation request ', creationRequest);
-        this.projectService.newProject(creationRequest).catch((reason) => {
-          console.error('Unable to create new project: ', reason);
-        });
-      }
-    });
-  }
-
-  searchTopic(topic: string) {
-    let ks = this.ksFactory.searchKS(topic);
-    this.browserViewDialogService.open({ks: ks});
-  }
-
-  search(term: string) {
-    this.searchTopic(term);
-    if (this.searchBar)
-      this.searchBar.nativeElement.value = ''
-  }
-
-  deleteProject(id: UuidModel) {
-    let project = this.projectService.getProject(id);
-    let subprojects = this.projectService.getSubTree(id)
-    this.confirmationService.confirm({
-      message: `Are you sure you want to remove ${subprojects.length} Projects?`,
-      accept: () => {
-        console.debug('AppComponent: Deleting project(s): ', project, subprojects);
-        this.projectService.deleteProject(id)
+        })
       }
     })
   }
 
-  onOpenProjectTree(_?: any) {
-    this.projectTreeVisible = !this.projectTreeVisible;
+  ngOnInit() {
   }
 
-  onOpenIngest(_?: any) {
-    this.ksIngestVisible = !this.ksIngestVisible;
+  showSettings() {
+    this.settings.show();
   }
 
-  onOpenUpNext($event?: any) {
-    if (this.ksQueue.length)
-      this.ksUpNextVisible = !this.ksUpNextVisible;
-    else {
-      if ($event) {
-        this.ksQueueOverlay.toggle($event);
-      } else {
-        const container = document.getElementById('upNextButton');
-        this.ksQueueOverlay.toggle({}, container);
-      }
+  onKcClick() {
+    let req: DialogRequest = {
+      ksList: []
+    }
+    this.ipc.openKcDialog(req).catch((_) => {
+      this.notifications.error('App', 'Error Opening Graph', `Something prevented Knowledge from opening graph view.`);
+    });
+  }
+
+  close(_: MouseEvent) {
+    window.close()
+  }
+
+  minimize(_: MouseEvent) {
+    window.api.send('A2E:Window:Minimize');
+  }
+
+  maximize(_: MouseEvent) {
+    window.api.send('A2E:Window:Maximize');
+  }
+
+  onSidebarClick($event: MouseEvent, item: SidebarItem) {
+    this.selectedView = item.label === 'Settings' ? this.selectedView : item.label;
+    if (item.command) {
+      item.command();
     }
   }
 }
