@@ -148,7 +148,6 @@ export class SettingsService {
     }
 
     const route = this.router.url;
-    const settingsRoute = route.search(/settings:.*/);
 
     setTimeout(() => {
       this.router.navigate(['app', {outlets: {settings: [category]}}]).then((success) => {
@@ -158,7 +157,7 @@ export class SettingsService {
       })
     });
 
-    this.ref.onClose.subscribe((result) => {
+    this.ref.onClose.subscribe((_: any) => {
       this.router.navigateByUrl(route).then((success) => {
         if (!success) {
           console.warn('SettingsService - Unable to navigate to ', category);

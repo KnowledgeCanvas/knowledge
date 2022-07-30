@@ -25,7 +25,7 @@ type TutorialState = {
            [class.flex-row-reverse]="state.imagePos && state.imagePos === 'right'"
            style="min-height: 8rem">
         <div class="tutorial-image flex flex-column flex-shrink-1">
-          <img *ngIf="state.image" [src]="state.image" [height]="state.imageHeight" class="border-round"/>
+          <img *ngIf="state.image" [src]="state.image" [height]="state.imageHeight" class="border-round" alt="Tutorial Image"/>
         </div>
         <div class="tutorial-body flex flex-column flex-grow-1 h-full w-full text-lg">
           <div *ngIf="state.html" style="max-width: 64rem" [innerHtml]="state.html"></div>
@@ -84,13 +84,13 @@ export class TutorialComponent implements OnInit {
                 <li>Click <b>+File</b> or <b>+Link</b> on the Inbox page</li>
                 <li>Drag and drop files or links directly into this window</li>
                 <li>Use the built-in browser and click the Save button</li>
-                <li>Download our Chrome browser extension (requires setup)</li>
-                <li>Save a file to a specific directory (requires setup)</li>
+                <li>Download our Chrome browser extension (<span class="text-primary"><div class="pi pi-cog"></div> Settings > Import > Extensions</span>)</li>
+                <li>Enable Autoscan to monitor a local folder for new files (<span class="text-primary"><div class="pi pi-cog"></div> Settings > Import > Autoscan</span>)</li>
             </ul>
-            For more information on the various import options and how to enable them, visit the <a target="_blank" class="no-underline text-primary" href="https://github.com/KnowledgeCanvas/knowledge/wiki/Basics#sources">Knowledge Wiki</a>
+            For more information on the various import options and how to use them, visit the <a target="_blank" class="no-underline text-primary" href="https://github.com/KnowledgeCanvas/knowledge/wiki/Basics:-Sources">Knowledge Wiki</a>
         </p>
         <h3>Next Steps</h3>
-        <p>After importing Sources, click the following icons on the navigation bar to explore</p>
+        <p>After importing Sources, click the following icons on the navigation bar to explore Sources in various views</p>
         <ul>
             <li><span class="text-primary"><span class="pi pi-table"></span> Table</span></li>
             <li><span class="text-primary"><span class="pi pi-th-large"></span> Grid</span></li>
@@ -122,7 +122,11 @@ export class TutorialComponent implements OnInit {
                 </p>
                 <h3>Next Steps</h3>
                 <p>
-                    Once you are done with this tutorial, click the <b>+Project</b> button to create a project. You can also right-click on a Project inside the <span class="text-primary"><span class="pi pi-list"></span> Projects</span> Tree to create a Sub-Project.
+                    Once you are done with this tutorial, click the <b>+Project</b> button to create a new Project. You can also right-click on a Project inside the <span class="text-primary"><span class="pi pi-list"></span> Projects</span> Tree to create a Sub-Project.
+                </p>
+
+                <p>
+                    Learn more about Projects by visiting the <a target="_blank" class="no-underline text-primary" href="https://github.com/KnowledgeCanvas/knowledge/wiki/Basics:-Projects">Knowledge Wiki</a>
                 </p>
             </div>
         </div>
@@ -137,7 +141,7 @@ export class TutorialComponent implements OnInit {
       body: '',
       html: `
         <p>
-            No matter how you import sources into <code class="text-primary">Knowledge</code>, they will always appear in your <span class="text-primary"><span class="pi pi-inbox"></span> Inbox</span> first.
+            No matter how you import Sources into <b class="text-primary">Knowledge</b>, they will always appear in your <span class="text-primary"><span class="pi pi-inbox"></span> Inbox</span> first.
             From there, you can:
         </p>
         <ul>
@@ -145,7 +149,7 @@ export class TutorialComponent implements OnInit {
           <li>Add topics</li>
           <li>Set a due date</li>
           <li>Preview PDFs and YouTube videos</li>
-          <li>View and change details, like title and description</li>
+          <li>View and change details, like the title and description</li>
         </ul>
       `,
       index: 3
