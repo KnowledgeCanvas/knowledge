@@ -45,6 +45,7 @@ import {NotificationsService} from "../services/user-services/notifications.serv
                    class="flex-row-center-center border-round-left">
                 <app-ks-icon [ks]="ks"
                              (click)="setActive(ks)"
+                             [allowClickThrough]="false"
                              class="p-2 cursor-pointer">
                 </app-ks-icon>
               </div>

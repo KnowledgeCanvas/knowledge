@@ -50,6 +50,8 @@ import {KsCommandService} from "../../services/command-services/ks-command.servi
 export class KsIconComponent implements OnInit {
   @Input() ks?: Partial<KnowledgeSource>;
 
+  @Input() allowClickThrough: boolean = true;
+
   @Input() iconUrl?: string;
 
   @Input() showEditor: boolean = true;
@@ -69,7 +71,7 @@ export class KsIconComponent implements OnInit {
   }
 
   onClick() {
-    if (this.ks) {
+    if (this.ks && this.allowClickThrough) {
       this.command.open(this.ks);
     }
   }
