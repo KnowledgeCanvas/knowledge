@@ -13,7 +13,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-import {Component, Input} from '@angular/core';
+import {Component, Input, SecurityContext} from '@angular/core';
 import {KnowledgeSource} from "../../models/knowledge.source.model";
 import {KnowledgeSourceFactoryRequest, KsFactoryService} from "../../services/factory-services/ks-factory.service";
 import {NotificationsService} from "../../services/user-services/notifications.service";
@@ -28,41 +28,44 @@ import {ProjectService} from "../../services/factory-services/project.service";
 import {KcProject} from "../../models/project.model";
 import {DialogService} from "primeng/dynamicdialog";
 import {ProjectCreationDialogComponent} from "../project-components/project-creation-dialog.component";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {OverlayPanel} from "primeng/overlaypanel";
+import {DomSanitizer} from "@angular/platform-browser";
+import {HttpClient} from "@angular/common/http";
 
 @Component({
   selector: 'app-ks-ingest',
   template: `
     <div class="grid w-full">
-      <div class="col-8 flex-row-center-start">
+      <div class="col-11 flex-row-center-start">
         <button pButton
                 label="Project"
                 icon="pi pi-plus"
                 class="mr-2 hover:bg-primary"
                 (click)="onAddProject($event)">
         </button>
-        <p-fileUpload #fubauto
+        <p-fileUpload #fileUploadButton
                       class="mr-2"
                       styleClass="hover:bg-primary"
                       mode="basic"
                       name="files[]"
                       [multiple]="true"
-                      (onSelect)="onAddFile($event); fubauto.clear()"
+                      (onSelect)="onAddFile($event); fileUploadButton.clear()"
                       chooseLabel="File">
         </p-fileUpload>
         <button pButton
                 label="Link"
                 icon="pi pi-plus"
                 class="mr-2 hover:bg-primary"
-                (click)="overlayFunction = 'link'; overlayPanel.toggle($event)">
+                (click)="overlayPanel.toggle($event)">
         </button>
-      </div>
-      <div class="col-4 flex-row-center-end">
         <p-checkbox *ngIf="currentProject && currentProject.name && currentProject.name.length > 0"
                     label="Import to '{{currentProject.name}}'"
                     [(ngModel)]="importToProject"
                     [binary]="true">
         </p-checkbox>
-
+      </div>
+      <div class="col-1 flex-row-center-end">
         <div class="h-full flex-row-center-center ml-4">
           <div class="pi pi-sliders-h cursor-pointer flex-col-center-center"
                #importSettings
@@ -82,23 +85,33 @@ import {ProjectCreationDialogComponent} from "../project-components/project-crea
 
     <p-overlayPanel #overlayPanel
                     styleClass="surface-100 shadow-7"
+                    (onShow)="onLinkShow($event)"
                     appendTo="body">
       <ng-template pTemplate="content">
-        <div *ngIf="overlayFunction === 'link'" class="p-inputgroup">
-          <input pInputText
-                 #linkInput
-                 [autofocus]="true"
-                 type="url"
-                 (keyup.enter)="overlayPanel.hide(); extract(linkInput.value)"
-                 style="min-width: 300px;"
-                 placeholder="Enter a URL and press enter/return">
-          <span class="p-inputgroup-addon"
-                [class.cursor-pointer]="linkInput.value.length"
-                (click)="overlayPanel.hide(); extract(linkInput.value)">
+        <form [formGroup]="linkForm">
+          <div class="p-inputgroup">
+            <input pInputText
+                   #linkInput
+                   id="linkInput"
+                   formControlName="url"
+                   required
+                   [autofocus]="true"
+                   class="border-0"
+                   type="url"
+                   (keyup.enter)="onLinkSubmit(linkInput.value, overlayPanel)"
+                   style="min-width: 300px;"
+                   placeholder="Enter a URL and press enter/return">
+            <span class="p-inputgroup-addon"
+                  [class.p-disabled]="linkForm.controls.url.errors"
+                  [class.cursor-pointer]="linkInput.value.length"
+                  (click)="onLinkSubmit(linkInput.value, overlayPanel)">
             <i class="pi pi-arrow-circle-right"></i>
           </span>
-        </div>
-
+          </div>
+          <div *ngIf="linkForm.controls.url.errors?.pattern" class="p-error">
+            Enter a valid URL (e.g. https://example.com)
+          </div>
+        </form>
       </ng-template>
     </p-overlayPanel>
   `,
@@ -115,7 +128,7 @@ export class KsIngestComponent {
 
   importToProject: boolean = false;
 
-  overlayFunction: 'link' | 'project' | 'note' = 'project';
+  linkForm: FormGroup;
 
   constructor(private notifications: NotificationsService,
               private dialog: DialogService,
@@ -123,12 +136,19 @@ export class KsIngestComponent {
               private uuid: UuidService,
               private dnd: DragAndDropService,
               private favicon: FaviconService,
+              private formBuilder: FormBuilder,
+              private httpClient: HttpClient,
               private ingest: IngestService,
               private command: KsCommandService,
               private ipc: ElectronIpcService,
               private projects: ProjectService,
+              private sanitizer: DomSanitizer,
               private factory: KsFactoryService) {
     this.supportedTypes = dnd.supportedTypes;
+
+    this.linkForm = formBuilder.group({
+      url: ['', [Validators.required, Validators.pattern('https?://.+[.]+.+')]]
+    });
   }
 
   linkExists(value: string) {
@@ -169,28 +189,44 @@ export class KsIngestComponent {
       return;
     }
 
-    let req: KnowledgeSourceFactoryRequest = {
-      ingestType: 'website',
-      links: [new URL(value)]
+    let sanitized = this.sanitizer.sanitize(SecurityContext.URL, value);
+    let url: URL;
+    try {
+      url = new URL(sanitized ? sanitized : value);
+    } catch (e: any) {
+      this.notifications.error('Source Import', 'Invalid URL', e);
+      return;
     }
-    this.factory.many(req).then((ksList) => {
-      if (!ksList || !ksList.length) {
-        console.warn('Did not receive ks from list...');
-        return;
+
+    this.httpClient.get(url.href, {responseType: "text"}).subscribe((_) => {
+      let req: KnowledgeSourceFactoryRequest = {
+        ingestType: 'website',
+        links: [url]
       }
 
-      this.enqueue(ksList);
+      this.factory.many(req).then((ksList) => {
+        if (!ksList || !ksList.length) {
+          this.notifications.error('Source Import', 'Unable to import URL', value);
+          return;
+        }
 
-    }).catch((reason) => {
-      console.warn('Unable to create Knowledge Source from ', value, reason);
+        this.enqueue(ksList);
+
+      }).catch((_) => {
+        this.notifications.error('Source Import', 'Unable to import URL', value);
+      });
+    }, (_) => {
+      this.notifications.error('Source Import', 'Invalid URL', value);
+      return;
     });
+
 
     // TODO: setup web workers to extract website info asynchronously
     // TODO: make it so these things can be enqueued in Inbox even while they are still loading
   }
 
   onAddFile($event: any) {
-    const files = $event.currentFiles;
+    const files: any[] = $event.currentFiles;
     if (!files) {
       return;
     }
@@ -202,14 +238,14 @@ export class KsIngestComponent {
 
     this.factory.many(req).then((ksList) => {
       if (!ksList || !ksList.length) {
-        console.warn('Did not receive ks from list...');
+        this.notifications.error('Source Import', `Unable to import file${files.length > 1 ? 's' : ''}`, '');
         return;
       }
 
       this.enqueue(ksList);
 
     }).catch((reason) => {
-      console.warn('Unable to create Knowledge Source from ', files, reason);
+      this.notifications.error('Source Import', `Unable to import file${files.length > 1 ? 's' : ''}`, reason);
     });
   }
 
@@ -226,5 +262,19 @@ export class KsIngestComponent {
 
   onImportSettings(_: MouseEvent) {
     this.ingest.show();
+  }
+
+  onLinkShow(_: any) {
+    this.linkForm.reset();
+  }
+
+  async onLinkSubmit(value: string, overlayPanel: OverlayPanel) {
+    if (!this.linkForm.controls.url || this.linkForm.controls.url.errors || value.length < 4) {
+      this.notifications.error('Source Import', 'Invalid URL', value);
+      return;
+    }
+
+    overlayPanel.hide();
+    await this.extract(value);
   }
 }

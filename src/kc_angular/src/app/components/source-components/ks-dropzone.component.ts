@@ -72,7 +72,7 @@ export class KsDropzoneComponent implements OnInit {
 
   @Input() supportedTypes: string[] = [];
 
-  @Input() emptyMessage: string = 'Drag links, files, and more here!';
+  @Input() emptyMessage: string = 'Drag and drop here!';
 
   @Input() hintMessage: string = 'Hint: You can drag files and links directly into this window.';
 
