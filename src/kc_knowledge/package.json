@@ -1,6 +1,6 @@
 {
   "name": "kc_knowledge",
-  "version": "0.0.0",
+  "version": "0.6.1",
   "description": "The Knowledge Graph portion of the Knowledge Application.",
   "main": "dist/index.js",
   "author": "Rob Royce <robertris2@gmail.com> (https://robroyce.dev)",
