@@ -74,7 +74,7 @@ import {DataService} from "../../services/user-services/data.service";
               <b>Topics:</b> None
             </div>
             <div>
-              <b>Knowledge Sources:</b> {{kcProject.knowledgeSource.length ?? 0}}<br>
+              <b>Knowledge Sources:</b> {{kcProject.knowledgeSource.length}}<br>
               <b>Subprojects: </b> {{kcProject.subprojects.length}}
             </div>
             <b>Description:</b>
