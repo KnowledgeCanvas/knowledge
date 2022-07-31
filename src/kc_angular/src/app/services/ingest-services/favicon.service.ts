@@ -65,26 +65,27 @@ export class FaviconService {
        * TODO: keep track of domain/subdomain in icon map and use that to reduce overhead (duplicate icons)
        */
       for (let url of urls) {
-        if (url.includes('github')) {
+        let sanitized = this.sanitizer.sanitize(SecurityContext.URL, url);
+        let urlObj = new URL(sanitized ? sanitized : url);
+
+        if (urlObj.host == 'github.com') {
           url = 'https://github.com/favicon.ico';
-        } else if (url.includes('google.com')) {
+        } else if (urlObj.host == 'google.com') {
           url = 'https://google.com/favicon.ico';
         }
-
-        let sanitized = this.sanitizer.sanitize(SecurityContext.URL, url);
 
         url = sanitized ? sanitized : url;
 
         let getUrl = `${this.googleFaviconServicePrefix}${url}${this.googleFaviconServiceSuffix}`;
 
-        console.warn('Getting icon URL: ', getUrl);
+        this.notifications.debug('Favicon Extractor', 'Getting icon URL', `${url.substring(0, 31)}${url.length > 32 ? '...' : ''}`);
 
         promises.push(fetch(getUrl).then(response => response.blob()));
       }
 
       forkJoin(promises).subscribe(blobs => {
         if (!blobs || blobs.length !== promises.length) {
-          console.warn('Unable to retrieve favicons for Knowledge Sources...');
+          this.notifications.warn('Favicon Extractor', 'Favicon Unavailable', 'Unable to retrieve Source Favicons');
           for (let i = 0; i < promises.length; i++) {
             icons.push(this.defaultIcon);
           }
@@ -101,8 +102,7 @@ export class FaviconService {
         }
         resolve(icons);
       }, error => {
-        console.error('Could no get icon...')
-        console.error(error);
+        this.notifications.error('Favicon Extractor', 'Failed to get Favicon', error);
       });
     });
   }
