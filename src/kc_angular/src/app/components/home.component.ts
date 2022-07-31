@@ -13,7 +13,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
 import {KnowledgeSource} from "../models/knowledge.source.model";
 import {IngestService} from "../services/ingest-services/ingest.service";
 import {ProjectService} from "../services/factory-services/project.service";
@@ -73,8 +73,8 @@ import {NotificationsService} from "../services/user-services/notifications.serv
             <div class="flex-col-center-start">
               <div class="w-full flex-row-center-between mb-4 py-2 border-bottom-1 border-300">
                 <div>
-                  <button pButton icon="pi pi-arrow-left" [disabled]="upNext.length <= 1" class="p-button-rounded p-button-text" (click)="onLeftClick($event)"></button>
-                  <button pButton icon="pi pi-arrow-right" [disabled]="upNext.length <= 1" class="p-button-rounded p-button-text" (click)="onRightClick($event)"></button>
+                  <button pButton icon="pi pi-arrow-left" [disabled]="upNext.length <= 1" class="p-button-rounded p-button-text" (click)="onPreviousSource()"></button>
+                  <button pButton icon="pi pi-arrow-right" [disabled]="upNext.length <= 1" class="p-button-rounded p-button-text" (click)="onNextSource()"></button>
                 </div>
                 <div class="pr-3 flex-row-center-end">
                   <div class="text-primary pr-3" *ngIf="!selectedProject">
@@ -94,7 +94,7 @@ import {NotificationsService} from "../services/user-services/notifications.serv
                           class="ml-1"
                           label="Import"
                           [disabled]="!selectedProject"
-                          (click)="onProjectImport($event)"></button>
+                          (click)="onProjectImport()"></button>
                 </div>
                 <div class="flex-row-center-center">
                   <div class="flex-row-center-center" style="width: 100%">
@@ -205,6 +205,18 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.sub2.unsubscribe();
   }
 
+  @HostListener('document:keydown.Control.[')
+  @HostListener('document:keydown.meta.[')
+  keyPressPrevious() {
+    this.onPreviousSource();
+  }
+
+  @HostListener('document:keydown.Control.]')
+  @HostListener('document:keydown.meta.]')
+  keyPressNext() {
+    this.onNextSource();
+  }
+
   onKsRemove($event: KnowledgeSource) {
     this.confirm.confirm({
       message: `Permanently remove ${$event.title}?`,
@@ -232,7 +244,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.active = this.upNext[this.activeIndex];
   }
 
-  onLeftClick(_: MouseEvent) {
+  onPreviousSource() {
     if (this.activeIndex === 0) {
       this.activeIndex = this.upNext.length - 1;
     } else {
@@ -241,7 +253,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.active = this.upNext[this.activeIndex];
   }
 
-  onRightClick(_: MouseEvent) {
+  onNextSource() {
     if (this.activeIndex == this.upNext.length - 1) {
       this.activeIndex = 0;
     } else {
@@ -250,7 +262,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.active = this.upNext[this.activeIndex];
   }
 
-  onProjectImport(_: MouseEvent) {
+  onProjectImport() {
     if (!this.selectedProject) {
       this.notifications.warn('Home', 'Invalid Project', 'You must select a valid project to import.');
       return;
