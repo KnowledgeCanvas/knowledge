@@ -58,7 +58,7 @@ import {ProjectCreationDialogComponent} from "../project-components/project-crea
       </div>
       <div class="col-4 flex-row-center-end">
         <p-checkbox *ngIf="currentProject && currentProject.name && currentProject.name.length > 0"
-                    label="Import to '{{currentProject?.name}}'"
+                    label="Import to '{{currentProject.name}}'"
                     [(ngModel)]="importToProject"
                     [binary]="true">
         </p-checkbox>
@@ -224,7 +224,7 @@ export class KsIngestComponent {
     })
   }
 
-  onImportSettings($event: MouseEvent) {
+  onImportSettings(_: MouseEvent) {
     this.ingest.show();
   }
 }
