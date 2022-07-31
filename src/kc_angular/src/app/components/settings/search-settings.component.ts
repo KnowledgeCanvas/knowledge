@@ -73,7 +73,7 @@ import {Subscription} from "rxjs";
                   <div *ngIf="fuzzy">
                     Match based on threshold
                     <a class="pl-2" target="_blank" href="https://fusejs.io/concepts/scoring-theory.html">
-                      Learn More
+                      Learn more
                     </a>
                   </div>
                   <div *ngIf="!fuzzy">

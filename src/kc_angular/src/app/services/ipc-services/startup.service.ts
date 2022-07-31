@@ -72,10 +72,11 @@ export class StartupService {
       let ref = this.dialog.open(TutorialComponent, {
         width: 'min(90%, 64rem)',
         showHeader: false,
+        closable: true,
+        closeOnEscape: true,
         contentStyle: {
           'border-radius': '6px'
-        },
-        closable: false
+        }
       })
 
       ref.onClose.subscribe((result) => {

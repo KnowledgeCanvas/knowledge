@@ -89,7 +89,7 @@ export class TutorialComponent implements OnInit {
             </ul>
             For more information on the various import options and how to use them, visit the <a target="_blank" class="no-underline text-primary" href="https://github.com/KnowledgeCanvas/knowledge/wiki/Basics:-Sources">Knowledge Wiki</a>
         </p>
-        <h3>Next Steps</h3>
+        <h3>Next steps</h3>
         <p>After importing Sources, click the following icons on the navigation bar to explore Sources in various views</p>
         <ul>
             <li><span class="text-primary"><span class="pi pi-table"></span> Table</span></li>
@@ -120,7 +120,7 @@ export class TutorialComponent implements OnInit {
                     Projects bring structure to the learning process by organizing information into hierarchies.
                     Just like with our Math example, the hierarchical structure of Projects help to break concepts into small and digestible pieces.
                 </p>
-                <h3>Next Steps</h3>
+                <h3>Next steps</h3>
                 <p>
                     Once you are done with this tutorial, click the <b>+Project</b> button to create a new Project. You can also right-click on a Project inside the <span class="text-primary"><span class="pi pi-list"></span> Projects</span> Tree to create a Sub-Project.
                 </p>
@@ -179,7 +179,7 @@ export class TutorialComponent implements OnInit {
       index: 4
     },
     {
-      title: 'Learn More',
+      title: 'Learn more',
       body: '',
       html: `
       Visit the Knowledge Wiki for more on:
