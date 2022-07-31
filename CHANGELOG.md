@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.6.0](https://github.com/KnowledgeCanvas/knowledge/compare/v0.5.0...v0.6.0) (2022-07-31)
+
+
+### Features
+
+* Add Grid and Calendar views ([#24](https://github.com/KnowledgeCanvas/knowledge/issues/24)) ([9367db8](https://github.com/KnowledgeCanvas/knowledge/commit/9367db80f7801c65c175af7ce93af4bef618407d))
+
+
+### Bug Fixes
+
+* addresses 5 moderate and 2 high severity vulnerabilities ([47c13cf](https://github.com/KnowledgeCanvas/knowledge/commit/47c13cf6e7d8d405c06e3bd8e701485e7a1bdabe))
+* addresses multiple dependency vulnerabilities that range from low to critical severity. ([#40](https://github.com/KnowledgeCanvas/knowledge/issues/40)) ([414bc06](https://github.com/KnowledgeCanvas/knowledge/commit/414bc0686d685e3b4881ab5b62593fa81a8394d6))
+
+
+### Miscellaneous
+
+* Add release-please GitHub workflows. ([a4fad71](https://github.com/KnowledgeCanvas/knowledge/commit/a4fad719dab47e4453cdb9f7d1ed99023f1ab951))
+* remove invalid changelog entries that were auto-generated ([1192c94](https://github.com/KnowledgeCanvas/knowledge/commit/1192c947c709895964af74f9170af5a47c5fe968))
+
 ## [0.6.0](https://github.com/KnowledgeCanvas/knowledge-canvas/compare/v0.5.0...v0.6.0) (2022-07-21)
 
 
