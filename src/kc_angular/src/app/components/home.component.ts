@@ -128,34 +128,6 @@ import {NotificationsService} from "../services/user-services/notifications.serv
   `,
   styles: [
     `
-      .pulsate-fwd {
-        -webkit-animation: pulsate-fwd 3s ease-in-out infinite forwards;
-        animation: pulsate-fwd 3s ease-in-out infinite forwards;
-      }
-
-      @-webkit-keyframes pulsate-fwd {
-        0% {
-          transform: scale(1);
-        }
-        50% {
-          transform: scale(1.1);
-        }
-        100% {
-          transform: scale(1);
-        }
-      }
-
-      @keyframes pulsate-fwd {
-        0% {
-          transform: scale(1);
-        }
-        50% {
-          transform: scale(1.1);
-        }
-        100% {
-          transform: scale(1);
-        }
-      }
     `
   ]
 })

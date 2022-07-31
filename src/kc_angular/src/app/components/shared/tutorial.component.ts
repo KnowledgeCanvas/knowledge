@@ -196,8 +196,6 @@ export class TutorialComponent implements OnInit {
 
   state: TutorialState = this.states[0];
 
-  // TODO: finish tutorial
-
   constructor(private ref: DynamicDialogRef) {
   }
 
