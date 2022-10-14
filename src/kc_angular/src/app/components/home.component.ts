@@ -18,7 +18,7 @@ import {KnowledgeSource} from "../models/knowledge.source.model";
 import {IngestService} from "../services/ingest-services/ingest.service";
 import {ProjectService} from "../services/factory-services/project.service";
 import {Observable, Subscription} from "rxjs";
-import {KcProject} from "../models/project.model";
+import {KcProject, ProjectCreationRequest} from "../models/project.model";
 import {ProjectTreeFactoryService} from "../services/factory-services/project-tree-factory.service";
 import {ConfirmationService, FilterService, MenuItem, TreeNode} from "primeng/api";
 import {NotificationsService} from "../services/user-services/notifications.service";
@@ -100,7 +100,7 @@ import {Splitter} from "primeng/splitter";
                               (click)="collapseAll()"
                               class="p-button-rounded p-button-text shadow-none"></button>
                     </div>
-                    <div class="pr-3 flex-row-center-end">
+                    <div *ngIf="treeNodes.length > 0" class="pr-3 flex-row-center-end">
                       <div class="" *ngIf="selectedProject">
                         <button pButton icon="pi pi-fw pi-times" (click)="selectedProject = undefined" class="p-button-text p-button-plain"></button>
                       </div>
@@ -117,6 +117,14 @@ import {Splitter} from "primeng/splitter";
                               label="Import"
                               [disabled]="!selectedProject"
                               (click)="onProjectImport()"></button>
+                    </div>
+                    <div *ngIf="treeNodes.length === 0" class="pr-3 flex-row-center-end">
+                      <input pInputText #projectName placeholder="Create a new Project">
+                      <button pButton
+                              class="ml-1"
+                              label="Create and Import"
+                              [disabled]="!projectName.value"
+                              (click)="onProjectCreateAndImport(projectName.value)"></button>
                     </div>
                   </div>
                   <div class="h-full w-full px-4 border-bottom-1 border-300" style="max-height: calc(100vh - 48px - 36px - 32px - 116px);">
@@ -321,6 +329,35 @@ export class HomeComponent implements OnInit, OnDestroy {
         }
       })
     }
+  }
+
+  /**
+   * Create a new project and then import the selected source
+   * This function is only used when there are no existing projects
+   * @param projectName
+   */
+  onProjectCreateAndImport(projectName: string) {
+    console.log('Creating project with name: ', projectName);
+    let req: ProjectCreationRequest = {
+      calendar: {
+        events: [],
+        end: null,
+        start: null
+      },
+      sources: [],
+      authors: [],
+      description: "",
+      knowledgeSource: [],
+      name: projectName,
+      subProjects: [],
+      topics: [],
+      type: 'default',
+      parentId: {value: ''}
+    }
+    this.projects.newProject(req).then((_: any) => {
+      this.selectedProject = this.treeNodes[0];
+      this.onProjectImport();
+    })
   }
 
   expandAll() {

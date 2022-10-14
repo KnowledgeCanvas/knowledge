@@ -41,7 +41,7 @@ import {DomSanitizer} from "@angular/platform-browser";
       <button pButton icon="pi pi-file"
               class="p-button-text outline-none shadow-none non-header"
               pTooltip="Import Files"
-              (click)="onNewFile($event); newFile.click()">+
+              (click)="newFile.click()">+
       </button>
       <input [(ngModel)]="files" #newFile hidden type="file" [multiple]="true" (change)="onNewFile($event)">
       <button pButton icon="pi pi-link"
@@ -179,7 +179,6 @@ export class CreateComponent implements OnInit {
   onNewFile($event: any) {
     console.log('New files: ', $event.target.files);
 
-
     const files: any[] = $event.target.files;
     if (!files) {
       return;
@@ -200,6 +199,8 @@ export class CreateComponent implements OnInit {
 
     }).catch((reason) => {
       this.notifications.error('Source Import', `Unable to import file${files.length > 1 ? 's' : ''}`, reason);
+    }).finally(() => {
+      this.files = [];
     });
   }
 
