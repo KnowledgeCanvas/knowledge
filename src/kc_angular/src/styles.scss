@@ -145,6 +145,11 @@ input[type=range] + .thumb {
 }
 
 
+.ks-thumbnail {
+  max-width: min(100%, 48rem);
+  max-height: min(100%, 32rem);
+}
+
 /*********************************************/
 /******************* Prime NG Customization */
 /*******************************************/

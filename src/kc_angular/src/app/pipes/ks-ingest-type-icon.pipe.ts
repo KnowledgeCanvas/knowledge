@@ -20,7 +20,10 @@ import {Pipe, PipeTransform} from '@angular/core';
 })
 export class KsIngestTypeIconPipe implements PipeTransform {
 
-  transform(type: string): string {
+  transform(type?: string): string {
+    if (!type) {
+      return '';
+    }
     switch (type) {
       case "topic":
         return 'sitemap';
