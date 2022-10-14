@@ -36,49 +36,7 @@ import {HttpClient} from "@angular/common/http";
 @Component({
   selector: 'app-ks-ingest',
   template: `
-    <div class="grid w-full">
-      <div class="col-11 flex-row-center-start">
-        <button pButton
-                label="Project"
-                icon="pi pi-plus"
-                class="mr-2 hover:bg-primary"
-                (click)="onAddProject($event)">
-        </button>
-        <p-fileUpload #fileUploadButton
-                      class="mr-2"
-                      styleClass="hover:bg-primary"
-                      mode="basic"
-                      name="files[]"
-                      [multiple]="true"
-                      (onSelect)="onAddFile($event); fileUploadButton.clear()"
-                      chooseLabel="File">
-        </p-fileUpload>
-        <button pButton
-                label="Link"
-                icon="pi pi-plus"
-                class="mr-2 hover:bg-primary"
-                (click)="overlayPanel.toggle($event)">
-        </button>
-        <p-checkbox *ngIf="currentProject && currentProject.name && currentProject.name.length > 0"
-                    label="Import to '{{currentProject.name}}'"
-                    [(ngModel)]="importToProject"
-                    [binary]="true">
-        </p-checkbox>
-      </div>
-      <div class="col-1 flex-row-center-end">
-        <div class="h-full flex-row-center-center ml-4">
-          <div class="pi pi-sliders-h cursor-pointer flex-col-center-center"
-               #importSettings
-               [hidden]="true"
-               style="height: 28px"
-               (click)="onImportSettings($event)">
-          </div>
-        </div>
-      </div>
-    </div>
-
     <app-dropzone [shouldShorten]="ksList.length > 0"
-                  *ngIf="ksList.length === 0"
                   [supportedTypes]="supportedTypes"
                   hintMessage="Supported types: {{supportedTypes.join(', ')}}">
     </app-dropzone>

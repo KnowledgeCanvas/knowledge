@@ -110,6 +110,10 @@ export class IngestService implements OnDestroy {
    */
   private autoscanSubscribe() {
     this.autoscan.files.subscribe((fileModels) => {
+      if (!fileModels || fileModels.length === 0) {
+        return;
+      }
+
       let iconRequests = [];
       let ksList: KnowledgeSource[] = [];
 
@@ -200,7 +204,7 @@ export class IngestService implements OnDestroy {
         //      i.e. don't try to scrape meta tags if they have already been scraped
 
         this.enqueue([ks]);
-      }).catch((reason) => {
+      }).catch((_: any) => {
         this.notifications.error('IngestService', 'Exception', 'Unable to sanitize URL received from browser extension.');
       });
     });

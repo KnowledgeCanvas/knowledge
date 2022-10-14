@@ -18,7 +18,8 @@ export class KsContextMenuService {
     let menu: MenuItem[] = [
       {
         label: target.title.substring(0, 16) + (target.title.length > 16 ? '...' : ''),
-        disabled: true
+        disabled: true,
+        icon: 'pi pi-file'
       },
       {
         label: '',

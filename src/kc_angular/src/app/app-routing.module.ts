@@ -50,8 +50,6 @@ const routes: Routes = [
         path: 'calendar/:projectId',
         component: CalendarComponent
       },
-
-      /* Settings routes use named outlets, which are located inside */
       {
         path: 'display',
         outlet: 'settings',

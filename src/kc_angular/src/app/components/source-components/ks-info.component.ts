@@ -25,7 +25,6 @@ import {Router} from "@angular/router";
 import {TopicService} from "../../services/user-services/topic.service";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
-import {EventModel} from "../../../../../kc_shared/models/event.model";
 import {ElectronIpcService} from "../../services/ipc-services/electron-ipc.service";
 import {NotificationsService} from "../../services/user-services/notifications.service";
 
@@ -34,7 +33,7 @@ import {NotificationsService} from "../../services/user-services/notifications.s
   template: `
     <p-scrollPanel class="w-full h-full">
       <div class="p-fluid grid pb-4">
-        <p-panel header="Details" class="col-12">
+        <p-panel header="Details" class="col-12" [toggleable]="true" [collapsed]="collapseDetails">
           <div class="w-full h-full grid">
             <div class="col-12 lg:col-6">
               <div class="flex flex-row flex-auto w-full">
@@ -91,6 +90,48 @@ import {NotificationsService} from "../../services/user-services/notifications.s
               </form>
             </div>
           </div>
+        </p-panel>
+
+        <p-panel *ngIf="ksIsPdf"
+                 class="col-12"
+                 #pdfPanel
+                 header="PDF"
+                 [collapsed]="collapsePdf"
+                 [toggleable]="true"
+                 (onAfterToggle)="onPdfToggle($event)">
+          <ng-template pTemplate="icons">
+            <button pButton class="p-panel-header-icon" icon="pi pi-external-link" (click)="onKsOpen()"></button>
+          </ng-template>
+
+          <ng-template pTemplate="content">
+            <div *ngIf="ksIsPdf" class="flex-col-center-start h-full">
+              <embed *ngIf="safeUrl && this.allowCollapsedContent" [src]="safeUrl" class="p-fluid"
+                     [style]="{width: '100%', 'height': '65vh'}">
+            </div>
+          </ng-template>
+        </p-panel>
+
+        <p-panel *ngIf="this.ksIsYoutubeVideo"
+                 class="col-12"
+                 header="YouTube Video"
+                 [collapsed]="collapseYouTube"
+                 [toggleable]="true"
+                 (onAfterToggle)="youtubeToggle($event)">
+          <ng-template pTemplate="icons">
+            <button pButton
+                    class="p-panel-header-icon"
+                    icon="pi pi-external-link"
+                    (click)="onKsOpen()">
+            </button>
+          </ng-template>
+          <ng-template pTemplate="content">
+            <div class="p-fluid w-full flex-row-center-center">
+              <youtube-player *ngIf="this.ksIsYoutubeVideo && this.allowCollapsedContent"
+                              [videoId]="ksYoutubeVideoId"
+                              #youtubePlayer>
+              </youtube-player>
+            </div>
+          </ng-template>
         </p-panel>
 
         <p-panel header="Project"
@@ -161,47 +202,6 @@ import {NotificationsService} from "../../services/user-services/notifications.s
           </div>
         </p-panel>
 
-        <p-panel *ngIf="ksIsPdf"
-                 class="col-12"
-                 #pdfPanel
-                 header="PDF"
-                 [collapsed]="collapsePdf"
-                 [toggleable]="true">
-          <ng-template pTemplate="icons">
-            <button pButton class="p-panel-header-icon" icon="pi pi-external-link" (click)="onKsOpen()"></button>
-          </ng-template>
-
-          <ng-template pTemplate="content">
-            <div *ngIf="ksIsPdf" class="flex-col-center-start h-full">
-              <embed *ngIf="safeUrl && this.allowCollapsedContent" [src]="safeUrl" class="p-fluid"
-                     [style]="{width: '100%', 'height': '65vh'}">
-            </div>
-          </ng-template>
-        </p-panel>
-
-        <p-panel *ngIf="this.ksIsYoutubeVideo"
-                 class="col-12"
-                 header="YouTube Video"
-                 [collapsed]="collapseYouTube"
-                 [toggleable]="true"
-                 (onAfterToggle)="youtubeToggle($event)">
-          <ng-template pTemplate="icons">
-            <button pButton
-                    class="p-panel-header-icon"
-                    icon="pi pi-external-link"
-                    (click)="onKsOpen()">
-            </button>
-          </ng-template>
-          <ng-template pTemplate="content">
-            <div class="p-fluid w-full flex-row-center-center">
-              <youtube-player *ngIf="this.ksIsYoutubeVideo && this.allowCollapsedContent"
-                              [videoId]="ksYoutubeVideoId"
-                              #youtubePlayer>
-              </youtube-player>
-            </div>
-          </ng-template>
-        </p-panel>
-
         <p-panel header="Metadata" class="col-12"
                  *ngIf="ksMetadata.length > 0"
                  [toggleable]="true"
@@ -264,7 +264,7 @@ import {NotificationsService} from "../../services/user-services/notifications.s
               </div>
 
               <div class="field p-float-label sm:col-12 md:col-12 lg:col-6 mt-4">
-                <input id="importMethod" type="text" pInputText disabled [value]="ks.importMethod | titlecase">
+                <input id="importMethod" type="text" pInputText disabled [value]="ks.importMethod | importMethod">
                 <label for="importMethod">Import Method</label>
               </div>
 
@@ -337,7 +337,9 @@ export class KsInfoComponent implements OnInit, OnChanges {
 
   allowCollapsedContent: boolean = false;
 
-  collapseTimeline: boolean = false;
+  collapseDetails: boolean = false;
+
+  collapseTimeline: boolean = true;
 
   collapseYouTube: boolean = true;
 
@@ -347,10 +349,12 @@ export class KsInfoComponent implements OnInit, OnChanges {
 
   collapseSource: boolean = true;
 
-  collapseProject: boolean = false;
+  collapseProject: boolean = true;
 
   form: FormGroup;
+
   ksIsPdf: boolean = false;
+
   private first: boolean = true;
 
   constructor(private sanitizer: DomSanitizer,
@@ -385,12 +389,12 @@ export class KsInfoComponent implements OnInit, OnChanges {
         this.first = false;
       } else {
 
-        const event: EventModel = {
-          description: '',
-          timestamp: Date(),
-          type: 'update'
-        }
         // TODO: push update to knowledge source event list (currently, `events` is not the right type...)...
+        // const event: EventModel = {
+        //   description: '',
+        //   timestamp: Date(),
+        //   type: 'update'
+        // }
 
         const ksEvent: KnowledgeSourceEvent = {
           date: new Date(),
@@ -421,21 +425,24 @@ export class KsInfoComponent implements OnInit, OnChanges {
   reset() {
     this.ksIsYoutubeVideo = false;
     this.ksYoutubeVideoId = '';
+    this.ksIsPdf = false;
     this.safeUrl = undefined;
     this.fileConfig = undefined;
 
-    this.collapseTimeline = false;
-    this.collapseYouTube = false;
-    this.collapsePdf = false;
-    this.collapseExtraction = false;
-    this.collapseSource = false;
-    this.collapseProject = false;
+    this.collapseDetails = false;
+    this.collapseTimeline = true;
+    this.collapseYouTube = true;
+    this.collapsePdf = true;
+    this.collapseExtraction = true;
+    this.collapseSource = true;
+    this.collapseProject = true;
 
     this.first = true;
   }
 
   onExpandAll() {
     this.collapseAll = false;
+    this.collapseDetails = false;
     this.collapsePdf = false;
     this.collapseTimeline = false;
     this.collapseYouTube = false;
@@ -446,6 +453,7 @@ export class KsInfoComponent implements OnInit, OnChanges {
 
   onCollapseAll() {
     this.collapseAll = true;
+    this.collapseDetails = true;
     this.collapsePdf = true;
     this.collapseTimeline = true;
     this.collapseYouTube = true;
@@ -455,6 +463,18 @@ export class KsInfoComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
+    try {
+      if (changes.collapseAll?.currentValue !== undefined) {
+        if (changes.collapseAll.currentValue === true) {
+          this.onCollapseAll();
+        } else if (changes.collapseAll.currentValue === false) {
+          this.onExpandAll();
+        }
+      }
+    } catch (e) {
+      this.notifications.error('Source Info', 'Change Control Error', `${e}`)
+    }
+
     try {
       if (changes.ks.currentValue) {
         this.reset();
@@ -513,19 +533,7 @@ export class KsInfoComponent implements OnInit, OnChanges {
         }, 500);
       }
     } catch (e) {
-
-    }
-
-    try {
-      if (changes.collapseAll?.currentValue !== undefined) {
-        if (changes.collapseAll.currentValue === true) {
-          this.onCollapseAll();
-        } else if (changes.collapseAll.currentValue === false) {
-          this.onExpandAll();
-        }
-      }
-    } catch (e) {
-
+      this.notifications.error('Source Info', 'Change Control Error', `${e}`)
     }
   }
 
@@ -653,5 +661,9 @@ export class KsInfoComponent implements OnInit, OnChanges {
       this.ipc.showItemInFolder(accessLink);
       this.notifications.debug('IngestSettings', 'Locating Folder', location, 'toast');
     }
+  }
+
+  onPdfToggle(_: any) {
+    // TODO: Persist state in local storage
   }
 }
