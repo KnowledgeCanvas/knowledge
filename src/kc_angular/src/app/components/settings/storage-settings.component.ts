@@ -15,21 +15,20 @@
  */
 
 import {Component, OnInit} from '@angular/core';
+import {StorageService} from "../../services/ipc-services/storage.service";
 
 @Component({
   selector: 'app-storage-settings',
   template: `
     <div class="p-fluid grid">
       <div class="col-12">
-        <p-panel header="Storage">
+        <p-panel header="Import/Export">
           <ng-template pTemplate="content">
-            <ul>
-              <li>Local Storage</li>
-              <li>MongoDB (eventually)</li>
-              <li>Elasticsearch/OpenSearch (eventually)</li>
-              <li>Backups (eventually)</li>
-              <li>Clean up dangling objects in localStorage</li>
-            </ul>
+            <div class="p-fluid grid mt-1">
+              <div class="col-4">
+                <button pButton label="Export" [loading]="exporting" (click)="onExport($event, exportType)"></button>
+              </div>
+            </div>
           </ng-template>
         </p-panel>
       </div>
@@ -38,11 +37,19 @@ import {Component, OnInit} from '@angular/core';
   styles: []
 })
 export class StorageSettingsComponent implements OnInit {
+  exportType: string = 'Everything';
 
-  constructor() {
+  exporting: boolean = false;
+
+  constructor(private storage: StorageService) {
   }
 
   ngOnInit(): void {
   }
 
+  async onExport($event: MouseEvent, exportType: string) {
+    this.exporting = true;
+    await this.storage.export();
+    this.exporting = false;
+  }
 }
