@@ -81,7 +81,7 @@ export class TutorialComponent implements OnInit {
         <p>
             There are numerous ways to import Sources:
             <ul>
-                <li>Click <b>+File</b> or <b>+Link</b> on the Inbox page</li>
+                <li>Click the <span class="text-primary">+<div class="pi pi-file"></div></span> or <span class="text-primary">+<div class="pi pi-link"></div></span> buttons on the top bar</li>
                 <li>Drag and drop files or links directly into this window</li>
                 <li>Use the built-in browser and click the Save button</li>
                 <li>Download our Chrome browser extension (<span class="text-primary"><div class="pi pi-cog"></div> Settings > Import > Extensions</span>)</li>
@@ -89,7 +89,7 @@ export class TutorialComponent implements OnInit {
             </ul>
             For more information on the various import options and how to use them, visit the <a target="_blank" class="no-underline text-primary" href="https://github.com/KnowledgeCanvas/knowledge/wiki/Basics:-Sources">Knowledge Wiki</a>
         </p>
-        <h3>Next Steps</h3>
+        <h3>Next steps</h3>
         <p>After importing Sources, click the following icons on the navigation bar to explore Sources in various views</p>
         <ul>
             <li><span class="text-primary"><span class="pi pi-table"></span> Table</span></li>
@@ -120,9 +120,9 @@ export class TutorialComponent implements OnInit {
                     Projects bring structure to the learning process by organizing information into hierarchies.
                     Just like with our Math example, the hierarchical structure of Projects help to break concepts into small and digestible pieces.
                 </p>
-                <h3>Next Steps</h3>
+                <h3>Next steps</h3>
                 <p>
-                    Once you are done with this tutorial, click the <b>+Project</b> button to create a new Project. You can also right-click on a Project inside the <span class="text-primary"><span class="pi pi-list"></span> Projects</span> Tree to create a Sub-Project.
+                    Once you are done with this tutorial, click the <span class="text-primary">+<span class="pi pi-folder"></span></span> button on the top bar to create a new Project. You can also right-click on a Project inside the <span class="text-primary"><span class="pi pi-list"></span> Projects</span> Tree to create a Sub-Project.
                 </p>
 
                 <p>
@@ -151,6 +151,11 @@ export class TutorialComponent implements OnInit {
           <li>Preview PDFs and YouTube videos</li>
           <li>View and change details, like the title and description</li>
         </ul>
+
+        <h3>Hint:</h3>
+                <p>
+                    Try right-clicking on Sources for a list of actions (e.g. preview, show in files, copy links, etc.)
+                </p>
       `,
       index: 3
     },
@@ -179,7 +184,7 @@ export class TutorialComponent implements OnInit {
       index: 4
     },
     {
-      title: 'Learn More',
+      title: 'Learn more',
       body: '',
       html: `
       Visit the Knowledge Wiki for more on:
@@ -195,8 +200,6 @@ export class TutorialComponent implements OnInit {
   ]
 
   state: TutorialState = this.states[0];
-
-  // TODO: finish tutorial
 
   constructor(private ref: DynamicDialogRef) {
   }

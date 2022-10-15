@@ -56,7 +56,7 @@ import {animate, state, style, transition, trigger} from "@angular/animations";
         style({height: '20vh', top: 0, left: 0})
       ),
       state('dropzone-sm',
-        style({height: '2rem', top: 0, left: 0})
+        style({height: '4rem', top: 0, left: 0})
       ),
       transition('dropzone-lg => dropzone-sm', [
         animate('0.1s')
@@ -72,7 +72,7 @@ export class KsDropzoneComponent implements OnInit {
 
   @Input() supportedTypes: string[] = [];
 
-  @Input() emptyMessage: string = 'Drag links, files, and more here!';
+  @Input() emptyMessage: string = 'Drag and drop here!';
 
   @Input() hintMessage: string = 'Hint: You can drag files and links directly into this window.';
 

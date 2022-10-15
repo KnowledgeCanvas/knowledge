@@ -51,9 +51,10 @@ type SidebarItem = {
       </div>
       <div *ngIf="!os || (os && os !== 'darwin')"></div>
 
-      <div class="title-bar-interactive flex-row-center-between">
-        <app-history class="pr-8"></app-history>
-        <app-search></app-search>
+      <div class="flex-row-center-between">
+        <app-create class="title-bar-interactive"></app-create>
+        <app-search class="title-bar-interactive mx-8"></app-search>
+        <app-history class="title-bar-interactive"></app-history>
       </div>
 
       <div *ngIf="!os || (os && os === 'darwin')"></div>
@@ -406,6 +407,7 @@ export class AppComponent implements OnInit {
       if (ksReq) {
         this.factory.many(ksReq).then((ksList) => {
           if (ksList.length > 0) {
+            ksList.forEach(ks => ks.importMethod = 'dnd');
             this.ingest.enqueue(ksList);
           }
         })

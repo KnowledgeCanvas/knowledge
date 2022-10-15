@@ -34,23 +34,30 @@ export interface KsPreviewInput {
   template: `
     <div class="ks-preview-viewport">
       <div class="ks-preview-body" [ngStyle]="{'background-color' : backgroundColor}">
-        <ks-lib-browser-view
-          (clickEvent)="onBrowserViewClickEvent($event)"
-          (navEvent)="onBrowserViewNavEvent($event)"
-          (viewReady)="setViewReady($event)"
-          [kcBrowserViewConfig]="browserViewConfig"
-          *ngIf="browserViewConfig">
+        <ks-lib-browser-view *ngIf="browserViewConfig"
+                             (clickEvent)="onBrowserViewClickEvent($event)"
+                             (navEvent)="onBrowserViewNavEvent($event)"
+                             (viewReady)="setViewReady($event)"
+                             [kcBrowserViewConfig]="browserViewConfig">
         </ks-lib-browser-view>
 
-        <ks-lib-file-view (clickEvent)="onFileViewClickEvent($event)"
+        <ks-lib-file-view *ngIf="fileViewConfig"
+                          (clickEvent)="onFileViewClickEvent($event)"
                           (fileError)="onError($event)"
                           (viewReady)="setViewReady($event)"
-                          [config]="fileViewConfig"
-                          *ngIf="fileViewConfig">
+                          [config]="fileViewConfig">
         </ks-lib-file-view>
       </div>
 
-      <div class="ks-preview-footer">
+      <div class="ks-preview-footer w-full flex-row-center-center">
+        <div *ngIf="!viewReady">
+          <div>
+            <img src="assets/img/kc-icon-greyscale.png"
+                 alt="Knowledge Logo"
+                 class="pulsate-fwd"
+                 style="filter: drop-shadow(0 0 1px var(--primary-color)); height: 8rem; position: absolute; left: calc(50vw - 4rem); top: calc(50vh - 4rem)">
+          </div>
+        </div>
         <p-progressBar *ngIf="!viewReady" mode="indeterminate" id="progress-bar" class="p-fluid w-full"></p-progressBar>
       </div>
     </div>
@@ -203,29 +210,29 @@ export class KsPreviewComponent implements OnInit, OnDestroy {
   previewFile() {
     // Make sure browserViewConfig is undefined
     this.browserViewConfig = undefined;
-    if (!this.ks.reference.source.file || typeof this.ks.accessLink !== 'string')
+    if (!this.ks.reference.source.file || typeof this.ks.accessLink !== 'string') {
       return;
+    }
 
     let fileType = this.ks.reference.source.file.type;
 
-    // TODO: there's definitely be a better way to handle this... (double check with OS and/or just open in appropriate app)
     if (fileType === '') {
-      console.error('File type not recognized: ', fileType);
+      this.notifications.error('Source Preview', 'Unsupported File Type', `Knowledge cannot preview that file`);
       this.ref.close();
+      return;
     }
 
     let supported: boolean = false;
     for (let supportedType of this.supportedFileTypes) {
       if (fileType.indexOf(supportedType) > 0) {
         supported = true;
-        console.debug('KsPreview.previewFile() | supported fileType === ', fileType);
         this.previewSupportedType(supportedType);
+        break;
       }
     }
 
     if (!supported) {
-      console.warn('This file type is not supported!');
-      this.notifications.warn('KsPreview', 'Unsupported File Type', 'Knowledge does not currently support previewing files of that type.');
+      this.notifications.error('Source Preview', 'Unsupported File Type', `Knowledge cannot preview ${fileType} files`);
       this.ref.close();
     }
   }

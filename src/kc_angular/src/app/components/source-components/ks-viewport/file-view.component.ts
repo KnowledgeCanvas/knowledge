@@ -63,7 +63,6 @@ export class FileViewComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     const config: FileViewConfig = changes.config.currentValue;
-    // TODO: sanitize file paths to avoid errors (e.g. with # symbol in file path) [should be done when we import files...]
     if (config) {
       if (config.filePath) {
         if (this.validateFileURI(config.filePath)) {

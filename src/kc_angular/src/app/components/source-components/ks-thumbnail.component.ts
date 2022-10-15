@@ -32,8 +32,8 @@ import {ElectronIpcService} from "../../services/ipc-services/electron-ipc.servi
     <div class="w-full flex-col-center-center">
       <p-image *ngIf="thumbnail" [src]="thumbnail"
                height="200px"
-               width="100%"
-               [style]="{'border-radius': '5px', 'max-width': 'min(100%, 48rem)'}"
+               imageClass="ks-thumbnail"
+               [style]="{'border-radius': '5px'}"
                [preview]="false">
       </p-image>
     </div>

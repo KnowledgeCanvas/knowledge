@@ -13,38 +13,49 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-import {Component, Input, SecurityContext} from '@angular/core';
-import {KnowledgeSource} from "../../models/knowledge.source.model";
+import {Component, OnInit, SecurityContext} from '@angular/core';
+import {ProjectCreationDialogComponent} from "../project-components/project-creation-dialog.component";
+import {DialogService} from "primeng/dynamicdialog";
 import {KnowledgeSourceFactoryRequest, KsFactoryService} from "../../services/factory-services/ks-factory.service";
 import {NotificationsService} from "../../services/user-services/notifications.service";
-import {ExtractorService} from "../../services/ingest-services/extractor.service";
-import {ElectronIpcService} from "../../services/ipc-services/electron-ipc.service";
+import {KnowledgeSource} from "../../models/knowledge.source.model";
 import {IngestService} from "../../services/ingest-services/ingest.service";
-import {UuidService} from "../../services/ipc-services/uuid.service";
-import {FaviconService} from "../../services/ingest-services/favicon.service";
-import {DragAndDropService} from "../../services/ingest-services/drag-and-drop.service";
-import {KsCommandService} from "../../services/command-services/ks-command.service";
-import {ProjectService} from "../../services/factory-services/project.service";
-import {KcProject} from "../../models/project.model";
-import {DialogService} from "primeng/dynamicdialog";
-import {ProjectCreationDialogComponent} from "../project-components/project-creation-dialog.component";
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {OverlayPanel} from "primeng/overlaypanel";
-import {DomSanitizer} from "@angular/platform-browser";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {ExtractorService} from "../../services/ingest-services/extractor.service";
+import {UuidService} from "../../services/ipc-services/uuid.service";
+import {DragAndDropService} from "../../services/ingest-services/drag-and-drop.service";
+import {FaviconService} from "../../services/ingest-services/favicon.service";
 import {HttpClient} from "@angular/common/http";
+import {DomSanitizer} from "@angular/platform-browser";
 
 @Component({
-  selector: 'app-ks-ingest',
+  selector: 'app-create',
   template: `
-    <app-dropzone [shouldShorten]="ksList.length > 0"
-                  [supportedTypes]="supportedTypes"
-                  hintMessage="Supported types: {{supportedTypes.join(', ')}}">
-    </app-dropzone>
+    <div class="flex-row-center-center non-header" (dragstart)="$event.preventDefault()">
+      <button pButton icon="pi pi-folder"
+              class="p-button-text outline-none shadow-none non-header"
+              pTooltip="Create a Project"
+              (click)="onNewProject($event)">+
+      </button>
+      <button pButton icon="pi pi-file"
+              class="p-button-text outline-none shadow-none non-header"
+              pTooltip="Import Files"
+              (click)="newFile.click()">+
+      </button>
+      <input [(ngModel)]="files" #newFile hidden type="file" [multiple]="true" (change)="onNewFile($event)">
+      <button pButton icon="pi pi-link"
+              class="p-button-text outline-none shadow-none non-header"
+              pTooltip="Import a Website"
+              (click)="createPanel.toggle($event)">+
+      </button>
+    </div>
 
-    <p-overlayPanel #overlayPanel
-                    styleClass="surface-100 shadow-7"
+    <p-overlayPanel #createPanel
+                    appendTo="body"
+                    [focusOnShow]="true"
                     (onShow)="onLinkShow($event)"
-                    appendTo="body">
+                    styleClass="surface-100 shadow-7">
       <ng-template pTemplate="content">
         <form [formGroup]="linkForm">
           <div class="p-inputgroup">
@@ -56,13 +67,13 @@ import {HttpClient} from "@angular/common/http";
                    [autofocus]="true"
                    class="border-0"
                    type="url"
-                   (keyup.enter)="onLinkSubmit(linkInput.value, overlayPanel)"
+                   (keyup.enter)="onLinkSubmit(linkInput.value, createPanel)"
                    style="min-width: 300px;"
                    placeholder="Enter a URL and press enter/return">
             <span class="p-inputgroup-addon"
                   [class.p-disabled]="linkForm.controls.url.errors"
                   [class.cursor-pointer]="linkInput.value.length"
-                  (click)="onLinkSubmit(linkInput.value, overlayPanel)">
+                  (click)="onLinkSubmit(linkInput.value, createPanel)">
             <i class="pi pi-arrow-circle-right"></i>
           </span>
           </div>
@@ -75,38 +86,30 @@ import {HttpClient} from "@angular/common/http";
   `,
   styles: []
 })
-export class KsIngestComponent {
-  @Input() ksList: KnowledgeSource[] = [];
-
-  @Input() currentProject: KcProject | null = null;
-
-  supportedTypes: string[] = ["Links", "Files"];
-
-  files: File[] = [];
-
-  importToProject: boolean = false;
+export class CreateComponent implements OnInit {
+  ksList: KnowledgeSource[] = [];
 
   linkForm: FormGroup;
 
-  constructor(private notifications: NotificationsService,
-              private dialog: DialogService,
+  files: any[] = [];
+
+  constructor(private dialog: DialogService,
+              private factory: KsFactoryService,
+              private ingest: IngestService,
+              private notifications: NotificationsService,
               private extractor: ExtractorService,
               private uuid: UuidService,
               private dnd: DragAndDropService,
               private favicon: FaviconService,
               private formBuilder: FormBuilder,
-              private httpClient: HttpClient,
-              private ingest: IngestService,
-              private command: KsCommandService,
-              private ipc: ElectronIpcService,
-              private projects: ProjectService,
               private sanitizer: DomSanitizer,
-              private factory: KsFactoryService) {
-    this.supportedTypes = dnd.supportedTypes;
-
+              private httpClient: HttpClient) {
     this.linkForm = formBuilder.group({
       url: ['', [Validators.required, Validators.pattern('https?://.+[.]+.+')]]
     });
+  }
+
+  ngOnInit(): void {
   }
 
   linkExists(value: string) {
@@ -117,27 +120,6 @@ export class KsIngestComponent {
         return ks.accessLink.href.includes(value);
       }
     });
-  }
-
-  enqueue(ksList: KnowledgeSource[]) {
-    if (this.importToProject) {
-      const project = this.projects.getProject(this.currentProject?.id ?? '');
-      if (project && project.knowledgeSource) {
-        project.knowledgeSource = project.knowledgeSource.concat(ksList);
-      } else if (project && !project.knowledgeSource) {
-        project.knowledgeSource = ksList;
-      } else {
-        this.ingest.enqueue(ksList);
-        return;
-      }
-
-      if (project) {
-        this.projects.updateProjects([{id: project.id}]);
-        this.notifications.success('Import', project.name, ksList.length > 1 ? 'Sources Added' : 'Source Added');
-      }
-    } else {
-      this.ingest.enqueue(ksList);
-    }
   }
 
   async extract(value: string) {
@@ -168,7 +150,7 @@ export class KsIngestComponent {
           return;
         }
 
-        this.enqueue(ksList);
+        this.ingest.enqueue(ksList);
 
       }).catch((_) => {
         this.notifications.error('Source Import', 'Unable to import URL', value);
@@ -183,8 +165,21 @@ export class KsIngestComponent {
     // TODO: make it so these things can be enqueued in Inbox even while they are still loading
   }
 
-  onAddFile($event: any) {
-    const files: any[] = $event.currentFiles;
+  onNewProject(_: MouseEvent) {
+    this.dialog.open(ProjectCreationDialogComponent, {
+      width: `min(90vw, 92rem)`,
+      data: {parentId: undefined},
+      contentStyle: {
+        'border-bottom-left-radius': '6px',
+        'border-bottom-right-radius': '6px'
+      }
+    })
+  }
+
+  onNewFile($event: any) {
+    console.log('New files: ', $event.target.files);
+
+    const files: any[] = $event.target.files;
     if (!files) {
       return;
     }
@@ -200,30 +195,13 @@ export class KsIngestComponent {
         return;
       }
 
-      this.enqueue(ksList);
+      this.ingest.enqueue(ksList);
 
     }).catch((reason) => {
       this.notifications.error('Source Import', `Unable to import file${files.length > 1 ? 's' : ''}`, reason);
+    }).finally(() => {
+      this.files = [];
     });
-  }
-
-  onAddProject(_: MouseEvent) {
-    this.dialog.open(ProjectCreationDialogComponent, {
-      width: `min(90vw, 92rem)`,
-      data: {parentId: undefined},
-      contentStyle: {
-        'border-bottom-left-radius': '6px',
-        'border-bottom-right-radius': '6px'
-      }
-    })
-  }
-
-  onImportSettings(_: MouseEvent) {
-    this.ingest.show();
-  }
-
-  onLinkShow(_: any) {
-    this.linkForm.reset();
   }
 
   async onLinkSubmit(value: string, overlayPanel: OverlayPanel) {
@@ -234,5 +212,9 @@ export class KsIngestComponent {
 
     overlayPanel.hide();
     await this.extract(value);
+  }
+
+  onLinkShow(_: any) {
+    this.linkForm.reset();
   }
 }

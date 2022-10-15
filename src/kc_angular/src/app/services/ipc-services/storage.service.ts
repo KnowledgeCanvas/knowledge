@@ -255,8 +255,71 @@ export class StorageService {
     this.db.setItem(this.KC_ALL_PROJECT_IDS, projectListStr);
   }
 
-  export() {
-    console.warn('Export functionality not implemented...');
+  createFile(encoding: string) {
+    let type: string = 'text/json';
+    let charset: string = 'utf-8';
+
+    let blob = new Blob([encoding], {
+      type: `${type};charset=${charset};`
+    });
+
+    let link = document.createElement("a");
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    if (link.download !== undefined) {
+      link.setAttribute('href', URL.createObjectURL(blob));
+      link.setAttribute('download', `knowledge_export.json`);
+      link.click();
+    } else {
+      encoding = `data:${type};charset=${charset}` + encoding;
+      window.open(encodeURI(encoding));
+    }
+    document.body.removeChild(link);
+  }
+
+  async export() {
+    let sources: KnowledgeSource[] = [];
+    let icons: any[] = [];
+    let projects: KcProject[] = [];
+
+    for (let i = 0; i < this.db.length; i++) {
+      let key = this.db.key(i);
+      if (key?.startsWith('ks-')) {
+        let ksStr = this.db.getItem(key);
+        if (ksStr) {
+          let ks: KnowledgeSource = JSON.parse(ksStr)
+          if (ks) {
+            sources.push(ks);
+          }
+        }
+      } else if (key?.startsWith('icon-')) {
+        let iconStr = this.db.getItem(key);
+        if (iconStr) {
+          icons.push({
+            ksId: key.replace('icon-', ''),
+            icon: iconStr
+          });
+        }
+      } else if (key?.length === 36) {
+        let projectStr = this.db.getItem(key);
+        if (projectStr) {
+          let kcProject: KcProject = JSON.parse(projectStr);
+          if (kcProject) {
+            projects.push(kcProject);
+          }
+        }
+      } else {
+        this.notifications.error('Storage Service', 'Invalid Storage Key', key ?? '');
+      }
+    }
+
+    let encoding = {
+      projects: projects,
+      sources: sources,
+      icons: icons
+    };
+
+    this.createFile(JSON.stringify(encoding));
   }
 
   deleteKnowledgeSource(ks: KnowledgeSource) {

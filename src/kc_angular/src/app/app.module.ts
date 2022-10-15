@@ -132,6 +132,9 @@ import {TopicSearchComponent} from './components/shared/topic-search.component';
 import {SearchThresholdPipe} from './pipes/search-threshold.pipe';
 import {TutorialComponent} from './components/shared/tutorial.component';
 import {ViewIconPipe} from './pipes/view-icon.pipe';
+import {CreateComponent} from './components/shared/create.component';
+import {ImportMethodPipe} from './pipes/import-method.pipe';
+import {KsMessageComponent} from './components/source-components/ks-message.component';
 
 @NgModule({
   declarations: [
@@ -182,7 +185,10 @@ import {ViewIconPipe} from './pipes/view-icon.pipe';
     TopicSearchComponent,
     SearchThresholdPipe,
     TutorialComponent,
-    ViewIconPipe
+    ViewIconPipe,
+    CreateComponent,
+    ImportMethodPipe,
+    KsMessageComponent
   ],
   imports: [
     BrowserAnimationsModule,
