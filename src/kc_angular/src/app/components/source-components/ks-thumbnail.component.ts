@@ -29,12 +29,11 @@ import {ElectronIpcService} from "../../services/ipc-services/electron-ipc.servi
       <div class="text-sm mt-4">Thumbnail Unavailable</div>
     </div>
 
-    <div class="w-full flex-col-center-center">
-      <p-image *ngIf="thumbnail" [src]="thumbnail"
-               height="200px"
+    <div *ngIf="thumbnail" class="w-full flex-col-center-center">
+      <p-image [src]="thumbnail"
                imageClass="ks-thumbnail"
                [style]="{'border-radius': '5px'}"
-               [preview]="false">
+               [preview]="true">
       </p-image>
     </div>
   `,
