@@ -479,7 +479,7 @@ export class KsInfoComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     try {
-      if (changes.collapseAll?.currentValue !== undefined) {
+      if (changes.collapseAll && changes.collapseAll.currentValue !== undefined) {
         if (changes.collapseAll.currentValue === true) {
           this.onCollapseAll();
         } else if (changes.collapseAll.currentValue === false) {
@@ -491,7 +491,7 @@ export class KsInfoComponent implements OnInit, OnChanges {
     }
 
     try {
-      if (changes.ks.currentValue) {
+      if (changes.ks && changes.ks.currentValue) {
         this.reset();
 
         this.ksMetadata = this.ks.reference.source.website?.metadata?.meta ?? [];
