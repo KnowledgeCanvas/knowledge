@@ -140,7 +140,7 @@ type SidebarItem = {
 
     <p-confirmDialog appendTo="body"></p-confirmDialog>
     <p-messages key="app-banner"></p-messages>
-    <p-toast key="app-toast"></p-toast>
+    <p-toast [preventOpenDuplicates]="true" position="bottom-right" key="app-toast"></p-toast>
   `,
   styles: [
     `
