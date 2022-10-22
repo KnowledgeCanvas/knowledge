@@ -31,12 +31,12 @@ import {NotificationsService} from "../../services/user-services/notifications.s
       <div class="flex flex-row align-items-center justify-content-center">
         <button pButton
                 icon="pi pi-arrow-down"
-                label="Expand All"
+                label="Expand"
                 (click)="expandAll()"
                 class="p-button-rounded p-button-text shadow-none"></button>
         <button pButton
                 icon="pi pi-arrow-up"
-                label="Collapse All"
+                label="Collapse"
                 (click)="collapseAll()"
                 class="p-button-rounded p-button-text shadow-none"></button>
       </div>
