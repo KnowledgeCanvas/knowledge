@@ -24,6 +24,9 @@ import {ConfirmationService, FilterService, MenuItem, TreeNode} from "primeng/ap
 import {NotificationsService} from "../services/user-services/notifications.service";
 import {KsContextMenuService} from "../services/factory-services/ks-context-menu.service";
 import {Splitter} from "primeng/splitter";
+import {KsFactoryService} from "../services/factory-services/ks-factory.service";
+import {take} from "rxjs/operators";
+import {DragAndDropService} from "../services/ingest-services/drag-and-drop.service";
 
 @Component({
   selector: 'app-home',
@@ -35,129 +38,116 @@ import {Splitter} from "primeng/splitter";
                    [autoZIndex]="true"
                    appendTo="body">
     </p-contextMenu>
-    <div class="h-full w-full flex-col-center-center">
-      <div class="w-full h-full flex-col-center-between surface-section p-4" [style]="{'max-width': 'min(100%, 150rem)'}">
-        <div *ngIf="upNext.length === 0" class="w-full flex flex-row flex-shrink-1 mb-2">
-          <app-ks-ingest class="w-full border-1 border-300 border-round p-4 surface-section select-none"
-                         [ksList]="upNext"
-                         [currentProject]="kcProject | async">
-          </app-ks-ingest>
-        </div>
-
-        <div *ngIf="upNext.length > 0" class="w-full flex flex-row flex-shrink-1">
-          <div class="col-3">
+    <div class="w-full h-full flex inbox-container surface-section">
+      <div class="inbox-left">
+        <div *ngIf="upNext.length > 0" class="h-full" style="overflow-y: auto">
+          <div class="">
             <div class="p-input-icon-left w-full">
               <i class="pi pi-filter"></i>
               <input type="text"
                      pInputText
                      #filter
+                     style="height: 40px; width: 100%"
+                     placeholder="Filter"
                      (input)="onFilter($event, filter.value)"
                      class="w-full p-fluid">
             </div>
           </div>
-          <div class="col-3"></div>
-          <div class="col-3"></div>
-          <div class="col-3"></div>
+          <div>
+            <app-ks-message *ngFor="let ks of filtered"
+                            [ks]="ks"
+                            (click)="setActive(ks)"
+                            (contextmenu)="setContext(ks); onKsContextMenu(context); cm.show($event)"
+                            [class.bg-primary-reverse]="active && (ks.id.value === (active.id.value))"
+                            [class.surface-ground]="active && (ks.id.value === (active.id.value))">
+            </app-ks-message>
+          </div>
         </div>
 
+        <div *ngIf="upNext.length == 0" class="" id="inbox-side-panel" #inboxSidePanel>
+          <div style="width: 100%;" class="hover:surface-hover text-primary">
+            <app-ks-message class="cursor-pointer hover:surface-hover"
+                            (click)="loadExamples()"
+                            status="Click to load examples">
+            </app-ks-message>
+          </div>
+        </div>
+        <div class="w-full" *ngIf="loading">
+          <p-progressBar mode="indeterminate" [style]="{'height': '0.5rem'}"></p-progressBar>
+        </div>
+      </div>
 
-        <div class="w-full flex flex-row flex-grow-1 border-round border-1 border-300">
-          <p-splitter *ngIf="active"
-                      #splitter
-                      [panelSizes]="[leftPanelSize,rightPanelSize]"
-                      [minSizes]="[leftPanelMinSize, rightPanelMinSize]"
-                      stateKey="inboxSplitterPanel"
-                      stateStorage="local"
-                      styleClass="h-full">
-            <ng-template pTemplate>
-              <div class="w-full h-full inbox-side-panel" id="inbox-side-panel" #inboxSidePanel>
-                <div style="height: inherit; overflow-y: auto">
-                  <app-ks-message *ngFor="let ks of filtered"
-                                  [ks]="ks"
-                                  (click)="setActive(ks)"
-                                  (contextmenu)="setContext(ks); onKsContextMenu(context); cm.show($event)"
-                                  [class.bg-primary-reverse]="ks.id.value === active.id.value"
-                                  [class.surface-ground]="ks.id.value === active.id.value"
-                                  class="flex flex-row border-round-left w-full cursor-pointer overflow-hidden text-overflow-ellipsis">
-                  </app-ks-message>
-                </div>
-              </div>
-            </ng-template>
+      <div class="inbox-divider"></div>
 
-            <ng-template pTemplate>
-              <div class="flex flex-col flex-auto border-left-1 border-400 surface-section">
-                <div class="flex-col-center-start">
-                  <div class="w-full flex-row-center-between surface-ground mb-4 py-2 border-bottom-1 border-300">
-                    <div class="flex-row-center-start">
-                      <button pButton
-                              icon="pi pi-arrow-down"
-                              label="Expand All"
-                              (click)="expandAll()"
-                              class="p-button-rounded p-button-text shadow-none"></button>
-                      <button pButton
-                              icon="pi pi-arrow-up"
-                              label="Collapse All"
-                              (click)="collapseAll()"
-                              class="p-button-rounded p-button-text shadow-none"></button>
-                    </div>
-                    <div *ngIf="treeNodes.length > 0" class="pr-3 flex-row-center-end">
-                      <div class="" *ngIf="selectedProject">
-                        <button pButton icon="pi pi-fw pi-times" (click)="selectedProject = undefined" class="p-button-text p-button-plain"></button>
-                      </div>
-                      <p-treeSelect [options]="treeNodes"
-                                    [(ngModel)]="selectedProject"
-                                    class="text-primary"
-                                    selectionMode="single"
-                                    placeholder="Select a project"
-                                    [filter]="true"
-                                    appendTo="body">
-                      </p-treeSelect>
-                      <button pButton
-                              class="ml-1"
-                              label="Import"
-                              [disabled]="!selectedProject"
-                              (click)="onProjectImport()"></button>
-                    </div>
-                    <div *ngIf="treeNodes.length === 0" class="pr-3 flex-row-center-end">
-                      <input pInputText #projectName placeholder="Create a new Project">
-                      <button pButton
-                              class="ml-1"
-                              label="Create and Import"
-                              [disabled]="!projectName.value"
-                              (click)="onProjectCreateAndImport(projectName.value)"></button>
-                    </div>
-                  </div>
-                  <div class="h-full w-full px-4 border-bottom-1 border-300" style="max-height: calc(100vh - 48px - 36px - 32px - 116px);">
-                    <p-scrollPanel styleClass="w-full h-full">
-                      <app-ks-info *ngIf="active"
-                                   [ks]="active"
-                                   [collapseAll]="collapsed"
-                                   (onRemove)="onKsRemove($event)">
-                      </app-ks-info>
-                    </p-scrollPanel>
-                  </div>
-                </div>
-              </div>
-            </ng-template>
-          </p-splitter>
+      <div class="inbox-right">
+        <div *ngIf="active" class="w-full h-full flex flex-column">
+          <div class="flex flex-row justify-content-between align-items-center p-2">
+            <div class="flex flex-row">
+              <button pButton
+                      icon="pi pi-arrow-down"
+                      label="Expand"
+                      (click)="expandAll()"
+                      class="p-button-rounded p-button-text shadow-none"></button>
+              <button pButton
+                      icon="pi pi-arrow-up"
+                      label="Collapse"
+                      (click)="collapseAll()"
+                      class="p-button-rounded p-button-text shadow-none"></button>
+            </div>
 
-          <div *ngIf="!active" class="h-full w-full flex-row-center-center surface-section select-none border-round-bottom" style="height: 20rem">
-            <div class="h-full flex-col-center-center">
-              <div (dragstart)="$event.preventDefault()">
-                <img src="assets/img/kc-icon-greyscale.png"
-                     alt="Knowledge Logo"
-                     class="pulsate-fwd"
-                     style="filter: drop-shadow(0 0 1px var(--primary-color)); height: 8rem">
+            <div *ngIf="treeNodes.length > 0" class="flex flex-row">
+              <div class="" *ngIf="selectedProject">
+                <button pButton icon="pi pi-fw pi-times" (click)="selectedProject = undefined" class="p-button-text p-button-plain"></button>
               </div>
-              <div class="text-2xl text-600 mt-4">
-                You're all caught up.
-              </div>
-              <div class="text-400">
-                Imported sources will appear here as soon as they are ready
-              </div>
+              <p-treeSelect [options]="treeNodes"
+                            [(ngModel)]="selectedProject"
+                            class="text-primary"
+                            selectionMode="single"
+                            placeholder="Choose a project"
+                            [filter]="true"
+                            appendTo="body">
+              </p-treeSelect>
+              <button pButton
+                      class="ml-1"
+                      label="Import"
+                      [disabled]="!selectedProject"
+                      (click)="onProjectImport()"></button>
+            </div>
+
+            <div *ngIf="treeNodes.length === 0" class="">
+              <input pInputText #projectName placeholder="Create a new Project">
+              <button pButton
+                      class="ml-1"
+                      label="Create and Import"
+                      [disabled]="!projectName.value"
+                      (click)="onProjectCreateAndImport(projectName.value)"></button>
             </div>
           </div>
+          <div class="overflow-y-auto">
+            <app-ks-info *ngIf="active"
+                         [ks]="active"
+                         [collapseAll]="collapsed"
+                         (onRemove)="onKsRemove($event)">
+            </app-ks-info>
+          </div>
+        </div>
 
+        <div *ngIf="!active" class="w-full h-full flex flex-column">
+          <app-dropzone [shouldShorten]="upNext.length > 0"
+                        [supportedTypes]="supportedTypes"
+                        hintMessage="Supported types: {{supportedTypes.join(', ')}}">
+          </app-dropzone>
+          <div class="inactive-inbox gap-4">
+            <div (dragstart)="$event.preventDefault()">
+              <img src="assets/img/kc-icon-greyscale.png"
+                   alt="Knowledge Logo"
+                   class="pulsate-fwd"
+                   style="filter: drop-shadow(0 0 1px var(--primary-color)); height: 8rem">
+            </div>
+            <div class="text-600 text-2xl">
+              You're all caught up.
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -166,7 +156,43 @@ import {Splitter} from "primeng/splitter";
     `
       .inbox-side-panel {
         overflow: hidden;
-        max-height: calc(100vh - 48px - 32px - 36px - 52px);
+      }
+
+      .inbox-container {
+        max-width: min(100%, 140rem);
+        border-color: var(--primary-color-text) !important;
+        border-left-width: 1px;
+        border-right-width: 1px;
+        border-left-style: solid;
+        border-right-style: solid;
+      }
+
+      .inbox-left {
+        min-width: min(100%, 20rem);
+        height: 100%;
+        flex-basis: 20%;
+      }
+
+      .inbox-divider {
+        width: 4px;
+        border-width: 1px !important;
+        border-style: solid;
+        border-color: var(--surface-border) !important;
+      }
+
+      .inbox-right {
+        display: flex;
+        height: 100%;
+        flex-basis: 80%;
+      }
+
+      .inactive-inbox {
+        flex-basis: 75%;
+        display: flex;
+        flex-direction: column;
+        flex-wrap: nowrap;
+        align-items: center;
+        justify-content: center;
       }
     `
   ]
@@ -198,15 +224,13 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   ksMenuItems: MenuItem[] = [];
 
-  leftPanelSize: number = 20;
+  loading: boolean = false;
 
-  rightPanelSize: number = 80;
-
-  leftPanelMinSize: number = 15;
-
-  rightPanelMinSize: number = 65;
+  supportedTypes: string[] = ["Links", "Files"];
 
   constructor(private confirm: ConfirmationService,
+              private dnd: DragAndDropService,
+              private factory: KsFactoryService,
               private filterService: FilterService,
               private ingest: IngestService,
               private projects: ProjectService,
@@ -215,11 +239,14 @@ export class HomeComponent implements OnInit, OnDestroy {
               private tree: ProjectTreeFactoryService) {
     this.kcProject = projects.currentProject;
 
+    this.supportedTypes = dnd.supportedTypes;
+
     this.sub1 = projects.projectTree.subscribe((projectTree) => {
       this.treeNodes = tree.constructTreeNodes(projectTree, false);
     })
 
     this.sub2 = ingest.queue.subscribe((upNext) => {
+      this.loading = true;
       this.upNext = upNext;
 
       // Sort messages by date received (most recent appears at the top)
@@ -235,6 +262,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       const activeIndex = this.upNext.findIndex((ks => ks.id.value === this.active?.id.value));
       this.activeIndex = activeIndex === -1 ? 0 : activeIndex;
       this.active = this.upNext[this.activeIndex];
+      this.loading = false;
     })
   }
 
@@ -394,5 +422,30 @@ export class HomeComponent implements OnInit, OnDestroy {
     } else {
       this.filtered = this.upNext;
     }
+  }
+
+  loadExamples() {
+    if (this.loading) {
+      return;
+    }
+    this.loading = true;
+    this.factory.examples()
+      .pipe(
+        take(1)
+      )
+      .subscribe((ks: { "title": string, "accessLink": string }[]) => {
+        this.factory.many({
+          ingestType: "website",
+          links: ks.map(k => k.accessLink)
+        }).then((ksList) => {
+          this.ingest.enqueue(ksList);
+          this.loading = false;
+        })
+      }, (_: any) => {
+        setTimeout(() => {
+          this.loading = false;
+          this.notifications.error('Inbox', 'Unable to Load Examples', 'Please check your connection and try again later...', 'toast');
+        }, Math.floor(Math.random() * 1000));
+      })
   }
 }
