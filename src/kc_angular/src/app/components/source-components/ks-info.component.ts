@@ -27,6 +27,7 @@ import {FormBuilder, FormGroup} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {ElectronIpcService} from "../../services/ipc-services/electron-ipc.service";
 import {NotificationsService} from "../../services/user-services/notifications.service";
+import {Clipboard} from "@angular/cdk/clipboard";
 
 @Component({
   selector: 'app-ks-info',
@@ -233,10 +234,10 @@ import {NotificationsService} from "../../services/user-services/notifications.s
               </tr>
             </ng-template>
             <ng-template pTemplate="body" let-meta>
-              <tr *ngIf="meta.key.length > 0 && meta.value.length > 0">
-                <td>{{meta.key}}</td>
-                <td>{{meta.value}}</td>
-                <td>{{meta.property}}</td>
+              <tr *ngIf="meta.key.length > 0 && meta.value.length > 0" class="cursor-pointer surface-section">
+                <td (click)="toClipboard(meta.key)" class="ks-info-table hover:surface-hover">{{meta.key}}</td>
+                <td (click)="toClipboard(meta.value)" class="ks-info-table hover:surface-hover">{{meta.value}}</td>
+                <td (click)="toClipboard(meta.property)" class="ks-info-table hover:surface-hover">{{meta.property}}</td>
               </tr>
             </ng-template>
           </p-table>
@@ -359,6 +360,7 @@ export class KsInfoComponent implements OnInit, OnChanges {
 
   constructor(private sanitizer: DomSanitizer,
               private browser: BrowserViewDialogService,
+              private clipboard: Clipboard,
               private ipc: ElectronIpcService,
               private router: Router,
               private topics: TopicService,
@@ -659,11 +661,18 @@ export class KsInfoComponent implements OnInit, OnChanges {
   show(accessLink: URL | string) {
     if (typeof accessLink === 'string') {
       this.ipc.showItemInFolder(accessLink);
-      this.notifications.debug('IngestSettings', 'Locating Folder', location, 'toast');
+      this.notifications.debug('Source Info', 'Locating Folder', location, 'toast');
     }
   }
 
   onPdfToggle(_: any) {
     // TODO: Persist state in local storage
+  }
+
+  toClipboard(key: string) {
+    if (key && key.trim().length > 0) {
+      this.clipboard.copy(key);
+      this.notifications.success('Source Info', 'Copied!', key);
+    }
   }
 }
