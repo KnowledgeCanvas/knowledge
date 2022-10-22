@@ -58,4 +58,4 @@ export interface KnowledgeSourceIngestTask {
     id: string
 }
 
-export type ImportMethod = 'autoscan' | 'dnd' | 'extension' | 'manual';
+export type ImportMethod = 'autoscan' | 'dnd' | 'extension' | 'manual' | 'example' | 'recommend';

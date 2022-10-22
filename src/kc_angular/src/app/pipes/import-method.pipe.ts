@@ -18,7 +18,11 @@ export class ImportMethodPipe implements PipeTransform {
       case "extension":
         return 'Browser Extension';
       case "manual":
-        return 'Manual'
+        return 'Manual';
+      case "example":
+        return 'Example';
+      case "recommend":
+        return "Recommended"
       default:
         return ''
     }
