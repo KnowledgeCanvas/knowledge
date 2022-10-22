@@ -33,9 +33,9 @@ import {Clipboard} from "@angular/cdk/clipboard";
   selector: 'app-ks-info',
   template: `
     <p-scrollPanel class="w-full h-full">
-      <div class="p-fluid grid pb-4">
-        <p-panel header="Details" class="col-12" [toggleable]="true" [collapsed]="collapseDetails">
-          <div class="w-full h-full grid">
+      <div class="p-fluid grid">
+        <p-panel header="Details" class="col-12" [toggleable]="true" [collapsed]="collapseDetails" toggler="header">
+          <div class="w-full h-full flex flex-wrap surface-section p-2">
             <div class="col-12 lg:col-6">
               <div class="flex flex-row flex-auto w-full">
                 <app-ks-thumbnail [ks]="ks" class="col-12 border-1 border-dashed border-100 border-round"></app-ks-thumbnail>
@@ -99,13 +99,14 @@ import {Clipboard} from "@angular/cdk/clipboard";
                  header="PDF"
                  [collapsed]="collapsePdf"
                  [toggleable]="true"
+                 toggler="header"
                  (onAfterToggle)="onPdfToggle($event)">
           <ng-template pTemplate="icons">
             <button pButton class="p-panel-header-icon" icon="pi pi-external-link" (click)="onKsOpen()"></button>
           </ng-template>
 
           <ng-template pTemplate="content">
-            <div *ngIf="ksIsPdf" class="flex-col-center-start h-full">
+            <div *ngIf="ksIsPdf" class="flex-col-center-start h-full surface-section">
               <embed *ngIf="safeUrl && this.allowCollapsedContent" [src]="safeUrl" class="p-fluid"
                      [style]="{width: '100%', 'height': '65vh'}">
             </div>
@@ -117,6 +118,7 @@ import {Clipboard} from "@angular/cdk/clipboard";
                  header="YouTube Video"
                  [collapsed]="collapseYouTube"
                  [toggleable]="true"
+                 toggler="header"
                  (onAfterToggle)="youtubeToggle($event)">
           <ng-template pTemplate="icons">
             <button pButton
@@ -126,7 +128,7 @@ import {Clipboard} from "@angular/cdk/clipboard";
             </button>
           </ng-template>
           <ng-template pTemplate="content">
-            <div class="p-fluid w-full flex-row-center-center">
+            <div class="p-fluid w-full flex-row-center-center surface-section">
               <youtube-player *ngIf="this.ksIsYoutubeVideo && this.allowCollapsedContent"
                               [videoId]="ksYoutubeVideoId"
                               #youtubePlayer>
@@ -139,8 +141,9 @@ import {Clipboard} from "@angular/cdk/clipboard";
                  *ngIf="ks.associatedProject && ks.associatedProject.value.length"
                  class="col-12"
                  [toggleable]="true"
+                 toggler="header"
                  [collapsed]="collapseProject">
-          <div class="h-full w-full">
+          <div class="h-full w-full surface-section">
             <div class="w-full flex flex-row flex-auto">
               <div class="p-fluid grid w-full">
                 <div class="col-2 lg:col-1 field p-float-label mt-5 flex-row-center-between">
@@ -174,8 +177,9 @@ import {Clipboard} from "@angular/cdk/clipboard";
         <p-panel header="Timeline"
                  class="col-12"
                  [toggleable]="true"
+                 toggler="header"
                  [collapsed]="collapseTimeline">
-          <div class="flex flex-column flex-auto">
+          <div class="flex flex-column flex-auto surface-section">
             <div class="calendar-actions-container col-4">
               <div class="p-inputgroup">
                 <button pButton icon="pi pi-calendar-plus" (click)="dueDateCal.toggle()"
@@ -206,8 +210,10 @@ import {Clipboard} from "@angular/cdk/clipboard";
         <p-panel header="Metadata" class="col-12"
                  *ngIf="ksMetadata.length > 0"
                  [toggleable]="true"
+                 toggler="header"
                  [collapsed]="collapseExtraction">
           <textarea pInputTextarea id="_ksRawText"
+                    *ngIf="ks.rawText && ks.rawText.length > 0"
                     [autoResize]="true"
                     class="p-fluid w-full"
                     [rows]="10"
@@ -216,19 +222,19 @@ import {Clipboard} from "@angular/cdk/clipboard";
           </textarea>
           <p-table *ngIf="this.allowCollapsedContent"
                    [value]="ksMetadata"
-                   [autoLayout]="false"
                    [paginator]="true"
-                   [responsive]="false"
+                   [resizableColumns]="true"
+                   tableStyleClass="w-full overflow-x-auto surface-section"
                    [rows]="10">
             <ng-template pTemplate="header">
               <tr>
-                <th pSortableColumn="key">Key
+                <th class="ks-info-table" pSortableColumn="key">Key
                   <p-sortIcon field="key"></p-sortIcon>
                 </th>
-                <th pSortableColumn="value">Value
+                <th class="ks-info-table" pSortableColumn="value">Value
                   <p-sortIcon field="value"></p-sortIcon>
                 </th>
-                <th pSortableColumn="property">Property
+                <th class="ks-info-table" pSortableColumn="property">Property
                   <p-sortIcon field="property"></p-sortIcon>
                 </th>
               </tr>
@@ -246,9 +252,10 @@ import {Clipboard} from "@angular/cdk/clipboard";
         <p-panel header="Source Model"
                  class="col-12"
                  [toggleable]="true"
+                 toggler="header"
                  [collapsed]="collapseSource">
           <ng-template pTemplate="content">
-            <div class="p-fluid grid" *ngIf="this.allowCollapsedContent">
+            <div class="p-fluid flex flex-wrap surface-section" *ngIf="this.allowCollapsedContent">
               <div class="field p-float-label sm:col-12 md:col-12 lg:col-6 mt-4">
                 <input id="ksId" type="text" pInputText disabled [value]="ks.id.value">
                 <label for="ksId">Source ID</label>
@@ -303,6 +310,12 @@ import {Clipboard} from "@angular/cdk/clipboard";
         max-height: 100%;
         overflow-x: hidden;
         overflow-y: auto;
+      }
+
+      .ks-info-table {
+        overflow: hidden !important;
+        overflow-wrap: anywhere !important;
+        white-space: unset !important;
       }
     `
   ]
