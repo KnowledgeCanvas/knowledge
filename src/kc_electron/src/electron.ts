@@ -23,6 +23,7 @@ const http = require('http');
 const url = require('url');
 const fs = require('fs');
 const path = require('path');
+const sqlite3 = require('sqlite3');
 const settingsService = require('./app/services/settings.service');
 const uuid = require('uuid');
 const MAIN_ENTRY: string = path.join(app.getAppPath(), 'src', 'kc_angular', 'dist', 'main', 'index.html');
@@ -40,6 +41,7 @@ const MAIN_ENTRY: string = path.join(app.getAppPath(), 'src', 'kc_angular', 'dis
     path,
     settingsService,
     shell,
+    sqlite3,
     url,
     uuid,
 };

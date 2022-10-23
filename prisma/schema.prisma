@@ -1,0 +1,61 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Source {
+  id          String        @id
+  title       String
+  description String        @default("")
+  accessLink  String
+  icon        String
+  type        String
+  thumbnail   String
+  flagged     Boolean
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @default(now()) @updatedAt
+  topics      Topic[]
+  events      SourceEvent[]
+  Project     Project?      @relation(fields: [projectId], references: [id])
+  projectId   String?
+}
+
+model Project {
+  id          String         @id
+  name        String
+  description String
+  sources     Source[]
+  events      ProjectEvent[]
+}
+
+model SourceEvent {
+  id       String   @id
+  label    String
+  datetime DateTime @default(now())
+  Source   Source?  @relation(fields: [sourceId], references: [id])
+  sourceId String?
+}
+
+model ProjectEvent {
+  id        String   @id
+  label     String
+  datetime  DateTime @default(now())
+  Project   Project? @relation(fields: [projectId], references: [id])
+  projectId String?
+}
+
+model Topic {
+  id        String   @id
+  title     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Source    Source?  @relation(fields: [sourceId], references: [id])
+  sourceId  String?
+}
