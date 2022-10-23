@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.6.2](https://github.com/KnowledgeCanvas/knowledge/compare/v0.6.1...v0.6.2) (2022-10-23)
+
+
+### Features
+
+* clicking on fields in metadata table now copies those values to clipboard. ([6dd75b9](https://github.com/KnowledgeCanvas/knowledge/commit/6dd75b932fd716cfd03ce415f8b4c5a54a82fd78))
+* **Import:** added two new import methods (example and recommendation). ([4092af4](https://github.com/KnowledgeCanvas/knowledge/commit/4092af4bd723f964dd702f933231c4e3809e8f2e))
+* **Inbox:** add the ability to import example sources when the inbox is empty. ([ace76fb](https://github.com/KnowledgeCanvas/knowledge/commit/ace76fb403a718bf54200b4cf38bd497cb6dff22))
+* **Inbox:** update look and feel of inbox message template. ([6b7f849](https://github.com/KnowledgeCanvas/knowledge/commit/6b7f8495fa165b33c1ecf5b673eb9dea2f16a6b7))
+* **Inbox:** Updated inbox to be more... inbox-like. ([38e9b4f](https://github.com/KnowledgeCanvas/knowledge/commit/38e9b4f431c7c9711a083b713472156203e2e1e2))
+* **Inbox:** Updated inbox to be more... inbox-like. ([c6990fd](https://github.com/KnowledgeCanvas/knowledge/commit/c6990fd0d0d7481fa677ff39bb3c3d65435271d0))
+* **Preview:** Improved the Source Preview experience with better error handling and nicer loading page. ([5c2e9e5](https://github.com/KnowledgeCanvas/knowledge/commit/5c2e9e55554a003a89c0ef797956656f481bace6))
+* **Shortcut Keys:** Add shortcut key to Inbox for cycling through imported Sources. ([62b8316](https://github.com/KnowledgeCanvas/knowledge/commit/62b831674b5bea1a15e8da52c005ebe44734a601))
+* **Storage:** Add the ability to export the entire contents of local storage. ([4c50705](https://github.com/KnowledgeCanvas/knowledge/commit/4c5070590206bfcce9cf14c1101e64941e99b30f))
+* update look and feel of `Source Details` component. ([951f78d](https://github.com/KnowledgeCanvas/knowledge/commit/951f78d67d7848fcd83396c7ce2ab112b451de65))
+
+
+### Bug Fixes
+
+* add debounce to toast notifications to prevent duplicates. ([b99e0f4](https://github.com/KnowledgeCanvas/knowledge/commit/b99e0f44aaae3bde390ea1f0fb9321c8fa3dda7a))
+* add logic to deal with undefined changes in `Source Details`. ([a2e560b](https://github.com/KnowledgeCanvas/knowledge/commit/a2e560bfc0cb6bacb2304c047ed9477a8d7cab5d))
+* Favicon extractor no longer attempts to match GitHub and Google URLs (edge cases) using the `includes` method. ([2a37d82](https://github.com/KnowledgeCanvas/knowledge/commit/2a37d8212a15c26f43ab9a27d2e0457bc6ade42f))
+* **Inbox:** Using the `+ Link` import method now validates URLs to avoid silent errors. ([b6e89ab](https://github.com/KnowledgeCanvas/knowledge/commit/b6e89ab2ebc7c758e33b2c11e33f9569bd0bb243))
+* Tutorial can now be closed by pressing the escape key. ([71d854a](https://github.com/KnowledgeCanvas/knowledge/commit/71d854a8c197d4e3d336275e54cf2e570538e824))
+
 ## 0.6.1 (2022-07-30)
 
 ### Fixes
