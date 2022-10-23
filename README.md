@@ -2,6 +2,8 @@
 
 *Knowledge* is a bookmark manager, file explorer, calendar, and project management tool. With *Knowledge*, you can create your own personal knowledge base, import nearly any digital resource, and organize your digital life.
 
+![knowledge_graph](https://user-images.githubusercontent.com/19367848/197421450-268520f4-c217-49b3-8b27-ce8fb6935926.gif)
+
 # Download
 
 - [Latest Stable Release](https://github.com/KnowledgeCanvas/knowledge-canvas/releases/latest)
@@ -22,31 +24,36 @@ Your data never leaves your computer. It's pretty much that simple. *Knowledge* 
 
 **Inbox**
 
-<img width="1082" alt="image" src="https://user-images.githubusercontent.com/19367848/178119660-a43117ad-b1f7-4f4a-9b54-9c6a611195ed.png">
+<img width="1232" alt="image" src="https://user-images.githubusercontent.com/19367848/197421214-143aacaa-79f8-43a4-a237-4364f8609dce.png">
 
 **Projects**
 
-<img width="1082" alt="image" src="https://user-images.githubusercontent.com/19367848/178119683-8458b24e-8561-45c9-828d-9403b38ec9df.png">
+<img width="1232" alt="image" src="https://user-images.githubusercontent.com/19367848/197421222-c0a5acc6-b44e-4fac-8dc4-a0710c8393d0.png">
 
 **Table**
 
-<img width="1082" alt="image" src="https://user-images.githubusercontent.com/19367848/178119688-237353be-5fde-4d7b-8b9a-39cca6eb8866.png">
+<img width="1232" alt="image" src="https://user-images.githubusercontent.com/19367848/197421245-55997b1b-1b13-4389-8a7e-3fe4807f7263.png">
 
 **Grid**
 
-<img width="1082" alt="image" src="https://user-images.githubusercontent.com/19367848/178119705-24eb55c9-cf03-43fc-a143-b789751346ef.png">
+<img width="1232" alt="image" src="https://user-images.githubusercontent.com/19367848/197421271-b89fc61c-8b5b-4736-a83a-ac03207b5014.png">
 
 **Calendar**
 
-<img width="1082" alt="image" src="https://user-images.githubusercontent.com/19367848/178119721-473fcacf-9cec-41d4-b7bc-fd3de87183b6.png">
+<img width="1232" alt="image" src="https://user-images.githubusercontent.com/19367848/197421296-3506ce1a-ed09-4251-8b09-896dc91c9983.png">
 
 **Knowledge Graph**
 
-<img width="1082" alt="image" src="https://user-images.githubusercontent.com/19367848/178119590-fcfff8c5-afb7-44b1-aa7f-c4f4730d26d7.gif">
+<img width="1164" alt="image" src="https://user-images.githubusercontent.com/19367848/197421597-73e09138-a580-436d-b362-c304c2b156dd.png">
 
 **Import Settings**
 
-<img width="1082" alt="image" src="https://user-images.githubusercontent.com/19367848/178119731-a6a27b33-42de-4a73-ba3c-f36c0601402b.png">
+<img width="1164" alt="image" src="https://user-images.githubusercontent.com/19367848/197421537-97f2b855-ce58-4e2d-82e4-31f11d48e924.png">
+
+**Search Settings**
+
+<img width="1164" alt="image" src="https://user-images.githubusercontent.com/19367848/197421571-65d2c664-ee12-4be6-8cee-8def56400e0b.png">
+
 
 # Disclaimer
 
