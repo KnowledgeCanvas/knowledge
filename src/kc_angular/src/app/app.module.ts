@@ -94,7 +94,6 @@ import {CountdownPipe} from "./pipes/countdown.pipe";
 import {TruncatePipe} from "./pipes/truncate.pipe";
 import {KsCardComponent} from './components/source-components/ks-card.component';
 import {KsIconComponent} from './components/source-components/ks-icon.component';
-import {KsIngestComponent} from './components/source-components/ks-ingest.component';
 import {SliderModule} from "primeng/slider";
 import {KsDropzoneComponent} from './components/source-components/ks-dropzone.component';
 import {InputSwitchModule} from "primeng/inputswitch";
@@ -160,7 +159,6 @@ import {KsMessageComponent} from './components/source-components/ks-message.comp
     TruncatePipe,
     KsCardComponent,
     KsIconComponent,
-    KsIngestComponent,
     KsDropzoneComponent,
     ProjectCardComponent,
     TopicListPipe,

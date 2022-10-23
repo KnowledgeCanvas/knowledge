@@ -22,6 +22,9 @@ import {FaviconService} from "../ingest-services/favicon.service";
 import {SettingsService} from "../ipc-services/settings.service";
 import {FileSourceModel} from "../../../../../kc_shared/models/file.source.model";
 import {UUID} from "../../../../../kc_shared/models/uuid.model";
+import {Observable} from "rxjs";
+import {map} from "rxjs/operators";
+import {HttpClient} from "@angular/common/http";
 
 export interface KnowledgeSourceFactoryRequest {
   ingestType: IngestType,
@@ -37,6 +40,7 @@ export class KsFactoryService {
 
   constructor(private favicon: FaviconService,
               private extractor: ExtractorService,
+              private http: HttpClient,
               private settings: SettingsService,
               private ipc: ElectronIpcService,
               private uuid: UuidService,) {
@@ -45,6 +49,18 @@ export class KsFactoryService {
         this.provider = searchSettings.provider;
       }
     })
+  }
+
+  examples(): Observable<{ "title": string, "accessLink": string }[]> {
+    return this.http
+      .get('https://knowledge-app.s3.us-west-1.amazonaws.com/examples_v1.json', {responseType: 'text'})
+      .pipe(
+        map((ksString) => {
+          let examples: { "title": string, "accessLink": string }[] = JSON.parse(ksString);
+          this.shuffleArray(examples);
+          return examples.slice(0, 4);
+        })
+      )
   }
 
   make(type: IngestType, link?: URL | string, file?: File): Promise<KnowledgeSource> {
@@ -264,5 +280,12 @@ export class KsFactoryService {
         resolve(ks);
       });
     });
+  }
+
+  private shuffleArray(array: any[]) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
   }
 }

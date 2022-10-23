@@ -42,7 +42,7 @@ export class NotificationsService {
 
   toast(msg: KcNotification) {
     msg.key = 'app-toast';
-    msg.life = msg.life ?? 5000;
+    msg.life = msg.life ?? 3000;
     this.messageService.add(msg);
   }
 

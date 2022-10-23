@@ -71,13 +71,19 @@ type SidebarItem = {
       </div>
     </div>
 
-    <div *ngIf="!readyToShow" class="w-full h-full surface-a flex-col-center-center">
-      <p-image src="assets/img/kc-logo-transparent.svg" class="w-5"></p-image>
-      <p-progressBar mode="indeterminate" class="w-3"></p-progressBar>
-      Getting things ready...
+    <div *ngIf="!readyToShow" class="w-full h-full surface-a flex-col-center-center gap-4" style="max-height: calc(100vh - 32px)">
+      <div>
+        <img src="assets/img/kc-icon-greyscale.png"
+             alt="Knowledge Logo"
+             class="pulsate-fwd knowledge-logo">
+      </div>
+      <div style="width: 100%; max-width: 12rem;">
+        <p-progressBar mode="indeterminate" class="w-full" [style]="{'height': '0.5rem'}"></p-progressBar>
+        Getting things ready...
+      </div>
     </div>
 
-    <div [hidden]="!readyToShow" class="flex relative lg:static" style="height: calc(100vh - 32px); max-width: 100vw">
+    <div *ngIf="readyToShow" class="flex relative lg:static" style="height: calc(100vh - 32px); max-width: 100vw">
       <div id="app-sidebar" class="h-full md:h-auto md:block flex-shrink-0 absolute md:static left-0 top-0 z-1 border-right-1 surface-0 border-primary w-auto">
         <div class="flex h-full">
           <div class="flex flex-column h-full flex-shrink-0">
@@ -134,7 +140,7 @@ type SidebarItem = {
 
     <p-confirmDialog appendTo="body"></p-confirmDialog>
     <p-messages key="app-banner"></p-messages>
-    <p-toast key="app-toast"></p-toast>
+    <p-toast [preventOpenDuplicates]="true" position="bottom-right" key="app-toast"></p-toast>
   `,
   styles: [
     `
@@ -146,6 +152,11 @@ type SidebarItem = {
         .p-sidebar-content {
           height: 100%;
         }
+      }
+
+      .knowledge-logo {
+        height: 8rem;
+        filter: drop-shadow(0 0 1px var(--primary-color));
       }
 
       .title-bar {
@@ -322,7 +333,7 @@ export class AppComponent implements OnInit {
     themes.setLocal().then((_: any) => {
       setTimeout(() => {
         this.readyToShow = true;
-      }, Math.floor(Math.random() * 1000));
+      }, Math.floor(Math.random() * 1500));
     });
   }
 

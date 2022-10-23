@@ -4,18 +4,19 @@ import {KnowledgeSource} from "../../models/knowledge.source.model";
 @Component({
   selector: 'app-ks-message',
   template: `
-    <div *ngIf="!ks" class="flex-col-center-between w-full h-full border-bottom-1 border-400 p-2">
-      <div class="flex-row-center-between w-full pb-2">
+    <div *ngIf="!ks" class="flex-col-center-between w-full border-bottom-1 border-100 hover:surface-hover p-2">
+      <div *ngIf="!status" class="flex-row-center-between w-full pb-2">
         <p-skeleton size="40px" shape="circle" class="pr-2"></p-skeleton>
-        <p-skeleton class="w-full" height="2rem" shape="rectangle"></p-skeleton>
+        <p-skeleton class="w-full" height="32px" shape="rectangle"></p-skeleton>
       </div>
-      <div class="flex-row-center-between w-full">
-        <p-skeleton class="w-full pr-2 mr-2" height="1.5rem" shape="rectangle"></p-skeleton>
-        <p-skeleton class="w-full" height="1.5rem" shape="rectangle"></p-skeleton>
+      <div *ngIf="status" class="w-full flex-row-center-center" style="height: 4rem">
+        <div class="text-500 font-bold">
+          {{status}}
+        </div>
       </div>
     </div>
 
-    <div *ngIf="ks" class="flex-col-center-between w-full h-full border-bottom-1 border-400 p-2">
+    <div *ngIf="ks" class="flex-col-center-between w-full h-full border-bottom-1 border-100 hover:surface-hover p-2">
       <div class="flex-row-center-between w-full pb-2">
         <app-ks-icon [ks]="ks"
                      [allowClickThrough]="false"
@@ -24,7 +25,7 @@ import {KnowledgeSource} from "../../models/knowledge.source.model";
         </app-ks-icon>
 
         <div #titleContainer class="ks-message-title-and-flag">
-          <div class="ks-message-title font-bold">{{ks.title | truncate:[titleContainer.offsetWidth / 4.5]}}</div>
+          <div class="ks-message-title font-bold">{{ks.title | truncate:[48]}}</div>
           <div [class.pi-flag-fill]="ks.flagged"
                [class.pi-flag]="!ks.flagged"
                [class.text-400]="!ks.flagged"
@@ -56,7 +57,6 @@ import {KnowledgeSource} from "../../models/knowledge.source.model";
           max-width: 40rem;
           max-height: 40px;
           overflow-wrap: anywhere;
-          overflow: hidden;
           font-weight: 600 !important;
         }
       }
@@ -64,7 +64,9 @@ import {KnowledgeSource} from "../../models/knowledge.source.model";
   ]
 })
 export class KsMessageComponent implements OnInit {
-  @Input() ks?: KnowledgeSource;
+  @Input() ks!: KnowledgeSource;
+
+  @Input() status?: string;
 
   constructor() {
   }

@@ -40,6 +40,22 @@ body {
   color: var(--text-color);
 }
 
+app-home {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  background-color: var(--surface-ground) !important;
+}
+
+app-ks-ingest {
+  flex-basis: 25%;
+}
+
 
 /*********************************************/
 /********************** Convenience Classes */
@@ -51,6 +67,13 @@ body {
   align-content: center;
   justify-content: space-between;
   align-items: center;
+}
+
+.flex-col-between {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: space-between;
 }
 
 .flex-row-center-start {
@@ -147,7 +170,7 @@ input[type=range] + .thumb {
 
 .ks-thumbnail {
   max-width: min(100%, 48rem);
-  max-height: min(100%, 32rem);
+  max-height: min(200px, 32rem);
 }
 
 /*********************************************/
