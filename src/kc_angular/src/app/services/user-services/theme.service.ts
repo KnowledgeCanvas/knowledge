@@ -14,7 +14,7 @@
  limitations under the License.
  */
 
-import {Inject, Injectable} from '@angular/core';
+import {EventEmitter, Inject, Injectable} from '@angular/core';
 import {DOCUMENT} from "@angular/common";
 import {KcTheme} from "../../../../../kc_shared/models/style.model";
 
@@ -22,6 +22,8 @@ import {KcTheme} from "../../../../../kc_shared/models/style.model";
   providedIn: 'root'
 })
 export class ThemeService {
+  onThemeChange = new EventEmitter();
+
   private readonly _themes: KcTheme[] = [
     {name: 'Lara Light Blue', code: 'lara-light-blue', isDark: false, isDual: true},
     {name: 'Lara Dark Blue', code: 'lara-dark-blue', isDark: true, isDual: true},
@@ -149,6 +151,8 @@ export class ThemeService {
     }).catch((_) => {
       console.warn('Unable to set theme - invalid style-sheet');
       return false;
+    }).finally(() => {
+      this.onThemeChange.emit();
     });
   }
 
