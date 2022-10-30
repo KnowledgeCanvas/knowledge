@@ -43,9 +43,6 @@ const ipcSendChannels = [
     "A2E:FileSystem:ShowFile",
     "A2E:Autoscan:Delete",
     "A2E:Autoscan:Finalize",
-    "A2E:KnowledgeCanvas:Close",
-    "A2E:KnowledgeCanvas:GetSources",
-    "A2E:KnowledgeCanvas:Open",
     "A2E:Settings:Defaults",
     "A2E:Settings:Get",
     "A2E:Settings:Set",
@@ -66,8 +63,6 @@ const ipcReceiveOnceChannels = [
     "E2A:FileSystem:DirectoryPrompt",
     "E2A:FileSystem:FileIcon",
     "E2A:FileSystem:OpenFile",
-    "E2A:KnowledgeCanvas:GetSources",
-    "E2A:KnowledgeCanvas:Open",
     "E2A:Settings:Defaults",
     "E2A:Uuid:Generate",
 ];

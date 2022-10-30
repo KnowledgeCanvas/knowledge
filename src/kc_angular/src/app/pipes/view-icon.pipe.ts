@@ -15,6 +15,8 @@ export class ViewIconPipe implements PipeTransform {
         return 'pi pi-table'
       case 'grid':
         return 'pi pi-th-large'
+      case 'graph':
+        return 'pi pi-sitemap'
       case 'calendar':
         return 'pi pi-calendar'
       default:

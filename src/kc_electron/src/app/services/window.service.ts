@@ -14,6 +14,8 @@
  limitations under the License.
  */
 
+let share: any = (global as any).share;
+
 class WindowService {
     constructor() {
         share.ipcMain.on('A2E:Window:Minimize', (_: any) => {
