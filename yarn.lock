@@ -2813,15 +2813,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/cytoscape-cxtmenu@npm:^3.4.0":
-  version: 3.4.0
-  resolution: "@types/cytoscape-cxtmenu@npm:3.4.0"
-  dependencies:
-    "@types/cytoscape": "*"
-  checksum: f4870d6ed0c145f8f5173014c80a966935154e6de55131c259c17fc0fc4dffe5ea7088ed4e7fe785199869529a81cbaee3c953f14d10aa32cd15e33b6a63ed75
-  languageName: node
-  linkType: hard
-
 "@types/cytoscape-dagre@npm:^2.3.0":
   version: 2.3.0
   resolution: "@types/cytoscape-dagre@npm:2.3.0"
@@ -2831,19 +2822,35 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/cytoscape-edgehandles@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "@types/cytoscape-edgehandles@npm:4.0.0"
+"@types/cytoscape-fcose@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "@types/cytoscape-fcose@npm:2.1.0"
   dependencies:
     "@types/cytoscape": "*"
-  checksum: 5f41495e38b38be44ceffc6edf6b096873e968c00227a30b31430919de5a43826e79a36409d0992f0ee178ad057f00c117a77b30acc9d7b13327275df3b560da
+  checksum: 120881e2b6a5d87b5207f16d69610de1570f0e7b1f272263d814b346a6077808c36f39080e301923b1c2b2cb83e99c416f1e658581101eacff055977124e4309
   languageName: node
   linkType: hard
 
-"@types/cytoscape@npm:*, @types/cytoscape@npm:^3.19.2":
+"@types/cytoscape-klay@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "@types/cytoscape-klay@npm:3.1.0"
+  dependencies:
+    "@types/cytoscape": "*"
+  checksum: 331a8174a888b79190e612a2d7bf2f90d1caaaaec49251dbc3d7efda12ad38b98dfd5d9427d1b3e6aba6c980d12f507da087087c49c54cfacd61608758c58380
+  languageName: node
+  linkType: hard
+
+"@types/cytoscape@npm:*":
   version: 3.19.2
   resolution: "@types/cytoscape@npm:3.19.2"
   checksum: 75ff6fcf43fb8031181f67e6a639fcdaf483bca4d4384a0b6008ceb1316b5584ba4f76adca8fee5303f7ec8b3a6a681325b5ff714e03dec10796886957a819d4
+  languageName: node
+  linkType: hard
+
+"@types/cytoscape@npm:^3.19.9":
+  version: 3.19.9
+  resolution: "@types/cytoscape@npm:3.19.9"
+  checksum: 773e7c73198a0dc9fe8fe708aca47af5e1fc47ba6e3138e37e3de23cd336441dd79d2a0215473c755a6bdd9842e3ed83e2e6d51abd128a34a5680fc10b3402b5
   languageName: node
   linkType: hard
 
@@ -5367,6 +5374,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cose-base@npm:^2.0.0":
+  version: 2.1.0
+  resolution: "cose-base@npm:2.1.0"
+  dependencies:
+    layout-base: ^2.0.0
+  checksum: 264653ee406aff5ec237f5f34a18001113d869c4e4e9836f61b4d9f782a5c977e005a57b8b6e1e53b0761631a89ac31a9a4f8eb980f13bc0bf7ea3bed2daff75
+  languageName: node
+  linkType: hard
+
 "cosmiconfig@npm:^7.0.0":
   version: 7.0.1
   resolution: "cosmiconfig@npm:7.0.1"
@@ -5530,45 +5546,115 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cytoscape-cxtmenu@npm:^3.4.0":
-  version: 3.4.0
-  resolution: "cytoscape-cxtmenu@npm:3.4.0"
+"cytoscape-cola@npm:^2.5.1":
+  version: 2.5.1
+  resolution: "cytoscape-cola@npm:2.5.1"
+  dependencies:
+    webcola: ^3.4.0
   peerDependencies:
     cytoscape: ^3.2.0
-  checksum: a79709cee8baa3c1936d71d0849fcec22b29e6b32516823a1a4e42c5a7320a83f72489f5d37d23c1a647a85b5245b7dab521558878c69c6122cce3c82ac7ae32
+  checksum: 3a41a535919c42164adca6720d3d23a18e58dfdf92fe1c51fc2c5a636317a89bdedf00e5521bfa4f1e6673efec0e6db43957c0e9484f026c6cde168be344bffd
   languageName: node
   linkType: hard
 
-"cytoscape-dagre@npm:^2.3.2":
-  version: 2.3.2
-  resolution: "cytoscape-dagre@npm:2.3.2"
+"cytoscape-dagre@npm:^2.4.0":
+  version: 2.4.0
+  resolution: "cytoscape-dagre@npm:2.4.0"
   dependencies:
     dagre: ^0.8.5
   peerDependencies:
     cytoscape: ^3.2.22
-  checksum: ec17d697548b125aa19f9a6175f3fab6b916b1deca3619c69d91bcc6fad911ab70a686325cb4c744d4198f9b9a51b8ad91bec3c5beaa5e7068223b5334a6b8c9
+  checksum: 3d878879e9ba062b0ae8f124c76007bec06508fa5435aca7ef8fa14c2f5e5f6e8310d1e1691641ef67eaa9113fed3ecee5e99340a0d04357344e23155425758c
   languageName: node
   linkType: hard
 
-"cytoscape-edgehandles@npm:^4.0.1":
-  version: 4.0.1
-  resolution: "cytoscape-edgehandles@npm:4.0.1"
+"cytoscape-fcose@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "cytoscape-fcose@npm:2.1.0"
   dependencies:
-    lodash.memoize: ^4.1.2
-    lodash.throttle: ^4.1.1
+    cose-base: ^2.0.0
   peerDependencies:
     cytoscape: ^3.2.0
-  checksum: 758851cc2e2fcc375fd28106b82d4f540f64121edde6381dff07beac17bb49b9ecc6950f428c086cabadb48996d164f6deee662fbfc467a670d15db7220bd339
+  checksum: 3bf302d8e043dbeb737171f29ddfaa395f67bb430b7ff9b0ec02b8b1de09fe7cc51d7446f5b048215844c4ff99097e58c17804094a959dc1805bafa22ddd57df
   languageName: node
   linkType: hard
 
-"cytoscape@npm:^3.20.0":
-  version: 3.20.0
-  resolution: "cytoscape@npm:3.20.0"
+"cytoscape-klay@npm:^3.1.4":
+  version: 3.1.4
+  resolution: "cytoscape-klay@npm:3.1.4"
+  dependencies:
+    klayjs: ^0.4.1
+  peerDependencies:
+    cytoscape: ^3.2.0
+  checksum: 612fd0d7eee682171daf268f8b773c79b850a7ce79749fb6a22ceb3d284b347b6fe3b02b7473560f16753fb02550a42e5577a7410e6543bf4f23bf09aa7475a9
+  languageName: node
+  linkType: hard
+
+"cytoscape-spread@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "cytoscape-spread@npm:3.0.0"
+  dependencies:
+    weaverjs: ^1.2.0
+  peerDependencies:
+    cytoscape: ^3.0.0
+  checksum: 0b5775a42e1557ef2753d870fe25bb545ce2e476ef2249f92bb307cd0e62ee27c90e11dd563ce767efe3c27f65078c4b3d5856b4b1c8c8723d312ee0c7641383
+  languageName: node
+  linkType: hard
+
+"cytoscape@npm:^3.23.0":
+  version: 3.23.0
+  resolution: "cytoscape@npm:3.23.0"
   dependencies:
     heap: ^0.2.6
-    lodash.debounce: ^4.0.8
-  checksum: 2994c5e281a1a212589dc371f3f31f51de1e85d1137db090279e6af3775278dc1038d560cbeed8a59d88c0f56929f20fb833387c22184c7d437e301cf606ac30
+    lodash: ^4.17.21
+  checksum: bcb3c48068384309287553a8b2561bf500562548563ef900c43d011b4a2c8e7cbf0c44f40f7f4ad1b661ff959385c627027f7e7a642021a3716054ae093d3749
+  languageName: node
+  linkType: hard
+
+"d3-dispatch@npm:1, d3-dispatch@npm:^1.0.3":
+  version: 1.0.6
+  resolution: "d3-dispatch@npm:1.0.6"
+  checksum: b4ecb016b6dda8b99aa4263b2d0a0c7b12e7dea93e4b0ce3013c94dca4d360d9ba00f5bdc15dc944cc4543af8e341067bd628f061f7b8deb642257e2ac90d06c
+  languageName: node
+  linkType: hard
+
+"d3-drag@npm:^1.0.4":
+  version: 1.2.5
+  resolution: "d3-drag@npm:1.2.5"
+  dependencies:
+    d3-dispatch: 1
+    d3-selection: 1
+  checksum: 6e86e89aa8d511979eea1b5326709c05c2a3c2d43a93a82ed6b6f98528b2ab03b2f58f5e4f66582f2f1c0ae44f9c19f6f4f857249eb66aabc46e4942295fa0a7
+  languageName: node
+  linkType: hard
+
+"d3-path@npm:1":
+  version: 1.0.9
+  resolution: "d3-path@npm:1.0.9"
+  checksum: d4382573baf9509a143f40944baeff9fead136926aed6872f7ead5b3555d68925f8a37935841dd51f1d70b65a294fe35c065b0906fb6e42109295f6598fc16d0
+  languageName: node
+  linkType: hard
+
+"d3-selection@npm:1":
+  version: 1.4.2
+  resolution: "d3-selection@npm:1.4.2"
+  checksum: 2484b392259b087a98f546f2610e6a11c90f38dae6b6b20a3fc85171038fcab4c72e702788b1960a4fece88bed2e36f268096358b5b48d3c7f0d35cfbe305da6
+  languageName: node
+  linkType: hard
+
+"d3-shape@npm:^1.3.5":
+  version: 1.3.7
+  resolution: "d3-shape@npm:1.3.7"
+  dependencies:
+    d3-path: 1
+  checksum: 46566a3ab64a25023653bf59d64e81e9e6c987e95be985d81c5cedabae5838bd55f4a201a6b69069ca862eb63594cd263cac9034afc2b0e5664dfe286c866129
+  languageName: node
+  linkType: hard
+
+"d3-timer@npm:^1.0.5":
+  version: 1.0.10
+  resolution: "d3-timer@npm:1.0.10"
+  checksum: f7040953672deb2dfa03830ace80dbbcb212f80890218eba15dcca6f33f74102d943023ccc2a563295195cd8c63639bb2410ef1691c8fecff4a114fdf5c666f4
   languageName: node
   linkType: hard
 
@@ -8814,20 +8900,31 @@ __metadata:
     "@fullcalendar/interaction": ^5.11.2
     "@fullcalendar/list": ^5.11.2
     "@fullcalendar/timegrid": ^5.11.2
+    "@types/cytoscape": ^3.19.9
+    "@types/cytoscape-dagre": ^2.3.0
+    "@types/cytoscape-fcose": ^2.1.0
+    "@types/cytoscape-klay": ^3.1.0
     "@types/node": ^16.11.46
     "@typescript-eslint/eslint-plugin": 5.31.0
     "@typescript-eslint/parser": 5.31.0
     chart.js: ^3.8.0
     chokidar: ^3.5.2
+    cytoscape: ^3.23.0
+    cytoscape-cola: ^2.5.1
+    cytoscape-dagre: ^2.4.0
+    cytoscape-fcose: ^2.1.0
+    cytoscape-klay: ^3.1.4
+    cytoscape-spread: ^3.0.0
     eslint: ^8.5.0
     fuse.js: ^6.6.2
     ng-packagr: ^14.1.0
     primeflex: ^3.2.1
-    primeicons: ^5.0.0
+    primeicons: ^6.0.1
     primeng: ^14.0.0
     rxjs: ~6.6.0
     tslib: ^2.4.0
     typescript: ^4.7.4
+    web-worker: ^1.2.0
     zone.js: ^0.11.7
   languageName: unknown
   linkType: soft
@@ -8848,28 +8945,6 @@ __metadata:
     ts-loader: ^9.3.1
     typescript: ^4.7.4
     uuid: ^8.3.2
-    webpack: ^5.74.0
-    webpack-cli: ^4.10.0
-    webpack-merge: ^5.8.0
-  languageName: unknown
-  linkType: soft
-
-"kc_knowledge@workspace:src/kc_knowledge":
-  version: 0.0.0-use.local
-  resolution: "kc_knowledge@workspace:src/kc_knowledge"
-  dependencies:
-    "@types/cytoscape": ^3.19.2
-    "@types/cytoscape-cxtmenu": ^3.4.0
-    "@types/cytoscape-dagre": ^2.3.0
-    "@types/cytoscape-edgehandles": ^4.0.0
-    cytoscape: ^3.20.0
-    cytoscape-cxtmenu: ^3.4.0
-    cytoscape-dagre: ^2.3.2
-    cytoscape-edgehandles: ^4.0.1
-    electron: ^19.0.9
-    lodash: ^4.17.21
-    ts-loader: ^9.3.1
-    typescript: ^4.7.4
     webpack: ^5.74.0
     webpack-cli: ^4.10.0
     webpack-merge: ^5.8.0
@@ -8899,6 +8974,13 @@ __metadata:
   version: 6.0.3
   resolution: "kind-of@npm:6.0.3"
   checksum: 3ab01e7b1d440b22fe4c31f23d8d38b4d9b91d9f291df683476576493d5dfd2e03848a8b05813dd0c3f0e835bc63f433007ddeceb71f05cb25c45ae1b19c6d3b
+  languageName: node
+  linkType: hard
+
+"klayjs@npm:^0.4.1":
+  version: 0.4.1
+  resolution: "klayjs@npm:0.4.1"
+  checksum: f57c872444c5031318b8c83ff2d4ea0df190e16db6dff6c18acf7fbb9228f6b77126e52b5a9e873584aae16ee244349507a7f9a6ec9302ebb7f7490ea9d9cc32
   languageName: node
   linkType: hard
 
@@ -8941,6 +9023,13 @@ __metadata:
   dependencies:
     package-json: ^6.3.0
   checksum: fbc72b071eb66c40f652441fd783a9cca62f08bf42433651937f078cd9ef94bf728ec7743992777826e4e89305aef24f234b515e6030503a2cbee7fc9bdc2c0f
+  languageName: node
+  linkType: hard
+
+"layout-base@npm:^2.0.0":
+  version: 2.0.1
+  resolution: "layout-base@npm:2.0.1"
+  checksum: ef93baf044f67c3680f4f3a6d628bf4c7faba0f70f3e0abb16e4811bed087045208560347ca749e123d169cbf872505ad84e11fb21b0be925997227e042c7f43
   languageName: node
   linkType: hard
 
@@ -9132,24 +9221,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash.memoize@npm:^4.1.2":
-  version: 4.1.2
-  resolution: "lodash.memoize@npm:4.1.2"
-  checksum: 9ff3942feeccffa4f1fafa88d32f0d24fdc62fd15ded5a74a5f950ff5f0c6f61916157246744c620173dddf38d37095a92327d5fd3861e2063e736a5c207d089
-  languageName: node
-  linkType: hard
-
 "lodash.merge@npm:^4.6.2":
   version: 4.6.2
   resolution: "lodash.merge@npm:4.6.2"
   checksum: ad580b4bdbb7ca1f7abf7e1bce63a9a0b98e370cf40194b03380a46b4ed799c9573029599caebc1b14e3f24b111aef72b96674a56cfa105e0f5ac70546cdc005
-  languageName: node
-  linkType: hard
-
-"lodash.throttle@npm:^4.1.1":
-  version: 4.1.1
-  resolution: "lodash.throttle@npm:4.1.1"
-  checksum: 129c0a28cee48b348aef146f638ef8a8b197944d4e9ec26c1890c19d9bf5a5690fe11b655c77a4551268819b32d27f4206343e30c78961f60b561b8608c8c805
   languageName: node
   linkType: hard
 
@@ -11170,10 +11245,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"primeicons@npm:^5.0.0":
-  version: 5.0.0
-  resolution: "primeicons@npm:5.0.0"
-  checksum: f391179f0c774064af417c0d4dbee4c37c714165632f23a2b93083322e4362ef9b1978d3c9aa09ed4ef0187c70dc5501a208b7f40c64c1e88a89462801b7e8c0
+"primeicons@npm:^6.0.1":
+  version: 6.0.1
+  resolution: "primeicons@npm:6.0.1"
+  checksum: a1412fee16ddbd24e06052a7e94b973cf6f68fadb5349192101388f2681f822b3bde077948e6d53e9949f87148b495e4bf2b149ad07242de068d2e7233f4446c
   languageName: node
   linkType: hard
 
@@ -13363,6 +13438,32 @@ __metadata:
   dependencies:
     defaults: ^1.0.3
   checksum: 814e9d1ddcc9798f7377ffa448a5a3892232b9275ebb30a41b529607691c0491de47cba426e917a4d08ded3ee7e9ba2f3fe32e62ee3cd9c7d3bafb7754bd553c
+  languageName: node
+  linkType: hard
+
+"weaverjs@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "weaverjs@npm:1.2.0"
+  checksum: 364518f8c66d4546868f4b36689a63b51facda550dd455b198f660bcb7d87a2087d8c358281607c5b2dade121115c80419c8efffa3a48a42d3ec947204e38695
+  languageName: node
+  linkType: hard
+
+"web-worker@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "web-worker@npm:1.2.0"
+  checksum: 1bb28348ddcf9b2e7c62c5fd02e49a84098795856cd905456de957271bba288e9618941cf69d8960f0a7ae81f5dfb74b427c0634be47ec69e3e955c4ec5213be
+  languageName: node
+  linkType: hard
+
+"webcola@npm:^3.4.0":
+  version: 3.4.0
+  resolution: "webcola@npm:3.4.0"
+  dependencies:
+    d3-dispatch: ^1.0.3
+    d3-drag: ^1.0.4
+    d3-shape: ^1.3.5
+    d3-timer: ^1.0.5
+  checksum: 046f7cc06ef077b42e2cdecba9b9407452008444629a95d1c921283b9dae7c874ef8b5d66d4e21d56f427662598ae12d11992fbe10ec29d8ec0bcc68f6c40b75
   languageName: node
   linkType: hard
 
