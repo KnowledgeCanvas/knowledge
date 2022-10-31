@@ -17,7 +17,7 @@ import {Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@an
 import {KcProject} from "../../models/project.model";
 import {EventService} from "../../services/user-services/event.service";
 import {FormBuilder, FormGroup} from "@angular/forms";
-import {debounceTime, distinctUntilChanged} from "rxjs/operators";
+import {debounceTime, distinctUntilChanged, tap} from "rxjs/operators";
 import {ProjectService} from "../../services/factory-services/project.service";
 import {NotificationsService} from "../../services/user-services/notifications.service";
 import {EventModel} from "../../../../../kc_shared/models/event.model";
@@ -133,6 +133,8 @@ import {TopicService} from "../../services/user-services/topic.service";
 export class ProjectInfoComponent implements OnInit, OnChanges, OnDestroy {
   @Input() project: KcProject | null = null;
 
+  @Input() collapseAll: boolean = false;
+
   first: boolean = true;
 
   form: FormGroup;
@@ -148,6 +150,7 @@ export class ProjectInfoComponent implements OnInit, OnChanges, OnDestroy {
               private notifications: NotificationsService,
               private projects: ProjectService,
               private topics: TopicService) {
+
     this.form = formBuilder.group({
       id: '',
       name: [''],
@@ -170,37 +173,36 @@ export class ProjectInfoComponent implements OnInit, OnChanges, OnDestroy {
           prev.end === curr.end &&
           prev.start === curr.start
         );
+      }),
+      tap((formValue) => {
+        if (this.first) {
+          this.first = false;
+        } else if (this.project) {
+          if (!this.project.events) {
+            this.project.events = [];
+          }
+
+          const event: EventModel = {
+            description: "",
+            timestamp: Date(),
+            type: 'update'
+          }
+          this.project.events.push(event);
+
+          this.project.name = this.form.get('name')?.value;
+          this.project.description = this.form.get('description')?.value;
+          this.project.topics = this.form.get('topics')?.value;
+          this.project.calendar.start = this.form.get('start')?.value;
+          this.project.calendar.end = this.form.get('end')?.value;
+
+          this.projects.updateProjects([{
+            id: this.project.id
+          }]).then(() => {
+            this.notifications.success('Project Info', 'Project Updated', this.project?.name ?? '');
+          });
+        }
       })
-    ).subscribe((formValue) => {
-      if (this.first) {
-        this.first = false;
-      } else if (this.project) {
-        if (!this.project.events) {
-          this.project.events = [];
-        }
-
-        const event: EventModel = {
-          description: "",
-          timestamp: Date(),
-          type: 'update'
-        }
-        this.project.events.push(event);
-
-        this.project.name = this.form.get('name')?.value;
-        this.project.description = this.form.get('description')?.value;
-        this.project.topics = this.form.get('topics')?.value;
-        this.project.calendar.start = this.form.get('start')?.value;
-        this.project.calendar.end = this.form.get('end')?.value;
-
-        this.projects.updateProjects([{
-          id: this.project.id
-        }]).then(() => {
-          this.notifications.success('Project Info', 'Project Updated', this.project?.name ?? '');
-        });
-      }
-
-
-    });
+    ).subscribe();
   }
 
   ngOnInit(): void {
@@ -212,33 +214,33 @@ export class ProjectInfoComponent implements OnInit, OnChanges, OnDestroy {
   ngOnChanges(changes: SimpleChanges) {
     if (changes.project.currentValue) {
       const project = changes.project.currentValue;
-
       this.first = true;
+      this.updateForm(project);
+    }
+  }
 
-      this.form.patchValue({
-        id: project.id.value,
-        name: project.name,
-        start: project.calendar.start ? new Date(project.calendar.start) : '',
-        end: project.calendar.end ? new Date(project.calendar.end) : '',
-        description: project.description,
-        topics: project.topics,
-      });
+  updateForm(project: KcProject) {
+    this.form.patchValue({
+      id: project.id.value,
+      name: project.name,
+      start: project.calendar.start ? new Date(project.calendar.start) : '',
+      end: project.calendar.end ? new Date(project.calendar.end) : '',
+      description: project.description,
+      topics: project.topics,
+    });
 
-      this.projectEvents = this.events.fromProject(project);
+    this.projectEvents = this.events.fromProject(project);
 
-      if (typeof project.calendar.start === 'string') {
-        this.start = new Date(project.calendar.start);
-      } else {
-        this.start = project.calendar.start;
-      }
+    if (typeof project.calendar.start === 'string') {
+      this.start = new Date(project.calendar.start);
+    } else {
+      this.start = project.calendar.start;
+    }
 
-      if (typeof project.calendar.end === 'string') {
-        this.end = new Date(project.calendar.end);
-      } else {
-        this.end = project.calendar.end;
-      }
-
-
+    if (typeof project.calendar.end === 'string') {
+      this.end = new Date(project.calendar.end);
+    } else {
+      this.end = project.calendar.end;
     }
   }
 
