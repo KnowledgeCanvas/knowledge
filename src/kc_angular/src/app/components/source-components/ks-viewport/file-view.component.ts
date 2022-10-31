@@ -24,7 +24,7 @@ import {BrowserViewHeaderConfig, BrowserViewHeaderEvent, FileViewClickEvent, Fil
                             [config]="headerConfig"
                             (headerEvents)="headerEvents($event)">
     </ks-lib-viewport-header>
-    <embed *ngIf="ready" [src]="safeUrl" class="file-view">
+    <iframe class="file-view" *ngIf="ready" [src]="safeUrl"></iframe>
   `,
   styles: [
     `
