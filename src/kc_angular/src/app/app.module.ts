@@ -134,6 +134,10 @@ import {ViewIconPipe} from './pipes/view-icon.pipe';
 import {CreateComponent} from './components/shared/create.component';
 import {ImportMethodPipe} from './pipes/import-method.pipe';
 import {KsMessageComponent} from './components/source-components/ks-message.component';
+import {GraphComponent} from "./components/graph.component";
+import {GraphControlsComponent} from "./components/graph-components/graph.controls.component";
+import {GraphCanvasComponent} from "./components/graph-components/graph.canvas.component";
+import {ProjectDetailsComponent} from './components/project-components/project-details.component';
 
 @NgModule({
   declarations: [
@@ -186,7 +190,11 @@ import {KsMessageComponent} from './components/source-components/ks-message.comp
     ViewIconPipe,
     CreateComponent,
     ImportMethodPipe,
-    KsMessageComponent
+    KsMessageComponent,
+    GraphComponent,
+    GraphControlsComponent,
+    GraphCanvasComponent,
+    ProjectDetailsComponent
   ],
   imports: [
     BrowserAnimationsModule,

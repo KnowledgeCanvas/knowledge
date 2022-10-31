@@ -89,7 +89,7 @@ type SidebarItem = {
         <div class="flex h-full">
           <div class="flex flex-column h-full flex-shrink-0">
             <div class="flex align-items-center justify-content-center select-none flex-shrink-0" style="height: 60px; width: 60px" (dragstart)="$event.preventDefault()">
-              <img src="assets/img/kc-icon-transparent.png" height="30" alt="Knowledge Logo" (click)="onKcClick()" class="cursor-pointer">
+              <img src="assets/img/kc-icon-transparent.png" height="30" alt="Icon for the Knowledge application.">
             </div>
             <div class="overflow-y-auto mt-3">
               <ul class="list-none py-3 pl-2 pr-0 m-0">
@@ -283,6 +283,10 @@ export class AppComponent implements OnInit {
           case '(grid':
             this.selectedView = 'Grid'
             break;
+          case 'graph':
+          case '(graph':
+            this.selectedView = 'Graph'
+            break;
           case 'calendar':
           case '(calendar':
             this.selectedView = 'Calendar'
@@ -347,6 +351,7 @@ export class AppComponent implements OnInit {
         this.sidebarItems = [
           {label: 'Inbox', routerLink: ['app', 'inbox', this.projectId], icon: 'pi pi-inbox'},
           {label: 'Projects', routerLink: ['app', 'projects', this.projectId], icon: 'pi pi-list'},
+          {label: 'Graph', routerLink: ['app', 'graph', this.projectId], icon: 'pi pi-sitemap'},
           {label: 'Table', routerLink: ['app', 'table', this.projectId], icon: 'pi pi-table'},
           {label: 'Grid', routerLink: ['app', 'grid', this.projectId], icon: 'pi pi-th-large'},
           {label: 'Calendar', routerLink: ['app', 'calendar', this.projectId], icon: 'pi pi-calendar'},
@@ -407,22 +412,30 @@ export class AppComponent implements OnInit {
 
   @HostListener('document:keydown.Control.3')
   @HostListener('document:keydown.meta.3')
+  goGraph() {
+    if (this.projectId.length > 0) {
+      this.router.navigate(['app', 'graph', this.projectId]);
+    }
+  }
+
+  @HostListener('document:keydown.Control.4')
+  @HostListener('document:keydown.meta.4')
   goTable() {
     if (this.projectId.length > 0) {
       this.router.navigate(['app', 'table', this.projectId]);
     }
   }
 
-  @HostListener('document:keydown.Control.4')
-  @HostListener('document:keydown.meta.4')
+  @HostListener('document:keydown.Control.5')
+  @HostListener('document:keydown.meta.5')
   goGrid() {
     if (this.projectId.length > 0) {
       this.router.navigate(['app', 'grid', this.projectId]);
     }
   }
 
-  @HostListener('document:keydown.Control.5')
-  @HostListener('document:keydown.meta.5')
+  @HostListener('document:keydown.Control.6')
+  @HostListener('document:keydown.meta.6')
   goCalendar() {
     if (this.projectId.length > 0) {
       this.router.navigate(['app', 'calendar', this.projectId]);
@@ -458,15 +471,6 @@ export class AppComponent implements OnInit {
 
   showSettings() {
     this.settings.show();
-  }
-
-  onKcClick() {
-    let req: DialogRequest = {
-      ksList: []
-    }
-    this.ipc.openKcDialog(req).catch((_) => {
-      this.notifications.error('App', 'Error Opening Graph', `Something prevented Knowledge from opening graph view.`);
-    });
   }
 
   close(_: MouseEvent) {
