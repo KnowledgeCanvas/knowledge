@@ -41,7 +41,7 @@
     "eslint": "^8.5.0",
     "fuse.js": "^6.6.2",
     "primeflex": "^3.2.1",
-    "primeicons": "^5.0.0",
+    "primeicons": "^6.0.1",
     "primeng": "^14.0.0",
     "rxjs": "~6.6.0",
     "tslib": "^2.4.0",
