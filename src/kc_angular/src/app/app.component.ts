@@ -21,7 +21,6 @@ import {ProjectService} from "./services/factory-services/project.service";
 import {KsFactoryService} from "./services/factory-services/ks-factory.service";
 import {ElectronIpcService} from "./services/ipc-services/electron-ipc.service";
 import {ThemeService} from "./services/user-services/theme.service";
-import {DialogRequest} from "../../../kc_shared/models/electron.ipc.model";
 import {NotificationsService} from "./services/user-services/notifications.service";
 import {IngestService} from "./services/ingest-services/ingest.service";
 import {DragAndDropService} from "./services/ingest-services/drag-and-drop.service";
@@ -29,8 +28,10 @@ import {KsCommandService} from "./services/command-services/ks-command.service";
 import {ProjectTreeFactoryService} from "./services/factory-services/project-tree-factory.service";
 import {NavigationEnd, Router} from "@angular/router";
 import {KsDetailsComponent} from "./components/source-components/ks-details.component";
-import {map, take} from "rxjs/operators";
+import {map, take, tap} from "rxjs/operators";
 import {StartupService} from "./services/ipc-services/startup.service";
+import {ProjectCommandService} from "./services/command-services/project-command.service";
+import {ProjectDetailsComponent} from "./components/project-components/project-details.component";
 
 
 type SidebarItem = {
@@ -210,6 +211,8 @@ export class AppComponent implements OnInit {
 
   sourceInfoDialog?: DynamicDialogRef;
 
+  projectInfoDialog?: DynamicDialogRef;
+
   sidebarItems: SidebarItem[] = [
     {label: 'Inbox', routerLink: ['app', 'inbox', 'undefined'], icon: 'pi pi-inbox'},
   ];
@@ -222,6 +225,7 @@ export class AppComponent implements OnInit {
               private notifications: NotificationsService,
               private startup: StartupService,
               private command: KsCommandService,
+              private pCommand: ProjectCommandService,
               private dialog: DialogService,
               private dnd: DragAndDropService,
               private factory: KsFactoryService,
@@ -289,14 +293,37 @@ export class AppComponent implements OnInit {
       }
     });
 
-    this.command.ksDetailEvent.subscribe((ks) => {
-      if (ks?.force && this.sourceInfoDialog) {
-        this.sourceInfoDialog.close();
-      }
+    this.command.ksDetailEvent.pipe(
+      tap((ks) => {
 
-      if (ks && !this.sourceInfoDialog) {
-        this.sourceInfoDialog = this.dialog.open(KsDetailsComponent, {
-          data: {ks: ks},
+        if (ks?.force && this.sourceInfoDialog) {
+          this.sourceInfoDialog.close();
+        }
+
+        if (ks && !this.sourceInfoDialog) {
+          this.sourceInfoDialog = this.dialog.open(KsDetailsComponent, {
+            data: {ks: ks},
+            width: 'min(90vw, 128rem)',
+            height: 'min(90vh, 128rem)',
+            showHeader: false,
+            contentStyle: {'border-radius': '10px'},
+            closeOnEscape: true
+          });
+
+          this.sourceInfoDialog.onClose.pipe(tap(() => {
+            this.sourceInfoDialog = undefined;
+          })).subscribe();
+        }
+      })
+    ).subscribe();
+
+    pCommand.detailEvent.pipe(
+      tap((project) => {
+        if (!project) {
+          return;
+        }
+        this.projectInfoDialog = this.dialog.open(ProjectDetailsComponent, {
+          data: {project: project},
           width: 'min(90vw, 128rem)',
           height: 'min(90vh, 128rem)',
           showHeader: false,
@@ -304,11 +331,11 @@ export class AppComponent implements OnInit {
           closeOnEscape: true
         });
 
-        this.sourceInfoDialog.onClose.subscribe(() => {
-          this.sourceInfoDialog = undefined;
-        })
-      }
-    });
+        this.projectInfoDialog.onClose.pipe(tap(() => {
+          this.projectInfoDialog = undefined;
+        })).subscribe();
+      })
+    ).subscribe()
 
     ingest.queue.subscribe((upNext) => {
       this.inboxBadge = upNext.length;
