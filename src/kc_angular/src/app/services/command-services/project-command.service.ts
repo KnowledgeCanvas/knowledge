@@ -22,6 +22,8 @@ import {DialogService} from "primeng/dynamicdialog";
 import {ConfirmationService} from "primeng/api";
 import {ProjectService} from "../factory-services/project.service";
 import {ProjectCreationDialogComponent} from "../../components/project-components/project-creation-dialog.component";
+import {Clipboard} from "@angular/cdk/clipboard";
+import {NotificationsService} from "../user-services/notifications.service";
 
 @Injectable({
   providedIn: 'root'
@@ -45,6 +47,8 @@ export class ProjectCommandService {
 
   constructor(private dialog: DialogService,
               private confirmation: ConfirmationService,
+              private clipboard: Clipboard,
+              private notifications: NotificationsService,
               private projects: ProjectService) {
   }
 
@@ -60,7 +64,7 @@ export class ProjectCommandService {
     this._projectUpdateEvent.next(projectList);
   }
 
-  remove(projectList: KcProject[]) {
+  async remove(projectList: KcProject[]) {
     if (projectList.length <= 0) {
       return;
     }
@@ -114,6 +118,14 @@ export class ProjectCommandService {
   }
 
   copyJSON(projectList: KcProject[]) {
+    try {
+      const pStr = JSON.stringify(projectList);
+      this.clipboard.copy(pStr)
+      this.notifications.success('Project Command', 'Copied to Clipboard!', '');
+    } catch (_: any) {
+
+    }
+
     this._projectCopyJSONEvent.next(projectList);
   }
 }

@@ -20,6 +20,7 @@ import {TreeModule} from "primeng/tree";
 import {ProjectCommandService} from "../../services/command-services/project-command.service";
 import {ProjectTreeFactoryService} from "../../services/factory-services/project-tree-factory.service";
 import {Subscription} from "rxjs";
+import {ProjectContextMenuService} from "../../services/factory-services/project-context-menu.service";
 
 @Component({
   selector: 'app-projects-tree',
@@ -99,6 +100,7 @@ export class ProjectsTreeComponent implements OnInit, OnDestroy {
 
   constructor(private projects: ProjectService,
               private pCommand: ProjectCommandService,
+              private pContext: ProjectContextMenuService,
               private tree: ProjectTreeFactoryService) {
     const expandPath = (node: TreeNode) => {
       let curr = node.parent;
@@ -170,27 +172,11 @@ export class ProjectsTreeComponent implements OnInit, OnDestroy {
 
   onContextMenu($event: any) {
     if ($event.node) {
-      this.menu = [
-        {
-          label: 'Subproject',
-          icon: 'pi pi-plus',
-          command: (event: any) => {
-            this.pCommand.new({value: $event.node.key});
-          }
-        },
-        {
-          label: 'Remove',
-          icon: 'pi pi-trash',
-          command: () => {
-            const project = this.projects.getProject($event.node.key);
+      const project = this.projects.getProject($event.node.key);
 
-            if (project) {
-              this.pCommand.remove([project]);
-            }
-
-          }
-        }
-      ]
+      if (project) {
+        this.menu = this.pContext.generate(project);
+      }
     } else {
       this.menu = [];
     }
