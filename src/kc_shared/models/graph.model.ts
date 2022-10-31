@@ -21,7 +21,7 @@ export interface ProjectGraphNode {
     subprojects: ProjectGraphNode[]
 }
 
-export interface KnowledgeSourceGraphNode {
+export interface SourceGraphNode {
     name: string
     id: string
     icon: string

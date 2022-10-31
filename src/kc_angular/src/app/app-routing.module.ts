@@ -24,6 +24,7 @@ import {TableComponent} from "./components/table.component";
 import {GridComponent} from "./components/grid.component";
 import {CalendarComponent} from "./components/calendar.component";
 import {StorageSettingsComponent} from "./components/settings/storage-settings.component";
+import {GraphComponent} from "./components/graph.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/app/inbox/undefined', pathMatch: 'full'},
@@ -37,6 +38,10 @@ const routes: Routes = [
       {
         path: 'projects/:projectId',
         component: ProjectsComponent
+      },
+      {
+        path: 'graph/:projectId',
+        component: GraphComponent
       },
       {
         path: 'table/:projectId',

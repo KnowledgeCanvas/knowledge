@@ -15,7 +15,7 @@
  */
 import {Injectable, NgZone} from '@angular/core';
 import {BehaviorSubject} from 'rxjs';
-import {BrowserViewRequest, DialogRequest, IpcMessage, PromptForDirectoryRequest, ThumbnailRequest} from "../../../../../kc_shared/models/electron.ipc.model";
+import {BrowserViewRequest, IpcMessage, PromptForDirectoryRequest, ThumbnailRequest} from "../../../../../kc_shared/models/electron.ipc.model";
 import {UUID} from "../../../../../kc_shared/models/uuid.model";
 
 export interface ElectronNavEvent {
@@ -62,8 +62,6 @@ export class ElectronIpcService {
     getFileThumbnailResults: 'E2A:FileSystem:FileThumbnail',
     openLocalFile: 'A2E:FileSystem:OpenFile',
     openLocalFileResults: 'E2A:FileSystem:OpenFile',
-    openKcDialog: 'A2E:KnowledgeCanvas:Open',
-    openKcDialogResults: 'E2A:KnowledgeCanvas:Open',
     promptForDirectory: 'A2E:FileSystem:DirectoryPrompt',
     promptForDirectoryResults: 'E2A:FileSystem:DirectoryPrompt',
     showItemInFolder: 'A2E:FileSystem:ShowFile',
@@ -99,6 +97,7 @@ export class ElectronIpcService {
      * Listen for auto update messages
      */
     this.receive(this.channels.autoUpdateReceive, (response: IpcMessage) => {
+      console.log('Auto update message: ', response);
     });
 
     this.receive(this.channels.checkCurrentVersionResults, (response: IpcMessage) => {
@@ -292,15 +291,6 @@ export class ElectronIpcService {
         });
       });
       this.send(this.channels.openLocalFile, path);
-    });
-  }
-
-  openKcDialog(request: DialogRequest): Promise<any> {
-    return new Promise<any>((_: any) => {
-      this.receiveOnce(this.channels.openKcDialogResults, (_: IpcMessage) => {
-      });
-
-      this.send(this.channels.openKcDialog, request);
     });
   }
 
