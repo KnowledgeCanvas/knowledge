@@ -29,8 +29,10 @@ import {ProjectCommandService} from "../services/command-services/project-comman
         <div class="h-full w-full flex flex-row surface-0 p-4" style="max-width: min(calc(100vw - 60px), 150rem) !important; max-height: calc(100vh - 100px)">
           <div class="h-full flex flex-column flex-grow-1 align-items-center justify-content-start overflow-y-auto">
             <div class="h-full w-full flex flex-row px-2 overflow-y-auto align-content-center justify-content-center align-items-start">
-              <div>
-                <app-project-info *ngIf="kcProject" [project]="kcProject"></app-project-info>
+              <div *ngIf="kcProject" class="h-full w-full flex flex-column">
+                <div>
+                  <app-project-info [project]="kcProject"></app-project-info>
+                </div>
               </div>
               <div *ngIf="!kcProject" class="w-full h-full">
                 <p-panel class="h-full w-full">

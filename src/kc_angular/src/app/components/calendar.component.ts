@@ -24,6 +24,7 @@ import {DataService} from "../services/user-services/data.service";
 import {OverlayPanel} from "primeng/overlaypanel";
 import {KsCommandService} from "../services/command-services/ks-command.service";
 import {TopicService} from "../services/user-services/topic.service";
+import {take, tap} from "rxjs/operators";
 
 @Component({
   selector: 'app-calendar',
@@ -99,18 +100,17 @@ export class CalendarComponent implements OnInit, OnDestroy {
     this.selectedKs = undefined;
     this.selectedProject = undefined;
 
-    const subscription = this.ksList.subscribe((ks) => {
-      const selected = ks.find(k => k.id.value === $event.ksId?.value);
-      if (selected)
-        this.selectedKs = selected;
+    this.ksList.pipe(
+      take(1),
+      tap((ks) => {
+        const selected = ks.find(k => k.id.value === $event.ksId?.value);
+        if (selected)
+          this.selectedKs = selected;
 
-      setTimeout(() => {
-        this.calendarOverlay.show($event.event, $event.element);
-        subscription.unsubscribe();
-      })
-    })
-
-
+        setTimeout(() => {
+          this.calendarOverlay.show($event.event, $event.element);
+        })
+      })).subscribe();
   }
 
   onProjectClick(_: KcCardRequest) {
@@ -147,7 +147,7 @@ export class CalendarComponent implements OnInit, OnDestroy {
     this.command.preview(ks);
   }
 
-  onTopicClick($event: {ks: KnowledgeSource, topic: string}) {
+  onTopicClick($event: { ks: KnowledgeSource, topic: string }) {
     this.topics.search($event.topic);
   }
 }
