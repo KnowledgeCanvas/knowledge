@@ -108,7 +108,7 @@ export class KsPreviewComponent implements OnInit, OnDestroy {
   ksChanged: boolean = false;
 
   // An array of file types that have been tested and are to be supported in file viewer
-  supportedFileTypes: string[] = ['pdf', 'jpeg', 'png'];
+  supportedFileTypes: string[] = ['pdf', 'jpeg', 'png', 'mp4'];
 
   // Set to true once file or browser viewers have loaded properly
   viewReady: boolean = false;
@@ -243,6 +243,7 @@ export class KsPreviewComponent implements OnInit, OnDestroy {
         this.previewPdf();
         break;
       case 'png':
+      case 'mp4':
         this.previewImage();
         break;
     }
