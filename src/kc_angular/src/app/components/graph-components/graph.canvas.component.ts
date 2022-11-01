@@ -132,6 +132,10 @@ export class GraphCanvasComponent implements OnInit, OnChanges {
         this.createCytoscape();
         this.addRunFit();
       })).subscribe()
+
+    setTimeout(() => {
+      this.onFitToView();
+    }, 1000)
   }
 
   ngOnChanges(changes: SimpleChanges) {
