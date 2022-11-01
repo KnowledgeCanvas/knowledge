@@ -37,7 +37,7 @@ import {KcProject} from "../../models/project.model";
       </div>
     </div>
     <div style="height: calc(100% - 65px); overflow-y: auto">
-      <app-project-info [project]="project"></app-project-info>
+      <app-project-info [project]="project" [collapseAll]="collapsed"></app-project-info>
     </div>
   `,
   styles: []
@@ -47,10 +47,9 @@ export class ProjectDetailsComponent implements OnInit {
 
   saved: boolean = false;
 
+  collapsed: boolean = false;
 
-  constructor(private config: DynamicDialogConfig,
-              private ref: DynamicDialogRef,) {
-    console.log('project info dialog with: ', config);
+  constructor(private config: DynamicDialogConfig, private ref: DynamicDialogRef) {
     if (this.config?.data?.project) {
       this.project = this.config.data.project;
     }
@@ -64,10 +63,10 @@ export class ProjectDetailsComponent implements OnInit {
   }
 
   collapseAll() {
-
+    this.collapsed = true;
   }
 
   expandAll() {
-
+    this.collapsed = false;
   }
 }
