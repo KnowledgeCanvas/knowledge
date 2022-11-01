@@ -438,6 +438,10 @@ export class HomeComponent implements OnInit, OnDestroy {
           ingestType: "website",
           links: ks.map(k => k.accessLink)
         }).then((ksList) => {
+          ksList.map((ks) => {
+            ks.importMethod = 'example';
+            return ks;
+          })
           this.ingest.enqueue(ksList);
           this.loading = false;
         })
