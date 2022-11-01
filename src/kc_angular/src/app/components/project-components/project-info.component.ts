@@ -33,7 +33,8 @@ import {TopicService} from "../../services/user-services/topic.service";
           <p-panel *ngIf="project"
                    header="Details"
                    styleClass="w-full h-full"
-                   [toggleable]="true">
+                   [toggleable]="true"
+                   [(collapsed)]="collapseAll">
             <ng-template pTemplate="content">
               <br>
               <form [formGroup]="form">
