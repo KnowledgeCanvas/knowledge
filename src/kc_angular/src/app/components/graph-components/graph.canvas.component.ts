@@ -14,7 +14,7 @@
  limitations under the License.
  */
 
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges} from '@angular/core';
 import {KnowledgeSource} from "../../models/knowledge.source.model";
 import {KcProject} from "../../models/project.model";
 import {ThemeService} from "../../services/user-services/theme.service";
@@ -53,9 +53,7 @@ cytoscape.use(require('cytoscape-fcose'));
     `
   ]
 })
-export class GraphCanvasComponent implements OnInit, OnChanges {
-  @ViewChild('cy') cyGraph!: HTMLElement;
-
+export class GraphCanvasComponent implements OnInit, OnChanges, OnDestroy {
   @Output() onReady = new EventEmitter();
 
   @Output() onSourceTap = new EventEmitter<{ data: KnowledgeSource, event: MouseEvent }>();
@@ -149,6 +147,10 @@ export class GraphCanvasComponent implements OnInit, OnChanges {
     if (this.cy) {
       this.addRunFit();
     }
+  }
+
+  ngOnDestroy() {
+    document?.getElementById('cy')?.remove();
   }
 
   private addRunFit() {
