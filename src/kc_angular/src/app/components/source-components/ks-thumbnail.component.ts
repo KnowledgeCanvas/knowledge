@@ -31,13 +31,20 @@ import {ElectronIpcService} from "../../services/ipc-services/electron-ipc.servi
 
     <div *ngIf="thumbnail" class="w-full flex-col-center-center">
       <p-image [src]="thumbnail"
+               class="flex-col-center-center surface-300 thumbnail-container"
                imageClass="ks-thumbnail"
                [style]="{'border-radius': '5px'}"
                [preview]="true">
       </p-image>
     </div>
   `,
-  styles: []
+  styles: [
+    `
+      .thumbnail-container {
+        height: 200px;
+      }
+    `
+  ]
 })
 export class KsThumbnailComponent implements OnInit, OnDestroy, OnChanges {
   @Input() ks!: KnowledgeSource;
