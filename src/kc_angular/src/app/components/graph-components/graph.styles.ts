@@ -40,6 +40,19 @@ export class GraphStyles {
     return getComputedStyle(document.documentElement).getPropertyValue('--surface-a');
   }
 
+  getWidth = (beta: number = 0) => {
+    return (ele: any) => {
+      return Math.abs(Math.log(Math.pow(ele.degree(), 10) + 1) + 32) + beta;
+    }
+  }
+
+  getHeight = (beta: number = 0) => {
+    return (ele: any) => {
+      return Math.abs(Math.log(Math.pow(ele.degree(), 10) + 1) + 32) + beta;
+    }
+  }
+
+
   get styles(): Stylesheet[] | Promise<Stylesheet[]> | undefined {
     return [
       {
@@ -58,14 +71,16 @@ export class GraphStyles {
           'text-valign': 'bottom',
           'text-halign': 'center',
           "text-wrap": "wrap",
-          "text-max-width": '100px'
+          "text-max-width": '100px',
+          width: this.getWidth(6),
+          height: this.getHeight()
         }
       },
       {
         selector: 'node[type="root"]',
         style: {
-          'width': '64px',
-          'height': '56px',
+          width: this.getWidth(16),
+          height: this.getHeight(10),
           'background-color': this.primary,
           "border-width": 1,
           "border-opacity": 0.7,
@@ -81,8 +96,8 @@ export class GraphStyles {
       {
         selector: 'node[type="project"]',
         style: {
-          'width': '28px',
-          'height': '24px',
+          width: this.getWidth(6),
+          height: this.getHeight(),
           "background-width": '36px',
           "background-height": '36ppx',
           'background-color': this.primaryLight,
@@ -101,8 +116,8 @@ export class GraphStyles {
         selector: 'node[type="ks"]',
         style: {
           "background-color": '#FFFFFF',
-          'width': '32px',
-          'height': '32px',
+          width: this.getWidth(),
+          height: this.getHeight(),
           "border-color": '#CACACA',
           "border-width": 2,
           "border-opacity": 0.8,
