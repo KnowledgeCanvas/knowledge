@@ -118,10 +118,10 @@ export class GraphComponent implements OnInit, OnDestroy {
         this.projects.setCurrentProject(this.projectId);
       }
       this.data = [];
-      this.run();
+      this.build();
     });
 
-    this.projects.currentProject.pipe(tap(this.run)).subscribe()
+    this.projects.currentProject.pipe(tap(this.build)).subscribe()
   }
 
   ngOnDestroy() {
@@ -130,7 +130,7 @@ export class GraphComponent implements OnInit, OnDestroy {
     }
   }
 
-  run() {
+  build() {
     if (!this.projectId) {
       return;
     }
