@@ -41,15 +41,17 @@ import {take, tap} from "rxjs/operators";
     </div>
 
     <p-overlayPanel #calendarOverlay>
-      <app-ks-card *ngIf="selectedKs"
-                   (onRemove)="onRemove($event)"
-                   (onEdit)="onEdit($event)"
-                   (onOpen)="onOpen($event)"
-                   (onPreview)="onPreview($event)"
-                   (onTopicClick)="onTopicClick($event)"
-                   [ks]="selectedKs">
-      </app-ks-card>
-      <app-project-card *ngIf="selectedProject" [kcProject]="selectedProject"></app-project-card>
+      <div class="max-w-30rem">
+        <app-ks-card *ngIf="selectedKs"
+                     (onRemove)="onRemove($event)"
+                     (onEdit)="onEdit($event)"
+                     (onOpen)="onOpen($event)"
+                     (onPreview)="onPreview($event)"
+                     (onTopicClick)="onTopicClick($event)"
+                     [ks]="selectedKs">
+        </app-ks-card>
+        <app-project-card *ngIf="selectedProject" [kcProject]="selectedProject"></app-project-card>
+      </div>
     </p-overlayPanel>
   `,
   styles: []
