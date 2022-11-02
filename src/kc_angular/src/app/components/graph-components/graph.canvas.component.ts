@@ -87,27 +87,12 @@ export class GraphCanvasComponent implements OnInit, OnChanges {
 
   graphLayouts: GraphLayouts = new GraphLayouts(this.commonOptions);
 
-  cyLayout: LayoutOptions =
-    {
-      name: 'fcose',
-      // @ts-ignore
-      animate: true,
-      fit: true,  // whether to fit to viewport
-      padding: 20, // fit padding
-      componentSpacing: 1.2,
-      nodeSeparation: 100,
-      uniformNodeDimensions: true,
-      sampleSize: 100,
-      spacingFactor: 1, // Applies a multiplicative factor (>0) to expand or compress the overall area that the nodes take up
-      nodeDimensionsIncludeLabels: true, // Applies a multiplicative factor (>0) to expand or compress the overall area that the nodes take up
-      initialTemp: 99999,
-      gravity: 50,
-      animationDuration: 500,
-      idealEdgeLength: (edge: any) => 100,
-      nodeRepulsion(node: any): number {
-        return 999999;
-      }
-    };
+  cyLayout: LayoutOptions = {
+    ...this.commonOptions,
+    name: 'klay',
+    // @ts-ignore
+    klay: {}
+  };
 
   constructor(private theme: ThemeService) {
     this.graphStyles = new GraphStyles();

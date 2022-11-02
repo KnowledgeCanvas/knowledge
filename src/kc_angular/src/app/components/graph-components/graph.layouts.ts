@@ -37,6 +37,16 @@ export class GraphLayouts {
 
   layouts: CytoscapeLayout[] = [
     {
+      name: 'Hierarchical',
+      code: 'klay',
+      options: {
+        ...this.commonOptions,
+        name: 'klay',
+        // @ts-ignore
+        klay: {}
+      }
+    },
+    {
       name: 'Centered',
       code: 'fcose',
       options: {
@@ -55,16 +65,6 @@ export class GraphLayouts {
         nodeRepulsion(node: any): number {
           return 999999;
         }
-      }
-    },
-    {
-      name: 'Hierarchical',
-      code: 'klay',
-      options: {
-        ...this.commonOptions,
-        name: 'klay',
-        // @ts-ignore
-        klay: {}
       }
     },
     {
