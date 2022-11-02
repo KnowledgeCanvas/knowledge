@@ -56,6 +56,34 @@ app-ks-ingest {
   flex-basis: 25%;
 }
 
+.app-splitter-container {
+  max-width: min(100%, 140rem);
+  border-color: var(--primary-color-text) !important;
+  border-left-width: 1px;
+  border-right-width: 1px;
+  border-left-style: solid;
+  border-right-style: solid;
+
+  .app-splitter-left {
+    min-width: min(100%, 20rem);
+    height: 100%;
+    flex-basis: 20%;
+  }
+
+  .app-splitter-divider {
+    width: 4px;
+    border-width: 1px !important;
+    border-style: solid;
+    border-color: var(--surface-border) !important;
+  }
+
+  .app-splitter-right {
+    display: flex;
+    height: 100%;
+    flex-basis: 80%;
+  }
+}
+
 
 /*********************************************/
 /********************** Convenience Classes */

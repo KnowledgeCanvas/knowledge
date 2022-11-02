@@ -38,8 +38,8 @@ import {DragAndDropService} from "../services/ingest-services/drag-and-drop.serv
                    [autoZIndex]="true"
                    appendTo="body">
     </p-contextMenu>
-    <div class="w-full h-full flex inbox-container surface-section">
-      <div class="inbox-left">
+    <div class="w-full h-full flex app-splitter-container surface-section">
+      <div class="app-splitter-left">
         <div *ngIf="upNext.length > 0" class="h-full" style="overflow-y: auto">
           <div class="">
             <div class="p-input-icon-left w-full">
@@ -77,9 +77,9 @@ import {DragAndDropService} from "../services/ingest-services/drag-and-drop.serv
         </div>
       </div>
 
-      <div class="inbox-divider"></div>
+      <div class="app-splitter-divider"></div>
 
-      <div class="inbox-right">
+      <div class="app-splitter-right">
         <div *ngIf="active" class="w-full h-full flex flex-column">
           <div class="flex flex-row justify-content-between align-items-center p-2">
             <div class="flex flex-row">
@@ -154,38 +154,6 @@ import {DragAndDropService} from "../services/ingest-services/drag-and-drop.serv
   `,
   styles: [
     `
-      .inbox-side-panel {
-        overflow: hidden;
-      }
-
-      .inbox-container {
-        max-width: min(100%, 140rem);
-        border-color: var(--primary-color-text) !important;
-        border-left-width: 1px;
-        border-right-width: 1px;
-        border-left-style: solid;
-        border-right-style: solid;
-      }
-
-      .inbox-left {
-        min-width: min(100%, 20rem);
-        height: 100%;
-        flex-basis: 20%;
-      }
-
-      .inbox-divider {
-        width: 4px;
-        border-width: 1px !important;
-        border-style: solid;
-        border-color: var(--surface-border) !important;
-      }
-
-      .inbox-right {
-        display: flex;
-        height: 100%;
-        flex-basis: 80%;
-      }
-
       .inactive-inbox {
         flex-basis: 75%;
         display: flex;
