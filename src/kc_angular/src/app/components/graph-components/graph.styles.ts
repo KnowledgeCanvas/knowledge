@@ -40,21 +40,29 @@ export class GraphStyles {
     return getComputedStyle(document.documentElement).getPropertyValue('--surface-a');
   }
 
-  getWidth = (beta: number = 0) => {
-    return (ele: any) => {
-      return Math.abs(Math.log(Math.pow(ele.degree(), 10) + 1) + 32) + beta;
-    }
-  }
-
-  getHeight = (beta: number = 0) => {
-    return (ele: any) => {
-      return Math.abs(Math.log(Math.pow(ele.degree(), 10) + 1) + 32) + beta;
-    }
-  }
-
-
   get styles(): Stylesheet[] | Promise<Stylesheet[]> | undefined {
-    return [
+    let levels: any[] = [];
+    let colors = [
+      '--primary-color',
+      '--pink-500',
+      '--green-500',
+      '--blue-500',
+      '--yellow-500',
+      '--cyan-500'
+    ]
+
+    for (let i = 0; i < 16; i++) {
+      let color: string = colors[i % colors.length]
+      levels.push({
+        selector: `node[level=${i + 1}]`,
+        style: {
+          'background-color': getComputedStyle(document.documentElement).getPropertyValue(color)
+        }
+      })
+    }
+
+
+    let nodeStyles: any[] = [
       {
         selector: 'edge',
         style: {
@@ -72,15 +80,15 @@ export class GraphStyles {
           'text-halign': 'center',
           "text-wrap": "wrap",
           "text-max-width": '100px',
-          width: this.getWidth(6),
-          height: this.getHeight()
+          width: 32,
+          height: 32
         }
       },
       {
         selector: 'node[type="root"]',
         style: {
-          width: this.getWidth(16),
-          height: this.getHeight(10),
+          width: 'data(width)',
+          height: 'data(height)',
           'background-color': this.primary,
           "border-width": 1,
           "border-opacity": 0.7,
@@ -96,8 +104,8 @@ export class GraphStyles {
       {
         selector: 'node[type="project"]',
         style: {
-          width: this.getWidth(6),
-          height: this.getHeight(),
+          width: 'data(width)',
+          height: 'data(height)',
           "background-width": '36px',
           "background-height": '36ppx',
           'background-color': this.primaryLight,
@@ -116,8 +124,8 @@ export class GraphStyles {
         selector: 'node[type="ks"]',
         style: {
           "background-color": '#FFFFFF',
-          width: this.getWidth(),
-          height: this.getHeight(),
+          width: 32,
+          height: 32,
           "border-color": '#CACACA',
           "border-width": 2,
           "border-opacity": 0.8,
@@ -138,6 +146,8 @@ export class GraphStyles {
         }
       }
     ]
+
+    return nodeStyles.concat(levels)
   }
 
 }
