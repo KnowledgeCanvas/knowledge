@@ -25,6 +25,7 @@ import {GridComponent} from "./components/grid.component";
 import {CalendarComponent} from "./components/calendar.component";
 import {StorageSettingsComponent} from "./components/settings/storage-settings.component";
 import {GraphComponent} from "./components/graph.component";
+import {GraphSettingsComponent} from "./components/settings/graph-settings.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/app/inbox/undefined', pathMatch: 'full'},
@@ -69,6 +70,11 @@ const routes: Routes = [
         path: 'import',
         outlet: 'settings',
         component: IngestSettingsComponent,
+      },
+      {
+        path: 'graph',
+        outlet: 'settings',
+        component: GraphSettingsComponent,
       },
       {
         path: 'storage',

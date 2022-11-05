@@ -329,7 +329,6 @@ export class ProjectService {
       // Handle add subproject update
       if (update.addSubprojects && update.addSubprojects.length) {
         if (target.subprojects) {
-          let subProjectList = ''
           for (let subp of update.addSubprojects) {
             target.subprojects.push(subp);
 
@@ -536,9 +535,7 @@ export class ProjectService {
     }
 
     this.projectSource = this.projectSource.filter(item => item.id.value !== id);
-
-    console.warn('Deleting project: ', project);
-
+    this.notifications.warn('Project Service', 'Deleting Project', project.name);
     this.storageService.deleteProject(id);
   }
 

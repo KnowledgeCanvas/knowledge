@@ -138,6 +138,7 @@ import {GraphComponent} from "./components/graph.component";
 import {GraphControlsComponent} from "./components/graph-components/graph.controls.component";
 import {GraphCanvasComponent} from "./components/graph-components/graph.canvas.component";
 import {ProjectDetailsComponent} from './components/project-components/project-details.component';
+import {GraphSettingsComponent} from './components/settings/graph-settings.component';
 
 @NgModule({
   declarations: [
@@ -194,7 +195,8 @@ import {ProjectDetailsComponent} from './components/project-components/project-d
     GraphComponent,
     GraphControlsComponent,
     GraphCanvasComponent,
-    ProjectDetailsComponent
+    ProjectDetailsComponent,
+    GraphSettingsComponent
   ],
   imports: [
     BrowserAnimationsModule,

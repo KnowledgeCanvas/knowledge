@@ -92,7 +92,17 @@ export class ProjectsComponent implements OnInit, OnDestroy {
       this.build();
     });
 
-    this.projects.currentProject.pipe(tap(this.build)).subscribe()
+    this.projects.currentProject.pipe(
+      tap(() => {
+        this.build();
+      })
+    ).subscribe()
+
+    projects.projectTree.pipe(
+      tap(() => {
+        this.build();
+      })
+    ).subscribe()
   }
 
   ngOnInit(): void {
@@ -117,7 +127,10 @@ export class ProjectsComponent implements OnInit, OnDestroy {
           id: project.id.value,
           label: project.name,
           type: project.id.value === this.projectId ? 'root' : 'project',
-          project: project
+          project: project,
+          width: (64 / Math.pow(project.level, 1 / 2)) + 4,
+          height: 64 / Math.pow(project.level, 1 / 2),
+          level: project.level
         }
       });
 
@@ -137,7 +150,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     this.data = data;
   }
 
-  private getTree(project: string | any): KcProject[] {
+  private getTree(project: string | any, level: number = 1): (KcProject & { level: number })[] {
     if (!project) {
       return [];
     }
@@ -148,6 +161,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
         return [];
       } else {
         project = p;
+        project.level = level;
       }
     }
 
@@ -156,7 +170,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
       return tree;
     }
     for (let subProject of project.subprojects) {
-      tree = tree.concat(this.getTree(subProject));
+      tree = tree.concat(this.getTree(subProject, level + 1));
     }
 
     return tree;

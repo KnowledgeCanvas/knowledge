@@ -62,6 +62,11 @@ export class SettingsComponent implements OnInit {
       icon: 'pi pi-fw pi-arrow-circle-down',
       routerLink: ['app', {outlets: {settings: ["import"]}}]
     },
+    {
+      label: 'Graph',
+      icon: 'pi pi-fw pi-sitemap',
+      routerLink: ['app', {outlets: {settings: ["graph"]}}]
+    },
     // { TODO: reinstate once storage settings component is implemented
     //   label: 'Storage',
     //   icon: 'pi pi-fw pi-database',

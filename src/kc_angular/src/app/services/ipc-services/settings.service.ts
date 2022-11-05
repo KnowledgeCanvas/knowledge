@@ -17,7 +17,14 @@
 import {Injectable, NgZone} from '@angular/core';
 import {BehaviorSubject} from 'rxjs';
 import {ElectronIpcService} from "./electron-ipc.service";
-import {ApplicationSettingsModel, DisplaySettingsModel, IngestSettingsModel, SearchSettingsModel, SettingsModel} from "../../../../../kc_shared/models/settings.model";
+import {
+  ApplicationSettingsModel,
+  DisplaySettingsModel,
+  GraphSettingsModel,
+  IngestSettingsModel,
+  SearchSettingsModel,
+  SettingsModel
+} from "../../../../../kc_shared/models/settings.model";
 import {DialogService, DynamicDialogRef} from "primeng/dynamicdialog";
 import {SettingsComponent} from "../../components/settings/settings.component";
 import {Router} from "@angular/router";
@@ -40,6 +47,9 @@ export class SettingsService {
 
   private _display = new BehaviorSubject<DisplaySettingsModel>({} as any);
   display = this._display.asObservable();
+
+  private _graph = new BehaviorSubject<GraphSettingsModel>({} as any);
+  graph = this._graph.asObservable();
 
   private send = window.api.send;
 
@@ -106,6 +116,12 @@ export class SettingsService {
         } else {
           console.error('SettingsService - Display Settings not found...');
         }
+
+        if (settings.app.graph) {
+          this._graph.next(settings.app.graph);
+        } else {
+          console.error('SettingsService - Graph Settings not found...');
+        }
       })
     })
 
@@ -132,7 +148,7 @@ export class SettingsService {
   }
 
 
-  show(category?: 'display' | 'search' | 'import') {
+  show(category?: 'display' | 'search' | 'import' | 'graph') {
     this.ref = this.dialog.open(SettingsComponent, {
       header: 'Settings',
       width: 'min(72rem, 95vw)',

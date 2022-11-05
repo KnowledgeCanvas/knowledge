@@ -77,6 +77,7 @@ export interface ApplicationSettingsModel {
     table: TableSettingsModel
     grid: GridSettingsModel
     calendar: CalendarSettingsModel
+    graph: GraphSettingsModel
 }
 
 export interface ProjectSettingsModel {
@@ -110,7 +111,18 @@ export type CardOptions = {
 }
 
 export interface CalendarSettingsModel {
-    
+
+}
+
+export interface GraphSettingsModel {
+    animation: {
+        enabled: boolean,
+        duration: number
+    },
+    simulation: {
+        enabled: boolean,
+        maxTime: number
+    }
 }
 
 export interface SearchSettingsModel {

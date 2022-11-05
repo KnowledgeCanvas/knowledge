@@ -173,6 +173,16 @@ class SettingsService {
                 calendar: {},
                 projects: {
                     ksInherit: true
+                },
+                graph: {
+                    animation: {
+                        enabled: true,
+                        duration: 1000
+                    },
+                    simulation: {
+                        enabled: true,
+                        maxTime: 5000
+                    }
                 }
             },
             display: {
