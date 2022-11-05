@@ -20,6 +20,7 @@ import {IngestSettingsModel} from "../../../../../kc_shared/models/settings.mode
 import {NotificationsService} from "../../services/user-services/notifications.service";
 import {InputText} from "primeng/inputtext";
 import {PromptForDirectoryRequest} from "../../../../../kc_shared/models/electron.ipc.model";
+import {tap} from "rxjs/operators";
 
 export type FileManagerTarget = 'autoscan' | 'all';
 
@@ -32,7 +33,7 @@ export type SelectButtonOption = {
 @Component({
   selector: 'app-ingest-settings',
   template: `
-    <div class="p-fluid grid select-none">
+    <div class="p-fluid grid select-none gap-2">
       <div class="col-12">
         <p-panel #autoscanPanel>
           <ng-template pTemplate="header">
@@ -45,26 +46,13 @@ export type SelectButtonOption = {
           </ng-template>
 
           <ng-template pTemplate="content">
-            <div class="p-fluid grid mt-1">
-              <div class="col-4 p-fluid">
-                <label for="autoscan-interval">Interval</label>
-                <p-inputNumber [(ngModel)]="ingestSettings.autoscan.interval"
-                               [suffix]="' seconds'"
-                               [disabled]="!ingestSettings.autoscan.enabled"
-                               (ngModelChange)="onAutoscanInterval($event)"
-                               inputId="autoscan-interval"
-                               [showButtons]="true"
-                               [useGrouping]="false"
-                               [allowEmpty]="false"
-                               [min]="10"
-                               [max]="600">
-                </p-inputNumber>
-              </div>
-
-
-              <div class="col-12 p-fluid mt-1">
-                <label for="autoscanLocation">Autoscan Location</label>
-                <div class="p-inputgroup p-float-label">
+            <div class="w-full h-full flex flex-column gap-2">
+              <div class="w-full flex flex-row justify-content-between align-items-center">
+                <div class="flex flex-row gap-2 align-items-center">
+                  <div>Autoscan Location:</div>
+                  <div class="pi pi-question-circle" pTooltip="Files saved to this location will automatically be added to your Inbox."></div>
+                </div>
+                <div class="p-inputgroup w-30rem">
                   <button pButton
                           [disabled]="!ingestSettings.autoscan.enabled"
                           icon="pi pi-folder"
@@ -80,9 +68,28 @@ export type SelectButtonOption = {
                           label="Show"
                           (click)="show(autoscanLocation.value)">
                   </button>
-                  <br>
-                  <small class="text-gray-500">Files saved to this location will automatically be added to your Inbox.</small>
                 </div>
+              </div>
+
+              <p-divider layout="horizontal"></p-divider>
+
+              <div class="w-full flex flex-row justify-content-between align-items-center">
+                <div class="flex flex-row gap-2 align-items-center">
+                  <div>Interval:</div>
+                  <div class="pi pi-question-circle" pTooltip="How frequently Knowledge will scan the directory."></div>
+                </div>
+                <p-inputNumber [(ngModel)]="ingestSettings.autoscan.interval"
+                               [suffix]="' seconds'"
+                               [disabled]="!ingestSettings.autoscan.enabled"
+                               (ngModelChange)="onAutoscanInterval($event)"
+                               inputId="autoscan-interval"
+                               class="w-16rem"
+                               [showButtons]="true"
+                               [useGrouping]="false"
+                               [allowEmpty]="false"
+                               [min]="10"
+                               [max]="600">
+                </p-inputNumber>
               </div>
             </div>
           </ng-template>
@@ -100,14 +107,17 @@ export type SelectButtonOption = {
           </ng-template>
 
           <ng-template pTemplate="content">
-            <div class="p-fluid grid mt-1">
-              <div class="col-6 flex flex-column">
-                <!--                TODO: Re-enable port selection once it has been fixed on the Electron side-->
-                <label for="port-number">Port</label>
+            <div class="w-full h-full flex flex-column gap-2">
+              <div class="w-full flex flex-row justify-content-between align-items-center">
+                <div class="flex flex-row gap-2 align-items-center">
+                  <div>Port:</div>
+                  <div class="pi pi-question-circle" pTooltip="The port used to communicate between Knowledge and the browser extension."></div>
+                </div>
                 <p-inputNumber [(ngModel)]="ingestSettings.extensions.port"
                                [disabled]="!ingestSettings.extensions.enabled"
                                (ngModelChange)="onExtensionPort($event)"
                                inputId="port-number"
+                               class="w-16rem"
                                [showButtons]="true"
                                [useGrouping]="false"
                                [allowEmpty]="false"
@@ -115,18 +125,26 @@ export type SelectButtonOption = {
                                [max]="65535">
                 </p-inputNumber>
               </div>
-              <div class="col-6 flex flex-column align-items-center">
-                <a target="_blank" href="https://github.com/KnowledgeCanvas/extensions">Download Extensions</a>
-                <div>
-                  <!--                  <a target="_blank" href="https://github.com/KnowledgeCanvas/extensions">-->
-                  <!--                    <app-ks-icon iconUrl="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Google_Chrome_icon_%28September_2014%29.svg/1024px-Google_Chrome_icon_%28September_2014%29.svg.png?20200318094909"></app-ks-icon>-->
-                  <!--                  </a>-->
-                  <!--                  TODO: Re-enable once firefox extension is released-->
-                  <!--                  <a target="_blank" class="pl-4" href="https://github.com/KnowledgeCanvas/extensions">-->
-                  <!--                    <app-ks-icon iconUrl="https://design.firefox.com/product-identity/firefox/firefox/firefox-logo.svg"></app-ks-icon>-->
-                  <!--                  </a>-->
+
+              <p-divider layout="horizontal"></p-divider>
+
+              <div class="w-full flex flex-row justify-content-start align-items-center">
+                <div class="flex flex-row gap-2 align-items-center">
+                  <a target="_blank" href="https://github.com/KnowledgeCanvas/extensions">Download Extensions</a>
                 </div>
               </div>
+              <!--              <div class="col-6 flex flex-column align-items-center">-->
+              <!--                -->
+              <!--                <div>-->
+              <!--                  &lt;!&ndash;                  <a target="_blank" href="https://github.com/KnowledgeCanvas/extensions">&ndash;&gt;-->
+              <!--                  &lt;!&ndash;                    <app-ks-icon iconUrl="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Google_Chrome_icon_%28September_2014%29.svg/1024px-Google_Chrome_icon_%28September_2014%29.svg.png?20200318094909"></app-ks-icon>&ndash;&gt;-->
+              <!--                  &lt;!&ndash;                  </a>&ndash;&gt;-->
+              <!--                  &lt;!&ndash;                  TODO: Re-enable once firefox extension is released&ndash;&gt;-->
+              <!--                  &lt;!&ndash;                  <a target="_blank" class="pl-4" href="https://github.com/KnowledgeCanvas/extensions">&ndash;&gt;-->
+              <!--                  &lt;!&ndash;                    <app-ks-icon iconUrl="https://design.firefox.com/product-identity/firefox/firefox/firefox-logo.svg"></app-ks-icon>&ndash;&gt;-->
+              <!--                  &lt;!&ndash;                  </a>&ndash;&gt;-->
+              <!--                </div>-->
+              <!--              </div>-->
             </div>
           </ng-template>
         </p-panel>
@@ -140,7 +158,7 @@ export type SelectButtonOption = {
           </ng-template>
 
           <ng-template pTemplate="content">
-            <div class="p-fluid grid mt-1">
+            <div class="w-full h-full flex flex-column gap-2">
               <!--              TODO: re-enable this once the feature is fully built out and supported -->
               <!--              <div class="col-12">-->
               <!--                <label for="managed-files">Managed Files</label>-->
@@ -156,9 +174,12 @@ export type SelectButtonOption = {
               <!--                </p-selectButton>-->
               <!--              </div>-->
 
-              <div class="col-12 p-fluid mt-1">
-                <label for="storage-path">Storage Location</label>
-                <div class="p-inputgroup p-float-label">
+              <div class="w-full flex flex-row justify-content-between align-items-center">
+                <div class="flex flex-row gap-2 align-items-center">
+                  <div>Storage Location:</div>
+                  <div class="pi pi-question-circle" pTooltip="Autoscan files will be moved from their original location to this location."></div>
+                </div>
+                <div class="p-inputgroup w-30rem">
                   <button pButton
                           icon="pi pi-folder"
                           pTooltip="Changing storage location will be supported in a future version of Knowledge"
@@ -174,8 +195,6 @@ export type SelectButtonOption = {
                   <button pButton label="Show"
                           (click)="show(filestorage.value)">
                   </button>
-                  <br>
-                  <small class="text-gray-500">Autoscan files will be moved from their original location to this location.</small>
                 </div>
               </div>
             </div>
@@ -201,10 +220,15 @@ export class IngestSettingsComponent implements OnInit {
               private ipcService: ElectronIpcService) {
     this.ingestSettings = settingsService.defaults.ingest;
 
-    settingsService.ingest.subscribe(ingestSettings => {
-      this.ingestSettings = ingestSettings;
-      this.setState(ingestSettings);
-    });
+
+    settingsService.ingest
+      .pipe(
+        tap((ingest) => {
+          this.ingestSettings = ingest;
+          this.setState(ingest);
+        })
+      )
+      .subscribe();
   }
 
   setState(ingest: IngestSettingsModel) {

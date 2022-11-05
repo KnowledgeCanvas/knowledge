@@ -22,30 +22,31 @@ import {Subscription} from "rxjs";
 @Component({
   selector: 'app-search-settings',
   template: `
-    <div class="p-fluid grid">
+    <div class="p-fluid grid gap-2">
       <div class="col-12">
         <p-panel>
           <ng-template pTemplate="header">
             <div class="flex-row-center-between w-full">
               <div>
-                <b>Search Provider</b>
+                <b>Web Search</b>
               </div>
             </div>
           </ng-template>
           <ng-template pTemplate="content">
-            <div class="w-full h-full grid">
-              <div class="col-12 mt-4 w-full">
-                <label for="search-dropdown">Select a provider</label>
-                <p-dropdown [(ngModel)]="provider"
-                            [options]="providers"
-                            optionLabel="name"
-                            [filter]="true"
-                            inputId="search-dropdown"
-                            [style]="{'width': '100%'}"
-                            appendTo="body"
-                            (onChange)="onProviderChange($event)">
-                </p-dropdown>
+            <div class="w-full h-full flex flex-row justify-content-between align-items-center">
+              <div class="flex flex-row gap-2 align-items-center">
+                <div>Select a provider:</div>
+                <div class="pi pi-question-circle" pTooltip="The search provider will be used to perform web searches."></div>
               </div>
+              <p-dropdown [(ngModel)]="provider"
+                          [options]="providers"
+                          optionLabel="name"
+                          [filter]="true"
+                          inputId="search-dropdown"
+                          [style]="{'width': '100%'}"
+                          appendTo="body"
+                          (onChange)="onProviderChange($event)">
+              </p-dropdown>
             </div>
           </ng-template>
         </p-panel>
@@ -61,37 +62,50 @@ import {Subscription} from "rxjs";
             </div>
           </ng-template>
           <ng-template pTemplate="content">
-            <div class="w-full h-full grid">
-              <div class="col-8 flex flex-column">
-                <div class="flex-row-center-start">
-                  <label for="search-fuzzy">Fuzzy Matching</label>
+            <div class="w-full h-full flex flex-column gap-2">
+              <div class="w-full flex flex-row justify-content-between align-items-center">
+                <div>
+                  <div class="flex-row-center-start">
+                    <label for="search-fuzzy">Fuzzy Matching</label>
+                  </div>
+                  <div class="flex-row-center-start text-500">
+                    <div *ngIf="fuzzy">
+                      Match based on threshold
+                      <a class="pl-2" target="_blank" href="https://fusejs.io/concepts/scoring-theory.html">
+                        Learn more
+                      </a>
+                    </div>
+                    <div *ngIf="!fuzzy">
+                      Match entire search term
+                    </div>
+                  </div>
                 </div>
                 <p-inputSwitch inputId="search-fuzzy" [(ngModel)]="fuzzy"
                                (onChange)="onFuzzyChange($event)">
                 </p-inputSwitch>
-                <div class="flex-row-center-start text-500">
-                  <div *ngIf="fuzzy">
-                    Match based on threshold
-                    <a class="pl-2" target="_blank" href="https://fusejs.io/concepts/scoring-theory.html">
-                      Learn more
-                    </a>
+              </div>
+
+              <p-divider layout="horizontal"></p-divider>
+
+              <div class="w-full flex flex-row justify-content-between align-items-center">
+                <div class="flex flex-row gap-1">
+                  <div>
+                    Threshold:
                   </div>
-                  <div *ngIf="!fuzzy">
-                    Match entire search term
+                  <div>
+                    {{threshold / 100 | number : '1.1' | percent}}
                   </div>
                 </div>
-              </div>
-              <div class="col-4 flex flex-column">
-                Threshold (default: 0.5)
-                <input type="text"
-                       pInputText
-                       [disabled]="!fuzzy"
-                       ngModel="{{threshold | searchThreshold}}"
-                       readonly/>
-                <p-slider [(ngModel)]="threshold"
-                          (onSlideEnd)="onThresholdChange($event)"
-                          [disabled]="!fuzzy">
-                </p-slider>
+                <div class="w-16rem flex flex-column gap-1">
+                  <p-slider [(ngModel)]="threshold"
+                            (onSlideEnd)="onThresholdChange($event)"
+                            [disabled]="!fuzzy">
+                  </p-slider>
+                  <div class="w-full flex flex-row justify-content-between">
+                    <div>Match Anything</div>
+                    <div>Exact Match</div>
+                  </div>
+                </div>
               </div>
             </div>
           </ng-template>
