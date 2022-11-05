@@ -30,18 +30,26 @@ export interface SettingsModel {
     user: UserSettingsModel;
 }
 
-export interface DockerSettingsModel {
-    enabled: boolean;
-    dockerPath: string;
+export class DockerSettingsModel {
+    enabled: boolean = false;
+    dockerPath: string = '';
+
+    constructor(path?: string) {
+        if (path) {
+            this.dockerPath = path;
+        }
+    }
 }
 
-export interface UserSettingsModel {
-    firstName: string;
-    lastName: string;
-    userName: string;
-    birthdate: string;
+export class UserSettingsModel {
+    firstName: string = '';
+    lastName: string = '';
+    userName: string = '';
+    birthdate: string = '';
     tutorials: {
-        showFirstRunTutorial: boolean;
+        showFirstRunTutorial: boolean
+    } = {
+        showFirstRunTutorial: true
     }
 }
 
@@ -80,18 +88,18 @@ export interface ApplicationSettingsModel {
     graph: GraphSettingsModel
 }
 
-export interface ProjectSettingsModel {
-    ksInherit: boolean
+export class ProjectSettingsModel {
+    ksInherit: boolean = true;
 }
 
-export interface TableSettingsModel {
-    showSubProjects: boolean
-    showCountdown: boolean
+export class TableSettingsModel {
+    showSubProjects: boolean = true;
+    showCountdown: boolean = true;
 }
 
-export interface GridSettingsModel {
-    size: CardSizeType
-    sorter: CardSortType
+export class GridSettingsModel {
+    size: CardSizeType = 'auto';
+    sorter: CardSortType = 'title-a';
 }
 
 export type CardSizeType = 'auto' | 'xs' | 'sm' | 'md' | 'lg';
@@ -110,59 +118,85 @@ export type CardOptions = {
     showProjectName: boolean
 }
 
-export interface CalendarSettingsModel {
+export class CalendarSettingsModel {
 
 }
 
-export interface GraphSettingsModel {
+export class GraphSettingsModel {
     animation: {
         enabled: boolean,
         duration: number
-    },
+    } = {
+        enabled: true,
+        duration: 1000
+    }
     simulation: {
         enabled: boolean,
         maxTime: number
+    } = {
+        enabled: false,
+        maxTime: 2500
     }
 }
 
-export interface SearchSettingsModel {
-    provider: 'google' | 'bing' | 'duck',
-    fuzzy: boolean,
-    threshold: number
+export class SearchSettingsModel {
+    provider: 'google' | 'bing' | 'duck' = 'google';
+    fuzzy: boolean = true;
+    threshold: number = 50;
 }
 
-export interface DisplaySettingsModel {
-    theme: KcTheme
-    logging: LoggingSettingsModel
-    zoom: number
+export class DisplaySettingsModel {
+    theme: KcTheme = new KcTheme()
+    logging: LoggingSettingsModel = new LoggingSettingsModel()
+    zoom: number = 100
 }
 
-export interface LoggingSettingsModel {
-    warn: boolean
-    error: boolean
-    debug: boolean
+export class LoggingSettingsModel {
+    warn: boolean = false;
+    error: boolean = false;
+    debug: boolean = false;
 }
 
-export interface IngestSettingsModel {
-    manager: FileManagerSettingsModel
-    extensions: ExtensionServerSettingsModel
-    autoscan: AutoscanSettingsModel
+export class IngestSettingsModel {
+    manager: FileManagerSettingsModel = new FileManagerSettingsModel()
+    extensions: ExtensionServerSettingsModel = new ExtensionServerSettingsModel()
+    autoscan: AutoscanSettingsModel = new AutoscanSettingsModel()
 }
 
-export interface ExtensionServerSettingsModel {
-    enabled: boolean,
-    port: number,
-    path: string
+export class ExtensionServerSettingsModel {
+    enabled: boolean = false;
+    port: number = 9000;
+    path: string = '';
+
+    constructor(path?: string) {
+        if (path) {
+            this.path = path;
+        }
+    }
+
 }
 
-export interface AutoscanSettingsModel {
-    enabled: boolean,
-    path: string,
-    interval: number,
+export class AutoscanSettingsModel {
+    enabled: boolean = false;
+    path: string = '';
+    interval: number = 15;
+
+    constructor(path?: string) {
+        if (path) {
+            this.path = path;
+        }
+    }
+
 }
 
-export interface FileManagerSettingsModel {
-    enabled: boolean,
-    storageLocation: string,
-    target: 'autoscan' | 'all'
+export class FileManagerSettingsModel {
+    enabled: boolean = false;
+    storageLocation: string = '';
+    target: 'autoscan' | 'all' = 'autoscan';
+
+    constructor(location?: string) {
+        if (location) {
+            this.storageLocation = location;
+        }
+    }
 }

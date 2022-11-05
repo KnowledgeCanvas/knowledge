@@ -66,7 +66,7 @@ import {Subscription} from "rxjs";
               <div class="w-full flex flex-row justify-content-between align-items-center">
                 <div>
                   <div class="flex-row-center-start">
-                    <label for="search-fuzzy">Fuzzy Matching</label>
+                    <div>Fuzzy Matching</div>
                   </div>
                   <div class="flex-row-center-start text-500">
                     <div *ngIf="fuzzy">

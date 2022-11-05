@@ -16,12 +16,29 @@
 
 import * as fs from 'fs';
 import {BehaviorSubject, Observable} from 'rxjs';
-import {EnvironmentSettingsModel, SettingsModel, SystemSettingsModel} from "../../../../kc_shared/models/settings.model";
+import {
+    AutoscanSettingsModel,
+    CalendarSettingsModel,
+    DockerSettingsModel,
+    EnvironmentSettingsModel,
+    ExtensionServerSettingsModel,
+    FileManagerSettingsModel,
+    GraphSettingsModel,
+    GridSettingsModel,
+    LoggingSettingsModel,
+    ProjectSettingsModel,
+    SearchSettingsModel,
+    SettingsModel,
+    SystemSettingsModel,
+    TableSettingsModel,
+    UserSettingsModel
+} from "../../../../kc_shared/models/settings.model";
 import * as dotenv from 'dotenv';
 import path from "path";
 import os from "os";
 
 import * as lodash from 'lodash';
+import {KcTheme} from "../../../../kc_shared/models/style.model";
 
 const {app, BrowserWindow, ipcMain} = require('electron');
 
@@ -72,7 +89,8 @@ class SettingsService {
         // 5. Listen to IPC channels for incoming requests
         ipcMain.on(this.ipcChannels.setSettings, (_: any, settings: SettingsModel) => {
             let next: SettingsModel = lodash.merge(this._all.value, settings);
-            this.writeSettings(next).then(() => {});
+            this.writeSettings(next).then(() => {
+            });
             this._all.next(next);
         });
         ipcMain.on(this.ipcChannels.getSettings, (_: any) => {
@@ -162,78 +180,25 @@ class SettingsService {
             env: env,
             system: system,
             app: {
-                table: {
-                    showSubProjects: true,
-                    showCountdown: true
-                },
-                grid: {
-                    size: 'auto',
-                    sorter: 'title-a',
-                },
-                calendar: {},
-                projects: {
-                    ksInherit: true
-                },
-                graph: {
-                    animation: {
-                        enabled: true,
-                        duration: 1000
-                    },
-                    simulation: {
-                        enabled: true,
-                        maxTime: 5000
-                    }
-                }
+                table: new TableSettingsModel(),
+                grid: new GridSettingsModel(),
+                calendar: new CalendarSettingsModel(),
+                projects: new ProjectSettingsModel(),
+                graph: new GraphSettingsModel()
             },
             display: {
-                theme: {
-                    name: 'Lara Light Indigo',
-                    code: 'lara-light-indigo',
-                    isDark: false,
-                    isDual: true
-                },
-                logging: {
-                    warn: false,
-                    debug: false,
-                    error: false
-                },
+                theme: new KcTheme(),
+                logging: new LoggingSettingsModel(),
                 zoom: 100
             },
-            docker: {
-                enabled: false,
-                dockerPath: ''
-            },
+            docker: new DockerSettingsModel(),
             ingest: {
-                manager: {
-                    enabled: false,
-                    storageLocation: path.resolve(system.appPath),
-                    target: 'autoscan'
-                },
-                extensions: {
-                    enabled: false,
-                    port: 9000,
-                    path: __dirname
-                },
-                autoscan: {
-                    enabled: false,
-                    path: path.resolve(system.downloadPath, 'Knowledge'),
-                    interval: 15
-                }
+                manager: new FileManagerSettingsModel(path.resolve(system.appPath)),
+                extensions: new ExtensionServerSettingsModel(__dirname),
+                autoscan: new AutoscanSettingsModel(path.resolve(system.downloadPath, 'Knowledge')),
             },
-            search: {
-                provider: 'google',
-                fuzzy: true,
-                threshold: 50
-            },
-            user: {
-                firstName: '',
-                lastName: '',
-                userName: '',
-                birthdate: '',
-                tutorials: {
-                    showFirstRunTutorial: true
-                }
-            }
+            search: new SearchSettingsModel(),
+            user: new UserSettingsModel()
         };
     }
 

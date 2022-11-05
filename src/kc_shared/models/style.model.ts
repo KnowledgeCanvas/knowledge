@@ -14,10 +14,10 @@
  limitations under the License.
  */
 
-export interface KcTheme {
-    name: string
-    code: string
-    isDark: boolean
-    isDual: boolean
+export class KcTheme {
+    name: string = 'Lara Light Indigo';
+    code: string = 'lara-light-indigo';
+    isDark: boolean = false;
+    isDual: boolean = true;
     items?: KcTheme[]
 }
