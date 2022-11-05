@@ -26,60 +26,90 @@ import {DisplaySettingsModel} from "../../../../../kc_shared/models/settings.mod
   template: `
     <div class="p-fluid grid">
       <div class="col-12">
-        <p-panel header="Theme">
+        <p-panel header="Display Settings">
           <ng-template pTemplate="content">
-            <label for="theme-dropdown">Select a theme</label>
-            <div class="p-inputgroup">
-              <button pButton icon="pi pi-replay" pTooltip="Restore default" (click)="restoreDefaultTheme()"></button>
-              <p-dropdown [(ngModel)]="selectedTheme"
-                          [options]="themes"
-                          optionLabel="name"
-                          [filter]="true"
-                          [group]="true"
-                          id="theme-dropdown"
-                          [style]="{'width': '100%'}"
-                          appendTo="body"
-                          (onChange)="onThemeChange($event)">
-                <ng-template pTemplate="group" let-group>
-                  <p-divider></p-divider>
-                  <b>{{group.name}}</b>
-                  <b *ngIf="group.isDark"> (Dark)</b>
-                  <b *ngIf="!group.isDark"> (Light)</b>
-                </ng-template>
-              </p-dropdown>
-            </div>
-          </ng-template>
-        </p-panel>
-      </div>
-      <div class="col-12">
-        <p-panel header="Zoom">
-          <ng-template pTemplate="content">
-            <div class="col-4">
-              <label for="zoom-dropdown">Set zoom level</label>
-              <div class="p-inputgroup">
-                <button pButton icon="pi pi-minus" pTooltip="Zoom Out" (click)="decrementZoom($event)"></button>
-                <p-inputNumber [(ngModel)]="zoomLevel" [disabled]="true" [suffix]="'%'" [min]="50" [max]="300"></p-inputNumber>
-                <button pButton icon="pi pi-plus" pTooltip="Zoom In" (click)="incrementZoom($event)"></button>
+            <div class="w-full h-full flex flex-column gap-2">
+              <div class="flex flex-row justify-content-between align-items-center">
+                <div>Select a theme:</div>
+                <div class="p-inputgroup w-16rem">
+                  <button pButton icon="pi pi-replay" pTooltip="Restore default" (click)="restoreDefaultTheme()"></button>
+                  <p-dropdown [(ngModel)]="selectedTheme"
+                              [options]="themes"
+                              optionLabel="name"
+                              [filter]="true"
+                              [group]="true"
+                              id="theme-dropdown"
+                              [style]="{'width': '100%'}"
+                              appendTo="body"
+                              (onChange)="onThemeChange($event)">
+                    <ng-template pTemplate="group" let-group>
+                      <p-divider></p-divider>
+                      <b>{{group.name}}</b>
+                      <b *ngIf="group.isDark"> (Dark)</b>
+                      <b *ngIf="!group.isDark"> (Light)</b>
+                    </ng-template>
+                  </p-dropdown>
+                </div>
+              </div>
+
+              <p-divider layout="horizontal"></p-divider>
+
+              <div class="flex flex-row justify-content-between align-items-center">
+                <div>Set zoom level:</div>
+                <div class="p-inputgroup w-16rem">
+                  <button pButton icon="pi pi-minus" pTooltip="Zoom Out" (click)="decrementZoom($event)"></button>
+                  <p-inputNumber [(ngModel)]="zoomLevel" [disabled]="true" [suffix]="'%'" [min]="50" [max]="300"></p-inputNumber>
+                  <button pButton icon="pi pi-plus" pTooltip="Zoom In" (click)="incrementZoom($event)"></button>
+                </div>
+              </div>
+
+              <p-divider layout="horizontal"></p-divider>
+
+              <div class="flex flex-row justify-content-between align-items-center">
+                <div>Enable log notifications:</div>
+                <p-selectButton [options]="logLevels"
+                                [(ngModel)]="logLevel"
+                                [multiple]="true"
+                                id="log-selector"
+                                class="w-24rem"
+                                (onChange)="onLoggingChange($event)"
+                                optionLabel="name"
+                                optionValue="value">
+                </p-selectButton>
               </div>
             </div>
           </ng-template>
         </p-panel>
       </div>
-      <div class="col-12">
-        <p-panel header="Logging">
-          <ng-template pTemplate="content">
-            <label for="log-selector">Enable Log Notifications</label>
-            <p-selectButton [options]="logLevels"
-                            [(ngModel)]="logLevel"
-                            [multiple]="true"
-                            id="log-selector"
-                            (onChange)="onLoggingChange($event)"
-                            optionLabel="name"
-                            optionValue="value">
-            </p-selectButton>
-          </ng-template>
-        </p-panel>
-      </div>
+      <!--      <div class="col-12">-->
+      <!--        <p-panel header="Zoom">-->
+      <!--          <ng-template pTemplate="content">-->
+      <!--            <div class="flex flex-row justify-content-between align-items-center">-->
+      <!--              <div>Set zoom level:</div>-->
+      <!--              <div class="p-inputgroup w-16rem">-->
+      <!--                <button pButton icon="pi pi-minus" pTooltip="Zoom Out" (click)="decrementZoom($event)"></button>-->
+      <!--                <p-inputNumber [(ngModel)]="zoomLevel" [disabled]="true" [suffix]="'%'" [min]="50" [max]="300"></p-inputNumber>-->
+      <!--                <button pButton icon="pi pi-plus" pTooltip="Zoom In" (click)="incrementZoom($event)"></button>-->
+      <!--              </div>-->
+      <!--            </div>-->
+      <!--          </ng-template>-->
+      <!--        </p-panel>-->
+      <!--      </div>-->
+      <!--      <div class="col-12">-->
+      <!--        <p-panel header="Logging">-->
+      <!--          <ng-template pTemplate="content">-->
+      <!--            <label for="log-selector">Enable Log Notifications</label>-->
+      <!--            <p-selectButton [options]="logLevels"-->
+      <!--                            [(ngModel)]="logLevel"-->
+      <!--                            [multiple]="true"-->
+      <!--                            id="log-selector"-->
+      <!--                            (onChange)="onLoggingChange($event)"-->
+      <!--                            optionLabel="name"-->
+      <!--                            optionValue="value">-->
+      <!--            </p-selectButton>-->
+      <!--          </ng-template>-->
+      <!--        </p-panel>-->
+      <!--      </div>-->
     </div>
   `,
   styles: []
@@ -213,7 +243,7 @@ export class DisplaySettingsComponent implements OnInit {
     }
   }
 
-  decrementZoom($event: MouseEvent) {
+  decrementZoom(_: MouseEvent) {
     this.zoomLevel = Math.max(this.zoomLevel - 10, 50);
     this.send(this.channels.zoomOut, this.zoomLevel);
     if (this.displaySettings) {
@@ -222,7 +252,7 @@ export class DisplaySettingsComponent implements OnInit {
     }
   }
 
-  incrementZoom($event: MouseEvent) {
+  incrementZoom(_: MouseEvent) {
     this.zoomLevel = Math.min(this.zoomLevel + 10, 150);
     this.send(this.channels.zoomIn, this.zoomLevel);
 
