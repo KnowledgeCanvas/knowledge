@@ -121,7 +121,19 @@ export class GraphComponent implements OnInit, OnDestroy {
       this.build();
     });
 
-    this.projects.currentProject.pipe(tap(this.build)).subscribe()
+    this.projects.currentProject.pipe(
+      tap(() => {
+        this.build();
+      })
+    ).subscribe()
+
+    this.projects.projectTree.pipe(
+      tap(() => {
+        this.build();
+      })
+    ).subscribe()
+
+
   }
 
   ngOnDestroy() {

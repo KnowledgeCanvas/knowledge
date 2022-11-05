@@ -67,9 +67,8 @@ export class GraphStyles {
         selector: 'edge',
         style: {
           'line-color': this.primary,
-          'width': 2,
-          'curve-style': 'haystack',
-          'background-color': 'white'
+          'width': 1,
+          'curve-style': 'haystack'
         }
       },
       {

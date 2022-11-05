@@ -19,10 +19,10 @@ import {KnowledgeSource} from "../../models/knowledge.source.model";
 import {KcProject} from "../../models/project.model";
 import {ThemeService} from "../../services/user-services/theme.service";
 import {CytoscapeLayout, GraphLayouts} from "./graph.layouts";
-import cytoscape, {CytoscapeOptions, LayoutOptions, Layouts} from "cytoscape";
+import cytoscape, {CytoscapeOptions, LayoutOptions} from "cytoscape";
 import {GraphStyles} from "./graph.styles";
 import {delay, tap} from "rxjs/operators";
-import {GraphSettings} from "./graph.controls.component";
+import {SettingsService} from "../../services/ipc-services/settings.service";
 
 cytoscape.use(require('cytoscape-cola'));
 cytoscape.use(require('cytoscape-dagre'));
@@ -35,10 +35,12 @@ cytoscape.use(require('cytoscape-fcose'));
     <div class="w-full h-full">
       <graph-controls class="w-full"
                       [layouts]="graphLayouts.layouts"
+                      [running]="running"
                       (onLayout)="onLayout($event)"
                       (onReset)="onFitToView()"
                       (onRun)="onRun()"
-                      (onSettingsChange)="onSettings($event)">
+                      (onStop)="onStop()"
+                      (onSettings)="onSettings()">
       </graph-controls>
       <div #cy class="cy" id="cy"></div>
     </div>
@@ -66,9 +68,7 @@ export class GraphCanvasComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input() data: any[] = [];
 
-  @Input() animate: boolean = true;
-
-  @Input() animationDurationMs: number = 1000;
+  running: boolean = false;
 
   cy?: cytoscape.Core;
 
@@ -77,23 +77,77 @@ export class GraphCanvasComponent implements OnInit, OnChanges, OnDestroy {
   private graphStyles: GraphStyles;
 
   private commonOptions = {
-    animate: this.animate,
-    animationDuration: this.animationDurationMs,
+    animate: true,
+    animationDuration: 1000,
     fit: true,
     nodeDimensionsIncludeLabels: true,
+    maxSimulationTime: 5000,
+    simulate: true
   }
 
   graphLayouts: GraphLayouts = new GraphLayouts(this.commonOptions);
 
   cyLayout: LayoutOptions = {
     ...this.commonOptions,
-    name: 'klay',
+    name: 'fcose',
     // @ts-ignore
-    klay: {}
+    padding: 20, // fit padding
+    componentSpacing: 1.2,
+    nodeSeparation: 100,
+    uniformNodeDimensions: true,
+    sampleSize: 100,
+    spacingFactor: 1, // Applies a multiplicative factor (>0) to expand or compress the overall area that the nodes take up
+    nodeDimensionsIncludeLabels: true, // Applies a multiplicative factor (>0) to expand or compress the overall area that the nodes take up
+    initialTemp: 99999,
+    gravity: 50,
+    idealEdgeLength: (_: any) => 100,
+    nodeRepulsion(_: any): number {
+      return 999999;
+    }
   };
 
-  constructor(private theme: ThemeService) {
+
+  initialize() {
+    this.graphLayouts = new GraphLayouts(this.commonOptions);
+
+    this.cyLayout = {
+      ...this.commonOptions,
+      name: 'fcose',
+      // @ts-ignore
+      padding: 20, // fit padding
+      componentSpacing: 1.2,
+      nodeSeparation: 100,
+      uniformNodeDimensions: true,
+      sampleSize: 100,
+      spacingFactor: 1, // Applies a multiplicative factor (>0) to expand or compress the overall area that the nodes take up
+      nodeDimensionsIncludeLabels: true, // Applies a multiplicative factor (>0) to expand or compress the overall area that the nodes take up
+      initialTemp: 99999,
+      gravity: 50,
+      idealEdgeLength: (_: any) => 100,
+      nodeRepulsion(_: any): number {
+        return 999999;
+      }
+    };
+  }
+
+  constructor(private theme: ThemeService,
+              private settings: SettingsService) {
     this.graphStyles = new GraphStyles();
+
+    settings.graph.pipe(
+      tap((graphSettings) => {
+        this.commonOptions = {
+          animate: graphSettings.animation.enabled,
+          animationDuration: graphSettings.animation.enabled ? graphSettings.animation.duration : 0,
+          fit: true,
+          nodeDimensionsIncludeLabels: true,
+          maxSimulationTime: graphSettings.simulation.maxTime,
+          simulate: graphSettings.simulation.enabled
+        }
+        console.log('Initializing with common options: ', this.commonOptions);
+        this.initialize();
+      })
+    ).subscribe()
   }
 
   ngOnInit(): void {
@@ -126,6 +180,8 @@ export class GraphCanvasComponent implements OnInit, OnChanges, OnDestroy {
       return;
     }
 
+    this.onStop();
+
     /*
      First Change OR Graph DNE ==> Init
       - Initialize cytoscape with predefined options
@@ -150,6 +206,7 @@ export class GraphCanvasComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.onStop();
     document?.getElementById('cy')?.remove();
   }
 
@@ -208,17 +265,22 @@ export class GraphCanvasComponent implements OnInit, OnChanges, OnDestroy {
       emit(this.onProjectCtxtap, project, event.originalEvent);
     })
 
-    this.cy.on('tap', 'edge', (event: any) => {
+    this.cy.on('tap', 'edge', (_: any) => {
       console.log('click on edge...'); // TODO:
     })
 
-    this.cy.on('cxttap', 'edge', (event: any) => {
+    this.cy.on('cxttap', 'edge', (_: any) => {
       console.log('right click on edge...'); // TODO:
     });
 
     this.cy.on("layoutstop", () => {
       this.cy?.fit();
+      this.running = false;
     });
+
+    this.cy.on('layoutstart', () => {
+      this.running = true;
+    })
 
   }
 
@@ -237,27 +299,17 @@ export class GraphCanvasComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   async onRun() {
-    const layouts = [
-      this.cy?.layout(this.cyLayout)
-    ];
-
-    const layoutStops = layouts.map((layout) => layout?.promiseOn('layoutstop'));
-    const runLayout = (layout: Layouts | undefined) => layout?.run();
-    layouts.forEach(runLayout)
-
-    return Promise.all(layoutStops);
+    this.onStop();
+    this.running = true;
+    this.cy?.layout(this.cyLayout).run();
   }
 
-  onShowSources($event: boolean) {
-    console.log('Show sources? ', $event);
-    // TODO: figure out how to hide sources
-    // Method 1 : Remove them (and their edges) from nodes
-    // Method 2 : Apply styles to hide them (display: hidden, etc.)
-    // Method 3 : Use a Cytoscape plugin to conceal/collapse/etc.
+  onSettings() {
+    this.settings.show('graph');
   }
 
-  onSettings($event: GraphSettings) {
-    console.log('settings changed: ', $event);
-
+  onStop() {
+    console.log('Stopping layout...');
+    this.cy?.stop(true, true);
   }
 }
