@@ -139,6 +139,8 @@ import {GraphControlsComponent} from "./components/graph-components/graph.contro
 import {GraphCanvasComponent} from "./components/graph-components/graph.canvas.component";
 import {ProjectDetailsComponent} from './components/project-components/project-details.component';
 import {GraphSettingsComponent} from './components/settings/graph-settings.component';
+import {SettingTemplateComponent} from './components/settings/setting-template.component';
+import {SwitchLabelPipe} from './pipes/switch-label.pipe';
 
 @NgModule({
   declarations: [
@@ -196,7 +198,9 @@ import {GraphSettingsComponent} from './components/settings/graph-settings.compo
     GraphControlsComponent,
     GraphCanvasComponent,
     ProjectDetailsComponent,
-    GraphSettingsComponent
+    GraphSettingsComponent,
+    SettingTemplateComponent,
+    SwitchLabelPipe
   ],
   imports: [
     BrowserAnimationsModule,
