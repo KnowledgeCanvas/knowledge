@@ -22,7 +22,7 @@ import {BrowserViewDialogService} from "../services/ipc-services/browser-view-di
 import {AutoComplete} from "primeng/autocomplete";
 import {KcProject} from "../models/project.model";
 import {SearchService} from "../services/user-services/search.service";
-import {first} from "rxjs/operators";
+import {take, tap} from "rxjs/operators";
 
 
 @Component({
@@ -55,28 +55,27 @@ import {first} from "rxjs/operators";
                   <div class="text-500" *ngIf="item.item.associatedProject">{{item.item.associatedProject | projectBreadcrumb}}</div>
                 </div>
               </div>
-              <div>
+              <div class="mr-2">
                 <div *ngIf="item.item.id.value === 'search' && suggestions.length > 0">
                   <b *ngIf="suggestions.length === 1">No results</b>
                   <b *ngIf="suggestions.length > 1">{{suggestions.length - 1}} reult{{suggestions.length > 2 ? 's' : ''}}</b>
                 </div>
                 <div *ngIf="item.item.id.value !== 'search'" class="h-full w-full flex-row-center-end">
-                  <div *ngIf="item.item.flagged" class="pi pi-flag-fill text-primary"></div>
+                  <div *ngIf="item.item.flagged">
+                    <button pButton class="p-button-rounded p-button-sm p-button-outlined" icon="pi pi-flag-fill"></button>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-          <div *ngIf="item.item.topics && item.item.topics.length > 0" class="flex-row-center-start overflow-x-auto pt-2 w-full">
-            <div *ngFor="let topic of item.item.topics; let i=index">
-              <p-chip *ngIf="i < 8"
-                      label="{{topic | truncate: [32]}}"
-                      styleClass="search-chip mr-1">
-              </p-chip>
-            </div>
-            <div *ngIf="item.item.topics.length > 8">
-              <p-chip label="+ {{item.item.topics.length - 8}} more"
-                      styleClass="search-chip mr-1"></p-chip>
-            </div>
+          <div *ngIf="item.item.topics && item.item.topics.length > 0" class="flex-row-center-start overflow-x-auto pt-2 w-full mr-2">
+            <p-chips [allowDuplicate]="false"
+                     [addOnBlur]="true"
+                     [addOnTab]="true"
+                     [(ngModel)]="item.item.topics"
+                     [disabled]="true"
+                     class="p-fluid w-full">
+            </p-chips>
           </div>
           <p-divider *ngIf="item.item.id.value === 'search' && suggestions.length > 1" layout="horizontal"></p-divider>
         </ng-template>
@@ -157,37 +156,39 @@ export class SearchComponent implements OnInit {
     }
 
     this._search.forTerm(query)
-      .pipe(first())
-      .subscribe((results: Partial<KnowledgeSource & KcProject & any>[]) => {
-        if (results && results.length > 0) {
-          this.suggestions = [
-            {
-              item:
-                {
-                  title: `Search ${provider.title} for: ${query}`,
-                  icon: provider.iconUrl,
-                  iconUrl: provider.iconUrl,
-                  id: {value: 'search'},
-                  query: query
-                }
-            },
-            ...results
-          ];
-        } else {
-          this.suggestions = [
-            {
-              item:
-                {
-                  title: `Search ${provider.title} for: ${query}`,
-                  icon: provider.iconUrl,
-                  iconUrl: provider.iconUrl,
-                  id: {value: 'search'},
-                  query: query
-                }
-            }
-          ];
-        }
-      });
+      .pipe(
+        take(1),
+        tap((results: Partial<KnowledgeSource & KcProject & any>[]) => {
+          if (results && results.length > 0) {
+            this.suggestions = [
+              {
+                item:
+                  {
+                    title: `Search ${provider.title} for: ${query}`,
+                    icon: provider.iconUrl,
+                    iconUrl: provider.iconUrl,
+                    id: {value: 'search'},
+                    query: query
+                  }
+              },
+              ...results
+            ];
+          } else {
+            this.suggestions = [
+              {
+                item:
+                  {
+                    title: `Search ${provider.title} for: ${query}`,
+                    icon: provider.iconUrl,
+                    iconUrl: provider.iconUrl,
+                    id: {value: 'search'},
+                    query: query
+                  }
+              }
+            ];
+          }
+        }))
+      .subscribe();
   }
 
   onSelect($event: { item: Partial<KnowledgeSource>, score: number, refIndex: number }) {

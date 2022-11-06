@@ -15,7 +15,7 @@
  */
 import {Injectable} from '@angular/core';
 import {KnowledgeSource} from "../../models/knowledge.source.model";
-import {BehaviorSubject} from "rxjs";
+import {BehaviorSubject, tap} from "rxjs";
 import {KcProject} from "../../models/project.model";
 import {StorageService} from "../ipc-services/storage.service";
 import {SettingsService} from "../ipc-services/settings.service";
@@ -110,6 +110,12 @@ export class DataService {
       }
     })
 
+    _projects.newSources.pipe(
+      tap((sources) => {
+        this.__allKs.next(this.__allKs.value.concat(sources));
+      })
+    ).subscribe()
+
     storage.ksList().then((ksList) => {
       this.favicon.extractFromKsList(ksList).then((ready) => {
         this.__allKs.next(ready);
@@ -118,32 +124,34 @@ export class DataService {
 
     this.projectList = _projects.projects;
 
-    _projects.currentProject.subscribe((project) => {
-      if (!project) {
-        return;
-      }
-      let ksList: KnowledgeSource[] = [];
-      let queue: KcProject[] = [project];
-
-      while (queue.length > 0) {
-        let p = queue.shift();
-        if (p && p.knowledgeSource) {
-          ksList = ksList.concat(p.knowledgeSource);
+    _projects.currentProject.pipe(
+      tap((project) => {
+        if (!project) {
+          return;
         }
+        let ksList: KnowledgeSource[] = [];
+        let queue: KcProject[] = [project];
 
-        if (p && this.projectInheritance) {
-          for (let sub of p.subprojects) {
-            let s = this._projects.getProject(sub);
-            if (s) {
-              queue.push(s);
+        while (queue.length > 0) {
+          let p = queue.shift();
+          if (p && p.knowledgeSource) {
+            ksList = ksList.concat(p.knowledgeSource);
+          }
+
+          if (p && this.projectInheritance) {
+            for (let sub of p.subprojects) {
+              let s = this._projects.getProject(sub);
+              if (s) {
+                queue.push(s);
+              }
             }
           }
         }
-      }
 
-      this.favicon.extractFromKsList(ksList).then((ready) => {
-        this.__ksList.next(ready);
+        this.favicon.extractFromKsList(ksList).then((ready) => {
+          this.__ksList.next(ready);
+        })
       })
-    })
+    ).subscribe()
   }
 }
