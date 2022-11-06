@@ -49,6 +49,9 @@ export class ProjectService {
   private allProjectModels: BehaviorSubject<KcProject[]> = new BehaviorSubject<KcProject[]>([]);
   projects = this.allProjectModels.asObservable();
 
+  private addedSources = new BehaviorSubject<KnowledgeSource[]>([]);
+  newSources = this.addedSources.asObservable();
+
   private tree: ProjectTree;
   private projectSource: KcProject[] = [];
   private lookup: Map<string, KcProject>;
@@ -617,6 +620,9 @@ export class ProjectService {
       }
       project.knowledgeSource = [...project.knowledgeSource, ...ksList];
     }
+
+    this.addedSources.next(add);
+
     return project;
   }
 

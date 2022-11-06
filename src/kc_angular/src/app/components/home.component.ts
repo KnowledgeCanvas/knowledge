@@ -318,8 +318,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
 
     if (this.active) {
-      project.knowledgeSource.push(this.active);
-      this.projects.updateProjects([{id: project.id}]).then((_) => {
+      this.projects.updateProjects([{
+        id: project.id,
+        addKnowledgeSource: [this.active]
+      }]).then((_) => {
         if (this.active) {
           this.ingest.add(this.active);
         }

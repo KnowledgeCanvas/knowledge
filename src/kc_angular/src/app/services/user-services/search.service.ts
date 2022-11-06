@@ -20,7 +20,7 @@ import {BehaviorSubject, Observable} from "rxjs";
 import {KnowledgeSource} from "../../models/knowledge.source.model";
 import {KcProject} from "../../models/project.model";
 import Fuse from "fuse.js";
-import {map} from "rxjs/operators";
+import {map, tap} from "rxjs/operators";
 
 export type SearchProvider = {
   id: string,
@@ -88,20 +88,21 @@ export class SearchService {
   }
 
   constructor(private data: DataService, private settings: SettingsService) {
-    settings.search.subscribe((searchSettings) => {
-      const provider = this.providers.find(s => s.id === searchSettings.provider);
-      if (provider) {
-        this.provider = provider;
-      }
+    settings.search.pipe(
+      tap((searchSettings) => {
+        const provider = this.providers.find(s => s.id === searchSettings.provider);
+        if (provider) {
+          this.provider = provider;
+        }
 
-      if (searchSettings.fuzzy !== undefined) {
-        this.fuzzy = searchSettings.fuzzy;
-      }
+        if (searchSettings.fuzzy !== undefined) {
+          this.fuzzy = searchSettings.fuzzy;
+        }
 
-      if (searchSettings.threshold !== undefined && searchSettings.threshold >= 0 && searchSettings.threshold <= 100) {
-        this.searchOptions.threshold = searchSettings.threshold / 100;
-      }
-    });
+        if (searchSettings.threshold !== undefined && searchSettings.threshold >= 0 && searchSettings.threshold <= 100) {
+          this.searchOptions.threshold = searchSettings.threshold / 100;
+        }
+      }));
   }
 
   executeSearch(term: string) {
