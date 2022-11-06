@@ -33,7 +33,7 @@ import {Clipboard} from "@angular/cdk/clipboard";
   selector: 'app-ks-info',
   template: `
     <p-scrollPanel class="w-full h-full">
-      <div class="p-fluid grid">
+      <div class="flex flex-column gap-2">
         <p-panel header="Details" class="col-12" [toggleable]="true" [collapsed]="collapseDetails" toggler="header">
           <div class="w-full h-full flex flex-wrap surface-section p-2">
             <div class="col-12 lg:col-6">
@@ -421,9 +421,9 @@ export class KsInfoComponent implements OnInit, OnChanges {
 
         this.ks.events.push(ksEvent);
 
-        this.ks.title = this.form.get('title')?.value;
-        this.ks.description = this.form.get('description')?.value;
-        this.ks.topics = this.form.get('topics')?.value;
+        this.ks.title = formValue.title;
+        this.ks.description = formValue.description;
+        this.ks.topics = formValue.topics;
 
         if (this.ks.associatedProject && this.ks.associatedProject.value.length > 0) {
           this.command.update([this.ks], !this.isDialog);
