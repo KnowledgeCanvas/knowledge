@@ -25,7 +25,7 @@ import {NotificationsService} from "../services/user-services/notifications.serv
 import {KsContextMenuService} from "../services/factory-services/ks-context-menu.service";
 import {Splitter} from "primeng/splitter";
 import {KsFactoryService} from "../services/factory-services/ks-factory.service";
-import {take} from "rxjs/operators";
+import {take, tap} from "rxjs/operators";
 import {DragAndDropService} from "../services/ingest-services/drag-and-drop.service";
 
 @Component({
@@ -397,27 +397,37 @@ export class HomeComponent implements OnInit, OnDestroy {
       return;
     }
     this.loading = true;
-    this.factory.examples()
-      .pipe(
-        take(1)
-      )
-      .subscribe((ks: { "title": string, "accessLink": string }[]) => {
+    this.factory.examples().pipe(
+      take(1),
+      tap((ks: { 'title': string, 'accessLink': string, 'topics': string[] }[]) => {
         this.factory.many({
           ingestType: "website",
           links: ks.map(k => k.accessLink)
         }).then((ksList) => {
-          ksList.map((ks) => {
-            ks.importMethod = 'example';
-            return ks;
+          ksList.map((k) => {
+            k.importMethod = 'example';
+            return k;
           })
+
+          if (ksList.length == ks.length) {
+            for (let i = 0; i < ksList.length; i++) {
+              ksList[i].title = ks[i].title;
+              ksList[i].topics = ks[i].topics;
+            }
+          }
+
           this.ingest.enqueue(ksList);
           this.loading = false;
         })
-      }, (_: any) => {
-        setTimeout(() => {
-          this.loading = false;
-          this.notifications.error('Inbox', 'Unable to Load Examples', 'Please check your connection and try again later...', 'toast');
-        }, Math.floor(Math.random() * 1000));
       })
+    ).subscribe({
+        error: (_: any) => {
+          setTimeout(() => {
+            this.loading = false;
+            this.notifications.error('Inbox', 'Unable to Load Examples', 'Please check your connection and try again later...', 'toast');
+          }, Math.floor(Math.random() * 1000));
+        }
+      }
+    )
   }
 }

@@ -51,12 +51,12 @@ export class KsFactoryService {
     })
   }
 
-  examples(): Observable<{ "title": string, "accessLink": string }[]> {
+  examples(): Observable<{ "title": string, "accessLink": string, "topics": string[] }[]> {
     return this.http
-      .get('https://knowledge-app.s3.us-west-1.amazonaws.com/examples_v1.json', {responseType: 'text'})
+      .get('https://knowledge-app.s3.us-west-1.amazonaws.com/examples_v2.json', {responseType: 'text'})
       .pipe(
         map((ksString) => {
-          let examples: { "title": string, "accessLink": string }[] = JSON.parse(ksString);
+          let examples: { "title": string, "accessLink": string, "topics": string[] }[] = JSON.parse(ksString);
           this.shuffleArray(examples);
           return examples.slice(0, 4);
         })
