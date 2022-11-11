@@ -16,43 +16,44 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
 import {KnowledgeSource} from "../models/knowledge.source.model";
-import {Subscription} from "rxjs";
+import {Observable, Subject, tap} from "rxjs";
 import {DataService} from "../services/user-services/data.service";
+import {takeUntil} from "rxjs/operators";
 
 @Component({
   selector: 'app-table',
   template: `
     <div class="h-full w-full flex-col-center-center">
       <div class="w-full h-full flex-col-center-between surface-section p-4" [style]="{'max-width': 'min(100%, 128rem)'}">
-        <ks-table class="w-full h-full" [ksList]="ksList"></ks-table>
+        <ks-table class="w-full h-full" [ksList]="(sources | async)!"></ks-table>
       </div>
     </div>
   `,
   styles: []
 })
 export class TableComponent implements OnInit, OnDestroy {
-  ksList: KnowledgeSource[] = [];
+  sources: Observable<KnowledgeSource[]>;
 
   projectId: string = '';
 
-  private subscription: Subscription;
+  private cleanUp: Subject<any> = new Subject();
 
   constructor(private data: DataService, private route: ActivatedRoute) {
-    this.subscription = route.paramMap.subscribe((params) => {
-      this.projectId = params.get('projectId') ?? '';
-    })
+    route.paramMap.pipe(
+      takeUntil(this.cleanUp),
+      tap((params) => {
+        this.projectId = params.get('projectId') ?? '';
+      })
+    ).subscribe()
 
-    data.ksList.subscribe((ksList) => {
-      this.ksList = ksList;
-    });
+    this.sources = data.ksList;
   }
 
   ngOnInit(): void {
   }
 
   ngOnDestroy() {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
+    this.cleanUp.next({});
+    this.cleanUp.complete();
   }
 }

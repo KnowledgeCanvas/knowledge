@@ -21,7 +21,7 @@ import {ProjectService} from "../services/factory-services/project.service";
 import {NotificationsService} from "../services/user-services/notifications.service";
 import {KsCommandService} from "../services/command-services/ks-command.service";
 import {TopicService} from "../services/user-services/topic.service";
-import {first} from "rxjs/operators";
+import {Observable} from "rxjs";
 
 @Component({
   selector: 'app-grid',
@@ -29,7 +29,7 @@ import {first} from "rxjs/operators";
     <div class="h-full w-full flex-col-center-center">
       <div class="w-full h-full flex-col-center-between surface-section p-4" id="grid-container" [style]="{'max-width': 'min(100%, 192rem)'}">
         <app-ks-card-list class="h-full flex flex-row flex-grow-1"
-                          [ksList]="ksList"
+                          [ksList]="(sources | async)!"
                           (onKsRemove)="onKsRemove($event)"
                           (onTopicSearch)="onTopicSearch($event)">
         </app-ks-card-list>
@@ -39,7 +39,7 @@ import {first} from "rxjs/operators";
   styles: []
 })
 export class GridComponent implements OnInit {
-  ksList: KnowledgeSource[] = [];
+  sources: Observable<KnowledgeSource[]>;
 
   constructor(private data: DataService,
               private activated: ActivatedRoute,
@@ -47,14 +47,7 @@ export class GridComponent implements OnInit {
               private notifications: NotificationsService,
               private projects: ProjectService,
               private topics: TopicService,) {
-    activated.params.subscribe((params) => {
-      data.ksList.pipe(first()).subscribe((ksList) => {
-        this.ksList = ksList;
-      });
-    })
-
-
-
+    this.sources = data.ksList;
   }
 
   ngOnInit(): void {

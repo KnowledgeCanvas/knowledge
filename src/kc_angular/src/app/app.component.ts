@@ -228,7 +228,7 @@ type SidebarItem = {
     fadeIn
   ]
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
   projectId: string = '';
 
   projectTreeVisible: boolean = false;
@@ -249,6 +249,8 @@ export class AppComponent implements OnInit {
 
   os: string = '';
 
+  private cleanUp = new Subject();
+
   constructor(private settings: SettingsService,
               private notifications: NotificationsService,
               private startup: StartupService,
@@ -262,72 +264,84 @@ export class AppComponent implements OnInit {
               private ingest: IngestService,
               private tree: ProjectTreeFactoryService,
               private router: Router,
+              private contexts: ChildrenOutletContexts,
               private themes: ThemeService,) {
     // Acquire system settings, set window controls based on OS
-    settings.all.pipe(take(2), map(s => s.system)).subscribe((systemSettings) => {
-      if (systemSettings && systemSettings.osPlatform) {
-        this.os = systemSettings.osPlatform;
-      }
-    });
+    settings.all.pipe(
+      take(2),
+      map(s => s.system),
+      tap((systemSettings) => {
+        if (systemSettings && systemSettings.osPlatform) {
+          this.os = systemSettings.osPlatform;
+        }
+      })
+    ).subscribe();
 
     // Acquire user settings, start tutorial if necessary
-    settings.all.pipe(take(2), map(s => s.user)).subscribe((userSettings) => {
-      if (!userSettings) {
-        return;
-      }
+    settings.all.pipe(
+      take(2),
+      map(s => s.user),
+      tap((userSettings) => {
+        if (!userSettings) {
+          return;
+        }
 
-      if (userSettings.tutorials === undefined) {
-        settings.set({user: {tutorials: {showFirstRunTutorial: true}}});
-      } else if (userSettings.tutorials.showFirstRunTutorial) {
-        setTimeout(() => {
-          this.startup.tutorial().subscribe(showAgain => {
-            settings.set({user: {tutorials: {showFirstRunTutorial: showAgain}}});
-          })
-        }, 1000)
-      }
-    })
+        if (userSettings.tutorials === undefined) {
+          settings.set({user: {tutorials: {showFirstRunTutorial: true}}});
+        } else if (userSettings.tutorials.showFirstRunTutorial) {
+          setTimeout(() => {
+            this.startup.tutorial().subscribe(showAgain => {
+              settings.set({user: {tutorials: {showFirstRunTutorial: showAgain}}});
+            })
+          }, 1000)
+        }
+      })
+    ).subscribe()
 
     /**
      * Subscribe to router events in order to manually adjust the current view
      */
-    router.events.subscribe((events) => {
-      if (events instanceof NavigationEnd) {
-        const segments = events.url.split('/').filter(f => f.length);
-        const visibleRoute = segments[1];
-        switch (visibleRoute) {
-          case 'inbox':
-          case '(inbox':
-            this.selectedView = 'Inbox'
-            break;
-          case 'projects':
-          case '(projects':
-            this.selectedView = 'Projects'
-            break;
-          case 'table':
-          case '(table':
-            this.selectedView = 'Table'
-            break;
-          case 'grid':
-          case '(grid':
-            this.selectedView = 'Grid'
-            break;
-          case 'graph':
-          case '(graph':
-            this.selectedView = 'Graph'
-            break;
-          case 'calendar':
-          case '(calendar':
-            this.selectedView = 'Calendar'
-            break;
-          default:
-            break;
+    router.events.pipe(
+      takeUntil(this.cleanUp),
+      tap((events) => {
+        if (events instanceof NavigationEnd) {
+          const segments = events.url.split('/').filter(f => f.length);
+          const visibleRoute = segments[1];
+          switch (visibleRoute) {
+            case 'inbox':
+            case '(inbox':
+              this.selectedView = 'Inbox'
+              break;
+            case 'projects':
+            case '(projects':
+              this.selectedView = 'Projects'
+              break;
+            case 'table':
+            case '(table':
+              this.selectedView = 'Table'
+              break;
+            case 'grid':
+            case '(grid':
+              this.selectedView = 'Grid'
+              break;
+            case 'graph':
+            case '(graph':
+              this.selectedView = 'Graph'
+              break;
+            case 'calendar':
+            case '(calendar':
+              this.selectedView = 'Calendar'
+              break;
+            default:
+              break;
+          }
         }
-      }
-    });
+      })
+    ).subscribe();
 
     this.command.ksDetailEvent.pipe(
+      takeUntil(this.cleanUp),
       tap((ks) => {
-
         if (ks?.force && this.sourceInfoDialog) {
           this.sourceInfoDialog.close();
         }
@@ -350,6 +364,7 @@ export class AppComponent implements OnInit {
     ).subscribe();
 
     pCommand.detailEvent.pipe(
+      takeUntil(this.cleanUp),
       tap((project) => {
         if (!project) {
           return;
@@ -369,25 +384,30 @@ export class AppComponent implements OnInit {
       })
     ).subscribe()
 
-    ingest.queue.subscribe((upNext) => {
-      this.inboxBadge = upNext.length;
-    })
+    ingest.queue.pipe(
+      tap((upNext) => {
+        this.inboxBadge = upNext.length;
+      })
+    ).subscribe()
 
-    projects.currentProject.subscribe((project) => {
-      if (project) {
-        this.projectId = project.id.value;
-        this.sidebarItems = [
-          {label: 'Inbox', routerLink: ['app', 'inbox', this.projectId], icon: 'pi pi-inbox'},
-          {label: 'Projects', routerLink: ['app', 'projects', this.projectId], icon: 'pi pi-list'},
-          {label: 'Graph', routerLink: ['app', 'graph', this.projectId], icon: 'pi pi-sitemap'},
-          {label: 'Table', routerLink: ['app', 'table', this.projectId], icon: 'pi pi-table'},
-          {label: 'Grid', routerLink: ['app', 'grid', this.projectId], icon: 'pi pi-th-large'},
-          {label: 'Calendar', routerLink: ['app', 'calendar', this.projectId], icon: 'pi pi-calendar'},
-        ];
-      } else {
-        this.projectId = '';
-      }
-    });
+    projects.currentProject.pipe(
+      takeUntil(this.cleanUp),
+      tap((project) => {
+        if (project) {
+          this.projectId = project.id.value;
+          this.sidebarItems = [
+            {label: 'Inbox', routerLink: ['app', 'inbox', this.projectId], icon: 'pi pi-inbox'},
+            {label: 'Projects', routerLink: ['app', 'projects', this.projectId], icon: 'pi pi-list'},
+            {label: 'Graph', routerLink: ['app', 'graph', this.projectId], icon: 'pi pi-sitemap'},
+            {label: 'Table', routerLink: ['app', 'table', this.projectId], icon: 'pi pi-table'},
+            {label: 'Grid', routerLink: ['app', 'grid', this.projectId], icon: 'pi pi-th-large'},
+            {label: 'Calendar', routerLink: ['app', 'calendar', this.projectId], icon: 'pi pi-calendar'},
+          ];
+        } else {
+          this.projectId = '';
+        }
+      })
+    ).subscribe();
 
     // When the app starts, we want to ensure the theme has been completely loaded
     themes.setLocal().then((_: any) => {
@@ -395,6 +415,11 @@ export class AppComponent implements OnInit {
         this.readyToShow = true;
       }, Math.floor(Math.random() * 1500));
     });
+  }
+
+  ngOnDestroy() {
+    this.cleanUp.next({});
+    this.cleanUp.complete();
   }
 
   /* TODO: Create a hotkey service that registers these keys on behalf of each module */

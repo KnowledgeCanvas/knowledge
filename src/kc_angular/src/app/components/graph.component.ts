@@ -18,15 +18,16 @@ import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
 import {ProjectService} from "../services/factory-services/project.service";
 import {KcProject} from "../models/project.model";
-import {Subscription} from "rxjs";
+import {Subject, Subscription} from "rxjs";
 import {KsContextMenuService} from "../services/factory-services/ks-context-menu.service";
 import {KnowledgeSource} from "../models/knowledge.source.model";
 import {KsCommandService} from "../services/command-services/ks-command.service";
-import {MenuItem} from "primeng/api";
+import {ConfirmationService, MenuItem} from "primeng/api";
 import {ContextMenu} from "primeng/contextmenu";
 import {ProjectCommandService} from "../services/command-services/project-command.service";
-import {tap} from "rxjs/operators";
+import {takeUntil, tap} from "rxjs/operators";
 import {ProjectContextMenuService} from "../services/factory-services/project-context-menu.service";
+import {SettingsService} from "../services/ipc-services/settings.service";
 
 
 @Component({
@@ -103,6 +104,14 @@ export class GraphComponent implements OnInit, OnDestroy {
 
   menuItems: MenuItem[] = [];
 
+  private activeProject?: KcProject;
+
+  private showSources: boolean = true;
+
+  private running: boolean = false;
+
+  private cleanUp = new Subject();
+
   constructor(private route: ActivatedRoute,
               private projects: ProjectService,
               private command: KsCommandService,
@@ -112,34 +121,47 @@ export class GraphComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.routeSub = this.route.params.subscribe((params) => {
-      this.projectId = params.projectId ?? '';
-      if (this.projectId !== this.projects.getCurrentProjectId()?.value) {
-        this.projects.setCurrentProject(this.projectId);
-      }
-      this.data = [];
-      this.build();
-    });
+    this.route.params.pipe(
+      takeUntil(this.cleanUp),
+      tap((params) => {
+        this.projectId = params.projectId ?? '';
+        if (this.projectId !== this.projects.getCurrentProjectId()?.value) {
+          this.projects.setCurrentProject(this.projectId);
+        }
+        this.data = [];
+        this.build();
+      })
+    ).subscribe();
 
     this.projects.currentProject.pipe(
-      tap(() => {
-        this.build();
+      takeUntil(this.cleanUp),
+      tap((project) => {
+        if (!this.activeProject && project) {
+          this.build();
+        } else if (this.activeProject && project) {
+          if (this.activeProject.id.value !== project.id.value
+            || this.activeProject.knowledgeSource.length !== project.knowledgeSource.length
+            || this.activeProject.subprojects.length !== project.subprojects.length) {
+            this.build();
+          }
+        }
+        this.activeProject = project ?? undefined;
       })
     ).subscribe()
 
-    this.projects.projectTree.pipe(
-      tap(() => {
+    this.settings.graph.pipe(
+      takeUntil(this.cleanUp),
+      tap((graphSettings) => {
+        this.showSources = graphSettings.display.showSources;
+        this.data = [];
         this.build();
       })
     ).subscribe()
-
-
   }
 
   ngOnDestroy() {
-    if (this.routeSub) {
-      this.routeSub.unsubscribe();
-    }
+    this.cleanUp.next({});
+    this.cleanUp.complete();
   }
 
   build() {
