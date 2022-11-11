@@ -106,6 +106,7 @@ export class GraphCanvasComponent implements OnInit, OnChanges, OnDestroy {
     }
   };
 
+  private cleanUp = new Subject();
 
   initialize() {
     this.graphLayouts = new GraphLayouts(this.commonOptions);
@@ -135,6 +136,7 @@ export class GraphCanvasComponent implements OnInit, OnChanges, OnDestroy {
     this.graphStyles = new GraphStyles();
 
     settings.graph.pipe(
+      takeUntil(this.cleanUp),
       tap((graphSettings) => {
         this.commonOptions = {
           animate: graphSettings.animation.enabled,
@@ -144,7 +146,6 @@ export class GraphCanvasComponent implements OnInit, OnChanges, OnDestroy {
           maxSimulationTime: graphSettings.simulation.maxTime,
           simulate: graphSettings.simulation.enabled
         }
-        console.log('Initializing with common options: ', this.commonOptions);
         this.initialize();
       })
     ).subscribe()
@@ -152,6 +153,7 @@ export class GraphCanvasComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnInit(): void {
     this.theme.onThemeChange.pipe(
+      takeUntil(this.cleanUp),
       delay(500),
       tap(() => {
         if (!this.cyOptions) {

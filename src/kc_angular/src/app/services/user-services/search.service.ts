@@ -20,7 +20,7 @@ import {BehaviorSubject, Observable} from "rxjs";
 import {KnowledgeSource} from "../../models/knowledge.source.model";
 import {KcProject} from "../../models/project.model";
 import Fuse from "fuse.js";
-import {map, tap} from "rxjs/operators";
+import {map, take, tap} from "rxjs/operators";
 
 export type SearchProvider = {
   id: string,
@@ -102,7 +102,7 @@ export class SearchService {
         if (searchSettings.threshold !== undefined && searchSettings.threshold >= 0 && searchSettings.threshold <= 100) {
           this.searchOptions.threshold = searchSettings.threshold / 100;
         }
-      }));
+      })).subscribe();
   }
 
   executeSearch(term: string) {
@@ -113,6 +113,7 @@ export class SearchService {
 
   forTerm(term: string): Observable<Partial<KnowledgeSource & KcProject & any>[]> {
     return this.data.allKs.pipe(
+      take(1),
       map(ks => {
         return new Fuse(ks, this.searchOptions).search(term);
       })

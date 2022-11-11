@@ -13,20 +13,21 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-import {Injectable} from '@angular/core';
+import {Injectable, OnDestroy} from '@angular/core';
 import {KnowledgeSource} from "../../models/knowledge.source.model";
-import {BehaviorSubject, tap} from "rxjs";
+import {BehaviorSubject, Subject, tap} from "rxjs";
 import {KcProject} from "../../models/project.model";
 import {StorageService} from "../ipc-services/storage.service";
 import {SettingsService} from "../ipc-services/settings.service";
 import {ProjectService} from "../factory-services/project.service";
 import {FaviconService} from "../ingest-services/favicon.service";
 import {UUID} from "../../../../../kc_shared/models/uuid.model";
+import {takeUntil} from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
 })
-export class DataService {
+export class DataService implements OnDestroy {
   sources = {
     create: async (ksList: KnowledgeSource[]) => {
       return this.sources.update(ksList);
@@ -96,21 +97,26 @@ export class DataService {
 
   private projectInheritance: boolean = true;
 
+  private cleanUp: Subject<any> = new Subject<any>();
+
   constructor(private storage: StorageService,
               private settings: SettingsService,
               private favicon: FaviconService,
               private _projects: ProjectService) {
-    settings.app.subscribe((app) => {
-
-      try {
-        this.projectInheritance = app.projects.ksInherit;
-      } catch (e) {
-        this.projectInheritance = true;
-        this.settings.set({app: {projects: {ksInherit: true}}});
-      }
-    })
+    settings.app.pipe(
+      takeUntil(this.cleanUp),
+      tap((app) => {
+        try {
+          this.projectInheritance = app.projects.ksInherit;
+        } catch (e) {
+          this.projectInheritance = true;
+          this.settings.set({app: {projects: {ksInherit: true}}});
+        }
+      })
+    ).subscribe()
 
     _projects.newSources.pipe(
+      takeUntil(this.cleanUp),
       tap((sources) => {
         this.__allKs.next(this.__allKs.value.concat(sources));
       })
@@ -125,6 +131,7 @@ export class DataService {
     this.projectList = _projects.projects;
 
     _projects.currentProject.pipe(
+      takeUntil(this.cleanUp),
       tap((project) => {
         if (!project) {
           return;
@@ -153,5 +160,10 @@ export class DataService {
         })
       })
     ).subscribe()
+  }
+
+  ngOnDestroy() {
+    this.cleanUp.next({});
+    this.cleanUp.complete();
   }
 }
