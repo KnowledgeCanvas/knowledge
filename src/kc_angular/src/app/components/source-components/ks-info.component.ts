@@ -13,7 +13,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SecurityContext, SimpleChanges, ViewChild} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SecurityContext, SimpleChanges, ViewChild} from '@angular/core';
 import {KnowledgeSource, KnowledgeSourceEvent} from "src/app/models/knowledge.source.model";
 import {DomSanitizer, SafeUrl} from "@angular/platform-browser";
 import {FileViewConfig} from "../../../../../kc_shared/models/browser.view.model";
@@ -24,10 +24,26 @@ import {YouTubePlayer} from "@angular/youtube-player";
 import {Router} from "@angular/router";
 import {TopicService} from "../../services/user-services/topic.service";
 import {FormBuilder, FormGroup} from "@angular/forms";
-import {debounceTime, distinctUntilChanged} from "rxjs/operators";
+import {debounceTime, distinctUntilChanged, takeUntil, tap} from "rxjs/operators";
 import {ElectronIpcService} from "../../services/ipc-services/electron-ipc.service";
 import {NotificationsService} from "../../services/user-services/notifications.service";
 import {Clipboard} from "@angular/cdk/clipboard";
+import {SettingsService} from "../../services/ipc-services/settings.service";
+import {Subject} from "rxjs";
+
+class CollapseState {
+  details: boolean;
+  project: boolean;
+  pdf: boolean;
+  youtube: boolean;
+  timeline: boolean;
+  metadata: boolean;
+  sourcemodel: boolean;
+
+  constructor(collapsed: boolean) {
+    this.details = this.project = this.pdf = this.youtube = this.timeline = this.metadata = this.sourcemodel = collapsed;
+  }
+}
 
 @Component({
   selector: 'app-ks-info',
@@ -320,7 +336,7 @@ import {Clipboard} from "@angular/cdk/clipboard";
     `
   ]
 })
-export class KsInfoComponent implements OnInit, OnChanges {
+export class KsInfoComponent implements OnInit, OnChanges, OnDestroy {
   @Input() ks!: KnowledgeSource;
 
   @Input() collapseAll: boolean = false;
@@ -369,6 +385,8 @@ export class KsInfoComponent implements OnInit, OnChanges {
 
   ksIsPdf: boolean = false;
 
+  private cleanUp: Subject<any> = new Subject<any>();
+
   private first: boolean = true;
 
   constructor(private sanitizer: DomSanitizer,
@@ -388,6 +406,7 @@ export class KsInfoComponent implements OnInit, OnChanges {
     });
 
     this.form.valueChanges.pipe(
+      takeUntil(this.cleanUp),
       debounceTime(this.isDialog ? 2500 : 1000),
       distinctUntilChanged((prev, curr) => {
         if (curr.title.length <= 3) {
@@ -398,39 +417,40 @@ export class KsInfoComponent implements OnInit, OnChanges {
           prev.description === curr.description &&
           JSON.stringify(prev.topics) === JSON.stringify(curr.topics)
         );
+      }),
+      tap((formValue) => {
+        if (this.first) {
+          this.first = false;
+        } else {
+
+          // TODO: push update to knowledge source event list (currently, `events` is not the right type...)...
+          // const event: EventModel = {
+          //   description: '',
+          //   timestamp: Date(),
+          //   type: 'update'
+          // }
+
+          const ksEvent: KnowledgeSourceEvent = {
+            date: new Date(),
+            label: 'Updated',
+          }
+          if (!this.ks.events) {
+            this.ks.events = [];
+          }
+
+          this.ks.events.push(ksEvent);
+
+          this.ks.title = formValue.title;
+          this.ks.description = formValue.description;
+          this.ks.topics = formValue.topics;
+
+          if (this.ks.associatedProject && this.ks.associatedProject.value.length > 0) {
+            this.command.update([this.ks], !this.isDialog);
+            this.onSaved.emit(this.ks);
+          }
+        }
       })
-    ).subscribe((formValue) => {
-      if (this.first) {
-        this.first = false;
-      } else {
-
-        // TODO: push update to knowledge source event list (currently, `events` is not the right type...)...
-        // const event: EventModel = {
-        //   description: '',
-        //   timestamp: Date(),
-        //   type: 'update'
-        // }
-
-        const ksEvent: KnowledgeSourceEvent = {
-          date: new Date(),
-          label: 'Updated',
-        }
-        if (!this.ks.events) {
-          this.ks.events = [];
-        }
-
-        this.ks.events.push(ksEvent);
-
-        this.ks.title = formValue.title;
-        this.ks.description = formValue.description;
-        this.ks.topics = formValue.topics;
-
-        if (this.ks.associatedProject && this.ks.associatedProject.value.length > 0) {
-          this.command.update([this.ks], !this.isDialog);
-          this.onSaved.emit(this.ks);
-        }
-      }
-    })
+    ).subscribe()
   }
 
   get ksAssociatedProjectId() {
@@ -553,6 +573,11 @@ export class KsInfoComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
+  }
+
+  ngOnDestroy() {
+    this.cleanUp.next({});
+    this.cleanUp.complete();
   }
 
   populateCalendar(ks: KnowledgeSource) {

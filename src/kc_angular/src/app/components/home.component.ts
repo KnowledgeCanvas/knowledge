@@ -17,7 +17,7 @@ import {Component, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/co
 import {KnowledgeSource} from "../models/knowledge.source.model";
 import {IngestService} from "../services/ingest-services/ingest.service";
 import {ProjectService} from "../services/factory-services/project.service";
-import {Observable, Subscription} from "rxjs";
+import {Observable, Subject} from "rxjs";
 import {KcProject, ProjectCreationRequest} from "../models/project.model";
 import {ProjectTreeFactoryService} from "../services/factory-services/project-tree-factory.service";
 import {ConfirmationService, FilterService, MenuItem, TreeNode} from "primeng/api";
@@ -25,7 +25,7 @@ import {NotificationsService} from "../services/user-services/notifications.serv
 import {KsContextMenuService} from "../services/factory-services/ks-context-menu.service";
 import {Splitter} from "primeng/splitter";
 import {KsFactoryService} from "../services/factory-services/ks-factory.service";
-import {take, tap} from "rxjs/operators";
+import {take, takeUntil, tap} from "rxjs/operators";
 import {DragAndDropService} from "../services/ingest-services/drag-and-drop.service";
 
 @Component({
@@ -196,6 +196,8 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   supportedTypes: string[] = ["Links", "Files"];
 
+  private cleanUp: Subject<any> = new Subject<any>();
+
   constructor(private confirm: ConfirmationService,
               private dnd: DragAndDropService,
               private factory: KsFactoryService,
@@ -209,37 +211,43 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     this.supportedTypes = dnd.supportedTypes;
 
-    this.sub1 = projects.projectTree.subscribe((projectTree) => {
-      this.treeNodes = tree.constructTreeNodes(projectTree, false);
-    })
+    projects.projectTree.pipe(
+      takeUntil(this.cleanUp),
+      tap((projectTree) => {
+        this.treeNodes = tree.constructTreeNodes(projectTree, false);
+      })
+    ).subscribe()
 
-    this.sub2 = ingest.queue.subscribe((upNext) => {
-      this.loading = true;
-      this.upNext = upNext;
+    ingest.queue.pipe(
+      takeUntil(this.cleanUp),
+      tap((upNext) => {
+        this.loading = true;
+        this.upNext = upNext;
 
-      // Sort messages by date received (most recent appears at the top)
-      this.filtered = this.upNext.sort((a, b) => {
-        if (a.dateCreated > b.dateCreated) {
-          return -1;
-        } else if (a.dateCreated < b.dateCreated) {
-          return 1;
-        } else {
-          return 0;
-        }
-      });
-      const activeIndex = this.upNext.findIndex((ks => ks.id.value === this.active?.id.value));
-      this.activeIndex = activeIndex === -1 ? 0 : activeIndex;
-      this.active = this.upNext[this.activeIndex];
-      this.loading = false;
-    })
+        // Sort messages by date received (most recent appears at the top)
+        this.filtered = this.upNext.sort((a, b) => {
+          if (a.dateCreated > b.dateCreated) {
+            return -1;
+          } else if (a.dateCreated < b.dateCreated) {
+            return 1;
+          } else {
+            return 0;
+          }
+        });
+        const activeIndex = this.upNext.findIndex((ks => ks.id.value === this.active?.id.value));
+        this.activeIndex = activeIndex === -1 ? 0 : activeIndex;
+        this.active = this.upNext[this.activeIndex];
+        this.loading = false;
+      })
+    ).subscribe()
   }
 
   ngOnInit(): void {
   }
 
   ngOnDestroy() {
-    this.sub1.unsubscribe();
-    this.sub2.unsubscribe();
+    this.cleanUp.next({});
+    this.cleanUp.complete();
   }
 
   @HostListener('document:keydown.Control.[')

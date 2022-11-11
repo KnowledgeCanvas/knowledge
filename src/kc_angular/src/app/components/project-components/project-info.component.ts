@@ -17,11 +17,12 @@ import {Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@an
 import {KcProject} from "../../models/project.model";
 import {EventService} from "../../services/user-services/event.service";
 import {FormBuilder, FormGroup} from "@angular/forms";
-import {debounceTime, distinctUntilChanged, tap} from "rxjs/operators";
+import {debounceTime, distinctUntilChanged, takeUntil, tap} from "rxjs/operators";
 import {ProjectService} from "../../services/factory-services/project.service";
 import {NotificationsService} from "../../services/user-services/notifications.service";
 import {EventModel} from "../../../../../kc_shared/models/event.model";
 import {TopicService} from "../../services/user-services/topic.service";
+import {Subject} from "rxjs";
 
 
 @Component({
@@ -146,6 +147,8 @@ export class ProjectInfoComponent implements OnInit, OnChanges, OnDestroy {
 
   projectEvents: any[] = [];
 
+  private cleanUp: Subject<any> = new Subject<any>();
+
   constructor(private events: EventService,
               private formBuilder: FormBuilder,
               private notifications: NotificationsService,
@@ -162,6 +165,7 @@ export class ProjectInfoComponent implements OnInit, OnChanges, OnDestroy {
     });
 
     this.form.valueChanges.pipe(
+      takeUntil(this.cleanUp),
       debounceTime(1000),
       distinctUntilChanged((prev, curr) => {
         if (curr.name.length <= 3) {
@@ -183,18 +187,18 @@ export class ProjectInfoComponent implements OnInit, OnChanges, OnDestroy {
             this.project.events = [];
           }
 
+          this.project.name = formValue.name;
+          this.project.description = formValue.description;
+          this.project.topics = formValue.topics;
+          this.project.calendar.start = formValue.start;
+          this.project.calendar.end = formValue.end;
+
           const event: EventModel = {
             description: "",
             timestamp: Date(),
             type: 'update'
           }
           this.project.events.push(event);
-
-          this.project.name = this.form.get('name')?.value;
-          this.project.description = this.form.get('description')?.value;
-          this.project.topics = this.form.get('topics')?.value;
-          this.project.calendar.start = this.form.get('start')?.value;
-          this.project.calendar.end = this.form.get('end')?.value;
 
           this.projects.updateProjects([{
             id: this.project.id
@@ -210,6 +214,8 @@ export class ProjectInfoComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.cleanUp.next({});
+    this.cleanUp.complete();
   }
 
   ngOnChanges(changes: SimpleChanges) {

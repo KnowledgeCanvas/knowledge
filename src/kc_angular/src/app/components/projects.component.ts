@@ -17,37 +17,15 @@ import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
 import {ProjectService} from "../services/factory-services/project.service";
 import {KcProject} from "../models/project.model";
-import {Subscription} from "rxjs";
-import {ProjectCommandService} from "../services/command-services/project-command.service";
+import {BehaviorSubject, Subject, tap} from "rxjs";
 import {ContextMenu} from "primeng/contextmenu";
 import {MenuItem} from "primeng/api";
-import {KsCommandService} from "../services/command-services/ks-command.service";
-import {KsContextMenuService} from "../services/factory-services/ks-context-menu.service";
-import {ProjectContextMenuService} from "../services/factory-services/project-context-menu.service";
-import {tap} from "rxjs/operators";
-import {KnowledgeSource} from "../models/knowledge.source.model";
+import {takeUntil} from "rxjs/operators";
 
 @Component({
   selector: 'app-projects',
   template: `
-    <div class="w-full h-full flex app-splitter-container surface-section">
-      <div class="app-splitter-left">
-        <app-projects-tree class="h-full max-h-screen flex flex-column flex-shrink-0 border-right-1 border-200"></app-projects-tree>
-      </div>
-
-      <div class="app-splitter-divider"></div>
-
-      <div class="app-splitter-right">
-        <graph-canvas #graph
-                      [data]="data"
-                      (onSourceTap)="onSourceTap($event)"
-                      (onSourceCtxtap)="onSourceCtxtap($event)"
-                      (onProjectTap)="onProjectTap($event)"
-                      (onProjectCtxtap)="onProjectCtxtap($event)"
-                      class="w-full h-full">
-        </graph-canvas>
-      </div>
-    </div>
+    <app-project-info [project]="project | async"></app-project-info>
 
     <p-contextMenu #cm
                    styleClass="shadow-7"
@@ -64,134 +42,38 @@ export class ProjectsComponent implements OnInit, OnDestroy {
 
   projectId: string = '';
 
-  kcProject: KcProject | null = null;
-
-  routeSub: Subscription;
+  project: BehaviorSubject<KcProject | null> = new BehaviorSubject<KcProject | null>(null);
 
   data: any[] = [];
 
   menuItems: MenuItem[] = [];
 
-  constructor(private route: ActivatedRoute,
-              private projects: ProjectService,
-              private command: KsCommandService,
-              private context: KsContextMenuService,
-              private pContext: ProjectContextMenuService,
-              private pCommand: ProjectCommandService) {
+  private cleanUp: Subject<any> = new Subject<any>();
 
-    this.routeSub = route.params.subscribe((params) => {
-      this.projectId = params.projectId ?? '';
+  constructor(private route: ActivatedRoute, private projects: ProjectService) {
+    route.params.pipe(
+      takeUntil(this.cleanUp),
+      tap((params) => {
+        this.projectId = params.projectId ?? '';
 
-      this.kcProject = projects.getProject(this.projectId) ?? null;
+        const project = projects.getProject(this.projectId) ?? null;
+        if (project) {
+          this.project.next(project);
+        }
 
-      if (this.projectId !== projects.getCurrentProjectId()?.value) {
-        this.projects.setCurrentProject(this.projectId);
-      }
-
-      this.data = [];
-      this.build();
-    });
-
-    this.projects.currentProject.pipe(
-      tap(() => {
-        this.build();
+        if (this.projectId !== projects.getCurrentProjectId()?.value) {
+          this.projects.setCurrentProject(this.projectId);
+        }
       })
-    ).subscribe()
-
-    projects.projectTree.pipe(
-      tap(() => {
-        this.build();
-      })
-    ).subscribe()
+    ).subscribe();
   }
 
   ngOnInit(): void {
   }
 
   ngOnDestroy() {
-    this.routeSub.unsubscribe();
-  }
-
-  build() {
-    if (!this.projectId) {
-      return;
-    }
-
-    const projectTree = this.getTree(this.projectId);
-    let data: any[] = [];
-
-    for (let project of projectTree) {
-      data.push({
-        group: 'nodes',
-        data: {
-          id: project.id.value,
-          label: project.name,
-          type: project.id.value === this.projectId ? 'root' : 'project',
-          project: project,
-          width: (64 / Math.pow(project.level, 1 / 2)) + 4,
-          height: 64 / Math.pow(project.level, 1 / 2),
-          level: project.level
-        }
-      });
-
-      for (let sub of project.subprojects) {
-        let edge = {
-          group: 'edges',
-          data: {
-            id: `${project.id.value}-${sub}`,
-            source: project.id.value,
-            target: sub
-          }
-        }
-        data.push(edge);
-      }
-    }
-
-    this.data = data;
-  }
-
-  private getTree(project: string | any, level: number = 1): (KcProject & { level: number })[] {
-    if (!project) {
-      return [];
-    }
-
-    if (typeof project === 'string') {
-      let p = this.projects.getProject(project);
-      if (!p) {
-        return [];
-      } else {
-        project = p;
-        project.level = level;
-      }
-    }
-
-    let tree = [project];
-    if (!project.subprojects) {
-      return tree;
-    }
-    for (let subProject of project.subprojects) {
-      tree = tree.concat(this.getTree(subProject, level + 1));
-    }
-
-    return tree;
-  }
-
-  onSourceTap($event: { data: KnowledgeSource; event: MouseEvent }) {
-    this.command.detail($event.data);
-  }
-
-  onSourceCtxtap($event: { data: KnowledgeSource; event: MouseEvent }) {
-    this.menuItems = this.context.generate($event.data)
-    this.cm.show($event.event);
-  }
-
-  onProjectCtxtap($event: { data: KcProject; event: MouseEvent }) {
-    this.menuItems = this.pContext.generate($event.data);
-    this.cm.show($event.event);
-  }
-
-  onProjectTap($event: { data: KcProject; event: MouseEvent }) {
-    console.log('project tap: ', $event);
-    this.pCommand.detail($event.data);
+    this.cleanUp.next({});
+    this.cleanUp.complete();
+    this.project.complete();
   }
 }

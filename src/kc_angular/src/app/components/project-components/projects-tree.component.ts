@@ -94,9 +94,7 @@ export class ProjectsTreeComponent implements OnInit, OnDestroy {
 
   menu: MenuItem[] = [];
 
-  projectTreeSub: Subscription;
-
-  projectSub: Subscription;
+  private cleanUp: Subject<any> = new Subject<any>();
 
   constructor(private projects: ProjectService,
               private pCommand: ProjectCommandService,
@@ -110,35 +108,41 @@ export class ProjectsTreeComponent implements OnInit, OnDestroy {
       }
     }
 
-    this.projectTreeSub = projects.projectTree.subscribe((projectTree) => {
-      this.projectTree = tree.constructTreeNodes(projectTree, true) ?? [];
-      if (this.projectTree.length > 0) {
-        this.currentProject = tree.findTreeNode(this.projectTree, this.projectId) ?? undefined;
-        if (this.currentProject) {
-          expandPath(this.currentProject);
+    projects.projectTree.pipe(
+      takeUntil(this.cleanUp),
+      tap((projectTree) => {
+        this.projectTree = tree.constructTreeNodes(projectTree, true) ?? [];
+        if (this.projectTree.length > 0) {
+          this.currentProject = tree.findTreeNode(this.projectTree, this.projectId) ?? undefined;
+          if (this.currentProject) {
+            this.expandPath(this.currentProject);
+          }
         }
-      }
-    })
+      })
+    ).subscribe()
 
-    this.projectSub = this.projects.currentProject.subscribe((project) => {
-      if (project) {
-        this.projectId = project.id.value;
-      }
-      if (this.projectTree.length > 0) {
-        this.currentProject = tree.findTreeNode(this.projectTree, this.projectId) ?? undefined;
-        if (this.currentProject) {
-          expandPath(this.currentProject);
+    projects.currentProject.pipe(
+      takeUntil(this.cleanUp),
+      tap((project) => {
+        if (project) {
+          this.projectId = project.id.value;
         }
-      }
-    })
+        if (this.projectTree.length > 0) {
+          this.currentProject = tree.findTreeNode(this.projectTree, this.projectId) ?? undefined;
+          if (this.currentProject) {
+            this.expandPath(this.currentProject);
+          }
+        }
+      })
+    ).subscribe()
   }
 
   ngOnInit(): void {
   }
 
   ngOnDestroy() {
-    this.projectTreeSub.unsubscribe();
-    this.projectSub.unsubscribe();
+    this.cleanUp.next({});
+    this.cleanUp.complete();
   }
 
   selectionChange($event: any) {

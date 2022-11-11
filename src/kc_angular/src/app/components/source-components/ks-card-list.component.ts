@@ -22,11 +22,12 @@ import {KsContextMenuService} from "../../services/factory-services/ks-context-m
 import {ApplicationSettingsModel, CardOptions, CardSizeType, CardSortType} from "../../../../../kc_shared/models/settings.model";
 import {SettingsService} from "../../services/ipc-services/settings.service";
 import {NotificationsService} from "../../services/user-services/notifications.service";
-import {Subscription} from "rxjs";
+import {Subject, tap} from "rxjs";
 import {KcProject, ProjectUpdateRequest} from "../../models/project.model";
 import {ProjectService} from "../../services/factory-services/project.service";
 import {ProjectTreeFactoryService} from "../../services/factory-services/project-tree-factory.service";
 import {ActivatedRoute} from "@angular/router";
+import {takeUntil} from "rxjs/operators";
 
 interface PaginateConfig {
   page: number,
@@ -402,6 +403,8 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
 
   selectedProject: TreeNode = {};
 
+  private cleanUp = new Subject();
+
   constructor(private command: KsCommandService,
               private menu: KsContextMenuService,
               private settings: SettingsService,
@@ -409,18 +412,24 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
               private tree: ProjectTreeFactoryService,
               private route: ActivatedRoute,
               private notifications: NotificationsService) {
-    projects.projectTree.subscribe((tree) => {
-      this.treeNodes = this.tree.constructTreeNodes(tree, false);
-      this.selectedProject = this.tree.findTreeNode(this.treeNodes, this.projects.getCurrentProjectId()?.value ?? '') ?? {};
-    })
+    projects.projectTree.pipe(
+      takeUntil(this.cleanUp),
+      tap((tree) => {
+        this.treeNodes = this.tree.constructTreeNodes(tree, false);
+        this.selectedProject = this.tree.findTreeNode(this.treeNodes, this.projects.getCurrentProjectId()?.value ?? '') ?? {};
+      })
+    ).subscribe()
 
-    this.settingsSubscription = settings.app.subscribe((appSettings) => {
-      if (appSettings && appSettings.grid) {
-        this.appSettings = appSettings;
-        this.loadSizer();
-        this.loadSorter();
-      }
-    });
+    settings.app.pipe(
+      takeUntil(this.cleanUp),
+      tap((appSettings) => {
+        if (appSettings && appSettings.grid) {
+          this.appSettings = appSettings;
+          this.loadSizer();
+          this.loadSorter();
+        }
+      })
+    ).subscribe();
   }
 
   configureCardList() {
@@ -512,7 +521,8 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.settingsSubscription.unsubscribe();
+    this.cleanUp.next({});
+    this.cleanUp.complete();
   }
 
   ngOnChanges(changes: SimpleChanges) {

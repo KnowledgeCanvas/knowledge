@@ -13,7 +13,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-import {Component, HostListener, OnInit, ViewChild} from '@angular/core';
+import {Component, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {KnowledgeSource} from "../models/knowledge.source.model";
 import {DataService} from "../services/user-services/data.service";
 import {KsCommandService} from "../services/command-services/ks-command.service";
@@ -22,7 +22,9 @@ import {BrowserViewDialogService} from "../services/ipc-services/browser-view-di
 import {AutoComplete} from "primeng/autocomplete";
 import {KcProject} from "../models/project.model";
 import {SearchService} from "../services/user-services/search.service";
-import {take, tap} from "rxjs/operators";
+import {take, takeUntil, tap} from "rxjs/operators";
+import {fadeIn} from "../animations";
+import {Subject} from "rxjs";
 
 
 @Component({
@@ -113,6 +115,8 @@ export class SearchComponent implements OnInit {
 
   suggestions: Partial<KnowledgeSource & KcProject & any>[] = [];
 
+  private cleanUp: Subject<any> = new Subject<any>();
+
   constructor(private data: DataService,
               private command: KsCommandService,
               private factory: KsFactoryService,
@@ -127,18 +131,26 @@ export class SearchComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this._search.query.subscribe((term) => {
-      if (term && term.trim().length > 0) {
-        this.query = term;
-        this.searchBar.search({}, term);
+    this._search.query.pipe(
+      takeUntil(this.cleanUp),
+      tap((term) => {
+        if (term && term.trim().length > 0) {
+          this.query = term;
+          this.searchBar.search({}, term);
 
-        setTimeout(() => {
-          this.searchBar.focusInput();
-          this.searchBar.show();
-        })
+          setTimeout(() => {
+            this.searchBar.focusInput();
+            this.searchBar.show();
+          })
 
-      }
-    })
+        }
+      })
+    ).subscribe()
+  }
+
+  ngOnDestroy() {
+    this.cleanUp.next({});
+    this.cleanUp.complete();
   }
 
   search(query: string) {
