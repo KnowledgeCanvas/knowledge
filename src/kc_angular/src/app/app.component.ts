@@ -13,7 +13,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-import {Component, HostListener, OnInit} from '@angular/core';
+import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
 import {environment} from "../environments/environment";
 import {SettingsService} from "./services/ipc-services/settings.service";
 import {DialogService, DynamicDialogRef} from "primeng/dynamicdialog";
@@ -26,12 +26,15 @@ import {IngestService} from "./services/ingest-services/ingest.service";
 import {DragAndDropService} from "./services/ingest-services/drag-and-drop.service";
 import {KsCommandService} from "./services/command-services/ks-command.service";
 import {ProjectTreeFactoryService} from "./services/factory-services/project-tree-factory.service";
-import {NavigationEnd, Router} from "@angular/router";
+import {ChildrenOutletContexts, NavigationEnd, Router} from "@angular/router";
 import {KsDetailsComponent} from "./components/source-components/ks-details.component";
-import {map, take, tap} from "rxjs/operators";
+import {map, take, takeUntil, tap} from "rxjs/operators";
+import {Subject} from "rxjs";
 import {StartupService} from "./services/ipc-services/startup.service";
 import {ProjectCommandService} from "./services/command-services/project-command.service";
 import {ProjectDetailsComponent} from "./components/project-components/project-details.component";
+import {animate, state, style, transition, trigger} from '@angular/animations';
+import {fadeIn, slideInAnimation} from "./animations";
 
 
 type SidebarItem = {
@@ -44,7 +47,7 @@ type SidebarItem = {
 @Component({
   selector: 'app-root',
   template: `
-    <div id="app-header" class="w-full p-fluid title-bar flex-row-center-between pl-2 surface-ground border-bottom-1 surface-border" style="height: 32px; max-width: 100vw">
+    <div @fadeIn id="app-header" class="w-full p-fluid title-bar flex-row-center-between pl-2 surface-ground border-bottom-1 surface-border" style="height: 32px; max-width: 100vw">
       <div class="select-none title-bar-interactive flex-row-center-start" *ngIf="os && os === 'darwin'">
         <div (click)="close($event)" class="macos-window-button window-button-close"></div>
         <div (click)="minimize($event)" class="macos-window-button window-button-minimize"></div>
@@ -72,7 +75,7 @@ type SidebarItem = {
       </div>
     </div>
 
-    <div *ngIf="!readyToShow" class="w-full h-full surface-a flex-col-center-center gap-4" style="max-height: calc(100vh - 32px)">
+    <div @fadeIn *ngIf="!readyToShow" class="w-full h-full surface-a flex-col-center-center gap-4" style="max-height: calc(100vh - 32px)">
       <div>
         <img src="assets/img/kc-icon-greyscale.png"
              alt="Knowledge Logo"
@@ -118,10 +121,15 @@ type SidebarItem = {
         </div>
       </div>
       <div id="app-body" class="w-full flex flex-column relative flex-auto select-none" style="max-height: calc(100vh - 32px)">
-        <div id="app-router-outlet" class="flex-auto overflow-y-auto" style="max-height: calc(100vh - 80px); max-width: calc(100vw - 61px)">
-          <router-outlet></router-outlet>
+        <div id="app-router-outlet" class="h-full flex flex-row overflow-y-auto" style="max-height: calc(100vh - 80px); max-width: calc(100vw - 61px)">
+          <div class="flex flex-column flex-grow-0 h-full border-right-1 border-400">
+            <app-projects-tree @flyInOut *ngIf="projectTreeVisible"></app-projects-tree>
+          </div>
+          <div [@routeAnimations]="getRouteAnimationData()" class="flex-column flex-grow-1 h-full">
+            <router-outlet></router-outlet>
+          </div>
         </div>
-        <div id="app-footer">
+        <div @fadeIn id="app-footer">
           <app-project-breadcrumb (dragstart)="$event.preventDefault()"
                                   class="w-full h-full select-none"
                                   [projectId]="projectId"
@@ -198,6 +206,26 @@ type SidebarItem = {
         height: 4rem;
       }
     `
+  ],
+  animations: [
+    slideInAnimation,
+    trigger('flyInOut', [
+      state('in', style({
+        transform: 'translateX(0)'
+      })),
+      transition('void => *', [
+        style({
+          transform: 'translateX(-100%)'
+        }),
+        animate(100)
+      ]),
+      transition('* => void', [
+        animate(100, style({
+          transform: 'translateX(-100%)'
+        }))
+      ])
+    ]),
+    fadeIn
   ]
 })
 export class AppComponent implements OnInit {
@@ -490,5 +518,9 @@ export class AppComponent implements OnInit {
     if (item.command) {
       item.command();
     }
+  }
+
+  getRouteAnimationData() {
+    return this.contexts.getContext('primary')?.route?.snapshot?.data?.['animation'];
   }
 }

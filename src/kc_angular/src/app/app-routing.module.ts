@@ -35,26 +35,32 @@ const routes: Routes = [
       {
         path: 'inbox/:projectId',
         component: HomeComponent,
+        data: {animation: 'Inbox'}
       },
       {
         path: 'projects/:projectId',
-        component: ProjectsComponent
+        component: ProjectsComponent,
+        data: {animation: 'Projects'}
       },
       {
         path: 'graph/:projectId',
-        component: GraphComponent
+        component: GraphComponent,
+        data: {animation: 'Graph'}
       },
       {
         path: 'table/:projectId',
-        component: TableComponent
+        component: TableComponent,
+        data: {animation: 'Table'}
       },
       {
         path: 'grid/:projectId',
-        component: GridComponent
+        component: GridComponent,
+        data: {animation: 'Grid'}
       },
       {
         path: 'calendar/:projectId',
-        component: CalendarComponent
+        component: CalendarComponent,
+        data: {animation: 'Calendar'}
       },
       {
         path: 'display',
