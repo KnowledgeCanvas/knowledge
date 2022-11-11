@@ -122,6 +122,8 @@ export class CalendarSettingsModel {
 
 }
 
+export type GraphActions = 'open' | 'preview' | 'details' | 'select'
+
 export class GraphSettingsModel {
     animation: {
         enabled: boolean,
@@ -130,12 +132,33 @@ export class GraphSettingsModel {
         enabled: true,
         duration: 1000
     }
+
+    display: {
+        showSources: boolean,
+        autoFit: boolean,
+        largeGraphWarning: boolean
+    } = {
+        showSources: true,
+        autoFit: true,
+        largeGraphWarning: true
+    }
+
     simulation: {
         enabled: boolean,
-        maxTime: number
+        maxTime: number,
+        delay: number
     } = {
-        enabled: false,
-        maxTime: 2500
+        enabled: true,
+        maxTime: 2500,
+        delay: 1500
+    }
+
+    actions: {
+        tap: GraphActions
+        dblTap: GraphActions
+    } = {
+        tap: 'details',
+        dblTap: 'preview'
     }
 }
 
@@ -149,6 +172,7 @@ export class DisplaySettingsModel {
     theme: KcTheme = new KcTheme()
     logging: LoggingSettingsModel = new LoggingSettingsModel()
     zoom: number = 100
+    autoplay: boolean = true;
 }
 
 export class LoggingSettingsModel {
