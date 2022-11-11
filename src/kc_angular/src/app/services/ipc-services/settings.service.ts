@@ -15,7 +15,7 @@
  */
 
 import {Injectable, NgZone} from '@angular/core';
-import {BehaviorSubject} from 'rxjs';
+import {BehaviorSubject, tap} from 'rxjs';
 import {ElectronIpcService} from "./electron-ipc.service";
 import {
   ApplicationSettingsModel,
@@ -28,6 +28,7 @@ import {
 import {DialogService, DynamicDialogRef} from "primeng/dynamicdialog";
 import {SettingsComponent} from "../../components/settings/settings.component";
 import {Router} from "@angular/router";
+import {take} from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
@@ -173,12 +174,15 @@ export class SettingsService {
       })
     });
 
-    this.ref.onClose.subscribe((_: any) => {
-      this.router.navigateByUrl(route).then((success) => {
-        if (!success) {
-          console.warn('SettingsService - Unable to navigate to ', category);
-        }
+    this.ref.onClose.pipe(
+      take(1),
+      tap((_: any) => {
+        this.router.navigateByUrl(route).then((success) => {
+          if (!success) {
+            console.warn('SettingsService - Unable to navigate to ', category);
+          }
+        })
       })
-    })
+    ).subscribe()
   }
 }

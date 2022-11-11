@@ -16,184 +16,128 @@
 
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {SettingsService} from "../../services/ipc-services/settings.service";
-import {Subscription} from "rxjs";
+import {FormBuilder, FormGroup} from "@angular/forms";
+import {SearchSettingsModel} from "../../../../../kc_shared/models/settings.model";
+import {debounceTime, distinctUntilChanged, tap} from "rxjs/operators";
 
 
 @Component({
   selector: 'app-search-settings',
   template: `
     <div class="p-fluid grid gap-2">
-      <div class="col-12">
-        <p-panel>
-          <ng-template pTemplate="header">
-            <div class="flex-row-center-between w-full">
-              <div>
-                <b>Web Search</b>
+      <form [formGroup]="form" class="w-full h-full">
+        <div class="col-12">
+          <p-panel [toggleable]="true" toggler="header">
+            <ng-template pTemplate="header">
+              <div class="flex-row-center-between w-full">
+                <div class="text-2xl"> Web Search</div>
               </div>
-            </div>
-          </ng-template>
-          <ng-template pTemplate="content">
-            <div class="w-full h-full flex flex-row justify-content-between align-items-center">
-              <div class="flex flex-row gap-2 align-items-center">
-                <div>Select a provider:</div>
-                <div class="pi pi-question-circle" pTooltip="The search provider will be used to perform web searches."></div>
+            </ng-template>
+            <ng-template pTemplate="content">
+              <div class="w-full h-full flex flex-column">
+                <app-setting-template label="Provider" labelHelp="The search provider will be used to perform web searches.">
+                  <p-dropdown [options]="providers" formControlName="provider" class="settings-input" optionLabel="name" [style]="{'width': '100%'}" appendTo="body"></p-dropdown>
+                </app-setting-template>
               </div>
-              <p-dropdown [(ngModel)]="provider"
-                          [options]="providers"
-                          optionLabel="name"
-                          [filter]="true"
-                          inputId="search-dropdown"
-                          [style]="{'width': '100%'}"
-                          appendTo="body"
-                          (onChange)="onProviderChange($event)">
-              </p-dropdown>
-            </div>
-          </ng-template>
-        </p-panel>
-      </div>
+            </ng-template>
+          </p-panel>
+        </div>
 
-      <div class="col-12">
-        <p-panel>
-          <ng-template pTemplate="header">
-            <div class="flex-row-center-between w-full">
-              <div>
-                <b>Local Search</b>
+        <div class="col-12">
+          <p-panel [toggleable]="true" toggler="header">
+            <ng-template pTemplate="header">
+              <div class="flex-row-center-between w-full">
+                <div class="text-2xl"> Local Search</div>
               </div>
-            </div>
-          </ng-template>
-          <ng-template pTemplate="content">
-            <div class="w-full h-full flex flex-column gap-2">
-              <div class="w-full flex flex-row justify-content-between align-items-center">
-                <div>
-                  <div class="flex-row-center-start">
-                    <div>Fuzzy Matching</div>
-                  </div>
-                  <div class="flex-row-center-start text-500">
-                    <div *ngIf="fuzzy">
-                      Match based on threshold
-                      <a class="pl-2" target="_blank" href="https://fusejs.io/concepts/scoring-theory.html">
-                        Learn more
-                      </a>
-                    </div>
-                    <div *ngIf="!fuzzy">
-                      Match entire search term
-                    </div>
-                  </div>
-                </div>
-                <p-inputSwitch inputId="search-fuzzy" [(ngModel)]="fuzzy"
-                               (onChange)="onFuzzyChange($event)">
-                </p-inputSwitch>
-              </div>
+            </ng-template>
+            <ng-template pTemplate="content">
+              <div class="w-full h-full flex flex-column">
+                <app-setting-template label="Fuzzy Matching"
+                                      labelHelp="Enable or disable fuzzy search. Enabling fuzzy search will result in more search results at the cost of accuracy."
+                                      labelSubtext="{{form.controls.fuzzy.value | switchLabel}}" labelHelpLink="https://fusejs.io/concepts/scoring-theory.html">
+                  <p-inputSwitch class="settings-input" formControlName="fuzzy"></p-inputSwitch>
+                </app-setting-template>
 
-              <p-divider layout="horizontal"></p-divider>
+                <p-divider layout="horizontal"></p-divider>
 
-              <div class="w-full flex flex-row justify-content-between align-items-center">
-                <div class="flex flex-row gap-1">
-                  <div>
-                    Threshold:
-                  </div>
-                  <div>
-                    {{threshold / 100 | number : '1.1' | percent}}
-                  </div>
-                </div>
-                <div class="w-16rem flex flex-column gap-1">
-                  <p-slider [(ngModel)]="threshold"
-                            (onSlideEnd)="onThresholdChange($event)"
-                            [disabled]="!fuzzy">
-                  </p-slider>
-                  <div class="w-full flex flex-row justify-content-between">
-                    <div>Match Anything</div>
-                    <div>Exact Match</div>
-                  </div>
-                </div>
+                <app-setting-template label="Threshold" labelSubtext="{{form.controls.threshold.value / 100 | number : '1.1'}}"
+                                      labelHelp="Only search results with a score lower than the threshold will be displayed. A threshold of 0.0 requires a perfect match, a threshold of 1.0 would match anything."
+                                      labelHelpLink="https://fusejs.io/api/options.html#includescore">
+                  <p-slider class="settings-input w-16rem" formControlName="threshold"></p-slider>
+                  <div class="settings-input-subtext-left">Fewer results</div>
+                  <div class="settings-input-subtext-right">More results</div>
+                </app-setting-template>
               </div>
-            </div>
-          </ng-template>
-        </p-panel>
-      </div>
+            </ng-template>
+          </p-panel>
+        </div>
+      </form>
     </div>
   `,
   styles: []
 })
 export class SearchSettingsComponent implements OnInit, OnDestroy {
-  // Search provider (Google by default)
-  provider = {code: 'google', name: 'Google'};
+  searchSettings: SearchSettingsModel = new SearchSettingsModel();
 
-  // Valid search provider selections
   providers = [
     {code: 'google', name: 'Google'},
     {code: 'bing', name: 'Bing'},
     {code: 'duck', name: 'DuckDuckGo'}
   ]
-  fuzzy: boolean = false;
-  threshold: number = 50;
-  private readonly _searchSubscription: Subscription;
 
-  constructor(private settingsService: SettingsService) {
-    this._searchSubscription = settingsService.search.subscribe((searchSettings) => {
-      if (!searchSettings.provider) {
-        return;
-      }
-      let provider = this.providers.find(p => p.code === searchSettings.provider);
-      if (provider) {
-        this.provider = provider;
-      }
+  form: FormGroup;
 
-      if (searchSettings.fuzzy === undefined) {
-        settingsService.set({search: {fuzzy: false}});
-      } else {
-        this.fuzzy = searchSettings.fuzzy;
-      }
+  constructor(private settings: SettingsService, private formBuilder: FormBuilder) {
+    if (!settings.get().search) {
+      this.set();
+    } else {
+      this.searchSettings = {
+        ...this.searchSettings,
+        ...settings.get().search
+      };
+    }
 
-      if (searchSettings.threshold === undefined) {
-        settingsService.set({search: {threshold: 50}});
-      } else {
-        this.threshold = searchSettings.threshold;
-      }
+    this.form = formBuilder.group({
+      provider: [this.providers.find(p => p.code === this.searchSettings.provider)],
+      fuzzy: [this.searchSettings.fuzzy],
+      threshold: [this.searchSettings.threshold]
     });
+
+    this.disable();
+
+    this.form.valueChanges.pipe(
+      debounceTime(500),
+      distinctUntilChanged((prev, curr) => {
+        return (curr.provider === prev.provider)
+          && (curr.fuzzy === prev.fuzzy)
+          && (curr.threshold === prev.threshold)
+      }),
+      tap((formValue) => {
+        this.searchSettings = {
+          provider: formValue.provider.code,
+          fuzzy: formValue.fuzzy,
+          threshold: formValue.threshold
+        };
+        this.disable();
+        this.set();
+      })
+    ).subscribe()
+
   }
 
   ngOnInit(): void {
   }
 
   ngOnDestroy() {
-    if (this._searchSubscription) {
-      this._searchSubscription.unsubscribe();
-    }
   }
 
-  onProviderChange($event: any) {
-    if (!$event.value) {
-      console.warn('SearchSettings: provider change unsuccessful, value unknown.');
-      return;
-    }
-    let provider = this.providers.find(p => p.code === $event.value.code);
-    if (provider) {
-      this.settingsService.set({search: {provider: $event.value.code}});
-    } else {
-      console.warn('SearchSettings: provider change unsuccessful, invalid value');
-    }
+  disable() {
+    this.searchSettings.fuzzy ? this.form.get('threshold')?.enable() : this.form.get('threshold')?.disable();
   }
 
-  onFuzzyChange($event: any) {
-    if ($event.checked !== undefined) {
-      this.settingsService.set({
-        search: {
-          fuzzy: $event.checked,
-          threshold: $event.checked ? 50 : 0
-        }
-      });
-    }
-  }
-
-  onThresholdChange($event: any) {
-    if ($event.value === undefined) {
-      return;
-    }
-
-    let threshold = $event.value;
-    if (threshold >= 0 && threshold <= 100) {
-      this.settingsService.set({search: {threshold: threshold}});
-    }
+  set() {
+    this.settings.set({
+      search: this.searchSettings
+    })
   }
 }

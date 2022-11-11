@@ -36,14 +36,14 @@ export type SelectButtonOption = {
     <div class="p-fluid grid select-none gap-2">
       <form [formGroup]="form" class="w-full h-full">
         <div class="col-12">
-          <p-panel #autoscanPanel>
+          <p-panel [toggleable]="true" toggler="header" #autoscanPanel>
             <ng-template pTemplate="header">
               <div class="flex-row-center-between w-full">
-                <b>Autoscan</b>
+                <div class="text-2xl">Autoscan</div>
               </div>
             </ng-template>
             <ng-template pTemplate="content">
-              <div class="w-full h-full flex flex-column gap-2">
+              <div class="w-full h-full flex flex-column">
                 <app-setting-template label="Autoscan (Beta)"
                                       labelHelp="Enable or disable watching for new files in a pre-designated folder."
                                       labelHelpLink="https://github.com/KnowledgeCanvas/knowledge/wiki/Basics:-Sources#how-are-sources-imported"
@@ -53,138 +53,95 @@ export type SelectButtonOption = {
 
                 <p-divider layout="horizontal"></p-divider>
 
-                <app-setting-template label="Autoscan Location"
-                                      labelHelp="Files saved to this location will automatically be added to your Inbox.">
+                <app-setting-template label="Autoscan Location" labelHelp="Files saved to this location will automatically be added to your Inbox.">
                   <div class="settings-input p-inputgroup w-30rem">
-                    <button pButton
-                            [disabled]="!form.controls.autoscan.value"
-                            icon="pi pi-folder"
-                            (click)="getAutoscanPath()">
-                    </button>
-                    <input pInputText
-                           type="text"
-                           #autoscanLocation
-                           id="autoscanLocation"
-                           style="width: calc(100% - 10rem)"
-                           formControlName="autoscanPath">
-                    <button pButton
-                            label="Show"
-                            (click)="show(autoscanLocation.value)">
-                    </button>
+                    <button pButton [disabled]="!form.controls.autoscan.value" icon="pi pi-folder" (click)="getAutoscanPath()"></button>
+                    <input pInputText type="text" #autoscanLocation id="autoscanLocation" style="width: calc(100% - 10rem)" formControlName="autoscanPath">
+                    <button pButton label="Show" (click)="show(autoscanLocation.value)"></button>
                   </div>
                 </app-setting-template>
 
                 <p-divider layout="horizontal"></p-divider>
 
                 <app-setting-template label="Scan Interval" labelHelp="How frequently Knowledge will scan the directory.">
-                  <p-inputNumber formControlName="autoscanInterval"
-                                 [suffix]="' seconds'"
-                                 inputId="autoscan-interval"
-                                 class="settings-input w-16rem"
-                                 [showButtons]="true"
-                                 [useGrouping]="false"
-                                 [allowEmpty]="false"
-                                 [min]="10"
-                                 [max]="600">
-                  </p-inputNumber>
+                  <p-inputNumber formControlName="autoscanInterval" [suffix]="' seconds'"
+                                 inputId="autoscan-interval" class="settings-input w-16rem" [showButtons]="true"
+                                 [useGrouping]="false" [allowEmpty]="false" [min]="10" [max]="600"></p-inputNumber>
                 </app-setting-template>
               </div>
             </ng-template>
           </p-panel>
         </div>
+
         <div class="col-12">
-          <p-panel #extensionpanel>
+          <p-panel [toggleable]="true" toggler="header" #fileManager>
             <ng-template pTemplate="header">
               <div class="flex-row-center-between w-full">
-                <b>Browser Extensions</b>
+                <div class="text-2xl">File Manager</div>
+              </div>
+            </ng-template>
+
+            <ng-template pTemplate="content">
+              <div class="w-full h-full flex flex-column">
+                <!-- TODO: re-enable this once the feature is fully built out and supported -->
+                <app-setting-template label="Managed Files"
+                                      labelHelp="Choose which imported files are moved to a centralized location on your computer. Note that Autoscan files are always moved."
+                                      labelSubtext="{{form.controls.managerTarget.value | titlecase}}">
+                  <p-selectButton [options]="fileManagerStates" [disabled]="true" formControlName="managerTarget"
+                                  pTooltip="Knowledge currently only supports managing files that were imported using Autoscan"
+                                  class="settings-input w-30rem" id="managed-files" optionLabel="name" optionValue="value" optionDisabled="disabled"></p-selectButton>
+                </app-setting-template>
+
+                <p-divider layout="horizontal"></p-divider>
+
+                <app-setting-template label="Storage Location"
+                                      labelHelp="Files imported using Autoscan will be moved from their original location to this location.">
+                  <div class="settings-input p-inputgroup w-30rem">
+                    <button pButton [disabled]="true" icon="pi pi-folder" (click)="getStoragePath()"
+                            pTooltip="Changing storage location will be supported in a future version of Knowledge"></button>
+
+                    <input pInputText type="text" formControlName="managerPath" id="storage-path" #filestorage style="width: calc(100% - 10rem)">
+
+                    <button pButton label="Show" (click)="show(filestorage.value)"></button>
+                  </div>
+                </app-setting-template>
+              </div>
+            </ng-template>
+          </p-panel>
+        </div>
+
+        <div class="col-12">
+          <p-panel [toggleable]="true" toggler="header" #extensionpanel>
+            <ng-template pTemplate="header">
+              <div class="flex-row-center-between w-full">
+                <div class="text-2xl">Browser Extensions</div>
               </div>
             </ng-template>
             <ng-template pTemplate="content">
-              <div class="w-full h-full flex flex-column gap-2">
+              <div class="w-full h-full flex flex-column">
                 <app-setting-template label="Browser Extensions (Beta)"
                                       labelHelp="Enable or disable communication with the Knowledge browser extension."
                                       labelHelpLink="https://github.com/KnowledgeCanvas/extensions"
-                                      labelSubtext="{{ingestSettings.extensions.enabled | switchLabel}}">
+                                      labelSubtext="{{form.controls.extensions.value | switchLabel}}">
                   <p-inputSwitch class="settings-input" formControlName="extensions"></p-inputSwitch>
                 </app-setting-template>
 
                 <p-divider layout="horizontal"></p-divider>
 
-                <app-setting-template label="Port"
-                                      labelHelp="The port used to communicate between Knowledge and the browser extension.">
-                  <p-inputNumber formControlName="extensionsPort"
-                                 inputId="port-number"
-                                 class="settings-input w-16rem"
-                                 [showButtons]="true"
-                                 [useGrouping]="false"
-                                 [allowEmpty]="false"
-                                 [min]="1025"
-                                 [max]="65535">
-                  </p-inputNumber>
+                <app-setting-template label="Port" labelHelp="The port used to communicate between Knowledge and the browser extension.">
+                  <p-inputNumber formControlName="extensionsPort" inputId="port-number" class="settings-input w-16rem"
+                                 [showButtons]="true" [useGrouping]="false" [allowEmpty]="false" [min]="1025" [max]="65535"></p-inputNumber>
                 </app-setting-template>
 
                 <p-divider layout="horizontal"></p-divider>
 
-                <app-setting-template label="Download Extensions"
-                                      labelHelp="Extensions are currently in Beta and require enabling 'Developer Mode' in Chrome.">
+                <app-setting-template label="Download Extensions" labelHelp="Extensions are currently in Beta and require enabling 'Developer Mode' in Chrome.">
                   <div class="settings-input">
                     <a target="_blank" href="https://github.com/KnowledgeCanvas/extensions/releases/download/v0.1.0/knowledge-extensions.zip">
-                      <app-ks-icon
-                        iconUrl="assets/img/icons/chrome_icon.svg"></app-ks-icon>
+                      <app-ks-icon iconUrl="assets/img/icons/chrome_icon.svg"></app-ks-icon>
                     </a>
                   </div>
                 </app-setting-template>
-              </div>
-            </ng-template>
-          </p-panel>
-        </div>
-        <div class="col-12">
-          <p-panel #fileManager>
-            <ng-template pTemplate="header">
-              <div class="flex-row-center-between w-full">
-                <b>File Manager</b>
-              </div>
-            </ng-template>
-
-            <ng-template pTemplate="content">
-              <div class="w-full h-full flex flex-column gap-2">
-                <!--              TODO: re-enable this once the feature is fully built out and supported -->
-                <!--              <div class="col-12">-->
-                <!--                <label for="managed-files">Managed Files</label>-->
-                <!--                <p-selectButton [options]="fileManagerStates"-->
-                <!--                                [(ngModel)]="ingestSettings.manager.target"-->
-                <!--                                (onChange)="onFileManagerTargetChange($event)"-->
-                <!--                                [disabled]="true"-->
-                <!--                                pTooltip="Knowledge currently only supports managing files that were imported using Autoscan"-->
-                <!--                                id="managed-files"-->
-                <!--                                optionLabel="name"-->
-                <!--                                optionValue="value"-->
-                <!--                                optionDisabled="disabled">-->
-                <!--                </p-selectButton>-->
-                <!--              </div>-->
-
-                <div class="w-full flex flex-row justify-content-between align-items-center">
-                  <div class="flex flex-row gap-2 align-items-center">
-                    <div>Storage Location:</div>
-                    <div class="pi pi-question-circle" pTooltip="Autoscan files will be moved from their original location to this location."></div>
-                  </div>
-                  <div class="p-inputgroup w-30rem">
-                    <button pButton
-                            [disabled]="true"
-                            icon="pi pi-folder"
-                            pTooltip="Changing storage location will be supported in a future version of Knowledge"
-                            (click)="getStoragePath()">
-                    </button>
-                    <input pInputText type="text"
-                           formControlName="managerPath"
-                           id="storage-path"
-                           #filestorage
-                           style="width: calc(100% - 10rem)">
-                    <button pButton label="Show"
-                            (click)="show(filestorage.value)">
-                    </button>
-                  </div>
-                </div>
               </div>
             </ng-template>
           </p-panel>

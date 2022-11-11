@@ -189,7 +189,8 @@ class SettingsService {
             display: {
                 theme: new KcTheme(),
                 logging: new LoggingSettingsModel(),
-                zoom: 100
+                zoom: 100,
+                autoplay: true
             },
             docker: new DockerSettingsModel(),
             ingest: {
