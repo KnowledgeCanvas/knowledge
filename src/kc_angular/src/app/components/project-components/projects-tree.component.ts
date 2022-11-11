@@ -19,14 +19,14 @@ import {MenuItem, TreeNode} from "primeng/api";
 import {TreeModule} from "primeng/tree";
 import {ProjectCommandService} from "../../services/command-services/project-command.service";
 import {ProjectTreeFactoryService} from "../../services/factory-services/project-tree-factory.service";
-import {Subscription} from "rxjs";
+import {Subject, tap} from "rxjs";
 import {ProjectContextMenuService} from "../../services/factory-services/project-context-menu.service";
+import {takeUntil} from "rxjs/operators";
 
 @Component({
   selector: 'app-projects-tree',
   template: `
     <p-tree class="h-full"
-            styleClass="surface-ground"
             [style]="{'max-height': '100%'}"
             [contextMenu]="cm"
             (onNodeContextMenuSelect)="onContextMenu($event)"
@@ -57,15 +57,22 @@ import {ProjectContextMenuService} from "../../services/factory-services/project
         <div class="flex-row-center-between border-top-1 border-400">
           <button pButton
                   icon="pi pi-arrow-down"
-                  label="Expand All"
+                  label="Expand"
                   (click)="expandAll(projectTree, true)"
-                  class="p-button-text p-button-plain">
+                  class="p-button-text p-button-plain outline-none border-none shadow-none">
+          </button>
+          <button pButton
+                  icon="pi pi-circle"
+                  class="p-button-text border-none outline-none shadow-none"
+                  pTooltip="Show selected project"
+                  tooltipPosition="top"
+                  (click)="showSelected()">
           </button>
           <button pButton
                   icon="pi pi-arrow-up"
-                  label="Collapse All"
+                  label="Collapse"
                   (click)="expandAll(projectTree, false)"
-                  class="p-button-text p-button-plain">
+                  class="p-button-text p-button-plain outline-none border-none shadow-none">
           </button>
         </div>
       </ng-template>
@@ -100,13 +107,6 @@ export class ProjectsTreeComponent implements OnInit, OnDestroy {
               private pCommand: ProjectCommandService,
               private pContext: ProjectContextMenuService,
               private tree: ProjectTreeFactoryService) {
-    const expandPath = (node: TreeNode) => {
-      let curr = node.parent;
-      while (curr) {
-        curr.expanded = true;
-        curr = curr.parent;
-      }
-    }
 
     projects.projectTree.pipe(
       takeUntil(this.cleanUp),
@@ -143,6 +143,14 @@ export class ProjectsTreeComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.cleanUp.next({});
     this.cleanUp.complete();
+  }
+
+  private expandPath = (node: TreeNode) => {
+    let curr = node.parent;
+    while (curr) {
+      curr.expanded = true;
+      curr = curr.parent;
+    }
   }
 
   selectionChange($event: any) {
@@ -183,6 +191,13 @@ export class ProjectsTreeComponent implements OnInit, OnDestroy {
       }
     } else {
       this.menu = [];
+    }
+  }
+
+  showSelected() {
+    if (this.currentProject) {
+      this.expandAll(this.projectTree, false);
+      this.expandPath(this.currentProject);
     }
   }
 }

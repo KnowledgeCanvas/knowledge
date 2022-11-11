@@ -397,8 +397,6 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
 
   selectedSizer: KsCardSizer = this.sizers[0];
 
-  settingsSubscription: Subscription;
-
   treeNodes: TreeNode[] = [];
 
   selectedProject: TreeNode = {};
@@ -828,7 +826,7 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
     this.onProjectChange.emit($event);
   }
 
-  onMoveAll($event: MouseEvent) {
+  onMoveAll(_: MouseEvent) {
     if (!this.selectedProject || !this.selectedProject.key || this.selectedProject.key.trim() === '') {
       this.notifications.error('Source Card List', 'Failed to Move', 'No project selected.');
       return;

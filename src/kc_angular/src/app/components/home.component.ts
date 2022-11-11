@@ -38,114 +38,123 @@ import {DragAndDropService} from "../services/ingest-services/drag-and-drop.serv
                    [autoZIndex]="true"
                    appendTo="body">
     </p-contextMenu>
-    <div class="w-full h-full flex app-splitter-container surface-section">
-      <div class="app-splitter-left">
-        <div *ngIf="upNext.length > 0" class="h-full" style="overflow-y: auto">
-          <div class="">
-            <div class="p-input-icon-left w-full">
-              <i class="pi pi-filter"></i>
-              <input type="text"
-                     pInputText
-                     #filter
-                     style="height: 40px; width: 100%"
-                     placeholder="Filter"
-                     (input)="onFilter($event, filter.value)"
-                     class="w-full p-fluid">
-            </div>
-          </div>
-          <div>
-            <app-ks-message *ngFor="let ks of filtered"
-                            [ks]="ks"
-                            (click)="setActive(ks)"
-                            (contextmenu)="setContext(ks); onKsContextMenu(context); cm.show($event)"
-                            [class.bg-primary-reverse]="active && (ks.id.value === (active.id.value))"
-                            [class.surface-ground]="active && (ks.id.value === (active.id.value))">
-            </app-ks-message>
-          </div>
-        </div>
 
-        <div *ngIf="upNext.length == 0" class="" id="inbox-side-panel" #inboxSidePanel>
-          <div style="width: 100%;" class="hover:surface-hover text-primary">
-            <app-ks-message class="cursor-pointer hover:surface-hover"
-                            (click)="loadExamples()"
-                            status="Click to load examples">
-            </app-ks-message>
+    <div class="flex flex-column h-full w-full">
+      <div class="inbox-header flex-grow-0">
+        <div class="flex flex-row justify-content-between align-items-center p-2">
+          <div *ngIf="treeNodes.length > 0" class="flex flex-row">
+            <div class="" *ngIf="selectedProject">
+              <button pButton icon="pi pi-fw pi-times" (click)="selectedProject = undefined" class="p-button-text p-button-plain"></button>
+            </div>
+            <p-treeSelect [options]="treeNodes"
+                          [(ngModel)]="selectedProject"
+                          [disabled]="!upNext || upNext.length === 0"
+                          class="text-primary"
+                          selectionMode="single"
+                          placeholder="Import to Project..."
+                          [filter]="true"
+                          appendTo="body">
+            </p-treeSelect>
+            <button pButton
+                    class="ml-1"
+                    label="Import"
+                    [disabled]="!selectedProject"
+                    (click)="onProjectImport()"></button>
           </div>
-        </div>
-        <div class="w-full" *ngIf="loading">
-          <p-progressBar mode="indeterminate" [style]="{'height': '0.5rem'}"></p-progressBar>
+
+          <div *ngIf="treeNodes.length === 0" class="">
+            <input pInputText #projectName placeholder="Create a new Project">
+            <button pButton
+                    class="ml-1"
+                    label="Create and Import"
+                    [disabled]="!projectName.value"
+                    (click)="onProjectCreateAndImport(projectName.value)"></button>
+          </div>
+
+          <div class="flex flex-row">
+            <button pButton
+                    icon="pi pi-arrow-down"
+                    label="Expand"
+                    [disabled]="!active"
+                    (click)="expandAll()"
+                    class="p-button-rounded p-button-text shadow-none"></button>
+            <button pButton
+                    icon="pi pi-arrow-up"
+                    label="Collapse"
+                    [disabled]="!active"
+                    (click)="collapseAll()"
+                    class="p-button-rounded p-button-text shadow-none"></button>
+          </div>
         </div>
       </div>
 
-      <div class="app-splitter-divider"></div>
-
-      <div class="app-splitter-right">
-        <div *ngIf="active" class="w-full h-full flex flex-column">
-          <div class="flex flex-row justify-content-between align-items-center p-2">
-            <div class="flex flex-row">
-              <button pButton
-                      icon="pi pi-arrow-down"
-                      label="Expand"
-                      (click)="expandAll()"
-                      class="p-button-rounded p-button-text shadow-none"></button>
-              <button pButton
-                      icon="pi pi-arrow-up"
-                      label="Collapse"
-                      (click)="collapseAll()"
-                      class="p-button-rounded p-button-text shadow-none"></button>
-            </div>
-
-            <div *ngIf="treeNodes.length > 0" class="flex flex-row">
-              <div class="" *ngIf="selectedProject">
-                <button pButton icon="pi pi-fw pi-times" (click)="selectedProject = undefined" class="p-button-text p-button-plain"></button>
+      <div class="inbox-content flex-grow-1 h-full overflow-y-auto">
+        <div class="w-full h-full flex app-splitter-container">
+          <div class="app-splitter-left">
+            <div *ngIf="upNext.length > 0" class="h-full" style="overflow-y: auto">
+              <div class="">
+                <div class="p-input-icon-left w-full">
+                  <i class="pi pi-filter"></i>
+                  <input type="text"
+                         pInputText
+                         #filter
+                         style="height: 40px; width: 100%"
+                         placeholder="Filter"
+                         (input)="onFilter($event, filter.value)"
+                         class="w-full p-fluid">
+                </div>
               </div>
-              <p-treeSelect [options]="treeNodes"
-                            [(ngModel)]="selectedProject"
-                            class="text-primary"
-                            selectionMode="single"
-                            placeholder="Choose a project"
-                            [filter]="true"
-                            appendTo="body">
-              </p-treeSelect>
-              <button pButton
-                      class="ml-1"
-                      label="Import"
-                      [disabled]="!selectedProject"
-                      (click)="onProjectImport()"></button>
+              <div>
+                <app-ks-message *ngFor="let ks of filtered"
+                                [ks]="ks"
+                                (click)="setActive(ks)"
+                                (contextmenu)="setContext(ks); onKsContextMenu(context); cm.show($event)"
+                                [class.bg-primary-reverse]="active && (ks.id.value === (active.id.value))"
+                                [class.surface-ground]="active && (ks.id.value === (active.id.value))">
+                </app-ks-message>
+              </div>
             </div>
 
-            <div *ngIf="treeNodes.length === 0" class="">
-              <input pInputText #projectName placeholder="Create a new Project">
-              <button pButton
-                      class="ml-1"
-                      label="Create and Import"
-                      [disabled]="!projectName.value"
-                      (click)="onProjectCreateAndImport(projectName.value)"></button>
+            <div *ngIf="upNext.length == 0" class="" id="inbox-side-panel" #inboxSidePanel>
+              <div style="width: 100%;" class="hover:surface-hover text-primary">
+                <app-ks-message class="cursor-pointer hover:surface-hover"
+                                (click)="loadExamples()"
+                                status="Click to load examples">
+                </app-ks-message>
+              </div>
+            </div>
+            <div class="w-full" *ngIf="loading">
+              <p-progressBar mode="indeterminate" [style]="{'height': '0.5rem'}"></p-progressBar>
             </div>
           </div>
-          <div class="overflow-y-auto">
-            <app-ks-info *ngIf="active"
-                         [ks]="active"
-                         [collapseAll]="collapsed"
-                         (onRemove)="onKsRemove($event)">
-            </app-ks-info>
-          </div>
-        </div>
 
-        <div *ngIf="!active" class="w-full h-full flex flex-column">
-          <app-dropzone [shouldShorten]="upNext.length > 0"
-                        [supportedTypes]="supportedTypes"
-                        hintMessage="Supported types: {{supportedTypes.join(', ')}}">
-          </app-dropzone>
-          <div class="inactive-inbox gap-4">
-            <div (dragstart)="$event.preventDefault()">
-              <img src="assets/img/kc-icon-greyscale.png"
-                   alt="Knowledge Logo"
-                   class="pulsate-fwd"
-                   style="filter: drop-shadow(0 0 1px var(--primary-color)); height: 8rem">
+          <div class="app-splitter-right">
+            <div *ngIf="active" class="w-full h-full flex flex-column">
+              <div class="overflow-y-auto">
+                <app-ks-info *ngIf="active"
+                             [ks]="active"
+                             [collapseAll]="collapsed"
+                             (onRemove)="onKsRemove($event)">
+                </app-ks-info>
+              </div>
             </div>
-            <div class="text-600 text-2xl">
-              You're all caught up.
+
+            <div *ngIf="!active" class="w-full h-full flex flex-column">
+              <app-dropzone [shouldShorten]="upNext.length > 0"
+                            [supportedTypes]="supportedTypes"
+                            hintMessage="Supported types: {{supportedTypes.join(', ')}}">
+              </app-dropzone>
+              <div class="inactive-inbox surface-hover gap-4 border-round-bottom-2xl">
+                <div (dragstart)="$event.preventDefault()">
+                  <img src="assets/img/kc-icon-greyscale.png"
+                       alt="Knowledge Logo"
+                       class="pulsate-fwd"
+                       style="filter: drop-shadow(0 0 1px var(--primary-color)); height: 8rem">
+                </div>
+                <div class="text-600 text-2xl">
+                  You're all caught up.
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -155,7 +164,7 @@ import {DragAndDropService} from "../services/ingest-services/drag-and-drop.serv
   styles: [
     `
       .inactive-inbox {
-        flex-basis: 75%;
+        height: 100%;
         display: flex;
         flex-direction: column;
         flex-wrap: nowrap;
@@ -185,10 +194,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   selectedProject: any;
 
   collapsed: boolean = false;
-
-  sub1: Subscription;
-
-  sub2: Subscription;
 
   ksMenuItems: MenuItem[] = [];
 

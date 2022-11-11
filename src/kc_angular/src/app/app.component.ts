@@ -133,19 +133,11 @@ type SidebarItem = {
           <app-project-breadcrumb (dragstart)="$event.preventDefault()"
                                   class="w-full h-full select-none"
                                   [projectId]="projectId"
-                                  (onShowProjectTree)="projectTreeVisible = $event">
+                                  (onShowProjectTree)="projectTreeVisible = !projectTreeVisible">
           </app-project-breadcrumb>
         </div>
       </div>
     </div>
-
-    <p-sidebar [(visible)]="projectTreeVisible"
-               [style]="{height: '100%', width: '30em'}"
-               appendTo="body"
-               [modal]="true"
-               [dismissible]="true">
-      <app-projects-tree *ngIf="projectTreeVisible"></app-projects-tree>
-    </p-sidebar>
 
     <p-confirmDialog appendTo="body"></p-confirmDialog>
     <p-messages key="app-banner"></p-messages>
@@ -231,7 +223,7 @@ type SidebarItem = {
 export class AppComponent implements OnInit, OnDestroy {
   projectId: string = '';
 
-  projectTreeVisible: boolean = false;
+  projectTreeVisible: boolean = true;
 
   readyToShow: boolean = false;
 
