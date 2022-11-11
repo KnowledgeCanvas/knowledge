@@ -50,7 +50,7 @@ class CollapseState {
   template: `
     <p-scrollPanel class="w-full h-full">
       <div class="flex flex-column gap-2">
-        <p-panel header="Details" class="col-12" [toggleable]="true" [collapsed]="collapseDetails" toggler="header">
+        <p-panel header="Details" class="col-12 pt-0" [toggleable]="true" [(collapsed)]="collapsed.details" toggler="header">
           <div class="w-full h-full flex flex-wrap surface-section p-2">
             <div class="col-12 lg:col-6">
               <div class="flex flex-row flex-auto w-full">
@@ -94,8 +94,7 @@ class CollapseState {
                   </div>
 
                   <div class="field col-12">
-                    <p-chips [max]="5"
-                             [allowDuplicate]="false"
+                    <p-chips [allowDuplicate]="false"
                              [addOnBlur]="true"
                              [addOnTab]="true"
                              (onChipClick)="onTopicClick($event)"
@@ -113,7 +112,7 @@ class CollapseState {
                  class="col-12"
                  #pdfPanel
                  header="PDF"
-                 [collapsed]="collapsePdf"
+                 [(collapsed)]="collapsed.pdf"
                  [toggleable]="true"
                  toggler="header"
                  (onAfterToggle)="onPdfToggle($event)">
@@ -132,7 +131,7 @@ class CollapseState {
         <p-panel *ngIf="this.ksIsYoutubeVideo"
                  class="col-12"
                  header="YouTube Video"
-                 [collapsed]="collapseYouTube"
+                 [(collapsed)]="collapsed.youtube"
                  [toggleable]="true"
                  toggler="header"
                  (onAfterToggle)="youtubeToggle($event)">
@@ -158,7 +157,8 @@ class CollapseState {
                  class="col-12"
                  [toggleable]="true"
                  toggler="header"
-                 [collapsed]="collapseProject">
+
+                 [(collapsed)]="collapsed.project">
           <div class="h-full w-full surface-section">
             <div class="w-full flex flex-row flex-auto">
               <div class="p-fluid grid w-full">
@@ -194,7 +194,7 @@ class CollapseState {
                  class="col-12"
                  [toggleable]="true"
                  toggler="header"
-                 [collapsed]="collapseTimeline">
+                 [(collapsed)]="collapsed.timeline">
           <div class="flex flex-column flex-auto surface-section">
             <div class="calendar-actions-container col-4">
               <div class="p-inputgroup">
@@ -203,6 +203,7 @@ class CollapseState {
                 </button>
                 <p-calendar [(ngModel)]="ks.dateDue"
                             #dueDateCal
+                            class="p-fluid"
                             appendTo="body"
                             placeholder="Due Date"
                             (ngModelChange)="onDueDate($event)"
@@ -227,7 +228,7 @@ class CollapseState {
                  *ngIf="ksMetadata.length > 0"
                  [toggleable]="true"
                  toggler="header"
-                 [collapsed]="collapseExtraction">
+                 [(collapsed)]="collapsed.metadata">
           <textarea pInputTextarea id="_ksRawText"
                     *ngIf="ks.rawText && ks.rawText.length > 0"
                     [autoResize]="true"
@@ -269,7 +270,7 @@ class CollapseState {
                  class="col-12"
                  [toggleable]="true"
                  toggler="header"
-                 [collapsed]="collapseSource">
+                 [(collapsed)]="collapsed.sourcemodel">
           <ng-template pTemplate="content">
             <div class="p-fluid flex flex-wrap surface-section" *ngIf="this.allowCollapsedContent">
               <div class="field p-float-label sm:col-12 md:col-12 lg:col-6 mt-4">
@@ -367,19 +368,7 @@ export class KsInfoComponent implements OnInit, OnChanges, OnDestroy {
 
   allowCollapsedContent: boolean = false;
 
-  collapseDetails: boolean = false;
-
-  collapseTimeline: boolean = true;
-
-  collapseYouTube: boolean = true;
-
-  collapsePdf: boolean = true;
-
-  collapseExtraction: boolean = true;
-
-  collapseSource: boolean = true;
-
-  collapseProject: boolean = true;
+  collapsed: CollapseState = new CollapseState(false);
 
   form: FormGroup;
 
@@ -389,6 +378,8 @@ export class KsInfoComponent implements OnInit, OnChanges, OnDestroy {
 
   private first: boolean = true;
 
+  private autoplay: boolean = true;
+
   constructor(private sanitizer: DomSanitizer,
               private browser: BrowserViewDialogService,
               private clipboard: Clipboard,
@@ -397,7 +388,15 @@ export class KsInfoComponent implements OnInit, OnChanges, OnDestroy {
               private topics: TopicService,
               private notifications: NotificationsService,
               private formBuilder: FormBuilder,
-              private command: KsCommandService) {
+              private command: KsCommandService,
+              private settings: SettingsService) {
+    settings.display.pipe(
+      takeUntil(this.cleanUp),
+      tap((displaySettings) => {
+        this.autoplay = displaySettings.autoplay;
+      })
+    ).subscribe()
+
     this.form = formBuilder.group({
       id: '',
       title: [''],
@@ -464,37 +463,17 @@ export class KsInfoComponent implements OnInit, OnChanges, OnDestroy {
     this.safeUrl = undefined;
     this.fileConfig = undefined;
 
-    this.collapseDetails = false;
-    this.collapseTimeline = true;
-    this.collapseYouTube = true;
-    this.collapsePdf = true;
-    this.collapseExtraction = true;
-    this.collapseSource = true;
-    this.collapseProject = true;
+    this.collapsed = new CollapseState(false)
 
     this.first = true;
   }
 
   onExpandAll() {
-    this.collapseAll = false;
-    this.collapseDetails = false;
-    this.collapsePdf = false;
-    this.collapseTimeline = false;
-    this.collapseYouTube = false;
-    this.collapseSource = false;
-    this.collapseExtraction = false;
-    this.collapseProject = false;
+    this.collapsed = new CollapseState(false)
   }
 
   onCollapseAll() {
-    this.collapseAll = true;
-    this.collapseDetails = true;
-    this.collapsePdf = true;
-    this.collapseTimeline = true;
-    this.collapseYouTube = true;
-    this.collapseSource = true;
-    this.collapseExtraction = true;
-    this.collapseProject = true;
+    this.collapsed = new CollapseState(true)
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -662,7 +641,7 @@ export class KsInfoComponent implements OnInit, OnChanges, OnDestroy {
     try {
       if ($event.collapsed === true) {
         this.ksYoutubePlayer.pauseVideo();
-      } else {
+      } else if (this.autoplay) {
         this.ksYoutubePlayer.playVideo();
       }
     } catch (e) {

@@ -50,7 +50,7 @@ export interface KcCardRequest {
 @Component({
   selector: 'app-project-calendar',
   template: `
-    <div *ngIf="viewReady" class="h-full w-full">
+    <div *ngIf="viewReady else loading" class="h-full w-full">
       <full-calendar #calendar
                      [deepChangeDetection]="deepChangeDetection"
                      class="h-full w-full"
@@ -66,11 +66,11 @@ export interface KcCardRequest {
       </div>
     </div>
 
-    <div *ngIf="!viewReady">
+    <ng-template #loading>
       <p-skeleton width="100%" height="40px"></p-skeleton>
       <br>
       <p-skeleton width="100%" height="65vh"></p-skeleton>
-    </div>
+    </ng-template>
   `,
   styles: [
     `
@@ -108,7 +108,7 @@ export interface KcCardRequest {
 export class ProjectCalendarComponent implements OnInit, OnChanges {
   @ViewChild('calendar') calendar!: FullCalendarComponent;
 
-  @Input() kcProject!: KcProject | null;
+  @Input() kcProject!: KcProject | null | undefined;
 
   @Input() ksList: KnowledgeSource[] | null = [];
 

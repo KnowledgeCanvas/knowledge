@@ -73,16 +73,15 @@ import {KsCommandService} from "../../services/command-services/ks-command.servi
 
           <div *ngIf="showTopics"
                [style]="{'height':'5rem', 'overflow-y': 'auto', 'overflow-x': 'hidden'}">
-            <p-chips [(ngModel)]="keywords"
-                     class="p-fluid w-full"
-                     styleClass="ks-topic-chip"
+            <p-chips [allowDuplicate]="false"
+                     [addOnBlur]="true"
+                     [addOnTab]="true"
                      (onChipClick)="onTopicClick.emit({ks: ks, topic: $event.value})"
                      (onAdd)="onTopicAdd()"
                      (onRemove)="onTopicRemove()"
-                     [addOnTab]="true"
-                     [addOnBlur]="true"
-                     [allowDuplicate]="false"
-                     placeholder="Add a Topic...">
+                     [(ngModel)]="keywords"
+                     class="p-fluid w-full"
+                     placeholder="Start typing to add a topic...">
             </p-chips>
           </div>
 

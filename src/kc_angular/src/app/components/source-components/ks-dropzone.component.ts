@@ -20,7 +20,7 @@ import {animate, state, style, transition, trigger} from "@angular/animations";
   selector: 'app-dropzone',
   template: `
     <div [@dropzone-shorten]="shouldShorten ? 'dropzone-sm' : 'dropzone-lg'"
-         class="dropzone select-none flex-row-center-center">
+         class="dropzone select-none border-round-top-2xl">
       <div class="flex-col-center-center">
         <b class="text-xl text-600">{{emptyMessage}}</b>
       </div>
@@ -34,7 +34,6 @@ import {animate, state, style, transition, trigger} from "@angular/animations";
       .dropzone {
         width: 100%;
         color: var(--text-color);
-        border-radius: 5px;
         background-image: linear-gradient(225deg,
           var(--surface-b) 25%, var(--surface-c) 25%,
           var(--surface-c) 50%, var(--surface-b) 50%,

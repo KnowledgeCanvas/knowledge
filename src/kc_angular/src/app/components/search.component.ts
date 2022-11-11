@@ -64,7 +64,7 @@ import {Subject} from "rxjs";
                 </div>
                 <div *ngIf="item.item.id.value !== 'search'" class="h-full w-full flex-row-center-end">
                   <div *ngIf="item.item.flagged">
-                    <button pButton class="p-button-rounded p-button-sm p-button-outlined" icon="pi pi-flag-fill"></button>
+                    <button pButton class="p-button-rounded p-button-sm" icon="pi pi-flag"></button>
                   </div>
                 </div>
               </div>
@@ -72,10 +72,10 @@ import {Subject} from "rxjs";
           </div>
           <div *ngIf="item.item.topics && item.item.topics.length > 0" class="flex-row-center-start overflow-x-auto pt-2 w-full mr-2">
             <p-chips [allowDuplicate]="false"
-                     [addOnBlur]="true"
-                     [addOnTab]="true"
-                     [(ngModel)]="item.item.topics"
-                     [disabled]="true"
+                     [addOnBlur]="false"
+                     [addOnTab]="false"
+                     [showClear]="false"
+                     [ngModel]="item.item.topics"
                      class="p-fluid w-full">
             </p-chips>
           </div>
@@ -106,9 +106,9 @@ import {Subject} from "rxjs";
         }
       }
     `
-  ]
+  ], animations: [fadeIn]
 })
-export class SearchComponent implements OnInit {
+export class SearchComponent implements OnInit, OnDestroy {
   @ViewChild('searchBar') searchBar!: AutoComplete;
 
   query: any;
