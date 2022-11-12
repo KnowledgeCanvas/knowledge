@@ -129,7 +129,7 @@ interface KsCardListConfig {
         </ng-template>
 
         <ng-template pTemplate="content">
-          <div class="h-full w-full p-4" style="max-height: calc(100vh - 285px)">
+          <div class="h-full w-full p-4">
             <p-scrollPanel [style]="{'max-height': 'calc(100vh - 300px)'}">
               <div #top style="height: 0; width: 0"></div>
               <div *ngIf="ksList.length === 0" class="h-full w-full">
