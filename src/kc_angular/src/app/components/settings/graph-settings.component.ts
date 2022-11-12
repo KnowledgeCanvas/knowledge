@@ -132,7 +132,7 @@ import {debounceTime, distinctUntilChanged, tap} from "rxjs/operators";
                 <app-setting-template label="Delay"
                                       labelHelp="How long to wait before running auto-simulate after running non-simulated layouts. A delay of at least 1 second is required."
                                       labelSubtext="{{form.controls.autoSimulateDelay.value / 1000.0 | number: '1.1'}}s">
-                  <p-slider class="w-16rem settings-input" [min]="1000" [max]="5000" [step]="500" formControlName="autoSimulateDelay"></p-slider>
+                  <p-slider class="w-16rem settings-input" [min]="0" [max]="5000" [step]="500" formControlName="autoSimulateDelay"></p-slider>
                   <div class="settings-input-subtext-left">Shorter</div>
                   <div class="settings-input-subtext-right">Longer</div>
                 </app-setting-template>

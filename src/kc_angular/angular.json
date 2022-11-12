@@ -26,6 +26,7 @@
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.json",
+            "webWorkerTsConfig": "tsconfig.worker.json",
             "aot": true,
             "inlineStyleLanguage": "scss",
             "assets": [

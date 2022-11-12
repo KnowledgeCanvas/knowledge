@@ -13,21 +13,30 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-
-import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges} from '@angular/core';
+import {Component, EventEmitter, Input, NgZone, OnChanges, OnDestroy, OnInit, Output, SimpleChanges} from '@angular/core';
 import {KnowledgeSource} from "../../models/knowledge.source.model";
 import {KcProject} from "../../models/project.model";
 import {ThemeService} from "../../services/user-services/theme.service";
 import {CytoscapeLayout, GraphLayouts} from "./graph.layouts";
 import cytoscape, {CytoscapeOptions, LayoutOptions} from "cytoscape";
 import {GraphStyles} from "./graph.styles";
-import {delay, tap} from "rxjs/operators";
+import {delay, takeUntil, tap} from "rxjs/operators";
 import {SettingsService} from "../../services/ipc-services/settings.service";
+import {NotificationsService} from "../../services/user-services/notifications.service";
+import {Subject} from "rxjs";
 
-cytoscape.use(require('cytoscape-cola'));
-cytoscape.use(require('cytoscape-dagre'));
-cytoscape.use(require('cytoscape-klay'));
-cytoscape.use(require('cytoscape-fcose'));
+
+/* Cytoscape Plugin Imports */
+const cola = require('cytoscape-cola');
+const dagre = require('cytoscape-dagre');
+const klay = require('cytoscape-klay');
+const fcose = require('cytoscape-fcose');
+
+/* Register Plugins */
+cytoscape.use(cola);
+cytoscape.use(dagre);
+cytoscape.use(klay);
+cytoscape.use(fcose);
 
 @Component({
   selector: 'graph-canvas',
@@ -37,12 +46,15 @@ cytoscape.use(require('cytoscape-fcose'));
                       [layouts]="graphLayouts.layouts"
                       [running]="running"
                       (onLayout)="onLayout($event)"
-                      (onReset)="onFitToView()"
+                      (onFit)="onFitToView()"
                       (onRun)="onRun()"
                       (onStop)="onStop()"
                       (onSettings)="onSettings()">
       </graph-controls>
-      <div #cy class="cy" id="cy"></div>
+      <div class="cy" id="cy"></div>
+      <div class="graph-footer">
+        {{projectNodeCount}} Projects, {{sourceNodeCount}} Sources
+      </div>
     </div>
   `,
   styles: [
@@ -52,17 +64,37 @@ cytoscape.use(require('cytoscape-fcose'));
         height: 100%;
         display: flex;
       }
+
+      .graph-footer {
+        min-width: 12rem;
+        width: 24rem;
+        max-width: 36rem;
+        display: flex;
+        position: absolute;
+        right: 1rem;
+        bottom: calc(48px + 1rem);
+        flex-direction: column;
+        flex-wrap: nowrap;
+        align-content: center;
+        align-items: flex-end;
+        justify-content: space-between;
+        z-index: 99;
+      }
     `
   ]
 })
 export class GraphCanvasComponent implements OnInit, OnChanges, OnDestroy {
-  @Output() onReady = new EventEmitter();
+  @Output() onRunning = new EventEmitter<boolean>();
 
   @Output() onSourceTap = new EventEmitter<{ data: KnowledgeSource, event: MouseEvent }>();
 
-  @Output() onSourceCtxtap = new EventEmitter<{ data: KnowledgeSource, event: MouseEvent }>();
+  @Output() onSourceDblTap = new EventEmitter<{ data: KnowledgeSource, event: MouseEvent }>();
+
+  @Output() onSourceCtxtap = new EventEmitter<{ data: KnowledgeSource[], event: MouseEvent }>();
 
   @Output() onProjectTap = new EventEmitter<{ data: KcProject, event: MouseEvent }>();
+
+  @Output() onProjectDblTap = new EventEmitter<{ data: KcProject, event: MouseEvent }>();
 
   @Output() onProjectCtxtap = new EventEmitter<{ data: KcProject, event: MouseEvent }>();
 
@@ -70,9 +102,13 @@ export class GraphCanvasComponent implements OnInit, OnChanges, OnDestroy {
 
   running: boolean = false;
 
-  cy?: cytoscape.Core;
+  cy: cytoscape.Core | undefined;
 
   cyOptions?: CytoscapeOptions;
+
+  projectNodeCount: number = 0;
+
+  sourceNodeCount: number = 0;
 
   private graphStyles: GraphStyles;
 
@@ -108,31 +144,11 @@ export class GraphCanvasComponent implements OnInit, OnChanges, OnDestroy {
 
   private cleanUp = new Subject();
 
-  initialize() {
-    this.graphLayouts = new GraphLayouts(this.commonOptions);
-
-    this.cyLayout = {
-      ...this.commonOptions,
-      name: 'fcose',
-      // @ts-ignore
-      padding: 20, // fit padding
-      componentSpacing: 1.2,
-      nodeSeparation: 100,
-      uniformNodeDimensions: true,
-      sampleSize: 100,
-      spacingFactor: 1, // Applies a multiplicative factor (>0) to expand or compress the overall area that the nodes take up
-      nodeDimensionsIncludeLabels: true, // Applies a multiplicative factor (>0) to expand or compress the overall area that the nodes take up
-      initialTemp: 99999,
-      gravity: 50,
-      idealEdgeLength: (_: any) => 100,
-      nodeRepulsion(_: any): number {
-        return 999999;
-      }
-    };
-  }
 
   constructor(private theme: ThemeService,
-              private settings: SettingsService) {
+              private settings: SettingsService,
+              private ngZone: NgZone,
+              private notifications: NotificationsService) {
     this.graphStyles = new GraphStyles();
 
     settings.graph.pipe(
@@ -169,7 +185,8 @@ export class GraphCanvasComponent implements OnInit, OnChanges, OnDestroy {
           this.cy.destroy();
         }
         this.createCytoscape();
-        this.addRunFit();
+        this.add();
+        this.onRun();
       })).subscribe()
 
     setTimeout(() => {
@@ -182,39 +199,53 @@ export class GraphCanvasComponent implements OnInit, OnChanges, OnDestroy {
       return;
     }
 
-    this.onStop();
-
-    /*
-     First Change OR Graph DNE ==> Init
-      - Initialize cytoscape with predefined options
-      - Create listener callbacks for graph events (click, right click, etc.)
-     Subsequent changes ==> Repurpose existing graph
-      - Remove current nodes/edges
-     All cases => Run
-      - Add nodes to Cytoscape graph
-      - Apply selected layout (provided by Graph Controls Component)
-      - Fit the Graph into current view
-     */
     if (changes.data.firstChange || !this.cy) {
       this.createCytoscape();
     } else if (this.cy) {
-      this.cy.nodes().remove();
-      this.cy.edges().remove();
+      this.cy?.destroy();
+      this.createCytoscape();
     }
 
     if (this.cy) {
-      this.addRunFit();
+      this.add();
+      this.onRun();
     }
   }
 
   ngOnDestroy() {
-    this.onStop();
+    this.cy?.destroy();
     document?.getElementById('cy')?.remove();
+    this.cleanUp.next({});
+    this.cleanUp.complete();
   }
 
-  private addRunFit() {
+  initialize() {
+    this.graphLayouts = new GraphLayouts(this.commonOptions);
+
+    this.cyLayout = {
+      ...this.commonOptions,
+      name: 'fcose',
+      // @ts-ignore
+      padding: 20, // fit padding
+      componentSpacing: 1.2,
+      nodeSeparation: 100,
+      uniformNodeDimensions: true,
+      sampleSize: 100,
+      spacingFactor: 1, // Applies a multiplicative factor (>0) to expand or compress the overall area that the nodes take up
+      nodeDimensionsIncludeLabels: true, // Applies a multiplicative factor (>0) to expand or compress the overall area that the nodes take up
+      initialTemp: 99999,
+      gravity: 50,
+      idealEdgeLength: (_: any) => 100,
+      nodeRepulsion(_: any): number {
+        return 999999;
+      }
+    };
+  }
+
+  private add() {
     this.cy?.add(this.data);
-    this.onRun();
+    this.projectNodeCount = 1 + (this.cy?.nodes('[type="project"]').length ?? 0);
+    this.sourceNodeCount = this.cy?.nodes('[type="ks"]').length ?? 0
   }
 
   private createCytoscape() {
@@ -226,8 +257,44 @@ export class GraphCanvasComponent implements OnInit, OnChanges, OnDestroy {
       boxSelectionEnabled: true,
       style: this.graphStyles.styles
     }
+
     this.cy = cytoscape(this.cyOptions);
     this.setListeners();
+  }
+
+  onLayout($event: CytoscapeLayout) {
+    this.cyLayout = $event.options;
+    this.onRun();
+  }
+
+  onFitToView() {
+    this.cy?.fit();
+  }
+
+  async onRun() {
+    this.ngZone.runOutsideAngular(() => {
+      this.cy?.layout(this.cyLayout).run();
+      /* If simulation is enabled and the current layout is not already "Simulate", schedule simulation */
+      if (this.settings.get().app.graph.simulation.enabled && this.cyLayout.name !== 'cola') {
+        const simLayout = this.graphLayouts.layouts.find(l => l.name === 'Simulate')?.options;
+        if (simLayout) {
+          setTimeout(() => {
+            if (!this.running) {
+              this.cy?.layout(simLayout).run()
+            }
+          }, this.settings.get().app.graph.animation.duration + (this.settings.get().app.graph.simulation.delay ?? 500))
+        }
+      }
+    });
+
+  }
+
+  onSettings() {
+    this.settings.show('graph');
+  }
+
+  onStop() {
+    this.cy?.stop(true, true);
   }
 
   private setListeners() {
@@ -237,19 +304,36 @@ export class GraphCanvasComponent implements OnInit, OnChanges, OnDestroy {
 
     const emit = (emitter: EventEmitter<any>, data: any, event: MouseEvent) => emitter.emit({data: data, event: event});
 
-    this.cy.on('tap', 'node[type="ks"]', (event: any) => {
+    this.cy.on('onetap', 'node[type="ks"]', (event: any) => {
       const ks: KnowledgeSource = event.target[0]._private.data.ks;
       emit(this.onSourceTap, ks, event.originalEvent);
     })
 
+    this.cy.on('dbltap', 'node[type="ks"]', (event: any) => {
+      const ks: KnowledgeSource = event.target[0]._private.data.ks;
+      emit(this.onSourceDblTap, ks, event.originalEvent);
+    })
+
     this.cy.on('cxttap', 'node[type="ks"]', (event: any) => {
-      const ks = event.target[0]._private.data.ks;
-      emit(this.onSourceCtxtap, ks, event.originalEvent);
+      // @ts-ignore
+      const select: KnowledgeSource[] = this.cy?.nodes(':selected').map(n => n._private.data.ks).filter(n => n !== undefined);
+
+      if (select && select.length > 0) {
+        emit(this.onSourceCtxtap, select, event.originalEvent);
+      } else {
+        const ks: KnowledgeSource = event.target[0]._private.data.ks;
+        emit(this.onSourceCtxtap, [ks], event.originalEvent);
+      }
     });
 
-    this.cy.on('tap', 'node[type="project"]', (event: any) => {
+    this.cy.on('onetap', 'node[type="project"]', (event: any) => {
       const project: KcProject = event.target[0]._private.data.project;
       emit(this.onProjectTap, project, event.originalEvent);
+    })
+
+    this.cy.on('dbltap', 'node[type="project"]', (event: any) => {
+      const project: KcProject = event.target[0]._private.data.project;
+      emit(this.onProjectDblTap, project, event.originalEvent);
     })
 
     this.cy.on('cxttap', 'node[type="project"]', (event: any) => {
@@ -257,9 +341,14 @@ export class GraphCanvasComponent implements OnInit, OnChanges, OnDestroy {
       emit(this.onProjectCtxtap, project, event.originalEvent);
     })
 
-    this.cy.on('tap', 'node[type="root"]', (event: any) => {
+    this.cy.on('onetap', 'node[type="root"]', (event: any) => {
       const project: KcProject = event.target[0]._private.data.project;
       emit(this.onProjectTap, project, event.originalEvent);
+    })
+
+    this.cy.on('dbltap', 'node[type="root"]', (event: any) => {
+      const project: KcProject = event.target[0]._private.data.project;
+      emit(this.onProjectDblTap, project, event.originalEvent);
     })
 
     this.cy.on('cxttap', 'node[type="root"]', (event: any) => {
@@ -267,51 +356,20 @@ export class GraphCanvasComponent implements OnInit, OnChanges, OnDestroy {
       emit(this.onProjectCtxtap, project, event.originalEvent);
     })
 
-    this.cy.on('tap', 'edge', (_: any) => {
-      console.log('click on edge...'); // TODO:
-    })
-
-    this.cy.on('cxttap', 'edge', (_: any) => {
-      console.log('right click on edge...'); // TODO:
-    });
-
     this.cy.on("layoutstop", () => {
-      this.cy?.fit();
+      this.notifications.debug('Graph Canvas', 'Stopping Layout', '');
+      if (this.settings.get().app.graph.display.autoFit) {
+        this.cy?.fit();
+      }
+
       this.running = false;
+      this.onRunning.emit(this.running);
     });
 
     this.cy.on('layoutstart', () => {
+      this.notifications.debug('Graph Canvas', 'Starting Layout', '');
       this.running = true;
+      this.onRunning.emit(this.running);
     })
-
-  }
-
-
-  onLayout($event: CytoscapeLayout) {
-    this.cyLayout = $event.options;
-    this.onRun();
-  }
-
-  async onFitToView() {
-    await this.cy?.fit();
-  }
-
-  onResetView() {
-    this.cy?.reset();
-  }
-
-  async onRun() {
-    this.onStop();
-    this.running = true;
-    this.cy?.layout(this.cyLayout).run();
-  }
-
-  onSettings() {
-    this.settings.show('graph');
-  }
-
-  onStop() {
-    console.log('Stopping layout...');
-    this.cy?.stop(true, true);
   }
 }

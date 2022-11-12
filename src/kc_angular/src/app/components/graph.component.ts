@@ -18,47 +18,35 @@ import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
 import {ProjectService} from "../services/factory-services/project.service";
 import {KcProject} from "../models/project.model";
-import {Subject, Subscription} from "rxjs";
+import {BehaviorSubject, fromEvent, skip, skipUntil, Subject, throttleTime} from "rxjs";
 import {KsContextMenuService} from "../services/factory-services/ks-context-menu.service";
 import {KnowledgeSource} from "../models/knowledge.source.model";
 import {KsCommandService} from "../services/command-services/ks-command.service";
 import {ConfirmationService, MenuItem} from "primeng/api";
 import {ContextMenu} from "primeng/contextmenu";
 import {ProjectCommandService} from "../services/command-services/project-command.service";
-import {takeUntil, tap} from "rxjs/operators";
+import {distinctUntilChanged, map, take, takeUntil, tap} from "rxjs/operators";
 import {ProjectContextMenuService} from "../services/factory-services/project-context-menu.service";
 import {SettingsService} from "../services/ipc-services/settings.service";
+import {NotificationsService} from "../services/user-services/notifications.service";
+import {createGraph} from "../workers/graph.worker";
 
 
 @Component({
   selector: 'app-graph',
   template: `
     <div class="graph-container">
-      <p-splitter [minSizes]="[15, 65]"
-                  [panelSizes]="[20, 80]"
-                  class="w-full"
-                  styleClass="w-full h-full">
-        <ng-template pTemplate="content">
-          <div class="graph-left">
-            <app-projects-tree></app-projects-tree>
-          </div>
-        </ng-template>
-
-        <ng-template pTemplate="content">
-          <div class="graph-right">
-            <graph-canvas #graph
-                          [data]="data"
-                          (onSourceTap)="onSourceTap($event)"
-                          (onSourceCtxtap)="onSourceCtxtap($event)"
-                          (onProjectTap)="onProjectTap($event)"
-                          (onProjectCtxtap)="onProjectCtxtap($event)"
-                          class="w-full h-full">
-            </graph-canvas>
-          </div>
-        </ng-template>
-      </p-splitter>
+      <graph-canvas #graph
+                    [data]="data"
+                    (onRunning)="onRunning($event)"
+                    (onSourceTap)="onSourceTap($event)"
+                    (onSourceDblTap)="onSourceDblTap($event)"
+                    (onSourceCtxtap)="onSourceCtxtap($event)"
+                    (onProjectTap)="onProjectTap($event)"
+                    (onProjectCtxtap)="onProjectCtxtap($event)"
+                    class="w-full h-full">
+      </graph-canvas>
     </div>
-
     <p-contextMenu #cm
                    styleClass="shadow-7"
                    [model]="menuItems"
@@ -76,19 +64,6 @@ import {SettingsService} from "../services/ipc-services/settings.service";
         flex-direction: row;
         flex-wrap: nowrap;
         justify-content: space-between;
-
-        .graph-left {
-          height: 100%;
-          width: 100%;
-        }
-
-        .graph-right {
-          height: 100%;
-          width: 100%;
-          display: flex;
-          flex-direction: column;
-          flex-wrap: nowrap;
-        }
       }
     `
   ]
@@ -97,8 +72,6 @@ export class GraphComponent implements OnInit, OnDestroy {
   @ViewChild('cm') cm!: ContextMenu;
 
   projectId: string = '';
-
-  routeSub?: Subscription;
 
   data: any[] = [];
 
@@ -112,37 +85,42 @@ export class GraphComponent implements OnInit, OnDestroy {
 
   private cleanUp = new Subject();
 
+  private onBuild = new BehaviorSubject({});
+
   constructor(private route: ActivatedRoute,
               private projects: ProjectService,
+              private confirm: ConfirmationService,
               private command: KsCommandService,
               private context: KsContextMenuService,
+              private notifications: NotificationsService,
               private pContext: ProjectContextMenuService,
-              private pCommand: ProjectCommandService) {
+              private pCommand: ProjectCommandService,
+              private settings: SettingsService) {
+    this.onBuild.asObservable().pipe(
+      skip(1),
+      skipUntil(this.projects.currentProject),
+      throttleTime(500),
+      tap(() => {
+        this.build();
+      })
+    ).subscribe()
   }
 
   ngOnInit(): void {
-    this.route.params.pipe(
-      takeUntil(this.cleanUp),
-      tap((params) => {
-        this.projectId = params.projectId ?? '';
-        if (this.projectId !== this.projects.getCurrentProjectId()?.value) {
-          this.projects.setCurrentProject(this.projectId);
-        }
-        this.data = [];
-        this.build();
-      })
-    ).subscribe();
-
     this.projects.currentProject.pipe(
       takeUntil(this.cleanUp),
       tap((project) => {
+        if (project) {
+          this.projectId = project.id.value;
+        }
+
         if (!this.activeProject && project) {
-          this.build();
+          this.onBuild.next({})
         } else if (this.activeProject && project) {
           if (this.activeProject.id.value !== project.id.value
             || this.activeProject.knowledgeSource.length !== project.knowledgeSource.length
             || this.activeProject.subprojects.length !== project.subprojects.length) {
-            this.build();
+            this.onBuild.next({})
           }
         }
         this.activeProject = project ?? undefined;
@@ -151,10 +129,13 @@ export class GraphComponent implements OnInit, OnDestroy {
 
     this.settings.graph.pipe(
       takeUntil(this.cleanUp),
+      distinctUntilChanged((prev, curr) => {
+        /* Only refresh the graph if the 'Show Sources' setting has changed */
+        return (prev.display.showSources === curr.display.showSources)
+      }),
       tap((graphSettings) => {
         this.showSources = graphSettings.display.showSources;
-        this.data = [];
-        this.build();
+        this.onBuild.next({})
       })
     ).subscribe()
   }
@@ -166,71 +147,59 @@ export class GraphComponent implements OnInit, OnDestroy {
 
   build() {
     if (!this.projectId) {
+      this.notifications.error('Graph', 'Invalid Project ID', 'No Project ID provided.')
       return;
     }
 
     const projectTree = this.getTree(this.projectId);
-    let data: any[] = [];
-
-    for (let project of projectTree) {
-      data.push({
-        group: 'nodes',
-        data: {
-          id: project.id.value,
-          label: project.name,
-          type: project.id.value === this.projectId ? 'root' : 'project',
-          project: project,
-          width: (64 / Math.pow(project.level, 1 / 2)) + 4,
-          height: 64 / Math.pow(project.level, 1 / 2),
-          level: project.level
-        }
-      });
-
-      for (let sub of project.subprojects) {
-        let edge = {
-          group: 'edges',
-          data: {
-            id: `${project.id.value}-${sub}`,
-            source: project.id.value,
-            target: sub
-          }
-        }
-        data.push(edge);
-      }
-
-      for (let ks of project.knowledgeSource) {
-        ks.icon = localStorage.getItem(`icon-${ks.id.value}`);
-        data.push({
-          group: 'nodes',
-          data: {
-            id: ks.id.value,
-            label: ks.title,
-            type: 'ks',
-            ks: ks,
-            icon: ks.icon,
-            // parent: project.id.value
-          }
+    const worker = new Worker(new URL('../workers/graph.worker', import.meta.url));
+    const confirm = (data: any[]) => {
+      if (this.settings.get().app.graph.display.largeGraphWarning && data.length > 750) {
+        this.confirm.confirm({
+          header: "Woah, that's a big graph!",
+          message: "If you notice performance issues, you may want to adjust the Graph Settings. You can also disable this warning in the settings menu.",
+          icon: 'pi pi-warn',
+          accept: () => {
+            this.data = data;
+          },
+          reject: () => {
+            this.settings.show('graph');
+          },
+          acceptLabel: 'Got it!',
+          rejectLabel: 'Graph Settings',
+          rejectIcon: 'pi pi-cog'
         })
-
-        data.push({
-          group: 'edges',
-          data: {
-            id: `${project.id.value}-${ks.id.value}`,
-            source: project.id.value,
-            target: ks.id.value
-          }
-        })
+      } else {
+        this.data = data;
       }
     }
 
-    this.data = data;
+    if (worker) {
+      const graphNodes = fromEvent(worker, 'message')
+      graphNodes.pipe(take(1),
+        map(msg => (msg as any).data),
+        map((data) => {
+          for (let node of data)
+            if (node.data.ks)
+              node.data.ks.icon = localStorage.getItem(`icon-${node.data.ks.id.value}`);
+          return data;
+        }),
+        tap(confirm)).subscribe()
+      worker.postMessage({projects: projectTree, root: this.projectId, showSources: this.showSources});
+    } else {
+      this.notifications.warn('Graph', 'Web Workers Unavailable', 'Reverting to synchronous operations...');
+      let data: any[] = createGraph(projectTree, this.projectId, this.showSources);
+      for (let node of data)
+        if (node.data.ks)
+          node.data.ks.icon = localStorage.getItem(`icon-${node.data.ks.id.value}`);
+      confirm(data);
+    }
   }
 
   private getTree(project: string | any, level: number = 1): (KcProject & { level: number })[] {
     if (!project) {
       return [];
     }
-
     if (typeof project === 'string') {
       let p = this.projects.getProject(project);
       if (!p) {
@@ -240,7 +209,6 @@ export class GraphComponent implements OnInit, OnDestroy {
         project.level = level;
       }
     }
-
     let tree = [project];
     if (!project.subprojects) {
       return tree;
@@ -248,16 +216,37 @@ export class GraphComponent implements OnInit, OnDestroy {
     for (let subProject of project.subprojects) {
       tree = tree.concat(this.getTree(subProject, level + 1));
     }
-
     return tree;
   }
 
   onSourceTap($event: { data: KnowledgeSource; event: MouseEvent }) {
-    this.command.detail($event.data);
+    const action = this.settings.get().app.graph.actions.tap;
+    if (action === 'preview') {
+      this.command.preview($event.data);
+    } else if (action === 'details') {
+      this.command.detail($event.data);
+    } else if (action === 'open') {
+      this.command.open($event.data);
+    }
   }
 
-  onSourceCtxtap($event: { data: KnowledgeSource; event: MouseEvent }) {
-    this.menuItems = this.context.generate($event.data)
+  onSourceDblTap($event: { data: KnowledgeSource; event: MouseEvent }) {
+    const action = this.settings.get().app.graph.actions.dblTap;
+    if (action === 'preview') {
+      this.command.preview($event.data);
+    } else if (action === 'details') {
+      this.command.detail($event.data);
+    } else if (action === 'open') {
+      this.command.open($event.data);
+    }
+  }
+
+  onSourceCtxtap($event: { data: KnowledgeSource[]; event: MouseEvent }) {
+    if ($event.data.length === 1) {
+      this.menuItems = this.context.generate($event.data[0])
+    } else {
+      this.menuItems = this.context.generate($event.data[0], $event.data)
+    }
     this.cm.show($event.event);
   }
 
@@ -267,7 +256,10 @@ export class GraphComponent implements OnInit, OnDestroy {
   }
 
   onProjectTap($event: { data: KcProject; event: MouseEvent }) {
-    console.log('project tap: ', $event);
     this.pCommand.detail($event.data);
+  }
+
+  onRunning(running: boolean) {
+    this.running = running;
   }
 }

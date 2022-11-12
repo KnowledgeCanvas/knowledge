@@ -26,7 +26,6 @@ export class GraphLayouts {
   constructor(common?: Partial<LayoutOptions>) {
     this.commonOptions = common ?? this.commonOptions;
     this.setLayouts();
-    console.log('Graph layout with options: ', this.commonOptions);
   }
 
   commonOptions: Partial<LayoutOptions & { simulate: boolean, maxSimulationTime: number }> = {
@@ -104,7 +103,7 @@ export class GraphLayouts {
           depthSort: undefined, // a sorting function to order nodes at equal depth. e.g. function(a, b){ return a.data('weight') - b.data('weight') }
 
           animationEasing: undefined, // easing of animation if enabled,
-          animateFilter: function (_, i: number) {
+          animateFilter: function (_) {
             return true;
           }, // a function that determines whether the node should be animated.  All nodes animated by default on animate enabled.  Non-animated nodes are positioned immediately when the layout starts
           ready: undefined, // callback on layoutready
@@ -126,11 +125,8 @@ export class GraphLayouts {
           ...this.commonOptions,
           name: 'concentric',
         }
-      }
-    ]
-
-    if (this.commonOptions.simulate) {
-      this.layouts.push({
+      },
+      {
         name: 'Simulate',
         code: 'cola',
         options: {
@@ -172,8 +168,8 @@ export class GraphLayouts {
           // infinite layout options
           infinite: false // overrides all other options for a forces-all-the-time mode
         }
-      })
-    }
+      }
+    ]
   }
 }
 
