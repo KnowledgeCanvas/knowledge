@@ -42,9 +42,6 @@ export class KsContextMenuService {
       {
         label: 'Open',
         icon: PrimeIcons.EXTERNAL_LINK,
-        command: () => {
-          this.ksCommandService.open(target);
-        }
       },
       {
         label: '',
@@ -82,6 +79,7 @@ export class KsContextMenuService {
     }
 
     menu = this.setRemove(menu, target, ksLabel, ksList);
+    menu = this.setOpen(menu, target, ksLabel, ksList);
     menu = this.setMove(menu, target, ksLabel, ksList);
     menu = this.setCopy(menu, target, ksLabel, ksList);
     menu = this.setShowIn(menu, target);
@@ -110,6 +108,37 @@ export class KsContextMenuService {
           styleClass: this.styleClass,
           command: () => {
             this.ksCommandService.remove(ksList);
+          }
+        })
+      }
+    }
+    return menu;
+  }
+
+  private setOpen(menu: MenuItem[], target: KnowledgeSource, label: string, ksList?: KnowledgeSource[]): MenuItem[] {
+    let open = menu.find(m => m.label === 'Open');
+
+    if (open && (!ksList || ksList.length === 0)) {
+      open.label = 'Open';
+      open.command = () => {
+        this.ksCommandService.open(target);
+      }
+    } else if (open) {
+      open.items = [{
+        label: label,
+        styleClass: this.styleClass,
+        command: () => {
+          this.ksCommandService.open(target);
+        }
+      }];
+      if (ksList && ksList.length > 1) {
+        open.items.push({
+          label: `Selected (${ksList.length})`,
+          styleClass: this.styleClass,
+          command: () => {
+            for (let ks of ksList) {
+              this.ksCommandService.open(ks);
+            }
           }
         })
       }
