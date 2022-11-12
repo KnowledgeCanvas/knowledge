@@ -143,6 +143,13 @@ export class GraphStyles {
           'ghost-offset-y': 1,
           'background-image': 'data(ks.icon)'
         }
+      },
+      {
+        selector: ':selected',
+        style: {
+          "border-width": 4,
+          "border-color": this.primary
+        }
       }
     ]
 
