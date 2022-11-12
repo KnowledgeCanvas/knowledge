@@ -19,9 +19,9 @@ import {MenuItem, TreeNode} from "primeng/api";
 import {TreeModule} from "primeng/tree";
 import {ProjectCommandService} from "../../services/command-services/project-command.service";
 import {ProjectTreeFactoryService} from "../../services/factory-services/project-tree-factory.service";
-import {Subject, tap} from "rxjs";
+import {BehaviorSubject, skip, Subject, tap} from "rxjs";
 import {ProjectContextMenuService} from "../../services/factory-services/project-context-menu.service";
-import {takeUntil} from "rxjs/operators";
+import {debounceTime, takeUntil} from "rxjs/operators";
 
 @Component({
   selector: 'app-projects-tree',
@@ -32,7 +32,7 @@ import {takeUntil} from "rxjs/operators";
             (onNodeContextMenuSelect)="onContextMenu($event)"
             [filter]="true"
             [value]="projectTree"
-            [(selection)]="currentProject"
+            [selection]="currentProject"
             selectionMode="single"
             (selectionChange)="selectionChange($event)"
             scrollHeight="flex">
@@ -64,7 +64,7 @@ import {takeUntil} from "rxjs/operators";
           <button pButton
                   icon="pi pi-circle"
                   class="p-button-text border-none outline-none shadow-none"
-                  pTooltip="Show selected project"
+                  pTooltip="Show current project"
                   tooltipPosition="top"
                   (click)="showSelected()">
           </button>
@@ -101,12 +101,22 @@ export class ProjectsTreeComponent implements OnInit, OnDestroy {
 
   menu: MenuItem[] = [];
 
+  projectChange = new BehaviorSubject<string>('');
+
   private cleanUp: Subject<any> = new Subject<any>();
 
   constructor(private projects: ProjectService,
               private pCommand: ProjectCommandService,
               private pContext: ProjectContextMenuService,
               private tree: ProjectTreeFactoryService) {
+    this.projectChange.asObservable().pipe(
+      takeUntil(this.cleanUp),
+      skip(1),
+      debounceTime(500),
+      tap((projectId) => {
+        this.projects.setCurrentProject(projectId);
+      })
+    ).subscribe()
 
     projects.projectTree.pipe(
       takeUntil(this.cleanUp),
@@ -154,7 +164,7 @@ export class ProjectsTreeComponent implements OnInit, OnDestroy {
   }
 
   selectionChange($event: any) {
-    this.projects.setCurrentProject($event.key);
+    this.projectChange.next($event.key);
   }
 
   onNewProject(currentProject?: TreeNode) {
