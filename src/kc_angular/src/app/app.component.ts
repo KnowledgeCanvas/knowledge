@@ -243,6 +243,8 @@ export class AppComponent implements OnInit, OnDestroy {
 
   private cleanUp = new Subject();
 
+  private _windowResize = new BehaviorSubject({});
+
   constructor(private settings: SettingsService,
               private notifications: NotificationsService,
               private startup: StartupService,
@@ -290,9 +292,6 @@ export class AppComponent implements OnInit, OnDestroy {
       })
     ).subscribe()
 
-    /**
-     * Subscribe to router events in order to manually adjust the current view
-     */
     router.events.pipe(
       takeUntil(this.cleanUp),
       tap((events) => {
@@ -407,11 +406,24 @@ export class AppComponent implements OnInit, OnDestroy {
         this.readyToShow = true;
       }, Math.floor(Math.random() * 1500));
     });
+
+    this._windowResize.asObservable().pipe(
+      takeUntil(this.cleanUp),
+      throttleTime(100),
+      tap((_) => {
+        this.projectTreeVisible = window.innerWidth >= 1200;
+      })
+    ).subscribe()
   }
 
   ngOnDestroy() {
     this.cleanUp.next({});
     this.cleanUp.complete();
+  }
+
+  @HostListener('window:resize', ["$event"])
+  windowResize(_: any) {
+    this._windowResize.next({});
   }
 
   /* TODO: Create a hotkey service that registers these keys on behalf of each module */
