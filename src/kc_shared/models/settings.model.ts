@@ -150,7 +150,7 @@ export class GraphSettingsModel {
     } = {
         enabled: true,
         maxTime: 2500,
-        delay: 1500
+        delay: 500
     }
 
     actions: {

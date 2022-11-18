@@ -32,7 +32,7 @@ import {debounceTime, distinctUntilChanged, tap} from "rxjs/operators";
           <p-panel [toggleable]="true" toggler="header">
             <ng-template pTemplate="header">
               <div class="flex-row-center-between w-full">
-                <div class="text-2xl">Display</div>
+                <div class="text-2xl">Appearance</div>
               </div>
             </ng-template>
             <ng-template pTemplate="content">
