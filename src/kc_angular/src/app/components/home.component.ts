@@ -19,7 +19,6 @@ import {IngestService} from "../services/ingest-services/ingest.service";
 import {ProjectService} from "../services/factory-services/project.service";
 import {Observable, Subject} from "rxjs";
 import {KcProject, ProjectCreationRequest} from "../models/project.model";
-import {ProjectTreeFactoryService} from "../services/factory-services/project-tree-factory.service";
 import {ConfirmationService, FilterService, MenuItem, TreeNode} from "primeng/api";
 import {NotificationsService} from "../services/user-services/notifications.service";
 import {KsContextMenuService} from "../services/factory-services/ks-context-menu.service";
@@ -27,6 +26,7 @@ import {Splitter} from "primeng/splitter";
 import {KsFactoryService} from "../services/factory-services/ks-factory.service";
 import {take, takeUntil, tap} from "rxjs/operators";
 import {DragAndDropService} from "../services/ingest-services/drag-and-drop.service";
+import {constructTreeNodes} from "../workers/tree.worker";
 
 @Component({
   selector: 'app-home',
@@ -43,23 +43,24 @@ import {DragAndDropService} from "../services/ingest-services/drag-and-drop.serv
       <div class="inbox-header flex-grow-0">
         <div class="flex flex-row justify-content-between align-items-center p-2">
           <div *ngIf="treeNodes.length > 0" class="flex flex-row">
-            <div class="" *ngIf="selectedProject">
-              <button pButton icon="pi pi-fw pi-times" (click)="selectedProject = undefined" class="p-button-text p-button-plain"></button>
-            </div>
-            <p-treeSelect [options]="treeNodes"
-                          [(ngModel)]="selectedProject"
-                          [disabled]="!upNext || upNext.length === 0"
-                          class="text-primary"
-                          selectionMode="single"
-                          placeholder="Import to Project..."
-                          [filter]="true"
-                          appendTo="body">
-            </p-treeSelect>
             <button pButton
                     class="ml-1"
                     label="Import"
-                    [disabled]="!selectedProject"
+                    [disabled]="!selectedProject || !upNext || upNext.length === 0"
                     (click)="onProjectImport()"></button>
+            <p-treeSelect [options]="treeNodes"
+                          [(ngModel)]="selectedProject"
+                          [disabled]="!upNext || upNext.length === 0"
+                          class="text-primary w-16rem p-fluid"
+                          selectionMode="single"
+                          placeholder="Import to Project..."
+                          [filter]="true"
+                          pStyleClass="w-16rem"
+                          appendTo="body">
+            </p-treeSelect>
+            <div class="" *ngIf="selectedProject">
+              <button pButton icon="pi pi-fw pi-times" (click)="selectedProject = undefined" class="p-button-text p-button-plain"></button>
+            </div>
           </div>
 
           <div *ngIf="treeNodes.length === 0" class="">
@@ -109,8 +110,7 @@ import {DragAndDropService} from "../services/ingest-services/drag-and-drop.serv
                                 [ks]="ks"
                                 (click)="setActive(ks)"
                                 (contextmenu)="setContext(ks); onKsContextMenu(context); cm.show($event)"
-                                [class.bg-primary-reverse]="active && (ks.id.value === (active.id.value))"
-                                [class.surface-ground]="active && (ks.id.value === (active.id.value))">
+                                [active]="active && (ks.id.value === (active.id.value))">
                 </app-ks-message>
               </div>
             </div>
@@ -210,8 +210,7 @@ export class HomeComponent implements OnInit, OnDestroy {
               private ingest: IngestService,
               private projects: ProjectService,
               private menu: KsContextMenuService,
-              private notifications: NotificationsService,
-              private tree: ProjectTreeFactoryService) {
+              private notifications: NotificationsService) {
     this.kcProject = projects.currentProject;
 
     this.supportedTypes = dnd.supportedTypes;
@@ -219,7 +218,8 @@ export class HomeComponent implements OnInit, OnDestroy {
     projects.projectTree.pipe(
       takeUntil(this.cleanUp),
       tap((projectTree) => {
-        this.treeNodes = tree.constructTreeNodes(projectTree, false);
+        this.notifications.debug('Home', 'Project Tree Updated', 'constructing tree nodes...');
+        this.treeNodes = constructTreeNodes(projectTree, true);
       })
     ).subscribe()
 
@@ -366,8 +366,10 @@ export class HomeComponent implements OnInit, OnDestroy {
       parentId: {value: ''}
     }
     this.projects.newProject(req).then((_: any) => {
-      this.selectedProject = this.treeNodes[0];
-      this.onProjectImport();
+      setTimeout(() => {
+        this.selectedProject = this.treeNodes[0];
+        this.onProjectImport();
+      }, 1000)
     })
   }
 

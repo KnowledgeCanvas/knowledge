@@ -58,16 +58,18 @@ export class NotificationsService {
   }
 
   debug(component: string, summary: string, detail: string | any, presentation: KcNotificationPresentation = 'none') {
-    console.debug(`[Debug]-[${this.datetime()}]-[${component}]: ${summary} - `, detail);
-    const msg: KcNotification = {
-      severity: 'info',
-      summary: summary,
-      detail: detail,
-      closable: true,
-      life: 3000,
-      presentation: presentation
+    if (this.settingsService.get()?.display?.logging?.debug) {
+      console.debug(`[Debug]-[${this.datetime()}]-[${component}]: ${summary} - `, detail);
+      const msg: KcNotification = {
+        severity: 'info',
+        summary: summary,
+        detail: detail,
+        closable: true,
+        life: 3000,
+        presentation: presentation
+      }
+      this.broadcast(msg);
     }
-    this.broadcast(msg);
   }
 
   error(component: string, summary: string, detail: string, presentation: KcNotificationPresentation = 'none') {

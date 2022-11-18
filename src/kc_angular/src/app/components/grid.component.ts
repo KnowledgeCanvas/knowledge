@@ -27,7 +27,7 @@ import {Observable} from "rxjs";
   selector: 'app-grid',
   template: `
     <div class="h-full w-full flex-col-center-center">
-      <div class="w-full h-full flex-col-center-between surface-section" id="grid-container" [style]="{'max-width': 'min(100%, 192rem)'}">
+      <div class="w-full h-full flex-col-center-between surface-section p-4" id="grid-container" [style]="{'max-width': 'min(100%, 192rem)'}">
         <app-ks-card-list class="h-full w-full flex flex-row flex-grow-1"
                           [ksList]="(sources | async)!"
                           (onKsRemove)="onKsRemove($event)"
