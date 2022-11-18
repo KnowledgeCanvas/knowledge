@@ -75,6 +75,10 @@ export function createGraph(projects: (KcProject & { level: number })[],
 }
 
 addEventListener('message', (msg) => {
+  if (!msg.data || !msg.data.projects || !msg.data.root) {
+    return;
+  }
+
   const projects: (KcProject & { level: number })[] = msg.data.projects;
   const root: string = msg.data.root;
   const showSources: boolean = msg.data.showSources;
