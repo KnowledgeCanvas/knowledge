@@ -300,76 +300,83 @@ export class GraphCanvasComponent implements OnInit, OnChanges, OnDestroy {
   private setListeners() {
     if (!this.cy) {
       return;
+    } else {
+      this.cy.removeAllListeners()
     }
 
     const emit = (emitter: EventEmitter<any>, data: any, event: MouseEvent) => emitter.emit({data: data, event: event});
 
-    this.cy.on('onetap', 'node[type="ks"]', (event: any) => {
-      const ks: KnowledgeSource = event.target[0]._private.data.ks;
-      emit(this.onSourceTap, ks, event.originalEvent);
-    })
-
-    this.cy.on('dbltap', 'node[type="ks"]', (event: any) => {
-      const ks: KnowledgeSource = event.target[0]._private.data.ks;
-      emit(this.onSourceDblTap, ks, event.originalEvent);
-    })
-
-    this.cy.on('cxttap', 'node[type="ks"]', (event: any) => {
-      // @ts-ignore
-      const select: KnowledgeSource[] = this.cy?.nodes(':selected').map(n => n._private.data.ks).filter(n => n !== undefined);
-
-      if (select && select.length > 0) {
-        emit(this.onSourceCtxtap, select, event.originalEvent);
-      } else {
+    this.ngZone.runOutsideAngular(() => {
+      if (!this.cy) {
+        return;
+      }
+      this.cy.on('onetap', 'node[type="ks"]', (event: any) => {
         const ks: KnowledgeSource = event.target[0]._private.data.ks;
-        emit(this.onSourceCtxtap, [ks], event.originalEvent);
-      }
-    });
+        emit(this.onSourceTap, ks, event.originalEvent);
+      })
 
-    this.cy.on('onetap', 'node[type="project"]', (event: any) => {
-      const project: KcProject = event.target[0]._private.data.project;
-      emit(this.onProjectTap, project, event.originalEvent);
-    })
+      this.cy.on('dbltap', 'node[type="ks"]', (event: any) => {
+        const ks: KnowledgeSource = event.target[0]._private.data.ks;
+        emit(this.onSourceDblTap, ks, event.originalEvent);
+      })
 
-    this.cy.on('dbltap', 'node[type="project"]', (event: any) => {
-      const project: KcProject = event.target[0]._private.data.project;
-      emit(this.onProjectDblTap, project, event.originalEvent);
-    })
+      this.cy.on('cxttap', 'node[type="ks"]', (event: any) => {
+        // @ts-ignore
+        const select: KnowledgeSource[] = this.cy?.nodes(':selected').map(n => n._private.data.ks).filter(n => n !== undefined);
 
-    this.cy.on('cxttap', 'node[type="project"]', (event: any) => {
-      const project: KcProject = event.target[0]._private.data.project;
-      emit(this.onProjectCtxtap, project, event.originalEvent);
-    })
+        if (select && select.length > 0) {
+          emit(this.onSourceCtxtap, select, event.originalEvent);
+        } else {
+          const ks: KnowledgeSource = event.target[0]._private.data.ks;
+          emit(this.onSourceCtxtap, [ks], event.originalEvent);
+        }
+      });
 
-    this.cy.on('onetap', 'node[type="root"]', (event: any) => {
-      const project: KcProject = event.target[0]._private.data.project;
-      emit(this.onProjectTap, project, event.originalEvent);
-    })
+      this.cy.on('onetap', 'node[type="project"]', (event: any) => {
+        const project: KcProject = event.target[0]._private.data.project;
+        emit(this.onProjectTap, project, event.originalEvent);
+      })
 
-    this.cy.on('dbltap', 'node[type="root"]', (event: any) => {
-      const project: KcProject = event.target[0]._private.data.project;
-      emit(this.onProjectDblTap, project, event.originalEvent);
-    })
+      this.cy.on('dbltap', 'node[type="project"]', (event: any) => {
+        const project: KcProject = event.target[0]._private.data.project;
+        emit(this.onProjectDblTap, project, event.originalEvent);
+      })
 
-    this.cy.on('cxttap', 'node[type="root"]', (event: any) => {
-      const project: KcProject = event.target[0]._private.data.project;
-      emit(this.onProjectCtxtap, project, event.originalEvent);
-    })
+      this.cy.on('cxttap', 'node[type="project"]', (event: any) => {
+        const project: KcProject = event.target[0]._private.data.project;
+        emit(this.onProjectCtxtap, project, event.originalEvent);
+      })
 
-    this.cy.on("layoutstop", () => {
-      this.notifications.debug('Graph Canvas', 'Stopping Layout', '');
-      if (this.settings.get().app.graph.display.autoFit) {
-        this.cy?.fit();
-      }
+      this.cy.on('onetap', 'node[type="root"]', (event: any) => {
+        const project: KcProject = event.target[0]._private.data.project;
+        emit(this.onProjectTap, project, event.originalEvent);
+      })
 
-      this.running = false;
-      this.onRunning.emit(this.running);
-    });
+      this.cy.on('dbltap', 'node[type="root"]', (event: any) => {
+        const project: KcProject = event.target[0]._private.data.project;
+        emit(this.onProjectDblTap, project, event.originalEvent);
+      })
 
-    this.cy.on('layoutstart', () => {
-      this.notifications.debug('Graph Canvas', 'Starting Layout', '');
-      this.running = true;
-      this.onRunning.emit(this.running);
+      this.cy.on('cxttap', 'node[type="root"]', (event: any) => {
+        const project: KcProject = event.target[0]._private.data.project;
+        emit(this.onProjectCtxtap, project, event.originalEvent);
+      })
+
+      this.cy.on("layoutstop", () => {
+        this.notifications.debug('Graph Canvas', 'Stopping Layout', '');
+        if (this.settings.get().app.graph.display.autoFit) {
+          this.cy?.fit();
+        }
+
+        this.running = false;
+        this.onRunning.emit(this.running);
+      });
+
+      this.cy.on('layoutstart', () => {
+        this.notifications.debug('Graph Canvas', 'Starting Layout', '');
+        this.running = true;
+        this.onRunning.emit(this.running);
+      })
     })
   }
 }

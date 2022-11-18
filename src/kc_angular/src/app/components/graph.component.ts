@@ -175,17 +175,25 @@ export class GraphComponent implements OnInit, OnDestroy {
     }
 
     if (worker) {
-      const graphNodes = fromEvent(worker, 'message')
-      graphNodes.pipe(take(1),
-        map(msg => (msg as any).data),
-        map((data) => {
-          for (let node of data)
-            if (node.data.ks)
-              node.data.ks.icon = localStorage.getItem(`icon-${node.data.ks.id.value}`);
-          return data;
-        }),
-        tap(confirm)).subscribe()
-      worker.postMessage({projects: projectTree, root: this.projectId, showSources: this.showSources});
+      try {
+        const graphNodes = fromEvent(worker, 'message')
+        graphNodes.pipe(take(1),
+          map(msg => (msg as any).data),
+          map((data) => {
+            for (let node of data)
+              if (node.data.ks)
+                node.data.ks.icon = localStorage.getItem(`icon-${node.data.ks.id.value}`);
+            return data;
+          }),
+          tap(confirm)).subscribe()
+        worker.postMessage({projects: projectTree, root: this.projectId, showSources: this.showSources});
+      } catch (e) {
+        let data: any[] = createGraph(projectTree, this.projectId, this.showSources);
+        for (let node of data)
+          if (node.data.ks)
+            node.data.ks.icon = localStorage.getItem(`icon-${node.data.ks.id.value}`);
+        confirm(data);
+      }
     } else {
       this.notifications.warn('Graph', 'Web Workers Unavailable', 'Reverting to synchronous operations...');
       let data: any[] = createGraph(projectTree, this.projectId, this.showSources);
