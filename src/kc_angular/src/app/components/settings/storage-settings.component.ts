@@ -16,22 +16,42 @@
 
 import {Component, OnInit} from '@angular/core';
 import {StorageService} from "../../services/ipc-services/storage.service";
+import {FormBuilder, FormGroup} from "@angular/forms";
 
 @Component({
   selector: 'app-storage-settings',
   template: `
     <div class="p-fluid grid">
-      <div class="col-12">
-        <p-panel header="Import/Export">
-          <ng-template pTemplate="content">
-            <div class="p-fluid grid mt-1">
-              <div class="col-4">
-                <button pButton label="Export" [loading]="exporting" (click)="onExport($event, exportType)"></button>
+      <form [formGroup]="form" class="w-full h-full">
+        <div class="col-12">
+          <p-panel [toggleable]="true" toggler="header">
+            <ng-template pTemplate="header">
+              <div class="flex-row-center-between w-full">
+                <div class="text-2xl">Import/Export</div>
               </div>
-            </div>
-          </ng-template>
-        </p-panel>
-      </div>
+            </ng-template>
+            <ng-template pTemplate="content">
+              <div class="w-full h-full flex flex-column">
+                <app-setting-template class="w-full" label="Export All">
+                  <div class="settings-input">
+                    <button pButton label="Export" [loading]="exporting" (click)="onExport($event, exportType)"></button>
+                  </div>
+
+                </app-setting-template>
+
+                <p-divider layout="horizontal"></p-divider>
+
+                <app-setting-template class="w-full" label="Import from File">
+                  <div class="settings-input">
+                    <input #importUpload class="hidden" (change)="onImport($event)" type="file">
+                    <button pButton label="Import" (click)="importUpload.click()"></button>
+                  </div>
+                </app-setting-template>
+              </div>
+            </ng-template>
+          </p-panel>
+        </div>
+      </form>
     </div>
   `,
   styles: []
@@ -41,7 +61,10 @@ export class StorageSettingsComponent implements OnInit {
 
   exporting: boolean = false;
 
-  constructor(private storage: StorageService) {
+  form: FormGroup;
+
+  constructor(private storage: StorageService, private formBuilder: FormBuilder) {
+    this.form = formBuilder.group({})
   }
 
   ngOnInit(): void {
@@ -51,5 +74,64 @@ export class StorageSettingsComponent implements OnInit {
     this.exporting = true;
     await this.storage.export();
     this.exporting = false;
+  }
+
+  onImport($event: any) {
+    console.log('Import: ', $event);
+    const files: any[] = $event.target.files;
+    if (!files) {
+      return;
+    }
+
+    console.log('Files: ', files);
+    if (files.length > 1) {
+
+    }
+
+    const file: File = files[0];
+    console.log('File: ', file);
+
+    file.text().then((importFile) => {
+      console.log('Import file size: ', importFile.length);
+
+      const imported = JSON.parse(importFile);
+      if (imported?.projects) {
+        console.log('Imported: ', imported);
+
+        const projects = imported.projects;
+        let projectList: string[] = [];
+        for (let project of projects) {
+          projectList.push(project.id.value);
+          const id = project.id.value;
+          const pStr = JSON.stringify(project);
+          if (pStr) {
+            localStorage.setItem(id, pStr);
+          }
+        }
+
+        const projectsStr = localStorage.getItem('kc-projects');
+        if (projectsStr) {
+          console.log('Adding to projects: ', projectsStr, projectList);
+          let ids: string[] = JSON.parse(projectsStr);
+          if (ids) {
+            const nextIds = [];
+            for (let id of ids) {
+              nextIds.push(id);
+            }
+            for (let id of projectList) {
+              nextIds.push(id);
+            }
+            ids.concat(projectList);
+            let idStr = JSON.stringify(nextIds);
+            console.log('Id strings: ', idStr);
+            localStorage.setItem('kc-projects', idStr)
+          }
+        }
+      }
+
+
+    }).catch((error) => {
+      console.error('Error on file read: ', error);
+    })
   }
 }

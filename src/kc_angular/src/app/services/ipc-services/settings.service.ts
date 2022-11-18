@@ -150,6 +150,9 @@ export class SettingsService {
 
 
   show(category?: 'display' | 'search' | 'import' | 'graph') {
+    if (this.ref) {
+      return;
+    }
     this.ref = this.dialog.open(SettingsComponent, {
       header: 'Settings',
       width: 'min(72rem, 95vw)',
@@ -181,6 +184,7 @@ export class SettingsService {
           if (!success) {
             console.warn('SettingsService - Unable to navigate to ', category);
           }
+          this.ref = undefined;
         })
       })
     ).subscribe()
