@@ -33,6 +33,7 @@ import {debounceTime, takeUntil} from "rxjs/operators";
             [filter]="true"
             [value]="projectTree"
             [selection]="currentProject"
+            emptyMessage=" "
             selectionMode="single"
             (selectionChange)="selectionChange($event)"
             scrollHeight="flex">
@@ -47,6 +48,7 @@ import {debounceTime, takeUntil} from "rxjs/operators";
           <button pButton
                   icon="pi pi-trash"
                   label="Remove"
+                  [disabled]="!projectTree"
                   (click)="onRemoveProject(currentProject)"
                   class="p-button-text p-button-plain p-button-danger">
           </button>
@@ -58,12 +60,14 @@ import {debounceTime, takeUntil} from "rxjs/operators";
           <button pButton
                   icon="pi pi-arrow-down"
                   label="Expand"
+                  [disabled]="!projectTree || projectTree.length === 0"
                   (click)="expandAll(projectTree, true)"
                   class="p-button-text p-button-plain outline-none border-none shadow-none">
           </button>
           <button pButton
                   icon="pi pi-circle"
                   class="p-button-text border-none outline-none shadow-none"
+                  [disabled]="!projectTree || projectTree.length === 0"
                   pTooltip="Show current project"
                   tooltipPosition="top"
                   (click)="showSelected()">
@@ -71,6 +75,7 @@ import {debounceTime, takeUntil} from "rxjs/operators";
           <button pButton
                   icon="pi pi-arrow-up"
                   label="Collapse"
+                  [disabled]="!projectTree || projectTree.length === 0"
                   (click)="expandAll(projectTree, false)"
                   class="p-button-text p-button-plain outline-none border-none shadow-none">
           </button>
@@ -118,10 +123,10 @@ export class ProjectsTreeComponent implements OnInit, OnDestroy {
       })
     ).subscribe()
 
-    projects.projectTree.pipe(
+    tree.treeNodes.pipe(
       takeUntil(this.cleanUp),
-      tap((projectTree) => {
-        this.projectTree = tree.constructTreeNodes(projectTree, true) ?? [];
+      tap((nodes) => {
+        this.projectTree = nodes;
         if (this.projectTree.length > 0) {
           this.currentProject = tree.findTreeNode(this.projectTree, this.projectId) ?? undefined;
           if (this.currentProject) {

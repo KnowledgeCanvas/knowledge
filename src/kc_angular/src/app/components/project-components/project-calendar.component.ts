@@ -75,33 +75,43 @@ export interface KcCardRequest {
   styles: [
     `
       .calendar-legend-dot {
-      height: 1rem;
-      width: 1rem;
-      border-radius: 50%;
-      display: inline-block;
-    }
-
-    .calendar-legend-dot.green {
-      background-color: var(--green-500);
-    }
-
-    .calendar-legend-dot.blue {
-      background-color: var(--blue-500);
-    }
-
-    .calendar-legend-dot.red {
-      background-color: var(--pink-500);
-    }
-
-    .calendar-legend-dot.orange {
-      background-color: var(--yellow-500);
-    }
-
-    ::ng-deep {
-      .fc-theme-standard .fc-list {
-        border: 1px solid var(--surface-100) !important;
+        height: 1rem;
+        width: 1rem;
+        border-radius: 50%;
+        display: inline-block;
       }
-    }
+
+      .calendar-legend-dot.green {
+        background-color: var(--green-500);
+      }
+
+      .calendar-legend-dot.blue {
+        background-color: var(--blue-500);
+      }
+
+      .calendar-legend-dot.red {
+        background-color: var(--pink-500);
+      }
+
+      .calendar-legend-dot.orange {
+        background-color: var(--yellow-500);
+      }
+
+      ::ng-deep {
+        .fc-theme-standard .fc-list {
+          border: 1px solid var(--surface-100) !important;
+        }
+
+        .fc-listYear-button.fc-button.fc-button-primary {
+          background-color: var(--surface-card) !important;
+          color: var(--text-color) !important;
+        }
+
+        .fc-listYear-button.fc-button.fc-button-primary.fc-button-active {
+          background-color: var(--primary-color) !important;
+          color: var(--primary-color-text) !important;
+        }
+      }
     `
   ]
 })
@@ -124,7 +134,7 @@ export class ProjectCalendarComponent implements OnInit, OnChanges {
 
   views = ['dayGridMonth', 'timeGridWeek', 'timeGridDay', 'listYear']
 
-  viewIndex = 2;
+  viewIndex = 3;
 
   constructor(private events: EventService) {
   }
@@ -134,8 +144,19 @@ export class ProjectCalendarComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (this.kcProject)
+    if (this.kcProject) {
       this.setupCalendar();
+      setTimeout(() => {
+        this.scroll();
+      }, 200);
+    }
+  }
+
+  scroll() {
+    const classElement = document.getElementsByClassName('fc-event-today');
+    if (classElement.length > 0) {
+      classElement[0].scrollIntoView();
+    }
   }
 
   @HostListener('document:keydown.Control.]')
@@ -182,7 +203,7 @@ export class ProjectCalendarComponent implements OnInit, OnChanges {
     this.calendarOptions.headerToolbar = {
       left: 'prev,next today',
       center: 'title',
-      right: this.views.join(',')
+      right: 'dayGridMonth,timeGridWeek,timeGridDay listYear'
     }
 
     this.calendarOptions.eventClick = (args) => {

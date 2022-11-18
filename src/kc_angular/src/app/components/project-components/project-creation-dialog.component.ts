@@ -14,7 +14,7 @@
  limitations under the License.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ProjectCreationRequest} from "src/app/models/project.model";
 import {DynamicDialogConfig, DynamicDialogRef} from "primeng/dynamicdialog";
 import {ProjectService} from "../../services/factory-services/project.service";
@@ -22,6 +22,10 @@ import {KcProjectType} from "../../../../../kc_shared/models/project.model";
 import {TreeNode} from "primeng/api";
 import {ProjectTreeFactoryService} from "../../services/factory-services/project-tree-factory.service";
 import {UUID} from "../../../../../kc_shared/models/uuid.model";
+import {takeUntil, tap} from "rxjs/operators";
+import {Subject} from "rxjs";
+import {constructTreeNodes} from "../../workers/tree.worker";
+import {NotificationsService} from "../../services/user-services/notifications.service";
 
 
 @Component({
@@ -109,7 +113,7 @@ import {UUID} from "../../../../../kc_shared/models/uuid.model";
   styles: []
 })
 
-export class ProjectCreationDialogComponent implements OnInit {
+export class ProjectCreationDialogComponent implements OnInit, OnDestroy {
   // A request, to be returned on form completion
   projectCreationRequest: ProjectCreationRequest;
 
@@ -123,8 +127,11 @@ export class ProjectCreationDialogComponent implements OnInit {
 
   selectedProject?: TreeNode;
 
+  private cleanUp: Subject<any> = new Subject<any>();
+
   constructor(private ref: DynamicDialogRef,
               private config: DynamicDialogConfig,
+              private notifications: NotificationsService,
               private projects: ProjectService,
               private projectTree: ProjectTreeFactoryService) {
     this.projectTypes = projects.ProjectTypes;
@@ -146,19 +153,28 @@ export class ProjectCreationDialogComponent implements OnInit {
       type: 'default'
     }
 
-    this.projects.projectTree.subscribe((tree) => {
-      this.treeNodes = this.treeNodes.concat(this.projectTree.constructTreeNodes(tree, false));
-      if (config.data.parentId) {
-        const parentId: UUID = config.data.parentId;
-        this.selectedProject = this.projectTree.findTreeNode(this.treeNodes, parentId.value);
-        this.projectCreationRequest.parentId = config.data.parentId;
-      }
-    })
+    this.projects.projectTree.pipe(
+      takeUntil(this.cleanUp),
+      tap((tree) => {
+        this.notifications.debug('Project Creation Dialog', 'Project Tree Updated', 'constructing tree nodes...');
+        this.treeNodes = this.treeNodes.concat(constructTreeNodes(tree, false));
+        if (config.data.parentId) {
+          const parentId: UUID = config.data.parentId;
+          this.selectedProject = this.projectTree.findTreeNode(this.treeNodes, parentId.value);
+          this.projectCreationRequest.parentId = config.data.parentId;
+        }
+      })
+    ).subscribe()
 
 
   }
 
   ngOnInit(): void {
+  }
+
+  ngOnDestroy() {
+    this.cleanUp.next({});
+    this.cleanUp.complete();
   }
 
   create(): void {

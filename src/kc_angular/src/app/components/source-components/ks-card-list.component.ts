@@ -154,13 +154,13 @@ interface KsCardListConfig {
                                [showThumbnail]="ksCardOptions.showThumbnail && !minimal"
                                [showTopics]="ksCardOptions.showTopics && !minimal"
                                [projectTreeNodes]="treeNodes"
-                               [selectedProject]="ks.associatedProject | projectAsTreeNode: treeNodes"
+                               [selectedProject]="ksCardOptions.showProjectSelection ? (ks.associatedProject | projectAsTreeNode: treeNodes) : undefined"
                                (onEdit)="_onKsDetail($event)"
                                (onOpen)="_onKsOpen($event)"
                                (onPreview)="_onKsPreview($event)"
                                (onRemove)="_onKsRemove($event)"
                                (onTopicClick)="onTopicSearch.emit($event.topic)"
-                               (onProjectChange)="_onProjectChange($event)">
+                               (onProjectChange)="onProjectChange.emit($event)">
                   </app-ks-card>
                 </div>
               </div>
@@ -413,8 +413,14 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
     projects.projectTree.pipe(
       takeUntil(this.cleanUp),
       tap((tree) => {
-        this.treeNodes = this.tree.constructTreeNodes(tree, false);
-        this.selectedProject = this.tree.findTreeNode(this.treeNodes, this.projects.getCurrentProjectId()?.value ?? '') ?? {};
+        this.selectedProject = this.tree.findTreeNode(tree, this.projects.getCurrentProjectId()?.value ?? '') ?? {};
+      })
+    ).subscribe()
+
+    tree.treeNodes.pipe(
+      takeUntil(this.cleanUp),
+      tap((nodes) => {
+        this.treeNodes = nodes;
       })
     ).subscribe()
 
@@ -820,10 +826,6 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
 
   setActiveKs(ks: KnowledgeSource) {
     this.ksSelection = ks;
-  }
-
-  _onProjectChange($event: { ks: KnowledgeSource; old: string; new: string }) {
-    this.onProjectChange.emit($event);
   }
 
   onMoveAll(_: MouseEvent) {
