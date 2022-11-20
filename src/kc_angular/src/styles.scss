@@ -221,3 +221,21 @@ input[type=range] + .thumb {
 .p-tooltip-lg .p-tooltip-text {
   min-width: 32rem !important;
 }
+
+
+// Animations
+.icon-rotate-animation {
+  animation: icon-rotate-animation 1s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+}
+
+@keyframes icon-rotate-animation {
+  0% {
+    transform: rotate(45deg);
+    opacity: 0;
+  }
+  100% {
+    transform: rotate(0);
+    opacity: 1;
+  }
+}
+

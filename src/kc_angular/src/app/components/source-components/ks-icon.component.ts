@@ -13,8 +13,6 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-
-
 import {Component, Input, OnInit} from '@angular/core';
 import {KnowledgeSource} from "../../models/knowledge.source.model";
 import {DragAndDropService} from "../../services/ingest-services/drag-and-drop.service";
@@ -24,7 +22,7 @@ import {KsCommandService} from "../../services/command-services/ks-command.servi
   selector: 'app-ks-icon',
   template: `
     <img [src]="ks && ks.icon ? ks.icon : iconUrl"
-         class="knowledge-source-icon"
+         class="knowledge-source-icon icon-rotate-animation"
          width="24"
          [style.cursor]="ks && ks.ingestType && ks.ingestType === 'file' ? 'grab' : 'pointer'"
          [class.shadow-3]="showShadow"
