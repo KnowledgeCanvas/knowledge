@@ -13,20 +13,14 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ProjectCreationRequest} from "src/app/models/project.model";
 import {DynamicDialogConfig, DynamicDialogRef} from "primeng/dynamicdialog";
 import {ProjectService} from "../../services/factory-services/project.service";
 import {KcProjectType} from "../../../../../kc_shared/models/project.model";
 import {TreeNode} from "primeng/api";
-import {ProjectTreeFactoryService} from "../../services/factory-services/project-tree-factory.service";
-import {UUID} from "../../../../../kc_shared/models/uuid.model";
-import {takeUntil, tap} from "rxjs/operators";
 import {Subject} from "rxjs";
-import {constructTreeNodes} from "../../workers/tree.worker";
 import {NotificationsService} from "../../services/user-services/notifications.service";
-
 
 @Component({
   selector: 'app-project-creation-dialog',
@@ -52,18 +46,11 @@ import {NotificationsService} from "../../services/user-services/notifications.s
           </div>
 
           <div class="field p-float-label sm:col-12 md:col-6 lg:col-6">
-            <p-treeSelect
-              id="parentId"
-              inputId="parentId"
-              [options]="treeNodes"
-              appendTo="body"
-              [filter]="true"
-              [filterInputAutoFocus]="true"
-              scrollHeight="min(40vh, 48rem)"
-              [(ngModel)]="selectedProject"
-              (onNodeSelect)="onParentChange($event)">
-            </p-treeSelect>
-            <label for="parentId">Parent Project (Optional)</label>
+            <project-selector label="Parent Project (Optional)"
+                              [setDefault]="false"
+                              [setById]="projectCreationRequest.parentId.value"
+                              (onSelect)="onParentChange($event)">
+            </project-selector>
           </div>
 
           <div class="field p-float-label sm:col-6 md:col-6 lg:col-6 mt-3">
@@ -123,17 +110,12 @@ export class ProjectCreationDialogComponent implements OnInit, OnDestroy {
   // Instance used during the creation process
   projectType: { code: KcProjectType, name: string };
 
-  treeNodes: TreeNode[] = [{key: '', label: 'None'}];
-
-  selectedProject?: TreeNode;
-
   private cleanUp: Subject<any> = new Subject<any>();
 
   constructor(private ref: DynamicDialogRef,
               private config: DynamicDialogConfig,
               private notifications: NotificationsService,
-              private projects: ProjectService,
-              private projectTree: ProjectTreeFactoryService) {
+              private projects: ProjectService) {
     this.projectTypes = projects.ProjectTypes;
 
     this.projectType = this.projectTypes[0];
@@ -152,24 +134,14 @@ export class ProjectCreationDialogComponent implements OnInit, OnDestroy {
       topics: [],
       type: 'default'
     }
-
-    this.projects.projectTree.pipe(
-      takeUntil(this.cleanUp),
-      tap((tree) => {
-        this.notifications.debug('Project Creation Dialog', 'Project Tree Updated', 'constructing tree nodes...');
-        this.treeNodes = this.treeNodes.concat(constructTreeNodes(tree, false));
-        if (config.data.parentId) {
-          const parentId: UUID = config.data.parentId;
-          this.selectedProject = this.projectTree.findTreeNode(this.treeNodes, parentId.value);
-          this.projectCreationRequest.parentId = config.data.parentId;
-        }
-      })
-    ).subscribe()
-
-
   }
 
   ngOnInit(): void {
+    setTimeout(() => {
+      if (this.config.data.parentId) {
+        this.projectCreationRequest.parentId = this.config.data.parentId;
+      }
+    })
   }
 
   ngOnDestroy() {
@@ -187,11 +159,9 @@ export class ProjectCreationDialogComponent implements OnInit, OnDestroy {
     });
   }
 
-  onParentChange($event: any) {
-    if ($event.node.key === '') {
-      this.selectedProject = undefined;
+  onParentChange($event?: TreeNode) {
+    if ($event?.key) {
+      this.projectCreationRequest.parentId = {value: $event.key}
     }
-
-    this.projectCreationRequest.parentId = {value: $event.node.key}
   }
 }

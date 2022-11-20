@@ -26,7 +26,7 @@ export class ProjectAsTreeNodePipe implements PipeTransform {
   constructor(private tree: ProjectTreeFactoryService) {}
 
   transform(id: UUID, treeNodes: TreeNode[]): TreeNode {
-    return this.tree.findTreeNode(treeNodes, id.value) ?? {};
+    return this.tree.findTreeNode(id.value, treeNodes) ?? {};
   }
 
 }

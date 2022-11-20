@@ -141,6 +141,7 @@ import {ProjectDetailsComponent} from './components/project-components/project-d
 import {GraphSettingsComponent} from './components/settings/graph-settings.component';
 import {SettingTemplateComponent} from './components/settings/setting-template.component';
 import {SwitchLabelPipe} from './pipes/switch-label.pipe';
+import {ProjectSelectorComponent} from './components/project-components/project-selector.component';
 
 @NgModule({
   declarations: [
@@ -200,7 +201,8 @@ import {SwitchLabelPipe} from './pipes/switch-label.pipe';
     ProjectDetailsComponent,
     GraphSettingsComponent,
     SettingTemplateComponent,
-    SwitchLabelPipe
+    SwitchLabelPipe,
+    ProjectSelectorComponent
   ],
   imports: [
     BrowserAnimationsModule,

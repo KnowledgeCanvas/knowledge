@@ -19,9 +19,7 @@ import {ProjectTreeNode} from "../models/project.tree.model";
 import {TreeNode} from "primeng/api";
 
 export function constructTreeNodes(nodes: ProjectTreeNode[], collapsed: boolean, parent?: TreeNode) {
-
   let treeNodes: TreeNode[] = [];
-
   for (let node of nodes) {
     let treeNode: TreeNode = {
       label: node.name,
@@ -34,12 +32,9 @@ export function constructTreeNodes(nodes: ProjectTreeNode[], collapsed: boolean,
       droppable: true,
       key: node.id
     };
-
     treeNode.children = node.subprojects.length > 0 ? constructTreeNodes(node.subprojects, collapsed, treeNode) : [];
-
     treeNodes.push(treeNode);
   }
-
   return treeNodes;
 }
 
@@ -47,8 +42,6 @@ addEventListener('message', (msg) => {
   if (!msg.data || !msg.data.nodes) {
     return;
   }
-
-  console.log('Tree worker running...', msg);
 
   const nodes = msg.data.nodes;
   const collapsed = msg.data.collapsed;

@@ -165,10 +165,7 @@ export class DisplaySettingsComponent implements OnInit {
         }
 
         if (this.displaySettings.theme.code !== formValue.theme.code) {
-          console.log('Setting theme...')
           this.themeService.switchTheme(formValue.theme.code)
-        } else {
-          console.log('Theme was not changed...')
         }
 
         if (this.displaySettings.zoom != formValue.zoom) {

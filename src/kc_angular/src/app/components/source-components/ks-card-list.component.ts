@@ -112,17 +112,10 @@ interface KsCardListConfig {
 
             <div *ngIf="allowMoveAll" class="p-fluid mr-3 ml-3 w-24rem flex-row-center-between">
               <div class="p-fluid flex-grow-1">
-                <p-treeSelect [(ngModel)]="selectedProject"
-                              [options]="treeNodes"
-                              [filter]="true"
-                              selectionMode="single"
-                              class="p-fluid w-full"
-                              appendTo="body"
-                              placeholder="Choose a Project">
-                </p-treeSelect>
+                <project-selector placeholder="Move to Project" (onSelect)="selectedProject = $event"></project-selector>
               </div>
               <div class="flex-shrink-1 ml-4">
-                <button pButton label="Move All" [disabled]="!selectedProject.key || treeNodes.length < 1" (click)="onMoveAll($event)"></button>
+                <button pButton label="Move All" [disabled]="!selectedProject?.key || treeNodes.length < 1" (click)="onMoveAll($event)"></button>
               </div>
             </div>
           </div>
@@ -399,7 +392,7 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
 
   treeNodes: TreeNode[] = [];
 
-  selectedProject: TreeNode = {};
+  selectedProject?: TreeNode = undefined;
 
   private cleanUp = new Subject();
 
@@ -413,7 +406,7 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
     projects.projectTree.pipe(
       takeUntil(this.cleanUp),
       tap((tree) => {
-        this.selectedProject = this.tree.findTreeNode(tree, this.projects.getCurrentProjectId()?.value ?? '') ?? {};
+        this.selectedProject = this.tree.findTreeNode(this.projects.getCurrentProjectId()?.value ?? '', tree) ?? {};
       })
     ).subscribe()
 

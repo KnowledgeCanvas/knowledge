@@ -26,7 +26,7 @@ import {Splitter} from "primeng/splitter";
 import {KsFactoryService} from "../services/factory-services/ks-factory.service";
 import {take, takeUntil, tap} from "rxjs/operators";
 import {DragAndDropService} from "../services/ingest-services/drag-and-drop.service";
-import {constructTreeNodes} from "../workers/tree.worker";
+import {ProjectTreeFactoryService} from "../services/factory-services/project-tree-factory.service";
 
 @Component({
   selector: 'app-home',
@@ -42,34 +42,11 @@ import {constructTreeNodes} from "../workers/tree.worker";
     <div class="flex flex-column h-full w-full">
       <div class="inbox-header flex-grow-0">
         <div class="flex flex-row justify-content-between align-items-center p-2">
-          <div *ngIf="treeNodes.length > 0" class="flex flex-row">
-            <button pButton
-                    class="ml-1"
-                    label="Import"
-                    [disabled]="!selectedProject || !upNext || upNext.length === 0"
-                    (click)="onProjectImport()"></button>
-            <p-treeSelect [options]="treeNodes"
-                          [(ngModel)]="selectedProject"
-                          [disabled]="!upNext || upNext.length === 0"
-                          class="text-primary w-16rem p-fluid"
-                          selectionMode="single"
-                          placeholder="Import to Project..."
-                          [filter]="true"
-                          pStyleClass="w-16rem"
-                          appendTo="body">
-            </p-treeSelect>
-            <div class="" *ngIf="selectedProject">
-              <button pButton icon="pi pi-fw pi-times" (click)="selectedProject = undefined" class="p-button-text p-button-plain"></button>
-            </div>
-          </div>
-
-          <div *ngIf="treeNodes.length === 0" class="">
-            <input pInputText #projectName placeholder="Create a new Project">
-            <button pButton
-                    class="ml-1"
-                    label="Create and Import"
-                    [disabled]="!projectName.value"
-                    (click)="onProjectCreateAndImport(projectName.value)"></button>
+          <div class="flex flex-row">
+            <button pButton class="ml-1" label="Import" [disabled]="!upNext || upNext.length === 0 || !selectedProject.key" (click)="onProjectImport()"></button>
+            <project-selector [disabled]="!upNext || upNext.length === 0 || !selectedProject.key" class="w-16rem"
+                              (onSelect)="selectedProject = $event"
+                              placeholder="Import to Project..."></project-selector>
           </div>
 
           <div class="flex flex-row">
@@ -210,16 +187,23 @@ export class HomeComponent implements OnInit, OnDestroy {
               private ingest: IngestService,
               private projects: ProjectService,
               private menu: KsContextMenuService,
-              private notifications: NotificationsService) {
+              private notifications: NotificationsService,
+              private tree: ProjectTreeFactoryService) {
     this.kcProject = projects.currentProject;
 
     this.supportedTypes = dnd.supportedTypes;
 
-    projects.projectTree.pipe(
+    tree.treeNodes.pipe(
       takeUntil(this.cleanUp),
-      tap((projectTree) => {
-        this.notifications.debug('Home', 'Project Tree Updated', 'constructing tree nodes...');
-        this.treeNodes = constructTreeNodes(projectTree, true);
+      tap((nodes) => {
+        this.treeNodes = nodes;
+      })
+    ).subscribe()
+
+    tree.selected.pipe(
+      takeUntil(this.cleanUp),
+      tap((selected) => {
+        this.selectedProject = selected;
       })
     ).subscribe()
 
@@ -320,7 +304,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   onProjectImport() {
     if (!this.selectedProject) {
-      this.notifications.warn('Home', 'Invalid Project', 'You must select a valid project to import.');
+      this.notifications.warn('Inbox', 'Invalid Project', 'You must select a valid project to import.');
       return;
     }
 
@@ -348,7 +332,7 @@ export class HomeComponent implements OnInit, OnDestroy {
    * @param projectName
    */
   onProjectCreateAndImport(projectName: string) {
-    console.log('Creating project with name: ', projectName);
+    this.notifications.debug('Inbox', 'Creating Project', projectName);
     let req: ProjectCreationRequest = {
       calendar: {
         events: [],
@@ -365,9 +349,9 @@ export class HomeComponent implements OnInit, OnDestroy {
       type: 'default',
       parentId: {value: ''}
     }
+
     this.projects.newProject(req).then((_: any) => {
       setTimeout(() => {
-        this.selectedProject = this.treeNodes[0];
         this.onProjectImport();
       }, 1000)
     })
@@ -446,5 +430,9 @@ export class HomeComponent implements OnInit, OnDestroy {
         }
       }
     )
+  }
+
+  onProjectSelect(node: TreeNode | undefined) {
+    this.selectedProject = node;
   }
 }
