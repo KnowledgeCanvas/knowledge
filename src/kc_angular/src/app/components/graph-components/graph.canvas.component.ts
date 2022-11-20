@@ -13,17 +13,17 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-import {Component, EventEmitter, Input, NgZone, OnChanges, OnDestroy, OnInit, Output, SimpleChanges} from '@angular/core';
+import {Component, EventEmitter, HostListener, Input, NgZone, OnChanges, OnDestroy, OnInit, Output, SimpleChanges} from '@angular/core';
 import {KnowledgeSource} from "../../models/knowledge.source.model";
 import {KcProject} from "../../models/project.model";
 import {ThemeService} from "../../services/user-services/theme.service";
 import {CytoscapeLayout, GraphLayouts} from "./graph.layouts";
 import cytoscape, {CytoscapeOptions, LayoutOptions} from "cytoscape";
 import {GraphStyles} from "./graph.styles";
-import {delay, takeUntil, tap} from "rxjs/operators";
+import {debounceTime, delay, takeUntil, tap} from "rxjs/operators";
 import {SettingsService} from "../../services/ipc-services/settings.service";
 import {NotificationsService} from "../../services/user-services/notifications.service";
-import {Subject} from "rxjs";
+import {BehaviorSubject, Subject} from "rxjs";
 
 
 /* Cytoscape Plugin Imports */
@@ -121,6 +121,8 @@ export class GraphCanvasComponent implements OnInit, OnChanges, OnDestroy {
     simulate: true
   }
 
+  private _windowResize = new BehaviorSubject({});
+
   graphLayouts: GraphLayouts = new GraphLayouts(this.commonOptions);
 
   cyLayout: LayoutOptions = {
@@ -163,6 +165,15 @@ export class GraphCanvasComponent implements OnInit, OnChanges, OnDestroy {
           simulate: graphSettings.simulation.enabled
         }
         this.initialize();
+      })
+    ).subscribe()
+
+    this._windowResize.asObservable().pipe(
+      takeUntil(this.cleanUp),
+      debounceTime(100),
+      delay(100),
+      tap(() => {
+        this.onFitToView()
       })
     ).subscribe()
   }
@@ -217,6 +228,11 @@ export class GraphCanvasComponent implements OnInit, OnChanges, OnDestroy {
     document?.getElementById('cy')?.remove();
     this.cleanUp.next({});
     this.cleanUp.complete();
+  }
+
+  @HostListener('window:resize', ["$event"])
+  windowResize(_: any) {
+    this._windowResize.next({});
   }
 
   initialize() {
