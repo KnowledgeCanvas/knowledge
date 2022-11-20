@@ -106,7 +106,7 @@ export class GraphComponent implements OnInit, OnDestroy {
     ).subscribe()
   }
 
-  ngOnInit(): void {
+  async ngOnInit() {
     this.projects.currentProject.pipe(
       takeUntil(this.cleanUp),
       tap((project) => {
@@ -145,7 +145,7 @@ export class GraphComponent implements OnInit, OnDestroy {
     this.cleanUp.complete();
   }
 
-  build() {
+  async build() {
     if (!this.projectId) {
       this.notifications.error('Graph', 'Invalid Project ID', 'No Project ID provided.')
       return;

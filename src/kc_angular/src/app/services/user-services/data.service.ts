@@ -22,12 +22,31 @@ import {SettingsService} from "../ipc-services/settings.service";
 import {ProjectService} from "../factory-services/project.service";
 import {FaviconService} from "../ingest-services/favicon.service";
 import {UUID} from "../../../../../kc_shared/models/uuid.model";
-import {takeUntil} from "rxjs/operators";
+import {map, takeUntil} from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService implements OnDestroy {
+  private __allKs = new BehaviorSubject<KnowledgeSource[]>([]);
+  allKs = this.__allKs.asObservable();
+
+  private __ksList = new BehaviorSubject<KnowledgeSource[]>([]);
+  ksList = this.__ksList.asObservable();
+
+  private __projectList = new BehaviorSubject<KcProject[]>([]);
+  projectList = this.__projectList.asObservable();
+
+  private __currentProject = new BehaviorSubject<KcProject | undefined>(undefined);
+  currentProject = this.__currentProject.asObservable();
+
+  private __selectedKs = new BehaviorSubject<KnowledgeSource[]>([]);
+  selectKs = this.__selectedKs.asObservable();
+
+  private projectInheritance: boolean = true;
+
+  private cleanUp: Subject<any> = new Subject<any>();
+
   sources = {
     create: async (ksList: KnowledgeSource[]) => {
       return this.sources.update(ksList);
@@ -71,33 +90,37 @@ export class DataService implements OnDestroy {
         const lookup = `ks-${ks.id.value}`;
         localStorage.removeItem(lookup);
       }
-    }
+    },
+
+    count: this.__ksList.asObservable().pipe(
+      map(sources => sources.length)
+    ),
+
+    typeCount: this.__ksList.asObservable().pipe(
+      map((sources) => {
+        let counts = {
+          websites: 0,
+          files: 0
+        }
+
+        sources.map(s => s.ingestType).forEach((ingestType) => {
+          if (ingestType === "website") {
+            counts.websites += 1;
+          } else if (ingestType === 'file') {
+            counts.files += 1;
+          }
+        });
+
+        return counts;
+      })
+    )
   }
 
-  projects = {}
-
-  /**
-   * TODO: This is only populated once on startup, but should be updated as sources are modified...
-   *        As a result of this, the search service is searching across old sources as time increases, causing the system to use stale values, etc.
-   */
-  private __allKs = new BehaviorSubject<KnowledgeSource[]>([]);
-  allKs = this.__allKs.asObservable();
-
-  private __ksList = new BehaviorSubject<KnowledgeSource[]>([]);
-  ksList = this.__ksList.asObservable();
-
-  private __projectList = new BehaviorSubject<KcProject[]>([]);
-  projectList = this.__projectList.asObservable();
-
-  private __currentProject = new BehaviorSubject<KcProject | undefined>(undefined);
-  currentProject = this.__currentProject.asObservable();
-
-  private __selectedKs = new BehaviorSubject<KnowledgeSource[]>([]);
-  selectKs = this.__selectedKs.asObservable();
-
-  private projectInheritance: boolean = true;
-
-  private cleanUp: Subject<any> = new Subject<any>();
+  projects = {
+    subprojectCount: this.__projectList.asObservable().pipe(
+      map(projects => projects.length)
+    )
+  }
 
   constructor(private storage: StorageService,
               private settings: SettingsService,
@@ -137,6 +160,7 @@ export class DataService implements OnDestroy {
           return;
         }
         let ksList: KnowledgeSource[] = [];
+        let projectList: KcProject[] = [project];
         let queue: KcProject[] = [project];
 
         while (queue.length > 0) {
@@ -150,10 +174,13 @@ export class DataService implements OnDestroy {
               let s = this._projects.getProject(sub);
               if (s) {
                 queue.push(s);
+                projectList.push(s);
               }
             }
           }
         }
+
+        this.__projectList.next(projectList);
 
         this.favicon.extractFromKsList(ksList).then((ready) => {
           this.__ksList.next(ready);
