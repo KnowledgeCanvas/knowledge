@@ -190,7 +190,7 @@ import {TopicService} from "../../services/user-services/topic.service";
               <div style="max-height: 5rem; overflow-x: hidden; overflow-y: auto">
                 <p-chip *ngFor="let topic of ksTopics"
                         class="cursor-pointer"
-                        label="{{topic}} ({{ksTableTopicCount(topic)}})"
+                        label="{{topic}}"
                         styleClass="search-chip m-1"
                         (click)="onChipClick(topic)">
                 </p-chip>
