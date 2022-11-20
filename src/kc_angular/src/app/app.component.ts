@@ -29,7 +29,7 @@ import {ProjectTreeFactoryService} from "./services/factory-services/project-tre
 import {ChildrenOutletContexts, NavigationEnd, Router} from "@angular/router";
 import {KsDetailsComponent} from "./components/source-components/ks-details.component";
 import {map, take, takeUntil, tap} from "rxjs/operators";
-import {Subject} from "rxjs";
+import {BehaviorSubject, Subject, throttleTime} from "rxjs";
 import {StartupService} from "./services/ipc-services/startup.service";
 import {ProjectCommandService} from "./services/command-services/project-command.service";
 import {ProjectDetailsComponent} from "./components/project-components/project-details.component";
@@ -125,7 +125,7 @@ type SidebarItem = {
           <div class="flex flex-column flex-grow-0 h-full border-right-1 border-400">
             <app-projects-tree @flyInOut *ngIf="projectTreeVisible"></app-projects-tree>
           </div>
-          <div [@routeAnimations]="getRouteAnimationData()" class="flex-column flex-grow-1 h-full">
+          <div [@routeAnimations]="routeAnimationData" class="flex-column flex-grow-1 h-full">
             <router-outlet></router-outlet>
           </div>
         </div>
@@ -241,6 +241,8 @@ export class AppComponent implements OnInit, OnDestroy {
 
   os: string = '';
 
+  routeAnimationData: string = 'Inbox';
+
   private cleanUp = new Subject();
 
   private _windowResize = new BehaviorSubject({});
@@ -326,6 +328,8 @@ export class AppComponent implements OnInit, OnDestroy {
             default:
               break;
           }
+
+          this.routeAnimationData = this.selectedView;
         }
       })
     ).subscribe();
@@ -384,19 +388,8 @@ export class AppComponent implements OnInit, OnDestroy {
     projects.currentProject.pipe(
       takeUntil(this.cleanUp),
       tap((project) => {
-        if (project) {
-          this.projectId = project.id.value;
-          this.sidebarItems = [
-            {label: 'Inbox', routerLink: ['app', 'inbox', this.projectId], icon: 'pi pi-inbox'},
-            {label: 'Projects', routerLink: ['app', 'projects', this.projectId], icon: 'pi pi-list'},
-            {label: 'Graph', routerLink: ['app', 'graph', this.projectId], icon: 'pi pi-sitemap'},
-            {label: 'Table', routerLink: ['app', 'table', this.projectId], icon: 'pi pi-table'},
-            {label: 'Grid', routerLink: ['app', 'grid', this.projectId], icon: 'pi pi-th-large'},
-            {label: 'Calendar', routerLink: ['app', 'calendar', this.projectId], icon: 'pi pi-calendar'},
-          ];
-        } else {
-          this.projectId = '';
-        }
+        this.projectId = project?.id.value ?? '';
+        this.setSidebar();
       })
     ).subscribe();
 
@@ -409,11 +402,14 @@ export class AppComponent implements OnInit, OnDestroy {
 
     this._windowResize.asObservable().pipe(
       takeUntil(this.cleanUp),
-      throttleTime(100),
+      throttleTime(50),
       tap((_) => {
         this.projectTreeVisible = window.innerWidth >= 1200;
       })
     ).subscribe()
+  }
+
+  ngOnInit() {
   }
 
   ngOnDestroy() {
@@ -421,12 +417,22 @@ export class AppComponent implements OnInit, OnDestroy {
     this.cleanUp.complete();
   }
 
+  setSidebar() {
+    this.sidebarItems = [
+      {label: 'Inbox', routerLink: ['app', 'inbox', this.projectId], icon: 'pi pi-inbox'},
+      {label: 'Projects', routerLink: ['app', 'projects', this.projectId], icon: 'pi pi-list'},
+      {label: 'Graph', routerLink: ['app', 'graph', this.projectId], icon: 'pi pi-sitemap'},
+      {label: 'Table', routerLink: ['app', 'table', this.projectId], icon: 'pi pi-table'},
+      {label: 'Grid', routerLink: ['app', 'grid', this.projectId], icon: 'pi pi-th-large'},
+      {label: 'Calendar', routerLink: ['app', 'calendar', this.projectId], icon: 'pi pi-calendar'},
+    ];
+  }
+
   @HostListener('window:resize', ["$event"])
   windowResize(_: any) {
     this._windowResize.next({});
   }
 
-  /* TODO: Create a hotkey service that registers these keys on behalf of each module */
   @HostListener('document:keydown.Control.r', ["$event"])
   @HostListener('document:keydown.f5', ["$event"])
   @HostListener('document:keydown.meta.r', ["$event"])
@@ -523,9 +529,6 @@ export class AppComponent implements OnInit, OnDestroy {
     })
   }
 
-  ngOnInit() {
-  }
-
   showSettings() {
     this.settings.show();
   }
@@ -547,9 +550,5 @@ export class AppComponent implements OnInit, OnDestroy {
     if (item.command) {
       item.command();
     }
-  }
-
-  getRouteAnimationData() {
-    return this.contexts.getContext('primary')?.route?.snapshot?.data?.['animation'];
   }
 }

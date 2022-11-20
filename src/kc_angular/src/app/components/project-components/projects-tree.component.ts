@@ -19,24 +19,27 @@ import {MenuItem, TreeNode} from "primeng/api";
 import {TreeModule} from "primeng/tree";
 import {ProjectCommandService} from "../../services/command-services/project-command.service";
 import {ProjectTreeFactoryService} from "../../services/factory-services/project-tree-factory.service";
-import {BehaviorSubject, skip, Subject, tap} from "rxjs";
+import {BehaviorSubject, merge, skip, Subject, tap} from "rxjs";
 import {ProjectContextMenuService} from "../../services/factory-services/project-context-menu.service";
 import {debounceTime, takeUntil} from "rxjs/operators";
+import {NotificationsService} from "../../services/user-services/notifications.service";
 
 @Component({
   selector: 'app-projects-tree',
   template: `
     <p-tree class="h-full"
+            emptyMessage=" "
+            selectionMode="single"
+            scrollHeight="flex"
             [style]="{'max-height': '100%'}"
             [contextMenu]="cm"
-            (onNodeContextMenuSelect)="onContextMenu($event)"
             [filter]="true"
             [value]="projectTree"
             [selection]="currentProject"
-            emptyMessage=" "
-            selectionMode="single"
             (selectionChange)="selectionChange($event)"
-            scrollHeight="flex">
+            (onNodeContextMenuSelect)="onContextMenu($event)"
+            (onNodeCollapse)="onNodeCollapse($event, true)"
+            (onNodeExpand)="onNodeCollapse($event, false)">
       <ng-template pTemplate="header">
         <div class="flex-row-center-between">
           <button pButton
@@ -106,44 +109,51 @@ export class ProjectsTreeComponent implements OnInit, OnDestroy {
 
   menu: MenuItem[] = [];
 
-  projectChange = new BehaviorSubject<string>('');
+  private projectChange = new BehaviorSubject<string>('');
 
   private cleanUp: Subject<any> = new Subject<any>();
 
-  constructor(private projects: ProjectService,
+  constructor(private notifications: NotificationsService,
+              private projects: ProjectService,
               private pCommand: ProjectCommandService,
               private pContext: ProjectContextMenuService,
               private tree: ProjectTreeFactoryService) {
+    /* When user selects a project in the project tree, set current project via project service */
     this.projectChange.asObservable().pipe(
       takeUntil(this.cleanUp),
       skip(1),
       debounceTime(500),
       tap((projectId) => {
+        this.notifications.debug('Project Tree', 'Project Change', `User clicked on ${projectId}`);
         this.projects.setCurrentProject(projectId);
       })
     ).subscribe()
 
-    tree.treeNodes.pipe(
+    /* When the project tree is updated, make sure the correct project is selected in the tree */
+    const treeSub$ = tree.treeNodes.pipe(
       takeUntil(this.cleanUp),
       tap((nodes) => {
+        this.notifications.debug('Project Tree', 'Tree Node Change', ``);
         this.projectTree = nodes;
-        if (this.projectTree.length > 0) {
-          this.currentProject = tree.findTreeNode(this.projectTree, this.projectId) ?? undefined;
-          if (this.currentProject) {
-            this.expandPath(this.currentProject);
-          }
-        }
       })
-    ).subscribe()
+    )
 
-    projects.currentProject.pipe(
+    /* When the current project changes, make sure the correct project is selected in the tree */
+    const projectSub$ = projects.currentProject.pipe(
       takeUntil(this.cleanUp),
       tap((project) => {
-        if (project) {
-          this.projectId = project.id.value;
-        }
+        this.notifications.debug('Project Tree', 'Project Change', `Current project changed to ${project?.id.value}`);
+        this.projectId = project?.id.value ?? this.projectId;
+      })
+    )
+
+    merge(treeSub$, projectSub$).pipe(
+      takeUntil(this.cleanUp),
+      debounceTime(500),
+      tap(() => {
+        this.notifications.debug('Project Tree', 'Setting Project', `${this.projectId}`);
         if (this.projectTree.length > 0) {
-          this.currentProject = tree.findTreeNode(this.projectTree, this.projectId) ?? undefined;
+          this.currentProject = tree.findTreeNode(this.projectId, this.projectTree) ?? undefined;
           if (this.currentProject) {
             this.expandPath(this.currentProject);
           }
@@ -173,11 +183,7 @@ export class ProjectsTreeComponent implements OnInit, OnDestroy {
   }
 
   onNewProject(currentProject?: TreeNode) {
-    if (currentProject?.key) {
-      this.pCommand.new({value: currentProject.key});
-    } else {
-      this.pCommand.new();
-    }
+    this.pCommand.new(currentProject?.key ? {value: currentProject.key} : undefined);
   }
 
   onRemoveProject(currentProject?: TreeNode) {
@@ -189,7 +195,7 @@ export class ProjectsTreeComponent implements OnInit, OnDestroy {
     }
   }
 
-  expandAll = (root: TreeNode[], expand: boolean) => {
+  expandAll = async (root: TreeNode[], expand: boolean) => {
     for (let t of root) {
       t.expanded = expand;
       if (t.children && t.children.length > 0)
@@ -213,6 +219,19 @@ export class ProjectsTreeComponent implements OnInit, OnDestroy {
     if (this.currentProject) {
       this.expandAll(this.projectTree, false);
       this.expandPath(this.currentProject);
+    }
+  }
+
+  onNodeCollapse($event: any, collapsed: boolean) {
+    const node = $event.node;
+    if (node?.key) {
+      let project = this.projects.getProject(node.key)
+      if (project) {
+        this.projects.updateProjects([{
+          id: project.id,
+          expanded: !collapsed
+        }])
+      }
     }
   }
 }

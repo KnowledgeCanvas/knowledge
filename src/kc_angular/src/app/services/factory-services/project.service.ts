@@ -494,7 +494,7 @@ export class ProjectService {
     return ret;
   }
 
-  setAllExpanded(expanded: boolean) {
+  async setAllExpanded(expanded: boolean) {
     for (let project of this.projectSource) {
       project.expanded = expanded;
     }

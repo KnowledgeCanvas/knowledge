@@ -223,7 +223,7 @@ export class StorageService {
     }
   }
 
-  saveProjectList(projects: KcProject[]) {
+  async saveProjectList(projects: KcProject[]) {
     for (let project of projects) {
       this.saveProject(project);
     }
