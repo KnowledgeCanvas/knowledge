@@ -40,7 +40,7 @@ body {
   color: var(--text-color);
 }
 
-app-home, app-data-view {
+app-home, app-data-view, app-projects {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
@@ -72,9 +72,6 @@ app-ks-ingest {
     min-width: min(100%, 20rem);
     height: 100%;
     flex-basis: 20%;
-    border-right-width: 1px !important;
-    border-right-style: solid;
-    border-color: var(--surface-200) !important;
   }
 
   .app-splitter-divider {
@@ -88,6 +85,10 @@ app-ks-ingest {
     height: 100%;
     flex-basis: 80%;
   }
+}
+
+.width-constrained {
+  max-width: min(100%, 140rem) !important;
 }
 
 

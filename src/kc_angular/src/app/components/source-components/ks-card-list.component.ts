@@ -122,42 +122,42 @@ interface KsCardListConfig {
         </ng-template>
 
         <ng-template pTemplate="content">
-          <div class="h-full w-full p-4">
-            <p-scrollPanel [style]="{'max-height': 'calc(100vh - 300px)'}">
-              <div #top style="height: 0; width: 0"></div>
-              <div *ngIf="ksList.length === 0" class="h-full w-full">
+          <div class="h-full w-full p-4 overflow-y-auto">
+            <div #top style="height: 0; width: 0"></div>
+            <div *ngIf="ksList.length > 0 else emptyList" class="grid w-full h-full" style="max-height: calc(100vh - 300px)">
+              <div *ngFor="let ks of displayList" [class]="selectedSizer.gridColClass" style="min-width: 24rem">
+                <app-ks-card [ks]="ks"
+                             (contextmenu)="setActiveKs(ks); cm.show($event)"
+                             [showIcon]="ksCardOptions.showIcon"
+                             [showContentType]="ksCardOptions.showContentType"
+                             [showDescription]="ksCardOptions.showDescription && !minimal"
+                             [showEdit]="ksCardOptions.showEdit"
+                             [showOpen]="ksCardOptions.showOpen"
+                             [showPreview]="ksCardOptions.showPreview"
+                             [showProjectBreadcrumbs]="ksCardOptions.showProjectName "
+                             [showProjectSelection]="ksCardOptions.showProjectSelection"
+                             [showRemove]="ksCardOptions.showRemove"
+                             [showFlag]="true"
+                             [showThumbnail]="ksCardOptions.showThumbnail && !minimal"
+                             [showTopics]="ksCardOptions.showTopics && !minimal"
+                             [projectTreeNodes]="treeNodes"
+                             [selectedProject]="ksCardOptions.showProjectSelection ? (ks.associatedProject | projectAsTreeNode: treeNodes) : undefined"
+                             (onEdit)="_onKsDetail($event)"
+                             (onOpen)="_onKsOpen($event)"
+                             (onPreview)="_onKsPreview($event)"
+                             (onRemove)="_onKsRemove($event)"
+                             (onTopicClick)="onTopicSearch.emit($event.topic)"
+                             (onProjectChange)="onProjectChange.emit($event)">
+                </app-ks-card>
+              </div>
+            </div>
+            <ng-template #emptyList>
+              <div  class="h-full w-full">
                 <div class="flex-row-center-center text-2xl text-500" style="height: 12rem; width: 100% !important;">
                   {{emptyMessage}}
                 </div>
               </div>
-              <div class="grid w-full h-full" style="max-height: calc(100vh - 285px)">
-                <div *ngFor="let ks of displayList" [class]="selectedSizer.gridColClass" style="min-width: 24rem">
-                  <app-ks-card [ks]="ks"
-                               (contextmenu)="setActiveKs(ks); cm.show($event)"
-                               [showIcon]="ksCardOptions.showIcon"
-                               [showContentType]="ksCardOptions.showContentType"
-                               [showDescription]="ksCardOptions.showDescription && !minimal"
-                               [showEdit]="ksCardOptions.showEdit"
-                               [showOpen]="ksCardOptions.showOpen"
-                               [showPreview]="ksCardOptions.showPreview"
-                               [showProjectBreadcrumbs]="ksCardOptions.showProjectName "
-                               [showProjectSelection]="ksCardOptions.showProjectSelection"
-                               [showRemove]="ksCardOptions.showRemove"
-                               [showFlag]="true"
-                               [showThumbnail]="ksCardOptions.showThumbnail && !minimal"
-                               [showTopics]="ksCardOptions.showTopics && !minimal"
-                               [projectTreeNodes]="treeNodes"
-                               [selectedProject]="ksCardOptions.showProjectSelection ? (ks.associatedProject | projectAsTreeNode: treeNodes) : undefined"
-                               (onEdit)="_onKsDetail($event)"
-                               (onOpen)="_onKsOpen($event)"
-                               (onPreview)="_onKsPreview($event)"
-                               (onRemove)="_onKsRemove($event)"
-                               (onTopicClick)="onTopicSearch.emit($event.topic)"
-                               (onProjectChange)="onProjectChange.emit($event)">
-                  </app-ks-card>
-                </div>
-              </div>
-            </p-scrollPanel>
+            </ng-template>
           </div>
         </ng-template>
 

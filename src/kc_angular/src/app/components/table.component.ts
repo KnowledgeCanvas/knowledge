@@ -24,7 +24,7 @@ import {takeUntil} from "rxjs/operators";
   selector: 'app-table',
   template: `
     <div class="h-full w-full flex-col-center-center">
-      <div class="w-full h-full flex-col-center-between surface-section p-4" [style]="{'max-width': 'min(100%, 128rem)'}">
+      <div class="width-constrained w-full h-full flex-col-center-between surface-section p-4">
         <ks-table class="w-full h-full" [ksList]="(sources | async)!"></ks-table>
       </div>
     </div>
