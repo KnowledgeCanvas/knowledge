@@ -39,12 +39,12 @@ import {ProjectTreeFactoryService} from "../services/factory-services/project-tr
                    appendTo="body">
     </p-contextMenu>
 
-    <div class="flex flex-column h-full w-full">
-      <div class="inbox-header flex-grow-0">
+    <div class="inbox-container width-constrained flex flex-column h-full w-full align-items-center">
+      <div class="inbox-header flex-grow-0 w-full">
         <div class="flex flex-row justify-content-between align-items-center p-2">
           <div class="flex flex-row">
             <button pButton class="ml-1" label="Import" [disabled]="!upNext || upNext.length === 0 || !selectedProject.key" (click)="onProjectImport()"></button>
-            <project-selector [disabled]="!upNext || upNext.length === 0 || !selectedProject.key" class="w-16rem"
+            <project-selector [disabled]="!upNext || upNext.length === 0" class="w-16rem"
                               (onSelect)="selectedProject = $event"
                               placeholder="Import to Project..."></project-selector>
           </div>
@@ -66,7 +66,7 @@ import {ProjectTreeFactoryService} from "../services/factory-services/project-tr
         </div>
       </div>
 
-      <div class="inbox-content flex-grow-1 h-full overflow-y-auto">
+      <div class="inbox-content flex-grow-1 h-full w-full overflow-y-auto">
         <div class="w-full h-full flex app-splitter-container">
           <div class="app-splitter-left">
             <div *ngIf="upNext.length > 0" class="h-full" style="overflow-y: auto">
@@ -85,7 +85,7 @@ import {ProjectTreeFactoryService} from "../services/factory-services/project-tr
               <div>
                 <app-ks-message *ngFor="let ks of filtered"
                                 [ks]="ks"
-                                (click)="setActive(ks)"
+                                (click)="setActive(ks, $event)"
                                 (contextmenu)="setContext(ks); onKsContextMenu(context); cm.show($event)"
                                 [active]="active && (ks.id.value === (active.id.value))">
                 </app-ks-message>
@@ -140,6 +140,14 @@ import {ProjectTreeFactoryService} from "../services/factory-services/project-tr
   `,
   styles: [
     `
+      .inbox-container {
+        border-right-width: 1px !important;
+        border-right-style: solid;
+        border-left-width: 1px !important;
+        border-left-style: solid;
+        border-color: var(--surface-200) !important;
+      }
+
       .inactive-inbox {
         height: 100%;
         display: flex;
@@ -268,7 +276,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     })
   }
 
-  setActive(ks: KnowledgeSource) {
+  setActive(ks: KnowledgeSource, event?: MouseEvent) {
     const found = this.upNext.indexOf(ks);
     if (found) {
       this.activeIndex = found;

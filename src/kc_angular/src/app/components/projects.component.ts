@@ -25,7 +25,7 @@ import {takeUntil} from "rxjs/operators";
 @Component({
   selector: 'app-projects',
   template: `
-    <div class="w-full h-full flex flex-column gap-2 p-4">
+    <div class="width-constrained w-full h-full flex flex-column gap-2 p-4">
       <app-project-info class="w-full" [project]="project | async"></app-project-info>
     </div>
     <p-contextMenu #cm

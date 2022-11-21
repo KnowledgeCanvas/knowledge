@@ -30,7 +30,7 @@ import {take, tap} from "rxjs/operators";
   selector: 'app-calendar',
   template: `
     <div class="h-full w-full flex-col-center-center">
-      <div class="w-full h-full flex-col-center-between surface-section p-4" [style]="{'max-width': 'min(100%, 128rem)'}">
+      <div class="width-constrained w-full h-full flex-col-center-between surface-section p-4">
         <app-project-calendar [kcProject]="project | async"
                               [ksList]="ksList | async"
                               (onKsClick)="onKsClick($event)"
