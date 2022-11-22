@@ -4,23 +4,15 @@
 # Angular files
 **/.angular
 
-# IDE files
-.idea/
 
 # Jupyter notebook checkpoints
-/kc_nlp/src/.ipynb_checkpoints/
+**/*.ipynb_checkpoints
 
 # Node modules
-/node_modules/
-src/kc_electron/node_modules
-src/kc_angular/node_modules
-src/kc_extensions/node_modules
-src/kc_knowledge/node_modules
+**/node_modules
 
 # Build artifacts
-dist/
-src/kc_angular/dist/
-src/kc_electron/dist/
+**/dist
 
 # Python stuff
 __pycache__
