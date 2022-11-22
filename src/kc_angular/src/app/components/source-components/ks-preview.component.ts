@@ -69,6 +69,7 @@ export interface KsPreviewInput {
       max-height: calc(100vh - 48px);
       min-width: 100%;
       max-width: 100%;
+      overflow: hidden;
     }
 
     .ks-preview-body {
