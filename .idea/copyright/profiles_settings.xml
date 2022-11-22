@@ -1,0 +1,8 @@
+<component name="CopyrightManager">
+  <settings default="Knowledge Copyright">
+    <module2copyright>
+      <element module="Typescript Files" copyright="Knowledge Copyright" />
+      <element module="HTML Files" copyright="Knowledge Copyright" />
+    </module2copyright>
+  </settings>
+</component>
