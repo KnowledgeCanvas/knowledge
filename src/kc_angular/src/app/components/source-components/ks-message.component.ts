@@ -19,20 +19,7 @@ import {KnowledgeSource} from "../../models/knowledge.source.model";
 @Component({
   selector: 'app-ks-message',
   template: `
-    <div *ngIf="!ks" class="flex-col-center-between w-full border-bottom-1 border-100 hover:surface-hover p-2"
-         [class.bg-primary-reverse]="active">
-      <div *ngIf="!status" class="flex-row-center-between w-full pb-2">
-        <p-skeleton size="40px" shape="circle" class="pr-2"></p-skeleton>
-        <p-skeleton class="w-full" height="32px" shape="rectangle"></p-skeleton>
-      </div>
-      <div *ngIf="status" class="w-full flex-row-center-center" style="height: 4rem">
-        <div class="text-500 font-bold">
-          {{status}}
-        </div>
-      </div>
-    </div>
-
-    <div *ngIf="ks" class="flex-col-center-between w-full h-full border-bottom-1 border-100 hover:surface-hover p-2"
+    <div *ngIf="ks else placeholder" class="flex-col-center-between w-full h-full border-bottom-1 border-100 hover:surface-hover p-2"
          [class.bg-primary-reverse]="active"
          [class.surface-card]="active">
       <div class="flex-row-center-between w-full pb-2">
@@ -56,6 +43,20 @@ import {KnowledgeSource} from "../../models/knowledge.source.model";
         <div class="text-right">{{ks.dateCreated | date:'MM/dd/yy hh:mm a'}}</div>
       </div>
     </div>
+
+    <ng-template #placeholder>
+      <div class="flex-col-center-between w-full border-bottom-1 border-100 hover:surface-hover p-2" [class.bg-primary-reverse]="active">
+        <div *ngIf="!status" class="flex-row-center-between w-full pb-2">
+          <p-skeleton size="40px" shape="circle" class="pr-2"></p-skeleton>
+          <p-skeleton class="w-full" height="32px" shape="rectangle"></p-skeleton>
+        </div>
+        <div *ngIf="status" class="w-full flex-row-center-center" style="height: 4rem">
+          <div class="text-500 font-bold">
+            {{status}}
+          </div>
+        </div>
+      </div>
+    </ng-template>
   `,
   styles: [
     `

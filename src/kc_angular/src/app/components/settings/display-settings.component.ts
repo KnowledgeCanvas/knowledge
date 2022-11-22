@@ -1,17 +1,17 @@
-/**
- Copyright 2022 Rob Royce
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
- http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+/*
+ * Copyright (c) 2022 Rob Royce
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
  */
 import {Component, OnInit} from '@angular/core';
 import {ThemeService} from "../../services/user-services/theme.service";
@@ -39,7 +39,7 @@ import {debounceTime, distinctUntilChanged, tap} from "rxjs/operators";
               <div class="w-full h-full flex flex-column">
                 <app-setting-template label="Theme">
                   <div class="p-inputgroup w-16rem settings-input">
-                    <button pButton icon="pi pi-replay" pTooltip="Restore default" (click)="restoreDefaultTheme()"></button>
+                    <button pButton icon="pi pi-replay" pTooltip="Restore default" tooltipPosition="left" (click)="restoreDefaultTheme()"></button>
                     <p-dropdown formControlName="theme" [options]="themes" optionLabel="name" [filter]="true" [group]="true" id="theme-dropdown" [style]="{'width': '100%'}"
                                 appendTo="body">
                       <ng-template pTemplate="group" let-group>
@@ -63,7 +63,7 @@ import {debounceTime, distinctUntilChanged, tap} from "rxjs/operators";
 
                 <p-divider layout="horizontal"></p-divider>
 
-                <app-setting-template label="Log Notifications">
+                <app-setting-template label="Log Notifications" labelHelp="Enable to display log messages as notifications in the bottom right corner of the application window.">
                   <p-selectButton [options]="logLevels" formControlName="logs" [multiple]="true" id="log-selector"
                                   class="settings-input w-24rem" optionLabel="name" optionValue="value"></p-selectButton>
                 </app-setting-template>
@@ -82,8 +82,26 @@ import {debounceTime, distinctUntilChanged, tap} from "rxjs/operators";
             <ng-template pTemplate="content">
               <div class="w-full h-full flex flex-column">
                 <app-setting-template label="Auto-play YouTube videos"
-                                      labelHelp="Automatically play and pause YouTube videos when the 'YouTube Video' panel is opened.">
+                                      labelHelp="Automatically play and pause YouTube videos when the 'YouTube Video' panel is toggled open.">
                   <p-inputSwitch formControlName="autoplay" class="settings-input"></p-inputSwitch>
+                </app-setting-template>
+              </div>
+            </ng-template>
+          </p-panel>
+        </div>
+
+        <div class="col-12">
+          <p-panel [toggleable]="true" toggler="header">
+            <ng-template pTemplate="header">
+              <div class="flex-row-center-between w-full">
+                <div class="text-2xl">Animations</div>
+              </div>
+            </ng-template>
+            <ng-template pTemplate="content">
+              <div class="w-full h-full flex flex-column">
+                <app-setting-template label="Animations"
+                                      labelHelp="Enable or disable animations. Disabling animations may improve performance. Note that this option does not affect graph animations.">
+                  <p-inputSwitch formControlName="animations" class="settings-input"></p-inputSwitch>
                 </app-setting-template>
               </div>
             </ng-template>
@@ -136,7 +154,8 @@ export class DisplaySettingsComponent implements OnInit {
         this.displaySettings.logging.debug ? 'debug' : '',
         this.displaySettings.logging.error ? 'error' : '',
         this.displaySettings.logging.warn ? 'warn' : ''
-      ]]
+      ]],
+      animations: [this.displaySettings.animations]
     })
 
     this.form.valueChanges.pipe(
@@ -146,6 +165,7 @@ export class DisplaySettingsComponent implements OnInit {
           && (curr.zoom === prev.zoom)
           && (curr.logs === prev.logs)
           && (curr.autoplay === prev.autoplay)
+          && (curr.animations === prev.animations)
       }),
       tap((formValue) => {
         const error = !!formValue.logs.find((l: any) => l == 'error');
@@ -175,12 +195,13 @@ export class DisplaySettingsComponent implements OnInit {
         this.displaySettings = {
           autoplay: formValue.autoplay,
           logging: {
-            error: error,
-            debug: debug,
-            warn: warn
+            error: error ?? this.displaySettings.logging.error,
+            debug: debug ?? this.displaySettings.logging.debug,
+            warn: warn ?? this.displaySettings.logging.warn
           },
           theme: formValue.theme,
-          zoom: formValue.zoom
+          zoom: formValue.zoom,
+          animations: formValue.animations
         }
         this.set();
       })
