@@ -1,22 +1,21 @@
-/**
- Copyright 2022 Rob Royce
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
- http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+/*
+ * Copyright (c) 2022 Rob Royce
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
  */
-import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ProjectService} from "../../services/factory-services/project.service";
 import {MenuItem, TreeNode} from "primeng/api";
-import {TreeModule} from "primeng/tree";
 import {ProjectCommandService} from "../../services/command-services/project-command.service";
 import {ProjectTreeFactoryService} from "../../services/factory-services/project-tree-factory.service";
 import {BehaviorSubject, merge, skip, Subject, tap} from "rxjs";
@@ -99,8 +98,6 @@ import {NotificationsService} from "../../services/user-services/notifications.s
   ]
 })
 export class ProjectsTreeComponent implements OnInit, OnDestroy {
-  @ViewChild('tree') pTree!: TreeModule;
-
   projectId: string = '';
 
   currentProject?: TreeNode;
@@ -148,8 +145,8 @@ export class ProjectsTreeComponent implements OnInit, OnDestroy {
       takeUntil(this.cleanUp),
       debounceTime(500),
       tap(() => {
-        this.notifications.debug('Project Tree', 'Setting Project', `${this.projectId}`);
         if (this.projectTree.length > 0) {
+          this.notifications.debug('Project Tree', 'Setting Active Project', `${this.projectId}`);
           this.currentProject = tree.findTreeNode(this.projectId, this.projectTree) ?? undefined;
           if (this.currentProject) {
             this.expandPath(this.currentProject);

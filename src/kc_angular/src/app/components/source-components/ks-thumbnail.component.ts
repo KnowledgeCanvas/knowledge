@@ -1,17 +1,17 @@
-/**
- Copyright 2022 Rob Royce
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
- http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+/*
+ * Copyright (c) 2022 Rob Royce
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
  */
 
 import {Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
@@ -20,13 +20,14 @@ import {BehaviorSubject, Observable, Subject, tap} from "rxjs";
 import {ElectronIpcService} from "../../services/ipc-services/electron-ipc.service";
 import {fadeIn} from "../../animations";
 import {takeUntil} from "rxjs/operators";
+import {SettingsService} from "../../services/ipc-services/settings.service";
 
 @Component({
   selector: 'app-ks-thumbnail',
   template: `
     <div *ngIf="(thumbnail | async) else loading" class="w-full flex-col-center-center">
       <p-image [src]="thumbnail | async"
-               @fadeIn
+               [@fadeIn]="animate"
                class="flex-col-center-center w-full surface-300 thumbnail-container"
                imageClass="ks-thumbnail"
                [style]="{'border-radius': '5px'}"
@@ -35,7 +36,7 @@ import {takeUntil} from "rxjs/operators";
     </div>
 
     <ng-template #loading>
-      <div @fadeIn class="flex-col-center-center select-none"
+      <div [@fadeIn]="animate" class="flex-col-center-center select-none"
            style="height: 200px; background-color: var(--surface-300); border-radius: 5px;">
         <app-ks-icon [ks]="ks"></app-ks-icon>
         <div class="text-sm mt-4">Thumbnail Unavailable</div>
@@ -54,6 +55,8 @@ import {takeUntil} from "rxjs/operators";
 export class KsThumbnailComponent implements OnInit, OnDestroy, OnChanges {
   @Input() ks!: KnowledgeSource;
 
+  @Input() animate: boolean = true;
+
   thumbnail$: BehaviorSubject<any> = new BehaviorSubject<any>(undefined);
 
   thumbnail: Observable<any> = this.thumbnail$.asObservable();
@@ -62,7 +65,8 @@ export class KsThumbnailComponent implements OnInit, OnDestroy, OnChanges {
 
   private cleanUp: Subject<any> = new Subject<any>();
 
-  constructor(private ipcService: ElectronIpcService) {
+  constructor(private ipcService: ElectronIpcService, private settings: SettingsService) {
+    this.animate = settings.get().display.animations;
   }
 
   ngOnInit(): void {

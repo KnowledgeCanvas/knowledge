@@ -1,17 +1,17 @@
-/**
- Copyright 2022 Rob Royce
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
- http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+/*
+ * Copyright (c) 2022 Rob Royce
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
  */
 import {Component, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {KnowledgeSource} from "../models/knowledge.source.model";
@@ -24,9 +24,10 @@ import {NotificationsService} from "../services/user-services/notifications.serv
 import {KsContextMenuService} from "../services/factory-services/ks-context-menu.service";
 import {Splitter} from "primeng/splitter";
 import {KsFactoryService} from "../services/factory-services/ks-factory.service";
-import {take, takeUntil, tap} from "rxjs/operators";
+import {map, take, takeUntil, tap} from "rxjs/operators";
 import {DragAndDropService} from "../services/ingest-services/drag-and-drop.service";
 import {ProjectTreeFactoryService} from "../services/factory-services/project-tree-factory.service";
+import {SettingsService} from "../services/ipc-services/settings.service";
 
 @Component({
   selector: 'app-home',
@@ -126,7 +127,7 @@ import {ProjectTreeFactoryService} from "../services/factory-services/project-tr
                 <div (dragstart)="$event.preventDefault()">
                   <img src="assets/img/kc-icon-greyscale.png"
                        alt="Knowledge Logo"
-                       class="pulsate-fwd"
+                       [class.pulsate-fwd]="animate"
                        style="filter: drop-shadow(0 0 1px var(--primary-color)); height: 8rem">
                 </div>
                 <div class="text-600 text-2xl">
@@ -193,6 +194,8 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   supportedTypes: string[] = ["Links", "Files"];
 
+  animate: boolean = true;
+
   private cleanUp: Subject<any> = new Subject<any>();
 
   constructor(private confirm: ConfirmationService,
@@ -203,10 +206,17 @@ export class HomeComponent implements OnInit, OnDestroy {
               private projects: ProjectService,
               private menu: KsContextMenuService,
               private notifications: NotificationsService,
-              private tree: ProjectTreeFactoryService) {
+              private tree: ProjectTreeFactoryService,
+              private settings: SettingsService) {
     this.kcProject = projects.currentProject;
 
     this.supportedTypes = dnd.supportedTypes;
+
+    settings.display.pipe(
+      takeUntil(this.cleanUp),
+      map(d => d.animations),
+      tap(animate => this.animate = animate)
+    ).subscribe()
 
     tree.treeNodes.pipe(
       takeUntil(this.cleanUp),

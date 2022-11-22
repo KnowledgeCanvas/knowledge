@@ -1,17 +1,17 @@
-/**
- Copyright 2022 Rob Royce
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
- http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+/*
+ * Copyright (c) 2022 Rob Royce
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
  */
 import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
 import {environment} from "../environments/environment";
@@ -33,8 +33,7 @@ import {BehaviorSubject, Subject, throttleTime} from "rxjs";
 import {StartupService} from "./services/ipc-services/startup.service";
 import {ProjectCommandService} from "./services/command-services/project-command.service";
 import {ProjectDetailsComponent} from "./components/project-components/project-details.component";
-import {animate, state, style, transition, trigger} from '@angular/animations';
-import {fadeIn, slideInAnimation} from "./animations";
+import {fadeIn, flyInOut, slideInAnimation} from "./animations";
 
 
 type SidebarItem = {
@@ -96,12 +95,13 @@ type SidebarItem = {
             </div>
             <div class="overflow-y-auto mt-3">
               <ul class="list-none py-3 pl-2 pr-0 m-0">
-                <li *ngFor="let item of sidebarItems" class="mb-2" [pTooltip]="item.label" (click)="onSidebarClick($event, item)" (dragstart)="$event.preventDefault()">
-                  <a [routerLink]="item.routerLink"
-                     class="p-element flex align-items-center cursor-pointer py-3 pl-0 pr-2 justify-content-center hover:surface-200 text-700 hover:text-900 transition-duration-150 transition-colors no-underline"
-                     [class.bg-primary]="item.label === selectedView"
-                     [class.hover:bg-primary]="item.label === selectedView"
-                     style="border-top-left-radius: 30px; border-bottom-left-radius: 30px;">
+                <li *ngFor="let item of sidebarItems" class="mb-2" [pTooltip]="item.label" [routerLink]="item.routerLink" (click)="onSidebarClick($event, item)"
+                    (dragstart)="$event.preventDefault()">
+                  <a
+                    class="p-element flex align-items-center cursor-pointer py-3 pl-0 pr-2 justify-content-center hover:surface-200 text-700 hover:text-900 transition-duration-150 transition-colors no-underline"
+                    [class.bg-primary]="item.label === selectedView"
+                    [class.hover:bg-primary]="item.label === selectedView"
+                    style="border-top-left-radius: 30px; border-bottom-left-radius: 30px;">
                     <i *ngIf="item.label === 'Inbox' && inboxBadge > 0" class="{{item.icon}} text-xl no-underline" pBadge value="{{inboxBadge}}" severity="danger"></i>
                     <i *ngIf="item.label === 'Inbox' && inboxBadge === 0" class="{{item.icon}} text-xl no-underline"></i>
                     <i *ngIf="item.label !== 'Inbox'" class="{{item.icon}} text-xl no-underline"></i>
@@ -123,7 +123,7 @@ type SidebarItem = {
       <div id="app-body" class="w-full flex flex-column relative flex-auto select-none" style="max-height: calc(100vh - 32px)">
         <div id="app-router-outlet" class="h-full flex flex-row overflow-y-auto" style="max-height: calc(100vh - 80px); max-width: calc(100vw - 61px)">
           <div class="flex flex-column flex-grow-0 h-full">
-            <app-projects-tree class="border-right-1 border-primary-500" @flyInOut *ngIf="projectTreeVisible"></app-projects-tree>
+            <app-projects-tree class="border-right-1 border-primary-500" [@flyInOut]="animate" *ngIf="projectTreeVisible"></app-projects-tree>
           </div>
           <div [@routeAnimations]="routeAnimationData" class="flex-column flex-grow-1 h-full">
             <router-outlet></router-outlet>
@@ -199,26 +199,7 @@ type SidebarItem = {
       }
     `
   ],
-  animations: [
-    slideInAnimation,
-    trigger('flyInOut', [
-      state('in', style({
-        transform: 'translateX(0)'
-      })),
-      transition('void => *', [
-        style({
-          transform: 'translateX(-100%)'
-        }),
-        animate(100)
-      ]),
-      transition('* => void', [
-        animate(100, style({
-          transform: 'translateX(-100%)'
-        }))
-      ])
-    ]),
-    fadeIn
-  ]
+  animations: [slideInAnimation, flyInOut, fadeIn]
 })
 export class AppComponent implements OnInit, OnDestroy {
   projectId: string = '';
@@ -242,6 +223,8 @@ export class AppComponent implements OnInit, OnDestroy {
   os: string = '';
 
   routeAnimationData: string = 'Inbox';
+
+  animate: boolean = true;
 
   private cleanUp = new Subject();
 
@@ -294,6 +277,14 @@ export class AppComponent implements OnInit, OnDestroy {
       })
     ).subscribe()
 
+    settings.display.pipe(
+      takeUntil(this.cleanUp),
+      map(d => d.animations),
+      tap((animations) => {
+        this.animate = animations;
+      })
+    ).subscribe()
+
     router.events.pipe(
       takeUntil(this.cleanUp),
       tap((events) => {
@@ -329,7 +320,9 @@ export class AppComponent implements OnInit, OnDestroy {
               break;
           }
 
-          this.routeAnimationData = this.selectedView;
+          if (this.animate) {
+            this.routeAnimationData = this.selectedView;
+          }
         }
       })
     ).subscribe();
@@ -417,15 +410,48 @@ export class AppComponent implements OnInit, OnDestroy {
     this.cleanUp.complete();
   }
 
+  /**
+   * Sets the sidebar icons and router links.
+   * If there are no projects, only display inbox.
+   * All other routes require a project ID to display properly.
+   */
   setSidebar() {
-    this.sidebarItems = [
+    this.sidebarItems = (this.projectId && this.projectId.trim().length === 36) ? [
       {label: 'Inbox', routerLink: ['app', 'inbox', this.projectId], icon: 'pi pi-inbox'},
       {label: 'Projects', routerLink: ['app', 'projects', this.projectId], icon: 'pi pi-list'},
       {label: 'Graph', routerLink: ['app', 'graph', this.projectId], icon: 'pi pi-sitemap'},
       {label: 'Table', routerLink: ['app', 'table', this.projectId], icon: 'pi pi-table'},
       {label: 'Grid', routerLink: ['app', 'grid', this.projectId], icon: 'pi pi-th-large'},
       {label: 'Calendar', routerLink: ['app', 'calendar', this.projectId], icon: 'pi pi-calendar'},
+    ] : [
+      {label: 'Inbox', routerLink: ['app', 'inbox', 'undefined'], icon: 'pi pi-inbox'}
     ];
+  }
+
+  showSettings() {
+    this.settings.show();
+  }
+
+  close(_: MouseEvent) {
+    window.close()
+  }
+
+  minimize(_: MouseEvent) {
+    window.api.send('A2E:Window:Minimize');
+  }
+
+  maximize(_: MouseEvent) {
+    window.api.send('A2E:Window:Maximize');
+  }
+
+  onSidebarClick($event: MouseEvent, item: SidebarItem) {
+    console.log('Click on sidebar: ', $event, item);
+    if ($event && item?.label) {
+      this.selectedView = item.label === 'Settings' ? this.selectedView : item.label;
+      if (item.command) {
+        item.command();
+      }
+    }
   }
 
   @HostListener('window:resize', ["$event"])
@@ -527,28 +553,5 @@ export class AppComponent implements OnInit, OnDestroy {
         })
       }
     })
-  }
-
-  showSettings() {
-    this.settings.show();
-  }
-
-  close(_: MouseEvent) {
-    window.close()
-  }
-
-  minimize(_: MouseEvent) {
-    window.api.send('A2E:Window:Minimize');
-  }
-
-  maximize(_: MouseEvent) {
-    window.api.send('A2E:Window:Maximize');
-  }
-
-  onSidebarClick($event: MouseEvent, item: SidebarItem) {
-    this.selectedView = item.label === 'Settings' ? this.selectedView : item.label;
-    if (item.command) {
-      item.command();
-    }
   }
 }
