@@ -122,8 +122,8 @@ type SidebarItem = {
       </div>
       <div id="app-body" class="w-full flex flex-column relative flex-auto select-none" style="max-height: calc(100vh - 32px)">
         <div id="app-router-outlet" class="h-full flex flex-row overflow-y-auto" style="max-height: calc(100vh - 80px); max-width: calc(100vw - 61px)">
-          <div class="flex flex-column flex-grow-0 h-full border-right-1 border-400">
-            <app-projects-tree @flyInOut *ngIf="projectTreeVisible"></app-projects-tree>
+          <div class="flex flex-column flex-grow-0 h-full">
+            <app-projects-tree class="border-right-1 border-primary-500" @flyInOut *ngIf="projectTreeVisible"></app-projects-tree>
           </div>
           <div [@routeAnimations]="routeAnimationData" class="flex-column flex-grow-1 h-full">
             <router-outlet></router-outlet>

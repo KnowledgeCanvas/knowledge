@@ -124,7 +124,6 @@ export class ProjectsTreeComponent implements OnInit, OnDestroy {
       skip(1),
       debounceTime(500),
       tap((projectId) => {
-        this.notifications.debug('Project Tree', 'Project Change', `User clicked on ${projectId}`);
         this.projects.setCurrentProject(projectId);
       })
     ).subscribe()
@@ -133,7 +132,6 @@ export class ProjectsTreeComponent implements OnInit, OnDestroy {
     const treeSub$ = tree.treeNodes.pipe(
       takeUntil(this.cleanUp),
       tap((nodes) => {
-        this.notifications.debug('Project Tree', 'Tree Node Change', ``);
         this.projectTree = nodes;
       })
     )
@@ -142,7 +140,6 @@ export class ProjectsTreeComponent implements OnInit, OnDestroy {
     const projectSub$ = projects.currentProject.pipe(
       takeUntil(this.cleanUp),
       tap((project) => {
-        this.notifications.debug('Project Tree', 'Project Change', `Current project changed to ${project?.id.value}`);
         this.projectId = project?.id.value ?? this.projectId;
       })
     )
@@ -156,6 +153,7 @@ export class ProjectsTreeComponent implements OnInit, OnDestroy {
           this.currentProject = tree.findTreeNode(this.projectId, this.projectTree) ?? undefined;
           if (this.currentProject) {
             this.expandPath(this.currentProject);
+            this.scrollToActive();
           }
         }
       })
@@ -163,6 +161,7 @@ export class ProjectsTreeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.scrollToActive(1000);
   }
 
   ngOnDestroy() {
@@ -199,7 +198,7 @@ export class ProjectsTreeComponent implements OnInit, OnDestroy {
     for (let t of root) {
       t.expanded = expand;
       if (t.children && t.children.length > 0)
-        this.expandAll(t.children, expand)
+        await this.expandAll(t.children, expand)
     }
   }
 
@@ -215,10 +214,19 @@ export class ProjectsTreeComponent implements OnInit, OnDestroy {
     }
   }
 
+  scrollToActive(timeout: number = 0) {
+    setTimeout(() => {
+      const classElement = document.getElementsByClassName('p-treenode-content p-treenode-selectable p-highlight');
+      if (classElement.length > 0) {
+        classElement[0].scrollIntoView();
+      }
+    }, timeout)
+  }
+
   showSelected() {
     if (this.currentProject) {
-      this.expandAll(this.projectTree, false);
       this.expandPath(this.currentProject);
+      this.scrollToActive();
     }
   }
 

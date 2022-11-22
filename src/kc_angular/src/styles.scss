@@ -62,11 +62,7 @@ app-ks-ingest {
 
 .app-splitter-container {
   max-width: min(100%, 140rem);
-  border-color: var(--primary-color-text) !important;
-  border-left-width: 1px;
-  border-right-width: 1px;
-  border-left-style: solid;
-  border-right-style: solid;
+  border: none;
 
   .app-splitter-left {
     min-width: min(100%, 20rem);
@@ -84,6 +80,16 @@ app-ks-ingest {
     display: flex;
     height: 100%;
     flex-basis: 80%;
+  }
+}
+
+@media (min-width: 140rem) {
+  .app-splitter-container {
+    border-color: var(--primary-color-text) !important;
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-left-style: solid;
+    border-right-style: solid;
   }
 }
 

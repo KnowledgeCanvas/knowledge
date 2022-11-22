@@ -18,7 +18,7 @@ import {KnowledgeSource} from "../models/knowledge.source.model";
 import {IngestService} from "../services/ingest-services/ingest.service";
 import {ProjectService} from "../services/factory-services/project.service";
 import {Observable, Subject} from "rxjs";
-import {KcProject, ProjectCreationRequest} from "../models/project.model";
+import {KcProject} from "../models/project.model";
 import {ConfirmationService, FilterService, MenuItem, TreeNode} from "primeng/api";
 import {NotificationsService} from "../services/user-services/notifications.service";
 import {KsContextMenuService} from "../services/factory-services/ks-context-menu.service";
@@ -45,6 +45,7 @@ import {ProjectTreeFactoryService} from "../services/factory-services/project-tr
           <div class="flex flex-row">
             <button pButton class="ml-1" label="Import" [disabled]="!upNext || upNext.length === 0 || !selectedProject.key" (click)="onProjectImport()"></button>
             <project-selector [disabled]="!upNext || upNext.length === 0" class="w-16rem"
+                              [showClear]="false"
                               (onSelect)="selectedProject = $event"
                               placeholder="Import to Project..."></project-selector>
           </div>
@@ -141,11 +142,17 @@ import {ProjectTreeFactoryService} from "../services/factory-services/project-tr
   styles: [
     `
       .inbox-container {
-        border-right-width: 1px !important;
-        border-right-style: solid;
-        border-left-width: 1px !important;
-        border-left-style: solid;
-        border-color: var(--surface-200) !important;
+        border-style: hidden;
+      }
+
+      @media (min-width: 140rem) {
+        .inbox-container {
+          border-right-width: 1px !important;
+          border-right-style: solid;
+          border-left-width: 1px !important;
+          border-left-style: solid;
+          border-color: var(--surface-200) !important;
+        }
       }
 
       .inactive-inbox {
@@ -332,37 +339,6 @@ export class HomeComponent implements OnInit, OnDestroy {
         }
       })
     }
-  }
-
-  /**
-   * Create a new project and then import the selected source
-   * This function is only used when there are no existing projects
-   * @param projectName
-   */
-  onProjectCreateAndImport(projectName: string) {
-    this.notifications.debug('Inbox', 'Creating Project', projectName);
-    let req: ProjectCreationRequest = {
-      calendar: {
-        events: [],
-        end: null,
-        start: null
-      },
-      sources: [],
-      authors: [],
-      description: "",
-      knowledgeSource: [],
-      name: projectName,
-      subProjects: [],
-      topics: [],
-      type: 'default',
-      parentId: {value: ''}
-    }
-
-    this.projects.newProject(req).then((_: any) => {
-      setTimeout(() => {
-        this.onProjectImport();
-      }, 1000)
-    })
   }
 
   expandAll() {
