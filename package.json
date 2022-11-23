@@ -28,6 +28,7 @@
     "pack": "electron-builder --dir",
     "dist": "electron-builder --publish never",
     "dist-all": "electron-builder -mwl --x64 --arm64 --publish never",
+    "interactive-upgrade": "yarn upgrade-interactive",
     "publish": "electron-builder --publish always",
     "publish-all": "electron-builder -mwl --x64 --arm64 --publish always",
     "release": "standard-version",
@@ -40,7 +41,7 @@
     "watch-electron": "cd src/kc_electron && yarn run watch-electron",
     "watch-electron-dev": "cd src/kc_electron && yarn run watch-electron-dev"
   },
-  "packageManager": "yarn@3.1.1",
+  "packageManager": "yarn@3.2.4",
   "dependencies": {
     "async": "^3.2.4",
     "ejs": "^3.1.8",
