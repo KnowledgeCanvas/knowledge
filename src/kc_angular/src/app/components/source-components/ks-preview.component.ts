@@ -1,24 +1,30 @@
-/**
- Copyright 2022 Rob Royce
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
- http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+/*
+ * Copyright (c) 2022 Rob Royce
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
  */
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {KnowledgeSource} from "../../models/knowledge.source.model";
 import {ElectronIpcService} from "../../services/ipc-services/electron-ipc.service";
 import {Clipboard} from "@angular/cdk/clipboard";
 import {ExtractorService} from "../../services/ingest-services/extractor.service";
-import {BrowserViewClickEvent, BrowserViewConfig, BrowserViewNavEvent, FileViewClickEvent, FileViewConfig} from "../../../../../kc_shared/models/browser.view.model";
+import {
+  BrowserViewClickEvent,
+  BrowserViewConfig,
+  BrowserViewNavEvent,
+  FileViewClickEvent,
+  FileViewConfig
+} from "../../../../../kc_shared/models/browser.view.model";
 import {KsFactoryService} from "../../services/factory-services/ks-factory.service";
 import {IngestService} from "../../services/ingest-services/ingest.service";
 import {DynamicDialogConfig, DynamicDialogRef} from "primeng/dynamicdialog";
@@ -156,7 +162,7 @@ export class KsPreviewComponent implements OnInit, OnDestroy {
 
   onFileViewClickEvent(clickEvent: FileViewClickEvent) {
     if (!this.fileViewConfig) {
-      console.error('Wires are crossed somewhere. Received KcFileViewClickEvent but FileViewConfig not present...');
+      this.notifications.error('Preview', 'Invalid File', 'Expected file view configuration.');
       return;
     }
 
@@ -174,7 +180,7 @@ export class KsPreviewComponent implements OnInit, OnDestroy {
 
   onBrowserViewClickEvent(clickEvent: BrowserViewClickEvent) {
     if (!this.browserViewConfig) {
-      console.error('Wires are crossed somewhere. Received KcFileViewClickEvent but FileViewConfig not present...');
+      this.notifications.error('Preview', 'Invalid File', 'Expected file view configuration.');
       return;
     }
 
@@ -252,7 +258,7 @@ export class KsPreviewComponent implements OnInit, OnDestroy {
 
   previewPdf() {
     if (typeof this.ks.accessLink !== 'string') {
-      console.warn('PDF cannot be opened because invalid access link...');
+      this.notifications.error('Preview', 'Invalid Path', 'Expected a path to the PDF file.');
       return;
     }
 
@@ -265,7 +271,7 @@ export class KsPreviewComponent implements OnInit, OnDestroy {
 
   previewImage() {
     if (typeof this.ks.accessLink !== 'string') {
-      console.warn('PDF cannot be opened because invalid access link...');
+      this.notifications.error('Preview', 'Invalid Path', 'Expected a path to the image file.');
       return;
     }
 
@@ -297,7 +303,7 @@ export class KsPreviewComponent implements OnInit, OnDestroy {
   save() {
     this.factory.make('website', this.activeBrowserViewUrl).then((ks) => {
       if (!ks) {
-        console.warn('Undefined Knowledge Source on apparent success...');
+        this.notifications.warn('Preview', 'Invalid Source', 'Success was reported but the Source is undefined.');
         return;
       }
       this.ingest.enqueue([ks]);

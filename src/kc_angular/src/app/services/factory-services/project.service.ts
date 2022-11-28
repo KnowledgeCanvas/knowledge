@@ -1,17 +1,17 @@
-/**
- Copyright 2022 Rob Royce
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
- http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+/*
+ * Copyright (c) 2022 Rob Royce
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
  */
 
 import {Injectable} from '@angular/core';
@@ -29,11 +29,6 @@ import {NotificationsService} from "../user-services/notifications.service";
 export interface ProjectIdentifiers {
   id: string;
   title: string;
-}
-
-export interface ProjectNavigationCommand {
-  navigateTo: string
-  navigateFrom: string
 }
 
 @Injectable({
@@ -55,8 +50,6 @@ export class ProjectService {
   private tree: ProjectTree;
   private projectSource: KcProject[] = [];
   private lookup: Map<string, KcProject>;
-  private _projectCommands: ProjectNavigationCommand[] = [];
-  private _projectCommandIndex: number = 0;
 
   constructor(private storageService: StorageService,
               private uuidService: UuidService,
@@ -82,14 +75,6 @@ export class ProjectService {
     ];
   }
 
-  get projectCommandCanGoBack() { // TODO: implement correctly
-    return this._projectCommands.length > 0 && this._projectCommandIndex > 0;
-  }
-
-  get projectCommandCanGoForward(): boolean { // TODO: implement correctly
-    return false;
-  }
-
   get ProjectIdentifiers(): ProjectIdentifiers[] {
     let ids: ProjectIdentifiers[] = [];
     for (let project of this.projectSource) {
@@ -100,37 +85,6 @@ export class ProjectService {
       ids.push(id);
     }
     return ids;
-  }
-
-  projectCommandNavigate(id: string) { // TODO: implement correctly
-    this.setCurrentProject(id);
-    //
-    // console.log(`Navigate to ${id} with current index ${this._projectCommandIndex} with command list: `, this._projectCommands);
-    //
-    // if (id === this.getCurrentProjectId().value) {
-    //   return;
-    // }
-    //
-    // if (this._projectCommandIndex !== this._projectCommands.length) {
-    //   // If we are not at the end of the command list, we need to modify it
-    //   this._projectCommands.length = this._projectCommandIndex - 1;
-    // }
-    //
-    // console.log('Pushing project commands...');
-    // this._projectCommands.push({navigateTo: id, navigateFrom: this.getCurrentProjectId().value});
-    // console.log('Pushing project commands...', this._projectCommands);
-    // this._projectCommandIndex = this._projectCommands.length - 1;
-    // this.setCurrentProject(id);
-  }
-
-  projectCommandGoBack() { // TODO: implement correctly
-    let currentCommand = this._projectCommands[this._projectCommandIndex];
-    this._projectCommandIndex -= 1;
-    this.setCurrentProject(currentCommand.navigateFrom);
-  }
-
-  projectCommandGoForward() { // TODO: implement correctly
-
   }
 
   async refreshTree() {
