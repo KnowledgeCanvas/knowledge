@@ -31,13 +31,12 @@ import {ThemeService} from "../../services/user-services/theme.service";
 import {CytoscapeLayout, GraphLayouts} from "./graph.layouts";
 import cytoscape, {CytoscapeOptions, ExportBlobOptions, LayoutOptions} from "cytoscape";
 import {GraphStyles} from "./graph.styles";
-import {debounceTime, delay, filter, map, take, takeUntil, tap} from "rxjs/operators";
+import {bufferTime, debounceTime, delay, filter, take, takeUntil, tap} from "rxjs/operators";
 import {SettingsService} from "../../services/ipc-services/settings.service";
 import {NotificationsService} from "../../services/user-services/notifications.service";
 import {BehaviorSubject, forkJoin, Observable, skip, Subject} from "rxjs";
 import {SearchService} from "../../services/user-services/search.service";
 import {SearchResult} from "./graph-search.component";
-
 
 /* Cytoscape Plugin Imports */
 const cola = require('cytoscape-cola');
@@ -154,6 +153,8 @@ export class GraphCanvasComponent implements OnInit, OnChanges, OnDestroy {
 
   private _selection = new BehaviorSubject({});
 
+  private _boxSelected = new BehaviorSubject({});
+
   private _selectedIndex = new BehaviorSubject<number>(0);
 
   graphLayouts: GraphLayouts = new GraphLayouts(this.commonOptions);
@@ -197,9 +198,21 @@ export class GraphCanvasComponent implements OnInit, OnChanges, OnDestroy {
     this._selection.asObservable().pipe(
       takeUntil(this.cleanUp),
       debounceTime(250),
-      map(_ => this.cy?.nodes(':selected').length),
-      tap((value) => {
-        this.selectedCount = value ?? 0;
+      tap((_) => {
+        this.selectedCount = this.cy?.nodes(':selected')?.nodes?.length ?? 0;
+      })
+    ).subscribe()
+
+    this._boxSelected.asObservable().pipe(
+      takeUntil(this.cleanUp),
+      bufferTime(250),
+      filter(s => s.length > 0),
+      tap((selected: any[]) => {
+        this.removeStyles();
+        const elems = this.cy?.collection(selected).nodes('[type="ks"]').select();
+        const sources: (KnowledgeSource & SearchResult)[] = elems?.map(s => s.data('ks')) ?? [];
+        this.highlightPath()
+        this._searchSources.next(sources);
       })
     ).subscribe()
 
@@ -406,6 +419,11 @@ export class GraphCanvasComponent implements OnInit, OnChanges, OnDestroy {
       this.cy.on('select', (event: any) => {
         this._selection.next(event);
       })
+
+      this.cy.on('boxselect', (event: any) => {
+        this.removeStyles();
+        this._boxSelected.next(event.target);
+      })
     })
   }
 
@@ -543,6 +561,10 @@ export class GraphCanvasComponent implements OnInit, OnChanges, OnDestroy {
     ).subscribe()
   }
 
+  private removeStyles() {
+    this.cy?.elements().removeClass('search-path-node search-path-edge').unselect();
+  }
+
   onIndexChange(reselect: boolean, zoomOutcenter: boolean) {
     if (this._searchSources.value.length === 0) {
       return;
@@ -551,7 +573,7 @@ export class GraphCanvasComponent implements OnInit, OnChanges, OnDestroy {
     const selector = `[id="${source.id.value}"]`;
 
     if (reselect) {
-      this.cy?.elements().removeClass('search-path-node search-path-edge').unselect();
+      this.removeStyles();
     }
 
     this.cy?.nodes(selector).select();

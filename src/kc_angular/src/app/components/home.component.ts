@@ -413,6 +413,11 @@ export class HomeComponent implements OnInit, OnDestroy {
 
           this.ingest.enqueue(ksList);
           this.loading = false;
+        }).catch((error) => {
+          setTimeout(() => {
+            this.loading = false;
+            this.notifications.error('Inbox', 'Unable to Load Examples', 'Please check your connection and try again later...', 'toast');
+          }, 1000);
         })
       })
     ).subscribe({
@@ -420,7 +425,7 @@ export class HomeComponent implements OnInit, OnDestroy {
           setTimeout(() => {
             this.loading = false;
             this.notifications.error('Inbox', 'Unable to Load Examples', 'Please check your connection and try again later...', 'toast');
-          }, Math.floor(Math.random() * 1000));
+          }, 1000);
         }
       }
     )

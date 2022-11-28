@@ -147,7 +147,7 @@ export class KsThumbnailComponent implements OnInit, OnDestroy, OnChanges {
               }
             })
           }).catch((_) => {
-            console.error('Unable to get thumbnail for ', url);
+            this.notifications.warn('Thumbnail', 'Invalid Thumbnail', url);
             this._thumbnail$.next(undefined);
           })
         }

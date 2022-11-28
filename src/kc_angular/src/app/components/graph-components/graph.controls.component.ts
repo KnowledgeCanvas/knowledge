@@ -45,7 +45,7 @@ import {SettingsService} from "../../services/ipc-services/settings.service";
 
       <div class="flex flex-row gap-2 justify-content-between">
         <div class="flex">
-          <button pButton icon="pi pi-download" (click)="onScreenshot.emit()"></button>
+          <button pButton icon="pi pi-download" class="p-button-secondary" (click)="onScreenshot.emit()"></button>
         </div>
 
         <div class="flex w-full p-inputgroup">
@@ -62,7 +62,7 @@ import {SettingsService} from "../../services/ipc-services/settings.service";
         </div>
 
         <div class="flex">
-          <button pButton icon="pi pi-cog" (click)="onSettings.emit()"></button>
+          <button pButton icon="pi pi-cog" class="p-button-secondary" (click)="onSettings.emit()"></button>
         </div>
       </div>
       <div class="graph-status">

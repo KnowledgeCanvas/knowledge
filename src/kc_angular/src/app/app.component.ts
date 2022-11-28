@@ -445,7 +445,6 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   onSidebarClick($event: MouseEvent, item: SidebarItem) {
-    console.log('Click on sidebar: ', $event, item);
     if ($event && item?.label) {
       this.selectedView = item.label === 'Settings' ? this.selectedView : item.label;
       if (item.command) {
