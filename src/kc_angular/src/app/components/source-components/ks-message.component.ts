@@ -1,17 +1,17 @@
-/**
- Copyright 2022 Rob Royce
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
- http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+/*
+ * Copyright (c) 2022 Rob Royce
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
  */
 import {Component, Input, OnInit} from '@angular/core';
 import {KnowledgeSource} from "../../models/knowledge.source.model";
@@ -19,11 +19,13 @@ import {KnowledgeSource} from "../../models/knowledge.source.model";
 @Component({
   selector: 'app-ks-message',
   template: `
-    <div *ngIf="ks else placeholder" class="flex-col-center-between w-full h-full border-bottom-1 border-100 hover:surface-hover p-2"
-         [class.bg-primary-reverse]="active"
+    <div *ngIf="ks else placeholder"
+         class="flex-col-center-between w-full h-full border-bottom-1 border-100 hover:surface-hover p-2 border-round-2xl"
+         [class.text-primary]="active"
          [class.surface-card]="active">
       <div class="flex-row-center-between w-full pb-2">
         <app-ks-icon [ks]="ks"
+                     [animate]="animate"
                      [allowClickThrough]="false"
                      style="height: 40px; width: 40px"
                      class="pr-2 flex align-items-center">
@@ -39,13 +41,15 @@ import {KnowledgeSource} from "../../models/knowledge.source.model";
         </div>
       </div>
       <div class="flex-row-center-between w-full text-500">
-        <div class="text-left">{{ks.importMethod | importMethod}}</div>
-        <div class="text-right">{{ks.dateCreated | date:'MM/dd/yy hh:mm a'}}</div>
+        <div *ngIf="!label else labelPlaceholder" class="text-left">{{ks.importMethod | importMethod}}</div>
+        <ng-template #labelPlaceholder>{{label}}</ng-template>
+        <div *ngIf="showDate" class="text-right">{{ks.dateCreated | date:'MM/dd/yy hh:mm a'}}</div>
       </div>
     </div>
 
     <ng-template #placeholder>
-      <div class="flex-col-center-between w-full border-bottom-1 border-100 hover:surface-hover p-2" [class.bg-primary-reverse]="active">
+      <div class="flex-col-center-between w-full border-bottom-1 border-100 hover:surface-hover p-2"
+           [class.bg-primary-reverse]="active">
         <div *ngIf="!status" class="flex-row-center-between w-full pb-2">
           <p-skeleton size="40px" shape="circle" class="pr-2"></p-skeleton>
           <p-skeleton class="w-full" height="32px" shape="rectangle"></p-skeleton>
@@ -88,6 +92,12 @@ export class KsMessageComponent implements OnInit {
   @Input() status?: string;
 
   @Input() active?: boolean = false;
+
+  @Input() label?: string;
+
+  @Input() showDate: boolean = true;
+
+  @Input() animate: boolean = true;
 
   constructor() {
   }

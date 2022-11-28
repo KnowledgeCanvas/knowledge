@@ -1,21 +1,31 @@
-/**
- Copyright 2022 Rob Royce
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
- http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+/*
+ * Copyright (c) 2022 Rob Royce
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
  */
 
 
-import {Component, EventEmitter, HostListener, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges} from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  HostListener,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import {KnowledgeSource} from "../../models/knowledge.source.model";
 import {TreeNode} from "primeng/api";
 import {Subscription} from "rxjs";
@@ -26,97 +36,97 @@ import {KsCommandService} from "../../services/command-services/ks-command.servi
 @Component({
   selector: 'app-ks-card',
   template: `
-    <div [class]="hovering ? 'shadow-3' : 'shadow-1'"
-         *ngIf="ks"
-         style="border: 1px dotted var(--surface-400); border-radius: 5px;">
-      <p-card (dblclick)="onEdit.emit(ks)" [style]="{'min-height': '12rem'}">
-        <ng-template pTemplate="header">
-          <app-ks-thumbnail *ngIf="showThumbnail" [ks]="ks"></app-ks-thumbnail>
-        </ng-template>
+    <div *ngIf="ks" (dblclick)="onEdit.emit(ks)"
+         class="hover:shadow-1 border-round-2xl border-1 border-dotted border-400 h-full flex flex-column overflow-hidden justify-content-between surface-card">
+      <div class="flex flex-grow-1">
+        <app-ks-thumbnail *ngIf="showThumbnail" [ks]="ks" class="w-full"></app-ks-thumbnail>
+      </div>
+      <div class="flex flex-column justify-content-end p-3">
+        <div class="flex-row-center-between pb-1">
+            <span class="font-bold text-xl cursor-pointer"
+                  (click)="onEdit.emit(this.ks)" [pTooltip]="ks.title" tooltipPosition="top">
+              {{ks.title |truncate: [truncate ? 28 : 64]}}
+            </span>
+          <i *ngIf="showContentType"
+             class="pi pi-{{ks.ingestType | ksIngestTypeIcon}}"
+             [pTooltip]="ks.ingestType | titlecase">
+          </i>
+        </div>
 
-        <ng-template pTemplate="content">
-          <div class="flex-row-center-between">
-        <span class="font-bold text-xl cursor-pointer"
-              (click)="onEdit.emit(this.ks)" [pTooltip]="ks.title">
-          {{ks.title |truncate: [truncate ? 28 : 128]}}
-        </span>
-            <i *ngIf="showContentType"
-               class="pi pi-{{ks.ingestType | ksIngestTypeIcon}}"
-               [pTooltip]="ks.ingestType | titlecase">
-            </i>
+        <div *ngIf="showProjectBreadcrumbs" class="text-500 font-bold pb-1">
+          {{ks.associatedProject | projectName}}
+        </div>
+
+        <div *ngIf="showDescription" class="pb-1">
+          <div *ngIf="description else noDescription" class="text-500" style="height: 4rem">
+            {{description | truncate: [truncate ? 64 : 128]}}
           </div>
-
-          <div *ngIf="showProjectBreadcrumbs" class="text-500">
-            {{ks.associatedProject | projectBreadcrumb: 'truncated'}}
-          </div>
-
-          <div *ngIf="showDescription">
-            <div *ngIf="description" class="text-500" style="height: 4rem">
-              {{description | truncate: [truncate ? 32 : 128]}}
+          <ng-template #noDescription>
+            <div class="text-500" style="height: 4rem">
+              {{descriptionPlaceholder}}
             </div>
-            <div *ngIf="!description" class="text-500" style="height: 4rem">
-              Double-click to add a description
-            </div>
-          </div>
+          </ng-template>
+        </div>
 
-          <div class="col-12" *ngIf="showProjectSelection && projectTreeNodes.length">
-            <p-treeSelect [(ngModel)]="selectedProject"
-                          [options]="projectTreeNodes"
-                          selectionMode="single"
-                          class="p-fluid w-full"
-                          (onNodeSelect)="onProjectSelected($event)"
-                          appendTo="body"
-                          placeholder="Choose a Project">
-            </p-treeSelect>
+        <div class="col-12 pb-1" *ngIf="showProjectSelection && projectTreeNodes.length">
+          <p-treeSelect [(ngModel)]="selectedProject"
+                        [options]="projectTreeNodes"
+                        selectionMode="single"
+                        class="p-fluid w-full"
+                        (onNodeSelect)="onProjectSelected($event)"
+                        appendTo="body"
+                        placeholder="Choose a Project">
+          </p-treeSelect>
+        </div>
 
-          </div>
+        <div *ngIf="showTopics" class="overflow-y-auto overflow-x-hidden"
+             [style]="{'height':'5rem'}">
+          <p-chips [allowDuplicate]="false"
+                   [addOnBlur]="true"
+                   [addOnTab]="true"
+                   (onChipClick)="onTopicClick.emit({ks: ks, topic: $event.value})"
+                   (onAdd)="onTopicAdd()"
+                   (onRemove)="onTopicRemove()"
+                   [(ngModel)]="keywords"
+                   class="p-fluid w-full"
+                   placeholder="Start typing to add a topic...">
+          </p-chips>
+        </div>
 
-          <div *ngIf="showTopics"
-               [style]="{'height':'5rem', 'overflow-y': 'auto', 'overflow-x': 'hidden'}">
-            <p-chips [allowDuplicate]="false"
-                     [addOnBlur]="true"
-                     [addOnTab]="true"
-                     (onChipClick)="onTopicClick.emit({ks: ks, topic: $event.value})"
-                     (onAdd)="onTopicAdd()"
-                     (onRemove)="onTopicRemove()"
-                     [(ngModel)]="keywords"
-                     class="p-fluid w-full"
-                     placeholder="Start typing to add a topic...">
-            </p-chips>
+        <div *ngIf="showIcon || showRemove || showOpen || showEdit || showPreview || showFlag"
+             class="flex-row-center-between">
+          <div class="col text-left">
+            <app-ks-icon [ks]="ks" *ngIf="showIcon"></app-ks-icon>
           </div>
+          <div *ngIf="showRemove || showOpen || showEdit || showPreview || showFlag">
+            <app-action-bar [showEdit]="showEdit"
+                            [showPreview]="showPreview"
+                            [showOpen]="showOpen"
+                            [showRemove]="showRemove"
+                            [showFlag]="showFlag"
+                            [flagged]="ks.flagged"
+                            (onEdit)="onEdit.emit(this.ks)"
+                            (onPreview)="onPreview.emit(this.ks)"
+                            (onOpen)="onOpen.emit(this.ks)"
+                            (onRemove)="onRemove.emit(this.ks)"
+                            (onFlagged)="onFlagged(this.ks, $event.checked)">
+            </app-action-bar>
+          </div>
+        </div>
 
-          <div *ngIf="showIcon || showRemove || showOpen || showEdit || showPreview || showFlag"
-               class="flex-row-center-between">
-            <div class="col text-left">
-              <app-ks-icon [ks]="ks" *ngIf="showIcon"></app-ks-icon>
-            </div>
-            <div *ngIf="showRemove || showOpen || showEdit || showPreview || showFlag">
-              <app-action-bar [showEdit]="showEdit"
-                              [showPreview]="showPreview"
-                              [showOpen]="showOpen"
-                              [showRemove]="showRemove"
-                              [showFlag]="showFlag"
-                              [flagged]="ks.flagged"
-                              (onEdit)="onEdit.emit(this.ks)"
-                              (onPreview)="onPreview.emit(this.ks)"
-                              (onOpen)="onOpen.emit(this.ks)"
-                              (onRemove)="onRemove.emit(this.ks)"
-                              (onFlagged)="onFlagged(this.ks, $event.checked)">
-              </app-action-bar>
-            </div>
-          </div>
-        </ng-template>
-      </p-card>
+        <div *ngIf="label" class="w-full text-center text-500 pt-2">
+          {{label}}
+        </div>
+      </div>
     </div>
-
   `,
   styles: [
     `
       ::ng-deep {
-      .p-chips-token {
-        cursor: pointer;
+        .p-chips-token {
+          cursor: pointer;
+        }
       }
-    }
     `
   ]
 })
@@ -206,6 +216,17 @@ export class KsCardComponent implements OnInit, OnDestroy, OnChanges {
    * Determines whether to show name of the Associated Project (default: false)
    */
   @Input() showProjectBreadcrumbs: boolean = false;
+
+  /**
+   * Set the description placeholder if description is blank.
+   */
+  @Input() descriptionPlaceholder: string = 'Double-click to add a description';
+
+
+  /**
+   * Set an optional label
+   */
+  @Input() label?: string;
 
   /**
    * EventEmitter that is triggered when the "Remove" button is pressed

@@ -33,7 +33,7 @@ import {BehaviorSubject, Subject, throttleTime} from "rxjs";
 import {StartupService} from "./services/ipc-services/startup.service";
 import {ProjectCommandService} from "./services/command-services/project-command.service";
 import {ProjectDetailsComponent} from "./components/project-components/project-details.component";
-import {fadeIn, flyInOut, slideInAnimation} from "./animations";
+import {fadeIn, fadeInAndOut, flyInOut} from "./animations";
 
 
 type SidebarItem = {
@@ -199,7 +199,7 @@ type SidebarItem = {
       }
     `
   ],
-  animations: [slideInAnimation, flyInOut, fadeIn]
+  animations: [fadeInAndOut, flyInOut, fadeIn]
 })
 export class AppComponent implements OnInit, OnDestroy {
   projectId: string = '';

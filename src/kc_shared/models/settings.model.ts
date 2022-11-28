@@ -159,6 +159,8 @@ export class GraphSettingsModel {
         tap: 'details',
         dblTap: 'preview'
     }
+
+    minimal: boolean = false;
 }
 
 export class SearchSettingsModel {

@@ -19,25 +19,26 @@ import {KnowledgeSource} from "../../models/knowledge.source.model";
 import {BehaviorSubject, Observable, Subject, tap} from "rxjs";
 import {ElectronIpcService} from "../../services/ipc-services/electron-ipc.service";
 import {fadeIn} from "../../animations";
-import {takeUntil} from "rxjs/operators";
+import {filter, takeUntil} from "rxjs/operators";
 import {SettingsService} from "../../services/ipc-services/settings.service";
+import {NotificationsService} from "../../services/user-services/notifications.service";
 
 @Component({
   selector: 'app-ks-thumbnail',
   template: `
-    <div *ngIf="(thumbnail | async) else loading" class="w-full flex-col-center-center">
-      <p-image [src]="thumbnail | async"
+    <div *ngIf="(thumbnail$ | async) else loading" class="h-full w-full">
+      <p-image [src]="thumbnail$ | async"
                [@fadeIn]="animate"
-               class="flex-col-center-center w-full surface-300 thumbnail-container"
+               (onImageError)="onImageError($event)"
+               class="flex-col-center-center h-full thumbnail-container overflow-hidden justify-content-start"
                imageClass="ks-thumbnail"
-               [style]="{'border-radius': '5px'}"
-               [preview]="true">
+               [preview]="allowPreview">
       </p-image>
     </div>
 
     <ng-template #loading>
-      <div [@fadeIn]="animate" class="flex-col-center-center select-none"
-           style="height: 200px; background-color: var(--surface-300); border-radius: 5px;">
+      <div [@fadeIn]="animate" class="h-full flex-col-center-center select-none surface-300"
+           style="min-height: 12rem">
         <app-ks-icon [ks]="ks"></app-ks-icon>
         <div class="text-sm mt-4">Thumbnail Unavailable</div>
       </div>
@@ -46,7 +47,7 @@ import {SettingsService} from "../../services/ipc-services/settings.service";
   styles: [
     `
       .thumbnail-container {
-        height: 200px;
+        min-height: 12rem;
       }
     `
   ],
@@ -57,15 +58,15 @@ export class KsThumbnailComponent implements OnInit, OnDestroy, OnChanges {
 
   @Input() animate: boolean = true;
 
-  thumbnail$: BehaviorSubject<any> = new BehaviorSubject<any>(undefined);
+  @Input() allowPreview: boolean = true;
 
-  thumbnail: Observable<any> = this.thumbnail$.asObservable();
+  _thumbnail$: BehaviorSubject<any> = new BehaviorSubject<any>(undefined);
 
-  thumbnailUnavailable: boolean = false;
+  thumbnail$: Observable<any> = this._thumbnail$.asObservable();
 
   private cleanUp: Subject<any> = new Subject<any>();
 
-  constructor(private ipcService: ElectronIpcService, private settings: SettingsService) {
+  constructor(private ipcService: ElectronIpcService, private settings: SettingsService, private notifications: NotificationsService) {
     this.animate = settings.get().display.animations;
   }
 
@@ -76,33 +77,35 @@ export class KsThumbnailComponent implements OnInit, OnDestroy, OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     try {
       if (changes.ks.currentValue) {
+        /**
+         * If the Source already has a thumbnail, try to display it immediately.
+         */
         if (changes.ks.currentValue.thumbnail) {
-          this.thumbnail$.next(changes.ks.currentValue.thumbnail);
+          this._thumbnail$.next(changes.ks.currentValue.thumbnail);
           return;
         }
 
+        /**
+         * Otherwise, if the Source is of type 'file', request thumbnail from OS
+         */
         if (this.ks.ingestType === 'file') {
           this.ipcService.thumbnail.pipe(
             takeUntil(this.cleanUp),
+            filter(t => t?.id === this.ks.id.value),
             tap((thumbnail) => {
-              if (thumbnail !== undefined && thumbnail.id && thumbnail.id === this.ks.id.value) {
-                this.ks.thumbnail = thumbnail.thumbnail;
-                this.thumbnail$.next(this.ks.thumbnail);
-              }
+              this.ks.thumbnail = thumbnail.thumbnail;
+              this._thumbnail$.next(this.ks.thumbnail);
             })
           ).subscribe();
         }
 
+        /**
+         * Otherwise, attempt to get thumbnail from the web
+         */
         this.getThumbnail();
-
-        setTimeout(() => {
-          if (this.thumbnail$.value === undefined) {
-            this.thumbnailUnavailable = true;
-          }
-        }, 1000);
       }
     } catch (e) {
-
+      this.notifications.warn('Source Thumbnail', 'Thumbnail Error', 'Unable to set thumbnail: ' + e);
     }
   }
 
@@ -122,28 +125,37 @@ export class KsThumbnailComponent implements OnInit, OnDestroy, OnChanges {
       return;
     } else {
       if (this.ks.thumbnail) {
-        this.thumbnail$.next(this.ks.thumbnail);
+        this._thumbnail$.next(this.ks.thumbnail);
       }
 
       let meta = this.ks.reference.source.website?.metadata?.meta;
       if (meta) {
         let ogImage = meta.find(m => m.key === 'og:image');
         if (ogImage && ogImage.value) {
+          if (!ogImage.value.startsWith('http')) {
+            this._thumbnail$.next(undefined);
+            return;
+          }
           const url = ogImage.value;
           fetch(url).then((result) => {
             result.text().then((text) => {
               // Sometimes, requesting an image will return HTML, which is signs of failure
               if (!text.startsWith('<')) {
+                // TODO: this should be sanitized... or completely removed
                 this.ks.thumbnail = url;
-                this.thumbnail$.next(this.ks.thumbnail);
+                this._thumbnail$.next(this.ks.thumbnail);
               }
             })
           }).catch((_) => {
             console.error('Unable to get thumbnail for ', url);
+            this._thumbnail$.next(undefined);
           })
         }
       }
     }
   }
 
+  onImageError(_: any) {
+    this._thumbnail$.next(undefined);
+  }
 }

@@ -1,17 +1,17 @@
-/**
- Copyright 2022 Rob Royce
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
- http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+/*
+ * Copyright (c) 2022 Rob Royce
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
  */
 import {A11yModule} from "@angular/cdk/a11y";
 import {AppComponent} from './app.component';
@@ -127,7 +127,6 @@ import {ChartModule} from "primeng/chart";
 import {TimelineComponent} from './components/shared/timeline.component';
 import {KsMoveComponent} from './components/source-components/ks-move.component';
 import {ProjectAsTreeNodePipe} from './pipes/project-as-tree-node.pipe';
-import {TopicSearchComponent} from './components/shared/topic-search.component';
 import {SearchThresholdPipe} from './pipes/search-threshold.pipe';
 import {TutorialComponent} from './components/shared/tutorial.component';
 import {ViewIconPipe} from './pipes/view-icon.pipe';
@@ -142,6 +141,7 @@ import {GraphSettingsComponent} from './components/settings/graph-settings.compo
 import {SettingTemplateComponent} from './components/settings/setting-template.component';
 import {SwitchLabelPipe} from './pipes/switch-label.pipe';
 import {ProjectSelectorComponent} from './components/project-components/project-selector.component';
+import {GraphSearchComponent} from './components/graph-components/graph-search.component';
 
 @NgModule({
   declarations: [
@@ -188,7 +188,6 @@ import {ProjectSelectorComponent} from './components/project-components/project-
     TimelineComponent,
     KsMoveComponent,
     ProjectAsTreeNodePipe,
-    TopicSearchComponent,
     SearchThresholdPipe,
     TutorialComponent,
     ViewIconPipe,
@@ -202,7 +201,8 @@ import {ProjectSelectorComponent} from './components/project-components/project-
     GraphSettingsComponent,
     SettingTemplateComponent,
     SwitchLabelPipe,
-    ProjectSelectorComponent
+    ProjectSelectorComponent,
+    GraphSearchComponent,
   ],
   imports: [
     BrowserAnimationsModule,

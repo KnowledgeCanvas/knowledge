@@ -71,7 +71,7 @@ import {SettingsService} from "../services/ipc-services/settings.service";
       <div class="inbox-content flex-grow-1 h-full w-full overflow-y-auto">
         <div class="w-full h-full flex app-splitter-container">
           <div class="app-splitter-left">
-            <div *ngIf="upNext.length > 0" class="h-full" style="overflow-y: auto">
+            <div *ngIf="upNext.length > 0" class="h-full pl-2" style="overflow-y: auto">
               <div class="">
                 <div class="p-input-icon-left w-full">
                   <i class="pi pi-filter"></i>
@@ -293,7 +293,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     })
   }
 
-  setActive(ks: KnowledgeSource, event?: MouseEvent) {
+  setActive(ks: KnowledgeSource, _?: MouseEvent) {
     const found = this.upNext.indexOf(ks);
     if (found) {
       this.activeIndex = found;
@@ -424,9 +424,5 @@ export class HomeComponent implements OnInit, OnDestroy {
         }
       }
     )
-  }
-
-  onProjectSelect(node: TreeNode | undefined) {
-    this.selectedProject = node;
   }
 }
