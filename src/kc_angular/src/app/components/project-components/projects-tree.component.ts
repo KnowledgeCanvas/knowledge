@@ -215,7 +215,7 @@ export class ProjectsTreeComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       const classElement = document.getElementsByClassName('p-treenode-content p-treenode-selectable p-highlight');
       if (classElement.length > 0) {
-        classElement[0].scrollIntoView();
+        classElement[0].scrollIntoView({behavior: 'smooth'});
       }
     }, timeout)
   }

@@ -15,7 +15,7 @@
  */
 import {animate, animateChild, group, query, state, style, transition, trigger} from "@angular/animations";
 
-export const slideInAnimation =
+export const fadeInAndOut =
   trigger('routeAnimations', [
     transition('* <=> *', [
       style({position: 'relative'}),

@@ -23,7 +23,7 @@ import {SettingsService} from "../../services/ipc-services/settings.service";
   selector: 'app-ks-icon',
   template: `
     <img [src]="ks && ks.icon ? ks.icon : iconUrl"
-         class="knowledge-source-icon"
+         class="knowledge-source-icon bg-auto"
          width="24"
          [style.cursor]="ks && ks.ingestType && ks.ingestType === 'file' ? 'grab' : 'pointer'"
          [class.shadow-3]="showShadow"
@@ -32,7 +32,7 @@ import {SettingsService} from "../../services/ipc-services/settings.service";
          (click)="onClick()"
          draggable="true"
          (dragstart)="onDragStart($event, ks)"
-         pTooltip="{{ks && ks.ingestType === 'file' ? 'Click to open, drag to copy' : 'Click to open'}}"
+         pTooltip="{{allowClickThrough ? (ks && ks.ingestType === 'file' ? 'Click to open, drag to copy' : 'Click to open') : ''}}"
          [tooltipOptions]="{showDelay: 750, tooltipStyleClass: ks && ks.ingestType === 'file' ? 'ks-file-icon-tooltip' : 'ks-icon-tooltip'}"
          tooltipPosition="bottom"
          alt="Knowledge Source Icon">
