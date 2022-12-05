@@ -9,6 +9,7 @@
       <excludeFolder url="file://$MODULE_DIR$/src/kc_angular/.angular" />
       <excludeFolder url="file://$MODULE_DIR$/src/kc_angular/dist" />
       <excludeFolder url="file://$MODULE_DIR$/src/kc_electron/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/.yarn" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
