@@ -90,6 +90,7 @@ const defaultLayout = {
                     (onResultClicked)="onResultClicked($event)"
                     (onContextMenu)="onSourceCtxtap.emit($event)">
       </graph-search>
+      <graph-status [running]="running"></graph-status>
       <div class="cy" id="cy"></div>
     </div>
   `,

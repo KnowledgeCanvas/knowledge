@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {CytoscapeLayout} from "./graph.layouts";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {Subject, tap} from "rxjs";
@@ -65,12 +65,6 @@ import {SettingsService} from "../../services/ipc-services/settings.service";
           <button pButton icon="pi pi-cog" class="p-button-secondary" (click)="onSettings.emit()"></button>
         </div>
       </div>
-      <div class="graph-status">
-        <div class="pt-2 flex flex-row justify-content-between align-items-center text-500">
-          <div #run *ngIf="running else done">Running... ({{runtime | number: '1.1'}}s elapsed)</div>
-          <ng-template #done>Done</ng-template>
-        </div>
-      </div>
     </div>
   `,
   styles: [
@@ -94,14 +88,10 @@ import {SettingsService} from "../../services/ipc-services/settings.service";
         width: 100%;
         padding-bottom: 1rem;
       }
-
-      .graph-status {
-        height: 1rem;
-      }
     `
   ]
 })
-export class GraphControlsComponent implements OnInit, OnChanges, OnDestroy {
+export class GraphControlsComponent implements OnInit, OnDestroy {
   @Input() showSources: boolean = false;
 
   @Input() layouts: CytoscapeLayout[] = [];
@@ -132,10 +122,6 @@ export class GraphControlsComponent implements OnInit, OnChanges, OnDestroy {
 
   selectedLayout: CytoscapeLayout = this.layouts[0];
 
-  runtime: number = 0;
-
-  runtimeInterval: any;
-
   form: FormGroup;
 
   private cleanUp: Subject<any> = new Subject<any>();
@@ -161,21 +147,6 @@ export class GraphControlsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnInit(): void {
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes?.running?.currentValue !== undefined) {
-      if (changes?.running?.currentValue) {
-        this.runtime = 0;
-        this.runtimeInterval = setInterval(() => {
-          this.runtime += 0.5;
-        }, 500)
-      } else {
-        if (this.runtimeInterval) {
-          clearInterval(this.runtimeInterval);
-        }
-      }
-    }
   }
 
   ngOnDestroy() {
