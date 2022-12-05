@@ -81,8 +81,8 @@ export interface SearchResult {
 
       <div class="w-full text-center pb-1" [class.pt-2]="sources && sources.length > 0">
         <div *ngIf="sources && sources.length > 0 else footer" class="w-full flex-row-center-between px-4 text-600">
-          <div>Prev: ⌘/Ctrl+[</div>
-          <div>Next: ⌘/Ctrl+]</div>
+          <div class="pi pi-arrow-left cursor-pointer" (click)="onNext.emit(true)" pTooltip="Previous: ⌘/Ctrl+["></div>
+          <div class="pi pi-arrow-right cursor-pointer" (click)="onNext.emit()" pTooltip="Next: ⌘/Ctrl+]"></div>
         </div>
         <ng-template #footer>
           <div>
@@ -139,6 +139,8 @@ export class GraphSearchComponent implements OnInit, OnDestroy, OnChanges {
   @Output() onResultClicked = new EventEmitter<KnowledgeSource & SearchResult>;
 
   @Output() onContextMenu = new EventEmitter<{ data: KnowledgeSource[], event: MouseEvent }>;
+
+  @Output() onNext = new EventEmitter<boolean>();
 
   layoutOptions = [
     {icon: 'pi pi-tablet', minimal: false},
