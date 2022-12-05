@@ -98,7 +98,7 @@ import {SettingsService} from "../services/ipc-services/settings.service";
               <div style="width: 100%;" class="hover:surface-hover text-primary">
                 <app-ks-message class="cursor-pointer hover:surface-hover"
                                 (click)="loadExamples()"
-                                status="Click to load examples">
+                                status="Load Examples">
                 </app-ks-message>
               </div>
             </div>
@@ -416,17 +416,17 @@ export class HomeComponent implements OnInit, OnDestroy {
         }).catch((error) => {
           setTimeout(() => {
             this.loading = false;
-            this.notifications.error('Inbox', 'Unable to Load Examples', 'Please check your connection and try again later...', 'toast');
+            this.notifications.error('Inbox', 'Unable to Load Examples', error, 'toast');
           }, 1000);
         })
       })
     ).subscribe({
-        error: (_: any) => {
-          setTimeout(() => {
-            this.loading = false;
-            this.notifications.error('Inbox', 'Unable to Load Examples', 'Please check your connection and try again later...', 'toast');
-          }, 1000);
-        }
+      error: (error: any) => {
+        setTimeout(() => {
+          this.loading = false;
+          this.notifications.error('Inbox', 'Unable to Load Examples', error, 'toast');
+        }, 1000);
+      }
       }
     )
   }

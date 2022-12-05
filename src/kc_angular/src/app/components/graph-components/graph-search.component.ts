@@ -20,6 +20,7 @@ import {KnowledgeSource} from "../../models/knowledge.source.model";
 import {animate, style, transition, trigger} from "@angular/animations";
 import {KsCommandService} from "../../services/command-services/ks-command.service";
 import {TopicService} from "../../services/user-services/topic.service";
+import {SettingsService} from "../../services/ipc-services/settings.service";
 
 export interface SearchResult {
   index: number
@@ -29,7 +30,8 @@ export interface SearchResult {
 @Component({
   selector: 'graph-search',
   template: `
-    <div class="graph-search border-1 border-primary-300 border-round-2xl surface-ground p-1">
+    <div class="graph-search border-1 border-primary-300 border-round-2xl surface-ground p-1"
+         [style.max-height]="layout.minimal ? 'min(25vh, 18rem)' : 'min(50vh, 38rem)'">
       <div *ngIf="sources && sources.length > 0" @grow class="w-full overflow-y-auto bg-transparent">
         <div
           class="graph-search-header w-full flex flex-column justify-content-center align-items-end absolute p-2 z-2">
@@ -97,7 +99,6 @@ export interface SearchResult {
       min-width: 12rem;
       width: min(38vw, 26rem);
       max-width: min(38vw, 26rem);
-      max-height: min(50vh, 38rem);
       display: flex;
       position: absolute;
       right: 1rem;
@@ -107,6 +108,14 @@ export interface SearchResult {
       align-content: center;
       justify-content: space-between;
       z-index: 99;
+    }
+
+    .graph-search-small {
+      max-height: min(25vh, 18rem);
+    }
+
+    .graph-search-large {
+      max-height: min(50vh, 38rem);
     }
 
     .graph-search-result {
@@ -151,7 +160,7 @@ export class GraphSearchComponent implements OnInit, OnDestroy, OnChanges {
 
   private cleanUp: Subject<any> = new Subject<any>();
 
-  constructor(private command: KsCommandService, private topic: TopicService) {
+  constructor(private command: KsCommandService, private topic: TopicService, private settings: SettingsService) {
   }
 
   ngOnInit(): void {
@@ -167,10 +176,15 @@ export class GraphSearchComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   scroll(timeoutms: number = 100) {
+    let scrollArgs: any = {behavior: 'smooth'}
+    if (!this.settings.get().app.graph.animation.enabled) {
+      scrollArgs = {};
+    }
+
     setTimeout(() => {
       const classElement = document.getElementsByClassName('active-source');
       if (classElement.length > 0) {
-        classElement[0].scrollIntoView({behavior: 'smooth'});
+        classElement[0].scrollIntoView(scrollArgs);
       }
     }, timeoutms)
   }

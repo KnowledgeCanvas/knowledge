@@ -181,7 +181,7 @@ export class GraphCanvasComponent implements OnInit, OnChanges, OnDestroy {
           animationDuration: graphSettings.animation.enabled ? graphSettings.animation.duration : 0,
           fit: true,
           nodeDimensionsIncludeLabels: true,
-          maxSimulationTime: graphSettings.simulation.maxTime,
+          maxSimulationTime: graphSettings.simulation.infinite ? 9999999 : graphSettings.simulation.maxTime,
           simulate: graphSettings.simulation.enabled
         }
         this.initialize();
