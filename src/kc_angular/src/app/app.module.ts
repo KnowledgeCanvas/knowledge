@@ -142,6 +142,7 @@ import {SettingTemplateComponent} from './components/settings/setting-template.c
 import {SwitchLabelPipe} from './pipes/switch-label.pipe';
 import {ProjectSelectorComponent} from './components/project-components/project-selector.component';
 import {GraphSearchComponent} from './components/graph-components/graph-search.component';
+import {GraphStatusComponent} from "./components/graph-components/graph.status";
 
 @NgModule({
   declarations: [
@@ -203,6 +204,7 @@ import {GraphSearchComponent} from './components/graph-components/graph-search.c
     SwitchLabelPipe,
     ProjectSelectorComponent,
     GraphSearchComponent,
+    GraphStatusComponent
   ],
   imports: [
     BrowserAnimationsModule,
