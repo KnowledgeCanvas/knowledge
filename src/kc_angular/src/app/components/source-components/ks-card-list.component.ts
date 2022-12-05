@@ -39,7 +39,7 @@ import {
 } from "../../../../../kc_shared/models/settings.model";
 import {SettingsService} from "../../services/ipc-services/settings.service";
 import {NotificationsService} from "../../services/user-services/notifications.service";
-import {Subject, tap} from "rxjs";
+import {BehaviorSubject, Subject, tap, throttleTime} from "rxjs";
 import {KcProject, ProjectUpdateRequest} from "../../models/project.model";
 import {ProjectService} from "../../services/factory-services/project.service";
 import {ProjectTreeFactoryService} from "../../services/factory-services/project-tree-factory.service";
@@ -132,7 +132,8 @@ interface KsCardListConfig {
                 <project-selector placeholder="Move to Project" (onSelect)="selectedProject = $event"></project-selector>
               </div>
               <div class="flex-shrink-1 ml-4">
-                <button pButton label="Move All" [disabled]="!selectedProject?.key || treeNodes.length < 1" (click)="onMoveAll($event)"></button>
+                <button pButton label="Move All" [disabled]="!selectedProject?.key || treeNodes.length < 1"
+                        (click)="onMoveAll($event)"></button>
               </div>
             </div>
           </div>
@@ -141,7 +142,8 @@ interface KsCardListConfig {
         <ng-template pTemplate="content">
           <div class="h-full w-full p-4 overflow-y-auto">
             <div #top style="height: 0; width: 0"></div>
-            <div *ngIf="ksList.length > 0 else emptyList" class="grid w-full h-full" style="max-height: calc(100vh - 300px)">
+            <div *ngIf="ksList.length > 0 else emptyList" class="grid w-full h-full justify-content-center"
+                 style="max-height: calc(100vh - 300px)">
               <div *ngFor="let ks of displayList" [class]="selectedSizer.gridColClass" style="min-width: 24rem">
                 <app-ks-card [ks]="ks"
                              (contextmenu)="setActiveKs(ks); cm.show($event)"
@@ -413,6 +415,8 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
 
   private cleanUp = new Subject();
 
+  private _windowResize = new BehaviorSubject({});
+
   constructor(private command: KsCommandService,
               private menu: KsContextMenuService,
               private settings: SettingsService,
@@ -444,6 +448,14 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
         }
       })
     ).subscribe();
+
+    this._windowResize.asObservable().pipe(
+      takeUntil(this.cleanUp),
+      throttleTime(50),
+      tap(() => {
+        this.setSizers();
+      })
+    ).subscribe()
   }
 
   configureCardList() {
@@ -562,30 +574,6 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
         this.assignCopy();
       }
     }
-  }
-
-  @HostListener('window:resize', ['$event'])
-  onResize(_: any) {
-    this.setSizers();
-  }
-
-  @HostListener('document:keydown.Control.]')
-  @HostListener('document:keydown.meta.]')
-  keyPressNext() {
-    const next = this.paginateConfig.first + this.paginateConfig.rows;
-    if (next < this.ksList.length) {
-      this.paginateConfig.first = this.paginateConfig.first + this.paginateConfig.rows;
-    }
-    this.assignCopy();
-    this.dataListTop.nativeElement.scrollIntoView();
-  }
-
-  @HostListener('document:keydown.Control.[')
-  @HostListener('document:keydown.meta.[')
-  keyPressPrevious() {
-    this.paginateConfig.first = Math.max(0, this.paginateConfig.first - this.paginateConfig.rows);
-    this.assignCopy();
-    this.dataListTop.nativeElement.scrollIntoView();
   }
 
   setSizers() {
@@ -860,5 +848,29 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
         this.notifications.success('Source Card List', `Source${this.ksList.length > 1 ? 's' : ''} Moved`, this.ksList.map(k => k.title).join(', '));
       });
     }
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(_: any) {
+    this._windowResize.next({});
+  }
+
+  @HostListener('document:keydown.Control.]')
+  @HostListener('document:keydown.meta.]')
+  keyPressNext() {
+    const next = this.paginateConfig.first + this.paginateConfig.rows;
+    if (next < this.ksList.length) {
+      this.paginateConfig.first = this.paginateConfig.first + this.paginateConfig.rows;
+    }
+    this.assignCopy();
+    this.dataListTop.nativeElement.scrollIntoView();
+  }
+
+  @HostListener('document:keydown.Control.[')
+  @HostListener('document:keydown.meta.[')
+  keyPressPrevious() {
+    this.paginateConfig.first = Math.max(0, this.paginateConfig.first - this.paginateConfig.rows);
+    this.assignCopy();
+    this.dataListTop.nativeElement.scrollIntoView();
   }
 }
