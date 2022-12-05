@@ -44,11 +44,24 @@ import {SettingsService} from "../services/ipc-services/settings.service";
       <div class="inbox-header flex-grow-0 w-full">
         <div class="flex flex-row justify-content-between align-items-center p-2">
           <div class="flex flex-row">
-            <button pButton class="ml-1" label="Import" [disabled]="!upNext || upNext.length === 0 || !selectedProject.key" (click)="onProjectImport()"></button>
-            <project-selector [disabled]="!upNext || upNext.length === 0" class="w-16rem"
+            <button pButton label="Import" icon="pi pi-download"
+                    [disabled]="!upNext || upNext.length === 0 || !selectedProject.key"
+                    (click)="onProjectImport()"></button>
+            <project-selector [disabled]="!upNext || upNext.length === 0" class="w-16rem px-2"
                               [showClear]="false"
                               (onSelect)="selectedProject = $event"
                               placeholder="Import to Project..."></project-selector>
+            <p-checkbox [binary]="true" label="Import All" [(ngModel)]="importAll"
+                        [disabled]="!upNext || upNext.length === 0 || !selectedProject.key"></p-checkbox>
+          </div>
+
+          <div class="flex flex-row">
+            <button pButton
+                    icon="pi pi-trash"
+                    label="Remove All"
+                    class="p-button-danger p-button-text"
+                    (click)="onKsRemove(upNext)"
+                    [disabled]="!upNext || upNext.length === 0"></button>
           </div>
 
           <div class="flex flex-row">
@@ -113,7 +126,7 @@ import {SettingsService} from "../services/ipc-services/settings.service";
                 <app-ks-info *ngIf="active"
                              [ks]="active"
                              [collapseAll]="collapsed"
-                             (onRemove)="onKsRemove($event)">
+                             (onRemove)="onKsRemove([$event])">
                 </app-ks-info>
               </div>
             </div>
@@ -196,6 +209,8 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   animate: boolean = true;
 
+  importAll: boolean = false;
+
   private cleanUp: Subject<any> = new Subject<any>();
 
   constructor(private confirm: ConfirmationService,
@@ -276,21 +291,42 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.onNextSource();
   }
 
-  onKsRemove($event: KnowledgeSource) {
-    this.confirm.confirm({
-      message: `Permanently remove ${$event.title}?`,
-      header: `Remove Source`,
-      acceptLabel: 'Remove',
-      rejectLabel: 'Keep',
-      acceptButtonStyleClass: 'p-button-text p-button-danger',
-      rejectButtonStyleClass: 'p-button-text',
-      acceptIcon: 'pi pi-trash',
-      icon: 'pi pi-exclamation-triangle',
-      accept: () => {
-        this.ingest.remove($event);
-        this.activeIndex = this.activeIndex > 0 ? this.activeIndex - 1 : 0;
-      }
-    })
+  onKsRemove(sources: KnowledgeSource[]) {
+    if (sources.length === 1) {
+      let source = sources[0];
+      this.confirm.confirm({
+        message: `Permanently remove ${source.title}?`,
+        header: `Remove Source`,
+        acceptLabel: 'Remove',
+        rejectLabel: 'Keep',
+        acceptButtonStyleClass: 'p-button-text p-button-danger',
+        rejectButtonStyleClass: 'p-button-text',
+        acceptIcon: 'pi pi-trash',
+        icon: 'pi pi-exclamation-triangle',
+        accept: () => {
+          this.ingest.remove(source);
+          this.activeIndex = this.activeIndex > 0 ? this.activeIndex - 1 : 0;
+        }
+      })
+    } else {
+      this.confirm.confirm({
+        message: `Permanently remove ${sources.length} Sources?`,
+        header: `Remove Sources`,
+        acceptLabel: 'Remove',
+        rejectLabel: 'Keep',
+        acceptButtonStyleClass: 'p-button-text p-button-danger',
+        rejectButtonStyleClass: 'p-button-text',
+        acceptIcon: 'pi pi-trash',
+        icon: 'pi pi-exclamation-triangle',
+        accept: () => {
+          for (let source of sources) {
+            this.ingest.remove(source);
+          }
+          this.activeIndex = 0;
+        }
+      })
+    }
+
   }
 
   setActive(ks: KnowledgeSource, _?: MouseEvent) {
@@ -339,7 +375,18 @@ export class HomeComponent implements OnInit, OnDestroy {
       return;
     }
 
-    if (this.active) {
+    if (this.importAll) {
+      this.projects.updateProjects([{
+        id: project.id,
+        addKnowledgeSource: this.upNext
+      }]).then((_) => {
+        if (this.active) {
+          for (let source of this.upNext) {
+            this.ingest.add(source);
+          }
+        }
+      })
+    } else if (this.active) {
       this.projects.updateProjects([{
         id: project.id,
         addKnowledgeSource: [this.active]
@@ -373,7 +420,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
       if (removeItem) {
         removeItem.command = () => {
-          this.onKsRemove(ks);
+          this.onKsRemove([ks]);
         }
       }
     }
@@ -421,12 +468,12 @@ export class HomeComponent implements OnInit, OnDestroy {
         })
       })
     ).subscribe({
-      error: (error: any) => {
-        setTimeout(() => {
-          this.loading = false;
-          this.notifications.error('Inbox', 'Unable to Load Examples', error, 'toast');
-        }, 1000);
-      }
+        error: (error: any) => {
+          setTimeout(() => {
+            this.loading = false;
+            this.notifications.error('Inbox', 'Unable to Load Examples', error, 'toast');
+          }, 1000);
+        }
       }
     )
   }
