@@ -93,9 +93,10 @@ import {debounceTime, distinctUntilChanged, tap} from "rxjs/operators";
                 <app-setting-template label="Animation Duration"
                                       labelHelp="How long it takes to animate changes in the graph."
                                       labelSubtext="{{form.controls.duration.value / 1000.0 | number: '1.1'}}s">
-                  <p-slider class="w-16rem settings-input" [min]="0" [max]="10000" [step]="500" formControlName="duration"></p-slider>
-                  <div class="settings-input-subtext-left">Fast</div>
-                  <div class="settings-input-subtext-right">Slow</div>
+                  <p-slider class="w-16rem settings-input" [min]="0" [max]="10000" [step]="500"
+                            formControlName="duration"></p-slider>
+                  <div class="settings-input-subtext-left">Shorter</div>
+                  <div class="settings-input-subtext-right">Longer</div>
                 </app-setting-template>
               </div>
             </ng-template>
@@ -119,12 +120,21 @@ import {debounceTime, distinctUntilChanged, tap} from "rxjs/operators";
 
                 <p-divider layout="horizontal"></p-divider>
 
+                <app-setting-template label="Run Forever"
+                                      labelHelp="Run simulation until it reaches steady state. May cause performance issues and extremely long runtimes."
+                                      labelSubtext="{{form.controls.infinite.value | switchLabel}}">
+                  <p-inputSwitch class="settings-input" formControlName="infinite"></p-inputSwitch>
+                </app-setting-template>
+
+                <p-divider layout="horizontal"></p-divider>
+
                 <app-setting-template label="Simulation Runtime"
                                       labelHelp="How long to run simulation before stopping. Shorter times may result in better performance and more stability at the cost of layout coherence."
                                       labelSubtext="{{form.controls.maxTime.value / 1000.0 | number: '1.1'}}s">
-                  <p-slider class="w-16rem settings-input" [min]="0" [max]="10000" [step]="500" formControlName="maxTime"></p-slider>
-                  <div class="settings-input-subtext-left">Fast</div>
-                  <div class="settings-input-subtext-right">Slow</div>
+                  <p-slider class="w-16rem settings-input" [min]="0" [max]="10000" [step]="500"
+                            formControlName="maxTime"></p-slider>
+                  <div class="settings-input-subtext-left">Shorter</div>
+                  <div class="settings-input-subtext-right">Longer</div>
                 </app-setting-template>
 
                 <p-divider layout="horizontal"></p-divider>
@@ -132,7 +142,8 @@ import {debounceTime, distinctUntilChanged, tap} from "rxjs/operators";
                 <app-setting-template label="Delay"
                                       labelHelp="How long to wait before running auto-simulate after running non-simulated layouts."
                                       labelSubtext="{{form.controls.autoSimulateDelay.value / 1000.0 | number: '1.1'}}s">
-                  <p-slider class="w-16rem settings-input" [min]="0" [max]="5000" [step]="500" formControlName="autoSimulateDelay"></p-slider>
+                  <p-slider class="w-16rem settings-input" [min]="0" [max]="5000" [step]="500"
+                            formControlName="autoSimulateDelay"></p-slider>
                   <div class="settings-input-subtext-left">Shorter</div>
                   <div class="settings-input-subtext-right">Longer</div>
                 </app-setting-template>
@@ -174,6 +185,7 @@ export class GraphSettingsComponent implements OnInit {
       animate: [this.graphSettings.animation.enabled],
       duration: [this.graphSettings.animation.duration],
       simulate: [this.graphSettings.simulation.enabled],
+      infinite: [this.graphSettings.simulation.infinite],
       maxTime: [this.graphSettings.simulation.maxTime],
       autoSimulateDelay: [this.graphSettings.simulation.delay],
       dblTap: [this.graphSettings.actions.dblTap],
@@ -189,6 +201,7 @@ export class GraphSettingsComponent implements OnInit {
           && (curr.duration === prev.duration)
           && (curr.simulate === prev.simulate)
           && (curr.maxTime === prev.maxTime)
+          && (curr.infinite === prev.infinite)
           && (curr.autoFit === prev.autoFit)
           && (curr.largeGraphWarning === prev.largeGraphWarning)
           && (curr.autoSimulateDelay === prev.autoSimulateDelay)
@@ -208,6 +221,7 @@ export class GraphSettingsComponent implements OnInit {
           },
           simulation: {
             enabled: formValue.simulate,
+            infinite: formValue.infinite,
             maxTime: formValue.maxTime,
             delay: formValue.autoSimulateDelay
           },
@@ -229,8 +243,21 @@ export class GraphSettingsComponent implements OnInit {
 
   disable() {
     this.graphSettings.animation.enabled ? this.form.get('duration')?.enable() : this.form.get('duration')?.disable();
-    this.graphSettings.simulation.enabled ? this.form.get('maxTime')?.enable() : this.form.get('maxTime')?.disable();
-    this.graphSettings.simulation.enabled ? this.form.get('autoSimulateDelay')?.enable() : this.form.get('autoSimulateDelay')?.disable();
+
+    if (this.graphSettings.simulation.enabled) {
+      this.form.get('infinite')?.enable();
+      this.form.get('autoSimulateDelay')?.enable();
+
+      if (this.graphSettings.simulation.infinite) {
+        this.form.get('maxTime')?.disable();
+      } else {
+        this.form.get('maxTime')?.enable();
+      }
+    } else {
+      this.form.get('infinite')?.disable();
+      this.form.get('maxTime')?.disable();
+      this.form.get('autoSimulateDelay')?.disable();
+    }
   }
 
   set() {

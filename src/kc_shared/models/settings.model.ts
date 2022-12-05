@@ -144,10 +144,12 @@ export class GraphSettingsModel {
 
     simulation: {
         enabled: boolean,
+        infinite: boolean;
         maxTime: number,
         delay: number
     } = {
         enabled: true,
+        infinite: false,
         maxTime: 2500,
         delay: 500
     }
