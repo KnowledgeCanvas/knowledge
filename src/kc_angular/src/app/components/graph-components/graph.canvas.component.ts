@@ -88,7 +88,8 @@ const defaultLayout = {
                     [selectedIndex]="selectedIndex"
                     footerText="{{projectNodeCount}} Projects, {{sourceNodeCount}} Sources, {{selectedCount}} selected"
                     (onResultClicked)="onResultClicked($event)"
-                    (onContextMenu)="onSourceCtxtap.emit($event)">
+                    (onContextMenu)="onSourceCtxtap.emit($event)"
+                    (onNext)="onSearchNext($event)">
       </graph-search>
       <graph-status [running]="running"></graph-status>
       <div class="cy" id="cy"></div>
