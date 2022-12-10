@@ -42,7 +42,7 @@ import {SettingsService} from "../services/ipc-services/settings.service";
 
     <div class="inbox-container width-constrained flex flex-column h-full w-full align-items-center">
       <div class="inbox-header flex-grow-0 w-full">
-        <div class="flex flex-row justify-content-between align-items-center p-2">
+        <div class="flex flex-row justify-content-between align-items-center p-2 border-bottom-1 surface-border mb-2">
           <div class="flex flex-row">
             <button pButton label="Import" icon="pi pi-download"
                     [disabled]="!upNext || upNext.length === 0 || !selectedProject.key"
@@ -53,15 +53,6 @@ import {SettingsService} from "../services/ipc-services/settings.service";
                               placeholder="Import to Project..."></project-selector>
             <p-checkbox [binary]="true" label="Import All" [(ngModel)]="importAll"
                         [disabled]="!upNext || upNext.length === 0 || !selectedProject.key"></p-checkbox>
-          </div>
-
-          <div class="flex flex-row">
-            <button pButton
-                    icon="pi pi-trash"
-                    label="Remove All"
-                    class="p-button-danger p-button-text"
-                    (click)="onKsRemove(upNext)"
-                    [disabled]="!upNext || upNext.length === 0"></button>
           </div>
 
           <div class="flex flex-row">
@@ -77,6 +68,15 @@ import {SettingsService} from "../services/ipc-services/settings.service";
                     [disabled]="!active"
                     (click)="collapseAll()"
                     class="p-button-rounded p-button-text shadow-none"></button>
+          </div>
+
+          <div class="flex flex-row">
+            <button pButton
+                    icon="pi pi-trash"
+                    label="Remove All"
+                    class="p-button-danger p-button-text"
+                    (click)="onKsRemove(upNext)"
+                    [disabled]="!upNext || upNext.length === 0"></button>
           </div>
         </div>
       </div>
@@ -279,18 +279,6 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.cleanUp.complete();
   }
 
-  @HostListener('document:keydown.Control.[')
-  @HostListener('document:keydown.meta.[')
-  keyPressPrevious() {
-    this.onPreviousSource();
-  }
-
-  @HostListener('document:keydown.Control.]')
-  @HostListener('document:keydown.meta.]')
-  keyPressNext() {
-    this.onNextSource();
-  }
-
   onKsRemove(sources: KnowledgeSource[]) {
     if (sources.length === 1) {
       let source = sources[0];
@@ -476,5 +464,21 @@ export class HomeComponent implements OnInit, OnDestroy {
         }
       }
     )
+  }
+
+  @HostListener('document:keydown.Control.[')
+  @HostListener('document:keydown.meta.[')
+  @HostListener('document:keydown.ArrowUp')
+  @HostListener('document:keydown.ArrowUp')
+  keyPressPrevious() {
+    this.onPreviousSource();
+  }
+
+  @HostListener('document:keydown.Control.]')
+  @HostListener('document:keydown.meta.]')
+  @HostListener('document:keydown.ArrowDown')
+  @HostListener('document:keydown.meta.ArrowDown')
+  keyPressNext() {
+    this.onNextSource();
   }
 }
