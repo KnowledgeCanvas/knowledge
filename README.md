@@ -4,6 +4,18 @@ Knowledge is a tool for saving, searching, accessing, and exploring all of your 
 
 ![KnowledgeGraph](https://user-images.githubusercontent.com/19367848/206884085-f73affb8-b94e-4039-beb3-b47f76762d8b.gif)
 
+# Download
+
+- [Latest Stable Release](https://github.com/KnowledgeCanvas/knowledge-canvas/releases/latest)
+- [All Versions](https://github.com/KnowledgeCanvas/knowledge-canvas/releases)
+
+# Documentation
+
+- [Basics](https://github.com/KnowledgeCanvas/knowledge/wiki/Basics)
+- [Shortcut Keys](https://github.com/KnowledgeCanvas/knowledge/wiki/Shortcut-Keys)
+- [Development and Build Instructions](https://github.com/KnowledgeCanvas/knowledge-canvas/wiki/Development)
+- [Debugging](https://github.com/KnowledgeCanvas/knowledge-canvas/wiki/Debugging)
+
 # Feature Roadmap
 
 The list of features supported by Knowledge is large and growing everyday. Here are a few highlights, both existing and yet to come:
@@ -85,18 +97,6 @@ The list of features supported by Knowledge is large and growing everyday. Here 
   - [x] No servers
   - [x] No sign-ups
   - [x] No data collection
-
-# Download
-
-- [Latest Stable Release](https://github.com/KnowledgeCanvas/knowledge-canvas/releases/latest)
-- [All Versions](https://github.com/KnowledgeCanvas/knowledge-canvas/releases)
-
-# Documentation
-
-- [Basics](https://github.com/KnowledgeCanvas/knowledge/wiki/Basics)
-- [Shortcut Keys](https://github.com/KnowledgeCanvas/knowledge/wiki/Shortcut-Keys)
-- [Development and Build Instructions](https://github.com/KnowledgeCanvas/knowledge-canvas/wiki/Development)
-- [Debugging](https://github.com/KnowledgeCanvas/knowledge-canvas/wiki/Debugging)
 
 # Screenshots
 
