@@ -2,7 +2,9 @@
 
 *Knowledge* is a bookmark manager, file explorer, calendar, and project management tool. With *Knowledge*, you can create your own personal knowledge base, import nearly any digital resource, and organize your digital life.
 
-![knowledge_graph](https://user-images.githubusercontent.com/19367848/197421450-268520f4-c217-49b3-8b27-ce8fb6935926.gif)
+![KnowledgeGraph](https://user-images.githubusercontent.com/19367848/206884085-f73affb8-b94e-4039-beb3-b47f76762d8b.gif)
+
+
 
 # Download
 
