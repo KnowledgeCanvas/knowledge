@@ -102,36 +102,31 @@ The list of features supported by Knowledge is large and growing everyday. Here 
 
 **Inbox**
 
-<img width="1232" alt="image" src="https://user-images.githubusercontent.com/19367848/197421214-143aacaa-79f8-43a4-a237-4364f8609dce.png">
+<img width="1363" alt="image" src="https://user-images.githubusercontent.com/19367848/206946620-989a966c-a4c7-49a1-926b-1ed52f2c2afb.png">
 
 **Projects**
 
-<img width="1232" alt="image" src="https://user-images.githubusercontent.com/19367848/197421222-c0a5acc6-b44e-4fac-8dc4-a0710c8393d0.png">
+<img width="1363" alt="image" src="https://user-images.githubusercontent.com/19367848/206946695-f806596f-ceb2-4c57-b73e-dadd0d6ca778.png">
+
+**Graph**
+
+<img width="1363" alt="image" src="https://user-images.githubusercontent.com/19367848/206946839-174623c7-54e6-48ef-bc06-6d0d981f124c.png">
 
 **Table**
 
-<img width="1232" alt="image" src="https://user-images.githubusercontent.com/19367848/197421245-55997b1b-1b13-4389-8a7e-3fe4807f7263.png">
+<img width="1363" alt="image" src="https://user-images.githubusercontent.com/19367848/206946889-885fbd50-cfe7-413b-936e-83a768b5965c.png">
 
 **Grid**
 
-<img width="1232" alt="image" src="https://user-images.githubusercontent.com/19367848/197421271-b89fc61c-8b5b-4736-a83a-ac03207b5014.png">
+<img width="1363" alt="image" src="https://user-images.githubusercontent.com/19367848/206947070-ad68c626-586e-4e2c-8fbc-1868801e6f51.png">
 
 **Calendar**
 
-<img width="1232" alt="image" src="https://user-images.githubusercontent.com/19367848/197421296-3506ce1a-ed09-4251-8b09-896dc91c9983.png">
+<img width="1363" alt="image" src="https://user-images.githubusercontent.com/19367848/206947134-e96e2e92-f9db-4934-bbfb-d09e67ccdfb1.png">
 
-**Knowledge Graph**
+**Settings**
 
-<img width="1164" alt="image" src="https://user-images.githubusercontent.com/19367848/197421597-73e09138-a580-436d-b362-c304c2b156dd.png">
-
-**Import Settings**
-
-<img width="1164" alt="image" src="https://user-images.githubusercontent.com/19367848/197421537-97f2b855-ce58-4e2d-82e4-31f11d48e924.png">
-
-**Search Settings**
-
-<img width="1164" alt="image" src="https://user-images.githubusercontent.com/19367848/197421571-65d2c664-ee12-4be6-8cee-8def56400e0b.png">
-
+<img width="1363" alt="image" src="https://user-images.githubusercontent.com/19367848/206947307-b37da407-bf72-4674-9458-f2e04a7ad5c6.png">
 
 # Disclaimer
 
