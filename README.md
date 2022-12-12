@@ -102,7 +102,7 @@ The list of features supported by Knowledge is large and growing everyday. Here 
 
 **Inbox**
 
-<img width="1363" alt="image" src="https://user-images.githubusercontent.com/19367848/206946620-989a966c-a4c7-49a1-926b-1ed52f2c2afb.png">
+<img width="1363" alt="image" src="https://user-images.githubusercontent.com/19367848/206948591-bbd79af0-4de6-4b64-b405-38f07cb3ca83.png">
 
 **Projects**
 
@@ -123,6 +123,10 @@ The list of features supported by Knowledge is large and growing everyday. Here 
 **Calendar**
 
 <img width="1363" alt="image" src="https://user-images.githubusercontent.com/19367848/206947134-e96e2e92-f9db-4934-bbfb-d09e67ccdfb1.png">
+
+**Details**
+
+<img width="1363" alt="image" src="https://user-images.githubusercontent.com/19367848/206948764-07e019a4-4168-47ba-a600-3dc7d35480e5.png">
 
 **Settings**
 
