@@ -32,6 +32,7 @@ The list of features supported by Knowledge is large and growing everyday. Here 
   - [x] Drag/Drop
   - [x] Built-in browser
   - [x] [Chrome extension](https://github.com/KnowledgeCanvas/extensions)
+  - [ ] Import multiple links at a time with drag/drop or copy/paste
   - [ ] Firefox extension
   - [ ] Extract specific content and HTML blocks
   - [ ] Offline copies
