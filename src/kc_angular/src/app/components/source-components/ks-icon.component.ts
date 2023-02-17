@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Rob Royce
+ * Copyright (c) 2022-2023 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -37,7 +37,9 @@ import {SettingsService} from "../../services/ipc-services/settings.service";
            [tooltipOptions]="{showDelay: 750, tooltipStyleClass: ks && ks.ingestType === 'file' ? 'ks-file-icon-tooltip' : 'ks-icon-tooltip'}"
            tooltipPosition="bottom"
            alt="Knowledge Source Icon">
-      <div *ngIf="ks && ks.dateDue" class="due-indicator">
+      <div *ngIf="showDuedate && ks && ks.dateDue" class="due-indicator" [class.due-future]="!pastDue"
+           [class.due-past]="pastDue"
+           [pTooltip]="pastDue ? 'Past due by ' + (ks.dateDue | countdown) : 'Due in ' + (ks.dateDue | countdown)">
         <div class="pi pi-calendar"></div>
       </div>
     </div>
@@ -56,7 +58,14 @@ import {SettingsService} from "../../services/ipc-services/settings.service";
         height: 12px;
         bottom: 0;
         left: 24px;
+      }
+
+      .due-past {
         color: var(--red-500);
+      }
+
+      .due-future {
+        color: var(--primary-color);
       }
     `
   ]
@@ -81,11 +90,19 @@ export class KsIconComponent implements OnInit {
 
   @Input() animate: boolean = true;
 
+  @Input() showDuedate: boolean = true;
+
+  pastDue: boolean = false;
+
   constructor(private dnd: DragAndDropService, private command: KsCommandService, private settings: SettingsService) {
   }
 
   ngOnInit(): void {
     this.animate = this.settings.get().display.animations;
+
+    if (this.ks?.dateDue) {
+      this.pastDue = new Date > this.ks.dateDue;
+    }
   }
 
   onDragStart($event: DragEvent, ks?: Partial<KnowledgeSource>) {
