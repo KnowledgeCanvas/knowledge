@@ -1,0 +1,43 @@
+{
+  "name": "kc_startup",
+  "version": "0.0.0",
+  "author": "Rob Royce <robertris2@gmail.com> (https://robroyce.dev)",
+  "license": "Apache-2.0",
+  "private": true,
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build startup --configuration production --base-href ./",
+    "build-dev": "ng build startup --configuration development --base-href ./",
+    "clean": "rm -rf dist",
+    "purge": "rm -rf node_modules .angular",
+    "watch": "ng build --configuration production --base-href ./ --watch",
+    "watch-dev": "ng build --configuration development --base-href ./ --watch"
+  },
+  "dependencies": {
+    "@angular/animations": "~14.2.8",
+    "@angular/cdk": "^14.2.6",
+    "@angular/common": "~14.2.8",
+    "@angular/compiler": "~14.2.8",
+    "@angular/core": "~14.2.8",
+    "@angular/forms": "^14.2.8",
+    "@angular/platform-browser": "^14.2.8",
+    "@angular/platform-browser-dynamic": "^14.2.8",
+    "@angular/router": "~14.2.8",
+    "primeflex": "^3.2.1",
+    "primeicons": "^6.0.1",
+    "primeng": "^14.1.2",
+    "rxjs": "~7.5.7",
+    "tslib": "^2.4.1",
+    "typescript": "^4.8.4",
+    "zone.js": "^0.11.8"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "^14.2.7",
+    "@angular/cli": "~14.2.7",
+    "@angular/compiler-cli": "^14.2.8",
+    "@types/node": "^16.11.46",
+    "ng-packagr": "^14.2.2",
+    "typescript": "^4.8.4"
+  }
+}
