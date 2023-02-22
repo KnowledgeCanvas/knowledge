@@ -14,15 +14,18 @@
  *  limitations under the License.
  */
 
-import {Component} from '@angular/core';
-import {ThemeService} from "./services/theme.service";
+import {Component, NgZone} from '@angular/core';
+import {ThemeService} from "./theme.service";
+import {IpcMessage} from "../../../kc_shared/models/electron.ipc.model";
 
 @Component({
   selector: 'startup-root',
   template: `
-    <div class="w-full h-full surface-a flex-col-center-center gap-4 draggable select-none" style="height: 100vh; width: 100vw;">
-      <div class="flex flex-column align-items-center justify-content-center no-select select-none">
+    <div class="w-full h-full surface-card flex-col-center-center gap-4 draggable select-none"
+         style="height: 100vh; width: 100vw;">
+      <div class="flex flex-column align-items-center justify-content-center">
         <img src="assets/img/kc-logo-transparent.svg"
+             [draggable]="false"
              alt="Knowledge Logo"
              height="128"
              class="select-none">
@@ -30,7 +33,7 @@ import {ThemeService} from "./services/theme.service";
       <div style="height: 10px"></div>
       <div style="width: 100%" class="w-full flex-col-center-center gap-2">
         <p-progressBar mode="indeterminate" class="w-full px-8" [style]="{'height': '0.5rem'}"></p-progressBar>
-        <div class="font-light text-700">
+        <div class="font-light text-700 h-1rem">
           {{startupStatus}}
         </div>
       </div>
@@ -46,13 +49,17 @@ import {ThemeService} from "./services/theme.service";
   ]
 })
 export class AppComponent {
-  title = 'Knowledge Startup';
+  startupStatus: string = "";
 
-  startupStatus: string = "Getting things ready...";
+  interval: any = undefined;
 
-  constructor(private themes: ThemeService) {
-    themes.setLocal().then((result) => {
-      console.log('Theme result: ', result);
+  constructor(private themes: ThemeService, private zone: NgZone) {
+    themes.setLocal();
+
+    window.api.receive('E2A:Startup:Status', (msg: IpcMessage) => {
+      zone.run(() => {
+        this.startupStatus = msg?.success?.data.status ?? this.startupStatus;
+      })
     })
   }
 }
