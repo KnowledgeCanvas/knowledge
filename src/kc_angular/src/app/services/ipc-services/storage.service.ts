@@ -29,12 +29,26 @@ import {ProjectStorageService} from "../data-services/project.storage.service";
 })
 export class StorageService {
   readonly KC_CURRENT_PROJECT = 'current-project';
-  private KC_ALL_PROJECT_IDS = 'kc-projects';
+  private KC_ALL_PROJECT_IDS = 'projects';
   private db = window.localStorage;
   private projectList: KcProject[] | null = null;
 
   constructor(private autoscan: AutoscanService,
-              private notifications: NotificationsService) {
+              private notifications: NotificationsService,
+              private ipcService: ElectronIpcService,
+              private projectStorage: ProjectStorageService) {
+  }
+
+  async getProjectList() {
+    return this.ipcService.storage.get(this.KC_ALL_PROJECT_IDS, ['projects']);
+  }
+
+  async getProject(id: UUID) {
+    return this.ipcService.storage.get(id.value, ['projects', id.value]);
+  }
+
+  async getManyProjects(ids: UUID[]) {
+    return this.ipcService.storage.getMany(ids.map(i => i.value), ['projects']);
   }
 
   get projects(): KcProject[] {
@@ -125,17 +139,6 @@ export class StorageService {
     return projects;
   }
 
-  set projects(projectModels: KcProject[]) {
-    let pStr: string;
-    let pids = [];
-    for (let project of projectModels) {
-      pStr = JSON.stringify(project);
-      this.db.setItem(project.id.value, pStr);
-      pids.push(project.id.value);
-    }
-    this.db.setItem(this.KC_ALL_PROJECT_IDS, JSON.stringify(pids));
-  }
-
   get kcCurrentProject(): string | null {
     return this.db.getItem(this.KC_CURRENT_PROJECT);
   }
@@ -181,9 +184,20 @@ export class StorageService {
   }
 
   async getProjects() {
-    if (this.projectList)
-      return this.projectList;
-    return this.projects;
+    return new Promise<KcProject[]>((resolve, reject) => {
+      from(this.getProjectList()).pipe(
+        take(1),
+        map((msg) => msg?.success?.data),
+        catchError((err) => {
+          console.error('Unable to get project list because: ', err);
+          return of([]);
+        }),
+        tap((msgs) => from(this.getManyProjects(msgs))),
+        tap((projects) => {
+          console.log('Projects from project list: ', projects);
+        })
+      ).subscribe()
+    })
   }
 
   async saveProject(project: KcProject) {
@@ -205,27 +219,51 @@ export class StorageService {
     // Update the project in database
     await this.updateProject(project);
 
-    // Get list of all project IDs from local storage
-    let projectList: string[] = [];
-    let projectListString = this.db.getItem(this.KC_ALL_PROJECT_IDS);
-    if (projectListString) {
-      projectList = JSON.parse(projectListString);
-    }
-
-    if (projectList.length > 0) {
-      let id = projectList.find(item => item === project.id.value);
-      // Check if project ID is in the list. If it's not, add it, otherwise continue
-      if (!id) {
-        projectList.push(project.id.value);
-        projectListString = JSON.stringify(projectList);
-        this.db.setItem(this.KC_ALL_PROJECT_IDS, projectListString);
-      }
-    } else {
-      // If there is no project list, create one and add project to it
-      projectList.push(project.id.value);
-      projectListString = JSON.stringify(projectList);
-      this.db.setItem(this.KC_ALL_PROJECT_IDS, projectListString);
-    }
+    // // Get list of all project IDs from local storage
+    // this.projectStorage.projectList.pipe(
+    //   take(1),
+    //   tap((projectList) => {
+    //     if (projectList.length > 0) {
+    //       let id = projectList.find(item => item === project.id.value);
+    //       // Check if project ID is in the list. If it's not, add it, otherwise continue
+    //       if (!id) {
+    //         projectList.push(project.id.value);
+    //
+    //         projectListString = JSON.stringify(projectList);
+    //         this.db.setItem(this.KC_ALL_PROJECT_IDS, projectListString);
+    //       }
+    //     } else {
+    //       // If there is no project list, create one and add project to it
+    //       projectList.push(project.id.value);
+    //       projectListString = JSON.stringify(projectList);
+    //       this.db.setItem(this.KC_ALL_PROJECT_IDS, projectListString);
+    //     }
+    //   })
+    // ).subscribe()
+    //
+    //
+    // ////////
+    //
+    // let projectList: string[] = [];
+    // let projectListString = this.db.getItem(this.KC_ALL_PROJECT_IDS);
+    // if (projectListString) {
+    //   projectList = JSON.parse(projectListString);
+    // }
+    //
+    // if (projectList.length > 0) {
+    //   let id = projectList.find(item => item === project.id.value);
+    //   // Check if project ID is in the list. If it's not, add it, otherwise continue
+    //   if (!id) {
+    //     projectList.push(project.id.value);
+    //     projectListString = JSON.stringify(projectList);
+    //     this.db.setItem(this.KC_ALL_PROJECT_IDS, projectListString);
+    //   }
+    // } else {
+    //   // If there is no project list, create one and add project to it
+    //   projectList.push(project.id.value);
+    //   projectListString = JSON.stringify(projectList);
+    //   this.db.setItem(this.KC_ALL_PROJECT_IDS, projectListString);
+    // }
   }
 
   async saveProjectList(projects: KcProject[]) {
@@ -235,11 +273,10 @@ export class StorageService {
   }
 
   async updateProject(project: KcProject) {
-    let projectString = JSON.stringify(project);
-    this.db.setItem(project.id.value, projectString);
+    await this.projectStorage.updateProject(project);
   }
 
-  deleteProject(id: string) {
+  async deleteProject(id: string) {
     if (!this.projectList) {
       this.notifications.warn('Storage Service', 'Invalid Project', 'Attempting to delete a project that does not exist in memory...');
       return;
@@ -251,13 +288,7 @@ export class StorageService {
     // Remove project saved under this string.
     this.db.removeItem(id);
 
-    // Persist changes
-    let projectIds: string[] = [];
-    for (let project of this.projectList) {
-      projectIds.push(project.id.value);
-    }
-    let projectListStr = JSON.stringify(projectIds);
-    this.db.setItem(this.KC_ALL_PROJECT_IDS, projectListStr);
+    await this.projectStorage.deleteProject([]);
   }
 
   createFile(encoding: string) {

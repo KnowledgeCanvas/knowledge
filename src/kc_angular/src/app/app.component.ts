@@ -34,6 +34,7 @@ import {StartupService} from "./services/ipc-services/startup.service";
 import {ProjectCommandService} from "./services/command-services/project-command.service";
 import {ProjectDetailsComponent} from "./components/project-components/project-details.component";
 import {fadeIn, fadeInAndOut, flyInOut} from "./animations";
+import {ProjectStorageService} from "./services/data-services/project.storage.service";
 
 
 type SidebarItem = {
@@ -248,6 +249,7 @@ export class AppComponent implements OnInit, OnDestroy {
               private dialog: DialogService,
               private dnd: DragAndDropService,
               private factory: KsFactoryService,
+              private projectStorage: ProjectStorageService,
               private projects: ProjectService,
               private ipc: ElectronIpcService,
               private ingest: IngestService,

@@ -16,7 +16,7 @@
 
 import {Injectable} from '@angular/core';
 import {ProjectTree, ProjectTreeNode} from "src/app/models/project.tree.model";
-import {BehaviorSubject, Observable} from 'rxjs';
+import {BehaviorSubject, Observable, tap} from 'rxjs';
 import {KcProject, ProjectCreationRequest, ProjectUpdateRequest} from "src/app/models/project.model";
 import {KnowledgeSource} from "src/app/models/knowledge.source.model";
 import {UuidService} from "../ipc-services/uuid.service";
@@ -25,6 +25,7 @@ import {KcProjectType} from "../../../../../kc_shared/models/project.model";
 import {EventModel} from "../../../../../kc_shared/models/event.model";
 import {UUID} from "../../../../../kc_shared/models/uuid.model";
 import {NotificationsService} from "../user-services/notifications.service";
+import {ProjectStorageService} from "../data-services/project.storage.service";
 
 export interface ProjectIdentifiers {
   id: string;
@@ -52,6 +53,7 @@ export class ProjectService {
   private lookup: Map<string, KcProject>;
 
   constructor(private storageService: StorageService,
+              private projectStorage: ProjectStorageService,
               private uuidService: UuidService,
               private notifications: NotificationsService) {
     this.allProjects = new BehaviorSubject<ProjectTreeNode[]>([]);
@@ -60,6 +62,33 @@ export class ProjectService {
     this.lookup = new Map();
     this.projectSource = [];
     this.refreshTree();
+
+    projectStorage.projects.pipe(
+      tap((projects) => {
+        // Rebuild tree
+        console.log('project service got projects from storage: ', projects);
+
+        if (!projects || projects.length == 0) {
+
+        }
+
+        this.lookup = new Map();
+        this.tree = new ProjectTree();
+        this.projectSource = [];
+
+        for (const project of projects) {
+          this.lookup.set(project.id.value, project);
+          if (!project.parentId?.value) {
+            this.projectSource.unshift(project);
+          } else {
+            this.projectSource.push(project);
+          }
+        }
+        this.allProjectModels.next(this.projectSource);
+        this.buildTree(this.projectSource);
+        this.initialize();
+      })
+    ).subscribe();
   }
 
   /**
@@ -362,9 +391,15 @@ export class ProjectService {
 
       // Persist project to storage system
       await this.storageService.updateProject(target);
+      await this.projectStorage.updateProject(target);
 
+      // Remove the project from the list of all projects TODO: remove this
       this.projectSource = this.projectSource.filter(p => p.id.value !== update.id.value);
+      // Add it back in to trigger change detection TODO: remove this
       this.projectSource.push(target);
+      // Trigger behavior subject
+      this.allProjectModels.next(this.projectSource);
+
     }
 
     this.refreshTree();
