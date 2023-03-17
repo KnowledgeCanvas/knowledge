@@ -46,7 +46,9 @@ type SidebarItem = {
 @Component({
   selector: 'app-root',
   template: `
-    <div @fadeIn id="app-header" class="w-full p-fluid title-bar flex-row-center-between pl-2 surface-ground border-bottom-1 surface-border" style="height: 32px; max-width: 100vw">
+    <div @fadeIn id="app-header"
+         class="w-full p-fluid title-bar flex-row-center-between pl-2 surface-ground border-bottom-1 surface-border"
+         style="height: 32px; max-width: 100vw">
       <div class="select-none title-bar-interactive flex-row-center-start" *ngIf="os && os === 'darwin'">
         <div (click)="close($event)" class="macos-window-button window-button-close"></div>
         <div (click)="minimize($event)" class="macos-window-button window-button-minimize"></div>
@@ -61,7 +63,8 @@ type SidebarItem = {
       </div>
 
       <div *ngIf="!os || (os && os === 'darwin')"></div>
-      <div class="select-none title-bar-interactive flex flex-row align-items-start h-full" *ngIf="os && os !== 'darwin'">
+      <div class="select-none title-bar-interactive flex flex-row align-items-start h-full"
+           *ngIf="os && os !== 'darwin'">
         <div (click)="minimize($event)" class="window-button hover:surface-300 flex-col-center-center">
           <div class="pi">—</div>
         </div>
@@ -74,7 +77,8 @@ type SidebarItem = {
       </div>
     </div>
 
-    <div @fadeIn *ngIf="!readyToShow" class="w-full h-full surface-a flex-col-center-center gap-4" style="max-height: calc(100vh - 32px)">
+    <div @fadeIn *ngIf="!readyToShow" class="w-full h-full surface-a flex-col-center-center gap-4"
+         style="max-height: calc(100vh - 32px)">
       <div>
         <img src="assets/img/kc-icon-greyscale.png"
              alt="Knowledge Logo"
@@ -88,20 +92,24 @@ type SidebarItem = {
            class="h-full md:h-auto md:block flex-shrink-0 absolute md:static left-0 top-0 z-1 border-right-1 surface-0 border-primary w-auto">
         <div class="flex h-full">
           <div class="flex flex-column h-full flex-shrink-0">
-            <div class="flex align-items-center justify-content-center select-none flex-shrink-0" style="height: 60px; width: 60px" (dragstart)="$event.preventDefault()">
+            <div class="flex align-items-center justify-content-center select-none flex-shrink-0"
+                 style="height: 60px; width: 60px" (dragstart)="$event.preventDefault()">
               <img src="assets/img/kc-icon-transparent.png" height="30" alt="Icon for the Knowledge application.">
             </div>
             <div class="overflow-y-auto mt-3">
               <ul class="list-none py-3 pl-2 pr-0 m-0">
-                <li *ngFor="let item of sidebarItems" class="mb-2" [pTooltip]="item.label" [routerLink]="item.routerLink" (click)="onSidebarClick($event, item)"
+                <li *ngFor="let item of sidebarItems" class="mb-2" [pTooltip]="item.label"
+                    [routerLink]="item.routerLink" (click)="onSidebarClick($event, item)"
                     (dragstart)="$event.preventDefault()">
                   <a
                     class="p-element flex align-items-center cursor-pointer py-3 pl-0 pr-2 justify-content-center hover:surface-200 text-700 hover:text-900 transition-duration-150 transition-colors no-underline"
                     [class.bg-primary]="item.label === selectedView"
                     [class.hover:bg-primary]="item.label === selectedView"
                     style="border-top-left-radius: 30px; border-bottom-left-radius: 30px;">
-                    <i *ngIf="item.label === 'Inbox' && inboxBadge > 0" class="{{item.icon}} text-xl no-underline" pBadge value="{{inboxBadge}}" severity="danger"></i>
-                    <i *ngIf="item.label === 'Inbox' && inboxBadge === 0" class="{{item.icon}} text-xl no-underline"></i>
+                    <i *ngIf="item.label === 'Inbox' && inboxBadge > 0" class="{{item.icon}} text-xl no-underline"
+                       pBadge value="{{inboxBadge}}" severity="danger"></i>
+                    <i *ngIf="item.label === 'Inbox' && inboxBadge === 0"
+                       class="{{item.icon}} text-xl no-underline"></i>
                     <i *ngIf="item.label !== 'Inbox'" class="{{item.icon}} text-xl no-underline"></i>
                     <span class="p-ink" style="height: 64px; width: 64px; top: 5px; left: 5px;"></span>
                   </a>
@@ -109,8 +117,9 @@ type SidebarItem = {
               </ul>
             </div>
             <div class="mt-auto">
-              <a class="p-element m-3 flex align-items-center cursor-pointer p-2 justify-content-center border-round bg-primary text-0 transition-duration-150 transition-colors"
-                 (click)="showSettings()">
+              <a
+                class="p-element m-3 flex align-items-center cursor-pointer p-2 justify-content-center border-round bg-primary text-0 transition-duration-150 transition-colors"
+                (click)="showSettings()">
                 <i class="pi pi-cog text-xl"></i>
                 <span class="p-ink" style="height: 64px; width: 64px; top: 4px; left: -1px;"></span>
               </a>
@@ -118,10 +127,13 @@ type SidebarItem = {
           </div>
         </div>
       </div>
-      <div id="app-body" class="w-full flex flex-column relative flex-auto select-none" style="max-height: calc(100vh - 32px)">
-        <div id="app-router-outlet" class="h-full flex flex-row overflow-y-auto" style="max-height: calc(100vh - 80px); max-width: calc(100vw - 61px)">
+      <div id="app-body" class="w-full flex flex-column relative flex-auto select-none"
+           style="max-height: calc(100vh - 32px)">
+        <div id="app-router-outlet" class="h-full flex flex-row overflow-y-auto"
+             style="max-height: calc(100vh - 80px); max-width: calc(100vw - 61px)">
           <div class="flex flex-column flex-grow-0 h-full">
-            <app-projects-tree class="border-right-1 border-primary-500" [@flyInOut]="animate" *ngIf="projectTreeVisible"></app-projects-tree>
+            <app-projects-tree class="border-right-1 border-primary-500" [@flyInOut]="animate"
+                               *ngIf="projectTreeVisible"></app-projects-tree>
           </div>
           <div [@routeAnimations]="routeAnimationData" class="flex-column flex-grow-1 h-full">
             <router-outlet></router-outlet>
