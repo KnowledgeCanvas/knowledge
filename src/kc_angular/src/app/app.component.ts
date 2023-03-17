@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Rob Royce
+ * Copyright (c) 2022-2023 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -80,14 +80,12 @@ type SidebarItem = {
              alt="Knowledge Logo"
              class="pulsate-fwd knowledge-logo">
       </div>
-      <div style="width: 100%; max-width: 12rem;">
-        <p-progressBar mode="indeterminate" class="w-full" [style]="{'height': '0.5rem'}"></p-progressBar>
-        Getting things ready...
-      </div>
     </div>
 
-    <div *ngIf="readyToShow" class="flex relative lg:static" style="height: calc(100vh - 32px); max-width: 100vw">
-      <div id="app-sidebar" class="h-full md:h-auto md:block flex-shrink-0 absolute md:static left-0 top-0 z-1 border-right-1 surface-0 border-primary w-auto">
+    <div @fadeIn *ngIf="readyToShow" class="flex relative lg:static"
+         style="height: calc(100vh - 32px); max-width: 100vw">
+      <div id="app-sidebar"
+           class="h-full md:h-auto md:block flex-shrink-0 absolute md:static left-0 top-0 z-1 border-right-1 surface-0 border-primary w-auto">
         <div class="flex h-full">
           <div class="flex flex-column h-full flex-shrink-0">
             <div class="flex align-items-center justify-content-center select-none flex-shrink-0" style="height: 60px; width: 60px" (dragstart)="$event.preventDefault()">
@@ -272,7 +270,7 @@ export class AppComponent implements OnInit, OnDestroy {
             this.startup.tutorial().subscribe(showAgain => {
               settings.set({user: {tutorials: {showFirstRunTutorial: showAgain}}});
             })
-          }, 1000)
+          }, 2000)
         }
       })
     ).subscribe()
@@ -390,7 +388,7 @@ export class AppComponent implements OnInit, OnDestroy {
     themes.setLocal().then((_: any) => {
       setTimeout(() => {
         this.readyToShow = true;
-      }, Math.floor(Math.random() * 1500));
+      }, 1500);
     });
 
     this._windowResize.asObservable().pipe(

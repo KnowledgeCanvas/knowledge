@@ -1,17 +1,17 @@
-/**
- Copyright 2022 Rob Royce
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
- http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+/*
+ * Copyright (c) 2023 Rob Royce
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
  */
 
 const {contextBridge, ipcRenderer} = require('electron');
@@ -46,6 +46,10 @@ const ipcSendChannels = [
     "A2E:Settings:Defaults",
     "A2E:Settings:Get",
     "A2E:Settings:Set",
+    "A2E:Storage:Delete",
+    "A2E:Storage:Get",
+    "A2E:Storage:GetMany",
+    "A2E:Storage:Set",
     "A2E:Uuid:Generate",
     "A2E:Version:Get",
     "A2E:Window:Minimize",
@@ -81,6 +85,11 @@ const ipcReceiveChannels = [
     "E2A:FileManager:NewFiles",
     "E2A:FileManager:Warn",
     "E2A:Settings:All",
+    "E2A:Startup:Status",
+    "E2A:Storage:Delete",
+    "E2A:Storage:Get",
+    "E2A:Storage:GetMany",
+    "E2A:Storage:Set",
     "E2A:Version:Get",
     "E2A:Window:ZoomLevel"
 ]

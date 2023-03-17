@@ -17,13 +17,14 @@
 import {Component, NgZone} from '@angular/core';
 import {ThemeService} from "./theme.service";
 import {IpcMessage} from "../../../kc_shared/models/electron.ipc.model";
+import {fadeIn} from "./animations";
 
 @Component({
   selector: 'startup-root',
   template: `
     <div class="w-full h-full surface-card flex-col-center-center gap-4 draggable select-none"
          style="height: 100vh; width: 100vw;">
-      <div class="flex flex-column align-items-center justify-content-center">
+      <div @fadeIn class="flex flex-column align-items-center justify-content-center">
         <img src="assets/img/kc-logo-transparent.svg"
              [draggable]="false"
              alt="Knowledge Logo"
@@ -46,7 +47,8 @@ import {IpcMessage} from "../../../kc_shared/models/electron.ipc.model";
         -webkit-app-region: drag;
       }
     `
-  ]
+  ],
+  animations: [fadeIn]
 })
 export class AppComponent {
   startupStatus: string = "";

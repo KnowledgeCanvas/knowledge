@@ -16,7 +16,7 @@
 
 import {EventEmitter, Inject, Injectable} from '@angular/core';
 import {DOCUMENT} from "@angular/common";
-import {KcTheme} from "../../../../kc_shared/models/style.model";
+import {KcTheme} from "../../../kc_shared/models/style.model";
 
 @Injectable({
   providedIn: 'root'

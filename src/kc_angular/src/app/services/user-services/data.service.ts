@@ -1,17 +1,17 @@
-/**
- Copyright 2022 Rob Royce
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
- http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+/*
+ * Copyright (c) 2023 Rob Royce
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
  */
 import {Injectable, OnDestroy} from '@angular/core';
 import {KnowledgeSource} from "../../models/knowledge.source.model";
@@ -21,8 +21,8 @@ import {StorageService} from "../ipc-services/storage.service";
 import {SettingsService} from "../ipc-services/settings.service";
 import {ProjectService} from "../factory-services/project.service";
 import {FaviconService} from "../ingest-services/favicon.service";
-import {UUID} from "../../../../../kc_shared/models/uuid.model";
 import {map, takeUntil} from "rxjs/operators";
+import {UUID} from "../../../../../kc_shared/models/uuid.model";
 
 @Injectable({
   providedIn: 'root'
@@ -138,6 +138,7 @@ export class DataService implements OnDestroy {
       })
     ).subscribe()
 
+    // When new sources are added, update the list of all sources
     _projects.newSources.pipe(
       takeUntil(this.cleanUp),
       tap((sources) => {
@@ -145,6 +146,7 @@ export class DataService implements OnDestroy {
       })
     ).subscribe()
 
+    // Get icons for all sources then populate the list
     storage.ksList().then((ksList) => {
       this.favicon.extractFromKsList(ksList).then((ready) => {
         this.__allKs.next(ready);

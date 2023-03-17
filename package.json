@@ -9,7 +9,7 @@
   "workspaces": [
     "src/kc_electron",
     "src/kc_angular",
-    "src/kc_extensions"
+    "src/kc_startup"
   ],
   "repository": {
     "type": "git",
@@ -17,12 +17,14 @@
   },
   "main": "src/kc_electron/dist/electron.js",
   "scripts": {
-    "build": "yarn build-electron && yarn build-angular",
+    "build": "yarn build-electron && yarn build-angular && yarn build-startup",
+    "build-dev": "yarn build-angular-dev && yarn build-electron-dev && yarn build-startup-dev",
     "build-angular": "yarn workspace kc_angular run build",
     "build-electron": "yarn workspace kc_electron run build",
+    "build-startup": "yarn workspace kc_startup run build",
     "build-angular-dev": "yarn workspace kc_angular run build-dev",
     "build-electron-dev": "yarn workspace kc_electron run build-dev",
-    "build-dev": "yarn build-angular-dev && yarn build-electron-dev",
+    "build-startup-dev": "yarn workspace kc_startup run build-dev",
     "clean": "rm -rf dist && yarn workspaces foreach run clean",
     "purge": "yarn workspaces foreach run purge && rm -rf node_modules && yarn cache clean",
     "pack": "electron-builder --dir",
@@ -39,7 +41,9 @@
     "watch-main": "cd src/kc_angular && yarn run watch-main",
     "watch-main-dev": "cd src/kc_angular && yarn run watch-main-dev",
     "watch-electron": "cd src/kc_electron && yarn run watch-electron",
-    "watch-electron-dev": "cd src/kc_electron && yarn run watch-electron-dev"
+    "watch-electron-dev": "cd src/kc_electron && yarn run watch-electron-dev",
+    "watch-startup": "cd src/kc_startup && yarn run watch",
+    "watch-startup-dev": "cd src/kc_startup && yarn run watch-dev"
   },
   "packageManager": "yarn@3.2.4",
   "dependencies": {
@@ -75,6 +79,7 @@
     "files": [
       "src/kc_angular/dist/**/*",
       "src/kc_electron/dist/**/*",
+      "src/kc_startup/dist/**/*",
       "Resources/**/*"
     ],
     "extraResources": [
