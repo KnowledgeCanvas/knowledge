@@ -29,6 +29,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@angular-devkit/architect@npm:0.1402.10":
+  version: 0.1402.10
+  resolution: "@angular-devkit/architect@npm:0.1402.10"
+  dependencies:
+    "@angular-devkit/core": 14.2.10
+    rxjs: 6.6.7
+  checksum: 668aa04962f1e58624b053882dfd2064476a7dbf34950eeb08e8fa3e85ee778f860a4a03cf154dbe6447ec3fda154b2e6b14d0174860e6865002c4d48b1c4be2
+  languageName: node
+  linkType: hard
+
 "@angular-devkit/architect@npm:0.1402.7, @angular-devkit/architect@npm:^0.1402.7":
   version: 0.1402.7
   resolution: "@angular-devkit/architect@npm:0.1402.7"
@@ -148,6 +158,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@angular-devkit/core@npm:14.2.10":
+  version: 14.2.10
+  resolution: "@angular-devkit/core@npm:14.2.10"
+  dependencies:
+    ajv: 8.11.0
+    ajv-formats: 2.1.1
+    jsonc-parser: 3.1.0
+    rxjs: 6.6.7
+    source-map: 0.7.4
+  peerDependencies:
+    chokidar: ^3.5.2
+  peerDependenciesMeta:
+    chokidar:
+      optional: true
+  checksum: 61c037d3228448ad388997e55080f6791bdb9afb4d323e5b17d94947f4a0dbb0b982908c74d2ad827728174b17ac781881ea946795739860c9bac576f2c379f0
+  languageName: node
+  linkType: hard
+
 "@angular-devkit/core@npm:14.2.7":
   version: 14.2.7
   resolution: "@angular-devkit/core@npm:14.2.7"
@@ -163,6 +191,19 @@ __metadata:
     chokidar:
       optional: true
   checksum: 1492bbbd13a386c7d8f978e765a4d0da5327240b4bfa1b8a8671fcb71982e81a474bc3428546a58915e1e6a5d88ebc0e1fb497c4b986d02a24f3f886c5b33a6c
+  languageName: node
+  linkType: hard
+
+"@angular-devkit/schematics@npm:14.2.10":
+  version: 14.2.10
+  resolution: "@angular-devkit/schematics@npm:14.2.10"
+  dependencies:
+    "@angular-devkit/core": 14.2.10
+    jsonc-parser: 3.1.0
+    magic-string: 0.26.2
+    ora: 5.4.1
+    rxjs: 6.6.7
+  checksum: cc7987f387d130cfde0598271bbcfcc5c905b8c65d3a5c2618fd445650a41563b60d1a13de9e14c1d8b070e6c22ffb97d4343a177aa23a8eb2be31151d71c246
   languageName: node
   linkType: hard
 
@@ -321,6 +362,36 @@ __metadata:
   bin:
     ng: bin/ng.js
   checksum: cf9f0f02e96c4bd2b3607da52b6c82ed967159b191f7afe2753996ef2efcb04f9f43705424202d4e9a7632b5ebe616b335c125b927cb30f061887dcd6954012d
+  languageName: node
+  linkType: hard
+
+"@angular/cli@npm:~14.2.7":
+  version: 14.2.10
+  resolution: "@angular/cli@npm:14.2.10"
+  dependencies:
+    "@angular-devkit/architect": 0.1402.10
+    "@angular-devkit/core": 14.2.10
+    "@angular-devkit/schematics": 14.2.10
+    "@schematics/angular": 14.2.10
+    "@yarnpkg/lockfile": 1.1.0
+    ansi-colors: 4.1.3
+    debug: 4.3.4
+    ini: 3.0.0
+    inquirer: 8.2.4
+    jsonc-parser: 3.1.0
+    npm-package-arg: 9.1.0
+    npm-pick-manifest: 7.0.1
+    open: 8.4.0
+    ora: 5.4.1
+    pacote: 13.6.2
+    resolve: 1.22.1
+    semver: 7.3.7
+    symbol-observable: 4.0.0
+    uuid: 8.3.2
+    yargs: 17.5.1
+  bin:
+    ng: bin/ng.js
+  checksum: 634e018804f3302d1f5f7f25c441d4937d1cf1f73d55d220c93376975ee6b0a8b7e0979a3876b84a38dcbee70e372e46b61e7da31410c482590b3da76afaca05
   languageName: node
   linkType: hard
 
@@ -2888,6 +2959,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@schematics/angular@npm:14.2.10":
+  version: 14.2.10
+  resolution: "@schematics/angular@npm:14.2.10"
+  dependencies:
+    "@angular-devkit/core": 14.2.10
+    "@angular-devkit/schematics": 14.2.10
+    jsonc-parser: 3.1.0
+  checksum: 8a07cd6ac4c84c057e13023345e8687b8d2a868239343a97b3089cf8b49ddbcae8fe8deb7afcf3cf96d63dacbf0a43f985345f90335ded27c7d6832114d31484
+  languageName: node
+  linkType: hard
+
 "@schematics/angular@npm:14.2.7":
   version: 14.2.7
   resolution: "@schematics/angular@npm:14.2.7"
@@ -3044,6 +3126,13 @@ __metadata:
   version: 3.1.1
   resolution: "@types/ejs@npm:3.1.1"
   checksum: 12fa444920aaa70af2fae4424fa62b49c23b31a37129c428b7c9f9068e58c0696b4e5601b0449f87bae8794e039c679a43651c356c34f17d1bb460456dd41441
+  languageName: node
+  linkType: hard
+
+"@types/electron-json-storage@npm:^4":
+  version: 4.5.0
+  resolution: "@types/electron-json-storage@npm:4.5.0"
+  checksum: 0ce33c9fe756588f59e1ed24919f91ceb89dd78d5abf2e191d6a68b07800aadb0302feda87900d4f1c8df2142d189db99f5cd5f00b377be4d67022996c9ec8eb
   languageName: node
   linkType: hard
 
@@ -4228,6 +4317,15 @@ __metadata:
   version: 2.0.1
   resolution: "async-exit-hook@npm:2.0.1"
   checksum: b72cbdd19ea90fa33a3a57b0dbff83e4bf2f4e4acd70b2b3847a588f9f16a45d38590ee13f285375dd919c224f60fa58dc3d315a87678d3aa24ff686d1c0200a
+  languageName: node
+  linkType: hard
+
+"async@npm:^2.0.0":
+  version: 2.6.4
+  resolution: "async@npm:2.6.4"
+  dependencies:
+    lodash: ^4.17.14
+  checksum: a52083fb32e1ebe1d63e5c5624038bb30be68ff07a6c8d7dfe35e47c93fc144bd8652cbec869e0ac07d57dde387aa5f1386be3559cdee799cb1f789678d88e19
   languageName: node
   linkType: hard
 
@@ -6252,6 +6350,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"electron-json-storage@npm:^4.6.0":
+  version: 4.6.0
+  resolution: "electron-json-storage@npm:4.6.0"
+  dependencies:
+    async: ^2.0.0
+    lockfile: ^1.0.4
+    lodash: ^4.0.1
+    mkdirp: ^0.5.1
+    rimraf: ^2.5.1
+    write-file-atomic: ^2.4.2
+  checksum: 77d16d4d01862a7c40927b005e272ad2ea2cd7928e9b78d9fcfba77fcda1b5f5f3b38f05bc735c501bc199ebec8d2010e2a0d2b45d8e815c3578dea92f60663d
+  languageName: node
+  linkType: hard
+
 "electron-osx-sign@npm:^0.6.0":
   version: 0.6.0
   resolution: "electron-osx-sign@npm:0.6.0"
@@ -7862,17 +7974,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"graceful-fs@npm:^4.1.11, graceful-fs@npm:^4.2.9":
+  version: 4.2.10
+  resolution: "graceful-fs@npm:4.2.10"
+  checksum: 3f109d70ae123951905d85032ebeae3c2a5a7a997430df00ea30df0e3a6c60cf6689b109654d6fdacd28810a053348c4d14642da1d075049e6be1ba5216218da
+  languageName: node
+  linkType: hard
+
 "graceful-fs@npm:^4.1.2, graceful-fs@npm:^4.1.6, graceful-fs@npm:^4.2.0, graceful-fs@npm:^4.2.4, graceful-fs@npm:^4.2.6":
   version: 4.2.8
   resolution: "graceful-fs@npm:4.2.8"
   checksum: 5d224c8969ad0581d551dfabdb06882706b31af2561bd5e2034b4097e67cc27d05232849b8643866585fd0a41c7af152950f8776f4dd5579e9853733f31461c6
-  languageName: node
-  linkType: hard
-
-"graceful-fs@npm:^4.2.9":
-  version: 4.2.10
-  resolution: "graceful-fs@npm:4.2.10"
-  checksum: 3f109d70ae123951905d85032ebeae3c2a5a7a997430df00ea30df0e3a6c60cf6689b109654d6fdacd28810a053348c4d14642da1d075049e6be1ba5216218da
   languageName: node
   linkType: hard
 
@@ -8902,6 +9014,7 @@ __metadata:
     "@types/cytoscape-dagre": ^2.3.0
     "@types/cytoscape-fcose": ^2.1.0
     "@types/cytoscape-klay": ^3.1.0
+    "@types/electron-json-storage": ^4
     "@types/node": ^16.11.46
     "@typescript-eslint/eslint-plugin": 5.42.0
     "@typescript-eslint/parser": 5.42.0
@@ -8912,6 +9025,7 @@ __metadata:
     cytoscape-dagre: ^2.5.0
     cytoscape-fcose: ^2.1.0
     cytoscape-klay: ^3.1.4
+    electron-json-storage: ^4.6.0
     eslint: ^8.26.0
     fuse.js: ^6.6.2
     ng-packagr: ^14.2.2
@@ -8945,6 +9059,34 @@ __metadata:
     webpack: ^5.74.0
     webpack-cli: ^4.10.0
     webpack-merge: ^5.8.0
+  languageName: unknown
+  linkType: soft
+
+"kc_startup@workspace:src/kc_startup":
+  version: 0.0.0-use.local
+  resolution: "kc_startup@workspace:src/kc_startup"
+  dependencies:
+    "@angular-devkit/build-angular": ^14.2.7
+    "@angular/animations": ~14.2.8
+    "@angular/cdk": ^14.2.6
+    "@angular/cli": ~14.2.7
+    "@angular/common": ~14.2.8
+    "@angular/compiler": ~14.2.8
+    "@angular/compiler-cli": ^14.2.8
+    "@angular/core": ~14.2.8
+    "@angular/forms": ^14.2.8
+    "@angular/platform-browser": ^14.2.8
+    "@angular/platform-browser-dynamic": ^14.2.8
+    "@angular/router": ~14.2.8
+    "@types/node": ^16.11.46
+    ng-packagr: ^14.2.2
+    primeflex: ^3.2.1
+    primeicons: ^6.0.1
+    primeng: ^14.1.2
+    rxjs: ~7.5.7
+    tslib: ^2.4.1
+    typescript: ^4.8.4
+    zone.js: ^0.11.8
   languageName: unknown
   linkType: soft
 
@@ -9181,6 +9323,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lockfile@npm:^1.0.4":
+  version: 1.0.4
+  resolution: "lockfile@npm:1.0.4"
+  dependencies:
+    signal-exit: ^3.0.2
+  checksum: 8de35aace8acbe883cbca3cc3959e88904d57c79dccd4afffc64aea8f9cf7b4c63598d08b8add66fbf381f8fb3ce4fd4c518cd231c797c266b6c790eb7b33abc
+  languageName: node
+  linkType: hard
+
 "lodash.debounce@npm:^4.0.8":
   version: 4.0.8
   resolution: "lodash.debounce@npm:4.0.8"
@@ -9216,7 +9367,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash@npm:^4.17.10, lodash@npm:^4.17.15, lodash@npm:^4.17.21":
+"lodash@npm:^4.0.1, lodash@npm:^4.17.10, lodash@npm:^4.17.14, lodash@npm:^4.17.15, lodash@npm:^4.17.21":
   version: 4.17.21
   resolution: "lodash@npm:4.17.21"
   checksum: eb835a2e51d381e561e508ce932ea50a8e5a68f4ebdd771ea240d3048244a8d13658acbd502cd4829768c56f2e16bdd4340b9ea141297d472517b83868e677f7
@@ -9599,6 +9750,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"minimist@npm:^1.2.6":
+  version: 1.2.8
+  resolution: "minimist@npm:1.2.8"
+  checksum: 75a6d645fb122dad29c06a7597bddea977258957ed88d7a6df59b5cd3fe4a527e253e9bbf2e783e4b73657f9098b96a5fe96ab8a113655d4109108577ecf85b0
+  languageName: node
+  linkType: hard
+
 "minimist@npm:^1.2.7":
   version: 1.2.7
   resolution: "minimist@npm:1.2.7"
@@ -9707,6 +9865,17 @@ __metadata:
     minipass: ^3.0.0
     yallist: ^4.0.0
   checksum: f1fdeac0b07cf8f30fcf12f4b586795b97be856edea22b5e9072707be51fc95d41487faec3f265b42973a304fe3a64acd91a44a3826a963e37b37bafde0212c3
+  languageName: node
+  linkType: hard
+
+"mkdirp@npm:^0.5.1":
+  version: 0.5.6
+  resolution: "mkdirp@npm:0.5.6"
+  dependencies:
+    minimist: ^1.2.6
+  bin:
+    mkdirp: bin/cmd.js
+  checksum: 0c91b721bb12c3f9af4b77ebf73604baf350e64d80df91754dc509491ae93bf238581e59c7188360cec7cb62fc4100959245a42cfe01834efedc5e9d068376c2
   languageName: node
   linkType: hard
 
@@ -11858,6 +12027,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"rimraf@npm:^2.5.1":
+  version: 2.7.1
+  resolution: "rimraf@npm:2.7.1"
+  dependencies:
+    glob: ^7.1.3
+  bin:
+    rimraf: ./bin.js
+  checksum: cdc7f6eacb17927f2a075117a823e1c5951792c6498ebcce81ca8203454a811d4cf8900314154d3259bb8f0b42ab17f67396a8694a54cae3283326e57ad250cd
+  languageName: node
+  linkType: hard
+
 "rimraf@npm:^3.0.0, rimraf@npm:^3.0.2":
   version: 3.0.2
   resolution: "rimraf@npm:3.0.2"
@@ -13645,6 +13825,17 @@ __metadata:
   version: 1.0.2
   resolution: "wrappy@npm:1.0.2"
   checksum: 159da4805f7e84a3d003d8841557196034155008f817172d4e986bd591f74aa82aa7db55929a54222309e01079a65a92a9e6414da5a6aa4b01ee44a511ac3ee5
+  languageName: node
+  linkType: hard
+
+"write-file-atomic@npm:^2.4.2":
+  version: 2.4.3
+  resolution: "write-file-atomic@npm:2.4.3"
+  dependencies:
+    graceful-fs: ^4.1.11
+    imurmurhash: ^0.1.4
+    signal-exit: ^3.0.2
+  checksum: 2db81f92ae974fd87ab4a5e7932feacaca626679a7c98fcc73ad8fcea5a1950eab32fa831f79e9391ac99b562ca091ad49be37a79045bd65f595efbb8f4596ae
   languageName: node
   linkType: hard
 
