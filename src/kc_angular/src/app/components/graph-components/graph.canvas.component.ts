@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Rob Royce
+ * Copyright (c) 2022-2023 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -206,6 +206,7 @@ export class GraphCanvasComponent implements OnInit, OnChanges, OnDestroy {
     ).subscribe()
 
     this._boxSelected.asObservable().pipe(
+      skip(1),
       takeUntil(this.cleanUp),
       bufferTime(250),
       filter(s => s.length > 0),
