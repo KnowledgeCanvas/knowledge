@@ -1,15 +1,14 @@
 {
   "name": "knowledge-canvas",
   "version": "0.7.0",
-  "description": "Knowledge is an application for students, researchers, and life-long learners to manage their digital lives.",
+  "description": "Knowledge is a tool for saving, searching, accessing, and exploring all of your favorite websites, documents and files.",
   "author": "Rob Royce <robertris2@gmail.com> (https://robroyce.dev)",
   "license": "Apache-2.0",
   "private": true,
   "postinstall": "electron-builder install-app-deps",
   "workspaces": [
     "src/kc_electron",
-    "src/kc_angular",
-    "src/kc_extensions"
+    "src/kc_angular"
   ],
   "repository": {
     "type": "git",
