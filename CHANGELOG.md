@@ -4,62 +4,17 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### [0.7.1](https://github.com/KnowledgeCanvas/knowledge/compare/v0.6.2...v0.7.1) (2023-03-23)
 
-
-### Features
-
-* added the ability to open multiple sources at the same time through the context menu. ([dba6268](https://github.com/KnowledgeCanvas/knowledge/commit/dba62685d5ef01e9b8b001d026330166ababd98d))
-* added the ability to preview local mp4 files. ([e4e5117](https://github.com/KnowledgeCanvas/knowledge/commit/e4e5117b5e743807e4e12c589f119d27ae8881bd))
-* **Due Dates:** distinguish past due from future due dates. ([26d2ef2](https://github.com/KnowledgeCanvas/knowledge/commit/26d2ef28253fa4daab5922903221cee8ed8b7e7c))
-* **Examples:** added a new set of curated examples, this time including topics. ([ccb0bc5](https://github.com/KnowledgeCanvas/knowledge/commit/ccb0bc5ed0318b589a56e59f70f402949aab47cf))
-* **Graph:** added a bunch of new Graph features, including single/double click behavior, better and more efficient layout sequencing, and a new control panel. ([cf3dc13](https://github.com/KnowledgeCanvas/knowledge/commit/cf3dc130a337a0e9233b305b28bf959d40bb38d7))
-* **Graph:** added graph settings and new controls. ([cfdc9c1](https://github.com/KnowledgeCanvas/knowledge/commit/cfdc9c1555207581a37a87f3101ca7d14b5bd86d))
-* **Graph:** added new features to the graph, including enhanced search, save to png, and more. ([ab27e2c](https://github.com/KnowledgeCanvas/knowledge/commit/ab27e2c47706921515cd5f627499e1cb154e5fd5))
-* **Graph:** added new features to the graph, including enhanced search, save to png, and more. ([57d4f33](https://github.com/KnowledgeCanvas/knowledge/commit/57d4f336b02e9c427e78634dc26b3c8b428945bf))
-* **Graph:** integrated knowledge graph into main application. ([57a723c](https://github.com/KnowledgeCanvas/knowledge/commit/57a723cbb3c9c7888fa970fa9ed30b54097f2527))
-* **Graph:** project node size and color are now based on depth in the tree (from root). ([eb43b65](https://github.com/KnowledgeCanvas/knowledge/commit/eb43b65459ef430c07802019d49af4db129c65b2))
-* **Graph:** set "hierarchical" as default layout. ([0b060e1](https://github.com/KnowledgeCanvas/knowledge/commit/0b060e163fb601ecde6f7dee3cc856e23758e840))
-* **Graph:** set size of nodes based on their degree (number of neighboring nodes). ([8778a52](https://github.com/KnowledgeCanvas/knowledge/commit/8778a524c8416bfde6c81b95d94860d095d6d048))
-* **Inbox:** add hotkeys for navigating through sources. ([75a815e](https://github.com/KnowledgeCanvas/knowledge/commit/75a815e68071c9cd0f3c1dba7d668c813bd55bd1))
-* **Inbox:** add the ability to "Import All" and "Remove All". ([d890b7a](https://github.com/KnowledgeCanvas/knowledge/commit/d890b7abfa47465796b991e5d4716ac8ffd092a4))
-* **Projects:** add graph to Projects page. ([9d710e7](https://github.com/KnowledgeCanvas/knowledge/commit/9d710e744a33ccdc56f130725c06f97d90a1b200))
-* **Projects:** added listener to automatically open/close project tree on window resize. ([377b976](https://github.com/KnowledgeCanvas/knowledge/commit/377b976887f94c953ad8fa464fa8baa4183f57a0))
-* **Projects:** Show top 20 source topics in Projects view. ([97a7000](https://github.com/KnowledgeCanvas/knowledge/commit/97a70009a60da9e4aa2774aa57af638ec24a5e2f))
-* **Projects:** the Project tree is now integrated into the main body of the app (toggleable). ([c20d552](https://github.com/KnowledgeCanvas/knowledge/commit/c20d552239626c4f0f9bdfd407cce4f846db56e1))
-* **Settings:** add template for standardizing various settings controls. ([9f5d52e](https://github.com/KnowledgeCanvas/knowledge/commit/9f5d52e4bba0fc9cf11c4e2c13b687b6452de8eb))
-* **Settings:** add the ability to enable or disable animations across the entire app. ([f8c03f2](https://github.com/KnowledgeCanvas/knowledge/commit/f8c03f2a961c9d541a14c8346b1e5608edd1a880))
-* **Settings:** add various settings and updated styling in the settings menu. ([080442a](https://github.com/KnowledgeCanvas/knowledge/commit/080442a3de28db9a6ecd5915b956f4a5a1e74e06))
-* standardize right-click menu for Projects throughout the app. ([1926f62](https://github.com/KnowledgeCanvas/knowledge/commit/1926f6211e562281b02c0ef8b5b59d03d4ef5da6))
-* update primeicons to version 6.0.1. ([58f79df](https://github.com/KnowledgeCanvas/knowledge/commit/58f79df738454bdc8c788fe7b9cbdedee63ab815))
-
-
-### Bug Fixes
-
-* bug [#93](https://github.com/KnowledgeCanvas/knowledge/issues/93) where an extra node is added when the graph is first constructed. ([2671b9c](https://github.com/KnowledgeCanvas/knowledge/commit/2671b9cba27b78ef734bc4ab20557bdf94812b24))
-* explicitly destroy graph container in component destructor. ([25e1362](https://github.com/KnowledgeCanvas/knowledge/commit/25e136267ccc85fd3989a2fcc915dcc0490bc0f9))
-* fixed an issue where newly added sources did not show up in the search list until the app was restarted. ([95de130](https://github.com/KnowledgeCanvas/knowledge/commit/95de13048ee7e85db3f2c3bb3270d6955c022446))
-* graph not fitting to view on first navigation. ([22073b4](https://github.com/KnowledgeCanvas/knowledge/commit/22073b42c5e6e16c8e43cba4f214c1d13bd10aed))
-* links can now be imported even if they are uncreachable. ([725f91b](https://github.com/KnowledgeCanvas/knowledge/commit/725f91b085bdf9f95479e477b1458f09dae64e9c))
-* modifying nodes in the graph now updates them appropriately. ([fef1512](https://github.com/KnowledgeCanvas/knowledge/commit/fef1512df94d86073de1f52a6c4a20e7cbeb5c88))
-* project detail components not collapsing and expanding correctly. ([806d7b6](https://github.com/KnowledgeCanvas/knowledge/commit/806d7b6cc3655787505ef862f3520aa5a5b248a5))
-* renaming projects now works for 3-letter project names. ([50e431a](https://github.com/KnowledgeCanvas/knowledge/commit/50e431a5712e7523d254b192636273088e5c9721))
-* replace minimatch 3.0.4 with 3.0.5 to resolve ReDoS vulnerability ([fce5e48](https://github.com/KnowledgeCanvas/knowledge/commit/fce5e4841e7e946230ae47e2a7bbf31de7f6c6de))
-* set angular file size limits higher to deal with cytoscape dependency import. ([280ddc7](https://github.com/KnowledgeCanvas/knowledge/commit/280ddc769b449d1a3559756aa658333738503f08))
-* set correct import method when importing examples. ([beff40d](https://github.com/KnowledgeCanvas/knowledge/commit/beff40d27a450c3ebeb5b896f1f9c26234215819))
-* various dependabot alerts of moderate to critical severity. ([b02358c](https://github.com/KnowledgeCanvas/knowledge/commit/b02358ceffa6193491647f8340f0e3361988e9af))
-
-### 0.7.1 (2023-03-23)
-
 ### Features
 
 * **Due Dates:** add indicators below the icons of sources that have due dates. ([26d2ef2](https://github.com/KnowledgeCanvas/knowledge/commit/26d2ef28253fa4daab5922903221cee8ed8b7e7c))
 
-
 ### Bug Fixes
 
 * bug [#93](https://github.com/KnowledgeCanvas/knowledge/issues/93) where an extra node is added when the graph is first constructed. ([2671b9c](https://github.com/KnowledgeCanvas/knowledge/commit/2671b9cba27b78ef734bc4ab20557bdf94812b24))
 * links can now be imported even if they are uncreachable. ([725f91b](https://github.com/KnowledgeCanvas/knowledge/commit/725f91b085bdf9f95479e477b1458f09dae64e9c))
 * modifying nodes in the graph now updates them appropriately. ([fef1512](https://github.com/KnowledgeCanvas/knowledge/commit/fef1512df94d86073de1f52a6c4a20e7cbeb5c88))
 * renaming projects now works for 3-letter project names. ([50e431a](https://github.com/KnowledgeCanvas/knowledge/commit/50e431a5712e7523d254b192636273088e5c9721))
+
 
 ## [0.7.0](https://github.com/KnowledgeCanvas/knowledge/compare/v0.6.2...v0.7.0) (2022-12-10)
 
