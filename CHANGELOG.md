@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 0.7.1 (2023-03-23)
+
+### Features
+
+* **Due Dates:** add indicators below the icons of sources that have due dates. ([26d2ef2](https://github.com/KnowledgeCanvas/knowledge/commit/26d2ef28253fa4daab5922903221cee8ed8b7e7c))
+
+
+### Bug Fixes
+
+* bug [#93](https://github.com/KnowledgeCanvas/knowledge/issues/93) where an extra node is added when the graph is first constructed. ([2671b9c](https://github.com/KnowledgeCanvas/knowledge/commit/2671b9cba27b78ef734bc4ab20557bdf94812b24))
+* links can now be imported even if they are uncreachable. ([725f91b](https://github.com/KnowledgeCanvas/knowledge/commit/725f91b085bdf9f95479e477b1458f09dae64e9c))
+* modifying nodes in the graph now updates them appropriately. ([fef1512](https://github.com/KnowledgeCanvas/knowledge/commit/fef1512df94d86073de1f52a6c4a20e7cbeb5c88))
+* renaming projects now works for 3-letter project names. ([50e431a](https://github.com/KnowledgeCanvas/knowledge/commit/50e431a5712e7523d254b192636273088e5c9721))
+
 ## [0.7.0](https://github.com/KnowledgeCanvas/knowledge/compare/v0.6.2...v0.7.0) (2022-12-10)
 
 
