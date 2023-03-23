@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Rob Royce
+ * Copyright (c) 2022-2023 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import {DragAndDropService} from "../../services/ingest-services/drag-and-drop.s
 import {FaviconService} from "../../services/ingest-services/favicon.service";
 import {HttpClient} from "@angular/common/http";
 import {DomSanitizer} from "@angular/platform-browser";
+import {ConfirmationService} from "primeng/api";
 
 @Component({
   selector: 'app-create',
@@ -94,6 +95,7 @@ export class CreateComponent implements OnInit {
   files: any[] = [];
 
   constructor(private dialog: DialogService,
+              private confirm: ConfirmationService,
               private factory: KsFactoryService,
               private ingest: IngestService,
               private notifications: NotificationsService,
@@ -146,17 +148,63 @@ export class CreateComponent implements OnInit {
 
       this.factory.many(req).then((ksList) => {
         if (!ksList || !ksList.length) {
-          this.notifications.error('Source Import', 'Unable to import URL', value);
+          this.notifications.error('Source Import', `Unable to import URL`, value);
           return;
         }
 
         this.ingest.enqueue(ksList);
 
-      }).catch((_) => {
-        this.notifications.error('Source Import', 'Unable to import URL', value);
+      }).catch((error) => {
+        this.notifications.error('Source Import', `Unable to import URL`, `Source Factory: ${value}`);
       });
-    }, (_) => {
-      this.notifications.error('Source Import', 'Invalid URL', value);
+    }, (error) => {
+      this.notifications.error('Source Import', `Invalid URL`, `HTTP Client: ${value}`);
+      console.log(error)
+
+      // If the link cannot be reached, ask the user if they still want to import it anyway
+      this.confirm.confirm({
+        header: "Link Unreachable",
+        message: `
+        <div>
+            <div style="max-width: 12rem;">
+                ${url.href} is unreachable.
+            </div>
+            <br>
+            <div style="max-width: 12rem;">
+                Sometimes this happens when the website is behind a paywall, requires authentication, or expects certain cookies.
+            </div>
+            <br>
+            <div>
+                  You can still add it to Knowledge and we will attempt to extract information from it later on.
+            </div>
+            <br>
+            <div>
+                  Do you want to import it anyway?
+            </div>
+        </div>
+        `,
+        icon: 'pi pi-warn',
+        acceptLabel: 'Import',
+        rejectLabel: 'Cancel',
+        accept: () => {
+          let req: KnowledgeSourceFactoryRequest = {
+            ingestType: 'website',
+            links: [url]
+          }
+
+          this.factory.many(req).then((ksList) => {
+            if (!ksList || !ksList.length) {
+              this.notifications.error('Source Import', `Unable to import URL`, value);
+              return;
+            }
+
+            this.ingest.enqueue(ksList);
+
+          }).catch((error) => {
+            this.notifications.error('Source Import', `Unable to import URL`, `Source Factory: ${value}`);
+          });
+        }
+      });
       return;
     });
 
