@@ -262,21 +262,55 @@ export class GraphCanvasComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges) {
+    // If there is no data, we do not need to do anything.
     if (!changes.data) {
       return;
     }
 
-    if (changes.data.firstChange || !this.cy) {
+    // If there is no cytoscape instance, or if the previous data was empty, we need to construct the graph from scratch.
+    if (changes.data.firstChange || !this.cy || changes.data.previousValue.length === 0) {
       this.createCytoscape();
-    } else if (this.cy) {
-      this.cy?.destroy();
-      this.createCytoscape();
-    }
-
-    if (this.cy) {
       this.add();
       this.onRun();
+      return;
     }
+
+    // If we get here, we are updating the graph and the update will depend on delta between previous and current data.
+    const prevData = changes.data.previousValue;
+    const currData = changes.data.currentValue;
+
+    // First, determine if this is the same root project as before. If it is not, rebuild the graph.
+    const prevRoot = prevData.find((p: any) => p.data.type === 'root');
+    const currRoot = currData.find((p: any) => p.data.type === 'root');
+    if (prevRoot.data.id !== currRoot.data.id) {
+      this.cy?.destroy();
+      this.createCytoscape();
+      this.add();
+      this.onRun();
+      return;
+    }
+
+    // If the root node is the same, check if any of the other nodes have changed.
+    // The only changes we care about are if the label has changed or if the node is no longer in the graph.
+    // Any other changes will result in the same graph, so we can safely ignore them.
+    prevData.forEach((p: any) => {
+      const curr = currData.find((c: any) => c.data.id === p.data.id);
+
+      // If the node is not in the current data, remove it from the graph.
+      if (!curr) {
+        this.cy?.remove(`node[id="${p.data.id}"]`);
+        return;
+      }
+
+      // If the node is the same, but the label has changed, update the label.
+      if (p.data.label !== curr.data.label) {
+        this.cy?.elements(`node[id="${p.data.id}"]`).data(curr.data);
+        return;
+      }
+    });
+
+    // Clear out the search sources
+    this._searchSources.next([]);
   }
 
   ngOnDestroy() {
