@@ -291,23 +291,43 @@ export class GraphCanvasComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     // If the root node is the same, check if any of the other nodes have changed.
-    // The only changes we care about are if the label has changed or if the node is no longer in the graph.
+    // The only changes we care about are if the label has changed, if the node is no longer in the graph, or if the node has been moved in the graph.
     // Any other changes will result in the same graph, so we can safely ignore them.
     prevData.forEach((p: any) => {
-      const curr = currData.find((c: any) => c.data.id === p.data.id);
+      // Find all nodes in currData that match the id of this node (p) in prevData
+      const currMatches = currData.filter((c: any) => c.data.id === p.data.id);
 
-      // If the node is not in the current data, remove it from the graph.
-      if (!curr) {
-        this.cy?.remove(`node[id="${p.data.id}"]`);
+      // If there are no matches, remove this element from the graph.
+      if (currMatches.length === 0) {
+        if (p.group === 'nodes') {
+          this.cy?.remove(`node[id="${p.data.id}"]`);
+        } else {
+          this.cy?.remove(`edge[id="${p.data.id}"]`);
+        }
         return;
       }
 
-      // If the node is the same, but the label has changed, update the label.
-      if (p.data.label !== curr.data.label) {
-        this.cy?.elements(`node[id="${p.data.id}"]`).data(curr.data);
+      // If there is only one match, check the label and update if necessary.
+      if (currMatches.length === 1 && currMatches[0].data.label !== p.data.label) {
+        this.cy?.elements(`node[id="${p.data.id}"]`).data(currMatches[0].data);
         return;
       }
     });
+
+    // Finally, we need to add any new nodes to the graph.
+    let added: any[] = [];
+    currData.forEach((c: any) => {
+      const prev = prevData.find((p: any) => p.data.id === c.data.id);
+      // If the node is not in the previous data, add it to the graph.
+      if (!prev) {
+        added.push(c);
+      }
+    })
+
+    if (added.length > 0) {
+      this.add(added);
+      this.onRun()
+    }
 
     // Clear out the search sources
     this._searchSources.next([]);
