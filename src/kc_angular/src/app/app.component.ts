@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Rob Royce
+ * Copyright (c) 2022-2023 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -423,6 +423,7 @@ export class AppComponent implements OnInit, OnDestroy {
       {label: 'Table', routerLink: ['app', 'table', this.projectId], icon: 'pi pi-table'},
       {label: 'Grid', routerLink: ['app', 'grid', this.projectId], icon: 'pi pi-th-large'},
       {label: 'Calendar', routerLink: ['app', 'calendar', this.projectId], icon: 'pi pi-calendar'},
+      {label: 'Chat', routerLink: ['app', 'chat', this.projectId], icon: 'pi pi-comments'},
     ] : [
       {label: 'Inbox', routerLink: ['app', 'inbox', 'undefined'], icon: 'pi pi-inbox'}
     ];

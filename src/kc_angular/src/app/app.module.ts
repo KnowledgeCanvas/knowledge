@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Rob Royce
+ * Copyright (c) 2022-2023 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -143,10 +143,12 @@ import {SwitchLabelPipe} from './pipes/switch-label.pipe';
 import {ProjectSelectorComponent} from './components/project-components/project-selector.component';
 import {GraphSearchComponent} from './components/graph-components/graph-search.component';
 import {GraphStatusComponent} from "./components/graph-components/graph.status";
+import {ChatComponent} from "./components/chat.component";
 
 @NgModule({
   declarations: [
     AppComponent,
+    ChatComponent,
     FileViewComponent,
     ViewportHeaderComponent,
     BrowserViewComponent,
