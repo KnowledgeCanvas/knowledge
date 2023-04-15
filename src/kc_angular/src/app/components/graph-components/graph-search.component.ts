@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Rob Royce
+ * Copyright (c) 2022-2023 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -164,9 +164,14 @@ export class GraphSearchComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   ngOnInit(): void {
-    const minimal = JSON.parse(localStorage.getItem('graph-search-minimal') ?? '');
-    this.layout = this.layoutOptions.find(l => l.minimal == minimal) ?? this.layoutOptions[0];
-    this.onLayoutChange();
+    try {
+      const minimal = JSON.parse(localStorage.getItem('graph-search-minimal') ?? '') ?? false;
+      this.layout = this.layoutOptions.find(l => l.minimal == minimal) ?? this.layoutOptions[0];
+      this.onLayoutChange();
+    } catch (e) {
+      this.layout = this.layoutOptions.find(l => l.minimal) ?? this.layoutOptions[0];
+      this.onLayoutChange();
+    }
   }
 
   ngOnChanges(changes: SimpleChanges) {

@@ -1,17 +1,17 @@
-/**
- * Copyright 2022 Rob Royce
+/*
+ * Copyright (c) 2023 Rob Royce
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
  */
 import {Component, OnInit} from '@angular/core';
 import {DynamicDialogConfig, DynamicDialogRef} from "primeng/dynamicdialog";
@@ -21,7 +21,7 @@ import {NotificationsService} from "../../services/user-services/notifications.s
 @Component({
   selector: 'app-details',
   template: `
-    <div class="w-full flex-row-center-between pb-3 pt-3 sticky">
+    <div class="w-full flex-row-center-between my-2 px-2 sticky">
       <div class="flex-row-center-start">
         <app-ks-icon [ks]="ks" class="pr-3"></app-ks-icon>
         <app-project-breadcrumb [disabled]="true"

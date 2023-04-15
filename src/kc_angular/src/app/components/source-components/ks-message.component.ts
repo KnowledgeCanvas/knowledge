@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Rob Royce
+ * Copyright (c) 2022-2023 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ import {KnowledgeSource} from "../../models/knowledge.source.model";
                class="ks-message-flag pi px-2 hover:text-primary"></div>
         </div>
       </div>
-      <div class="flex-row-center-between w-full text-500">
+      <div *ngIf="showFooter" class="flex-row-center-between w-full text-500">
         <div *ngIf="!label else labelPlaceholder" class="text-left">{{ks.importMethod | importMethod}}</div>
         <ng-template #labelPlaceholder>{{label}}</ng-template>
         <div *ngIf="showDate" class="text-right">{{ks.dateCreated | date:'MM/dd/yy hh:mm a'}}</div>
@@ -76,7 +76,7 @@ import {KnowledgeSource} from "../../models/knowledge.source.model";
         justify-content: space-between;
 
         .ks-message-title {
-          min-width: 10rem;
+          //min-width: 10rem;
           max-width: 40rem;
           max-height: 40px;
           overflow-wrap: anywhere;
@@ -94,6 +94,8 @@ export class KsMessageComponent implements OnInit {
   @Input() active?: boolean = false;
 
   @Input() label?: string;
+
+  @Input() showFooter: boolean = true;
 
   @Input() showDate: boolean = true;
 
