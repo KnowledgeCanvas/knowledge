@@ -176,6 +176,10 @@ type SidebarItem = {
         border-radius: 50%;
       }
 
+      .macos-window-button:hover {
+        box-shadow: inset 0 0 3px 0 black;
+      }
+
       .window-button {
         height: 32px;
         width: 45px;
@@ -202,34 +206,79 @@ type SidebarItem = {
   animations: [fadeInAndOut, flyInOut, fadeIn]
 })
 export class AppComponent implements OnInit, OnDestroy {
+  /**
+   * The current project id
+   */
   projectId: string = '';
 
+  /**
+   * Whether the project tree is visible
+   */
   projectTreeVisible: boolean = true;
 
+  /**
+   * Whether the app is ready to show the main view
+   */
   readyToShow: boolean = false;
 
+  /**
+   * The number of items in the inbox (used for the badge)
+   */
   inboxBadge: number = 0;
 
+  /**
+   * The reference to the source info dialog
+   */
   sourceInfoDialog?: DynamicDialogRef;
 
+  /**
+   * The reference to the project info dialog
+   */
   projectInfoDialog?: DynamicDialogRef;
 
+  /**
+   * A list of sidebar items to display, and their associated router links
+   */
   sidebarItems: SidebarItem[] = [
     {label: 'Inbox', routerLink: ['app', 'inbox', 'undefined'], icon: 'pi pi-inbox'},
   ];
 
+  /**
+   * The currently selected view
+   */
   selectedView: string = this.sidebarItems[0].label;
 
+  /**
+   * The host OS (windows, macos, linux)
+   */
   os: string = '';
 
+  /**
+   * The route animation data, used to determine which animation to use when navigating between views
+   */
   routeAnimationData: string = 'Inbox';
 
+  /**
+   * Whether to use animations in the app or not
+   */
   animate: boolean = true;
 
+  /**
+   * The subject used to clean up subscriptions
+   * @private
+   */
   private cleanUp = new Subject();
 
+  /**
+   * The subject used to emit window resize events
+   * @private
+   */
   private _windowResize = new BehaviorSubject({});
 
+
+  /**
+   * The application component constructor - injects all the services and sets up the subscriptions
+   */
   constructor(private settings: SettingsService,
               private notifications: NotificationsService,
               private startup: StartupService,
@@ -245,7 +294,10 @@ export class AppComponent implements OnInit, OnDestroy {
               private router: Router,
               private contexts: ChildrenOutletContexts,
               private themes: ThemeService,) {
-    // Acquire system settings, set window controls based on OS
+    /**
+     * Wait for system settings to be loaded, then check if the OS is Windows or not
+     * If it is Windows, then set the OS to 'windows' so that the correct icons are shown
+     */
     settings.all.pipe(
       take(2),
       map(s => s.system),
@@ -256,7 +308,9 @@ export class AppComponent implements OnInit, OnDestroy {
       })
     ).subscribe();
 
-    // Acquire user settings, start tutorial if necessary
+    /**
+     * Wait for user settings to be loaded, then check if the first run tutorial should be shown
+     */
     settings.all.pipe(
       take(2),
       map(s => s.user),
@@ -277,6 +331,9 @@ export class AppComponent implements OnInit, OnDestroy {
       })
     ).subscribe()
 
+    /**
+     * Listen for animation settings changes and update state accordingly
+     */
     settings.display.pipe(
       takeUntil(this.cleanUp),
       map(d => d.animations),
@@ -285,6 +342,9 @@ export class AppComponent implements OnInit, OnDestroy {
       })
     ).subscribe()
 
+    /**
+     * Listen for route changes and update the sidebar accordingly
+     */
     router.events.pipe(
       takeUntil(this.cleanUp),
       tap((events) => {
@@ -327,6 +387,9 @@ export class AppComponent implements OnInit, OnDestroy {
       })
     ).subscribe();
 
+    /**
+     * Listen for Source Info Dialog events, open/close the dialog as necessary
+     */
     this.command.ksDetailEvent.pipe(
       takeUntil(this.cleanUp),
       tap((ks) => {
@@ -337,12 +400,19 @@ export class AppComponent implements OnInit, OnDestroy {
         if (ks && !this.sourceInfoDialog) {
           this.sourceInfoDialog = this.dialog.open(KsDetailsComponent, {
             data: {ks: ks},
-            width: 'min(90vw, 128rem)',
-            height: 'min(90vh, 128rem)',
+            width: '100vw !important',
+            height: '100vh !important',
+            styleClass: 'min-h-screen',
+            maximizable: true,
             showHeader: false,
-            contentStyle: {'border-radius': '10px'},
             closeOnEscape: true
           });
+
+          setTimeout(() => {
+            if (this.sourceInfoDialog) {
+              this.sourceInfoDialog.maximize({});
+            }
+          })
 
           this.sourceInfoDialog.onClose.pipe(tap(() => {
             this.sourceInfoDialog = undefined;
@@ -351,6 +421,9 @@ export class AppComponent implements OnInit, OnDestroy {
       })
     ).subscribe();
 
+    /**
+     * Listen for Project Info Dialog events, open/close the dialog as necessary
+     */
     pCommand.detailEvent.pipe(
       takeUntil(this.cleanUp),
       tap((project) => {
@@ -372,12 +445,18 @@ export class AppComponent implements OnInit, OnDestroy {
       })
     ).subscribe()
 
+    /**
+     * Use the ingest queue to update the inbox badge on the sidebar
+     */
     ingest.queue.pipe(
       tap((upNext) => {
         this.inboxBadge = upNext.length;
       })
     ).subscribe()
 
+    /**
+     * When the project changes, update the sidebar and the project id
+     */
     projects.currentProject.pipe(
       takeUntil(this.cleanUp),
       tap((project) => {
@@ -386,13 +465,18 @@ export class AppComponent implements OnInit, OnDestroy {
       })
     ).subscribe();
 
-    // When the app starts, we want to ensure the theme has been completely loaded
+    /**
+     * When the app starts, we want to ensure the theme has been completely loaded
+     */
     themes.setLocal().then((_: any) => {
       setTimeout(() => {
         this.readyToShow = true;
       }, Math.floor(Math.random() * 1500));
     });
 
+    /**
+     * Listen for window resize events and update the sidebar visibility accordingly
+     */
     this._windowResize.asObservable().pipe(
       takeUntil(this.cleanUp),
       throttleTime(50),
@@ -405,6 +489,9 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnInit() {
   }
 
+  /**
+   * When the component is destroyed, unsubscribe from all observables
+   */
   ngOnDestroy() {
     this.cleanUp.next({});
     this.cleanUp.complete();
@@ -429,22 +516,42 @@ export class AppComponent implements OnInit, OnDestroy {
     ];
   }
 
+  /**
+   * A convenience method to open the settings dialog
+   */
   showSettings() {
     this.settings.show();
   }
 
+  /**
+   * When the user clicks the close button, close the window
+   * @param _ - The mouse event (not used)
+   */
   close(_: MouseEvent) {
     window.close()
   }
 
+  /**
+   * When the user clicks the minimize button, send a message to the main process to minimize the window
+   * @param _ - The mouse event (not used)
+   */
   minimize(_: MouseEvent) {
     window.api.send('A2E:Window:Minimize');
   }
 
+  /**
+   * When the user clicks the maximize button, send a message to the main process to maximize the window
+   * @param _ - The mouse event (not used)
+   */
   maximize(_: MouseEvent) {
     window.api.send('A2E:Window:Maximize');
   }
 
+  /**
+   * When the user clicks on a sidebar item, update the selected view and run the command if it exists
+   * @param $event
+   * @param item
+   */
   onSidebarClick($event: MouseEvent, item: SidebarItem) {
     if ($event && item?.label) {
       this.selectedView = item.label === 'Settings' ? this.selectedView : item.label;
@@ -454,11 +561,17 @@ export class AppComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * When the window resizes, send a message to the window resize observable
+   */
   @HostListener('window:resize', ["$event"])
   windowResize(_: any) {
     this._windowResize.next({});
   }
 
+  /**
+   * When the user presses the refresh key, reload the page
+   */
   @HostListener('document:keydown.Control.r', ["$event"])
   @HostListener('document:keydown.f5', ["$event"])
   @HostListener('document:keydown.meta.r', ["$event"])
@@ -467,30 +580,37 @@ export class AppComponent implements OnInit, OnDestroy {
       this.notifications.warn('App', 'Invalid Keystroke', 'Refresh');
       return;
     }
-
     try {
       event.preventDefault();
     } catch (e) {
       this.notifications.error('App', 'Unexpected Event', 'Host Listener provided an invalid event for refresh command.');
     }
-
     if (!environment.production) {
       location.reload();
     }
   }
 
+  /**
+   * When the user presses the open projects key, toggle the project tree
+   */
   @HostListener('document:keydown.Control.p')
   @HostListener('document:keydown.meta.p')
   keyPressOpenProjects() {
     this.projectTreeVisible = !this.projectTreeVisible;
   }
 
+  /**
+   * When the user presses the view 1 key, go to the inbox
+   */
   @HostListener('document:keydown.Control.1')
   @HostListener('document:keydown.meta.1')
   goInbox() {
     this.router.navigate(['app', 'inbox', this.projectId]);
   }
 
+  /**
+   * When the user presses the view 2 key, go to the projects view
+   */
   @HostListener('document:keydown.Control.2')
   @HostListener('document:keydown.meta.2')
   goProjects() {
@@ -499,6 +619,9 @@ export class AppComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * When the user presses the view 3 key, go to the graph view
+   */
   @HostListener('document:keydown.Control.3')
   @HostListener('document:keydown.meta.3')
   goGraph() {
@@ -507,6 +630,9 @@ export class AppComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * When the user presses the view 4 key, go to the table view
+   */
   @HostListener('document:keydown.Control.4')
   @HostListener('document:keydown.meta.4')
   goTable() {
@@ -515,6 +641,9 @@ export class AppComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * When the user presses the view 5 key, go to the grid view
+   */
   @HostListener('document:keydown.Control.5')
   @HostListener('document:keydown.meta.5')
   goGrid() {
@@ -523,6 +652,9 @@ export class AppComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * When the user presses the view 6 key, go to the calendar view
+   */
   @HostListener('document:keydown.Control.6')
   @HostListener('document:keydown.meta.6')
   goCalendar() {
@@ -531,16 +663,27 @@ export class AppComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * When the user presses settings menu key, show the seettings dialog
+   */
   @HostListener('document:keydown.Control.,')
   @HostListener('document:keydown.meta.,')
   goSettings() {
     this.showSettings();
   }
 
+  /**
+   * Use prevent default to allow drag and drop to work properly
+   * @param evt
+   */
   @HostListener("dragover", ["$event"]) onDragOver(evt: any) {
     evt.preventDefault()
   }
 
+  /**
+   * Handle the drop event by parsing the drag event and then importing any resultant sources
+   * @param event
+   */
   @HostListener('drop', ['$event']) handleDrop(event: DragEvent) {
     // Drop listener for importing files and links
     this.dnd.parseDragEvent(event).then((ksReq) => {

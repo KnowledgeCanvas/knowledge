@@ -24,7 +24,7 @@ import {SettingsService} from "../../services/ipc-services/settings.service";
   template: `
     <div class="w-full h-full relative">
       <img [src]="ks && ks.icon ? ks.icon : iconUrl"
-           class="knowledge-source-icon bg-auto"
+           class="knowledge-source-icon bg-white"
            width="24"
            [style.cursor]="ks && ks.ingestType && ks.ingestType === 'file' ? 'grab' : 'pointer'"
            [class.shadow-3]="showShadow"
@@ -71,7 +71,7 @@ import {SettingsService} from "../../services/ipc-services/settings.service";
   ]
 })
 export class KsIconComponent implements OnInit {
-  @Input() ks?: Partial<KnowledgeSource>;
+  @Input() ks?: Partial<KnowledgeSource> | null;
 
   /**
    * Enable or disable the ability to open a source by clicking its icon.
@@ -105,8 +105,10 @@ export class KsIconComponent implements OnInit {
     }
   }
 
-  onDragStart($event: DragEvent, ks?: Partial<KnowledgeSource>) {
-    this.dnd.dragOut($event, ks);
+  onDragStart($event: DragEvent, ks?: Partial<KnowledgeSource> | null) {
+    if (ks !== null) {
+      this.dnd.dragOut($event, ks);
+    }
   }
 
   onClick() {

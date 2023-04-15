@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2023 Rob Royce
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+
 import {Component, OnInit} from '@angular/core';
 import {DynamicDialogRef} from "primeng/dynamicdialog";
 
@@ -14,7 +30,7 @@ type TutorialState = {
 @Component({
   selector: 'app-tutorial',
   template: `
-    <div class="w-full h-full flex-col-center-between select-none">
+    <div class="w-full h-full flex-col-center-between">
       <div class="tutorial-header w-full flex flex-row justify-content-between pt-4">
         <b class="text-lg">{{state.title}}</b>
         <div>
@@ -25,7 +41,8 @@ type TutorialState = {
            [class.flex-row-reverse]="state.imagePos && state.imagePos === 'right'"
            style="min-height: 8rem">
         <div class="tutorial-image flex flex-column flex-shrink-1">
-          <img *ngIf="state.image" [src]="state.image" [height]="state.imageHeight" class="border-round" alt="Tutorial Image"/>
+          <img *ngIf="state.image" [src]="state.image" [height]="state.imageHeight" class="border-round"
+               alt="Tutorial Image"/>
         </div>
         <div class="tutorial-body flex flex-column flex-grow-1 h-full w-full text-lg">
           <div *ngIf="state.html" style="max-width: 64rem" [innerHtml]="state.html"></div>
@@ -34,9 +51,12 @@ type TutorialState = {
       <div class="tutorial-footer w-full flex flex-row flex-shrink-1 justify-content-between" style="min-width: 32rem">
         <p-checkbox [(ngModel)]="showAgain" [binary]="true" label="Show on startup"></p-checkbox>
         <div class="flex flex-row">
-          <button pButton [disabled]="state.index === 0" label="Previous" class="p-button-text" (click)="prev()"></button>
-          <button pButton *ngIf="state.index < states.length - 1" label="Next" class="p-button-text" (click)="next()"></button>
-          <button pButton *ngIf="state.index === states.length - 1" label="Close" class="p-button-danger p-button-text" (click)="close()"></button>
+          <button pButton [disabled]="state.index === 0" label="Previous" class="p-button-text"
+                  (click)="prev()"></button>
+          <button pButton *ngIf="state.index < states.length - 1" label="Next" class="p-button-text"
+                  (click)="next()"></button>
+          <button pButton *ngIf="state.index === states.length - 1" label="Close" class="p-button-danger p-button-text"
+                  (click)="close()"></button>
         </div>
       </div>
     </div>
@@ -56,8 +76,7 @@ export class TutorialComponent implements OnInit {
         </div>
         <br>
         <div>
-            At a very high level, <b class="text-primary">Knowledge</b> is a system for storing and accessing information.
-            You can use it to save PDF files, Word documents, images, YouTube videos, and full-blown webpages!
+            <b class="text-primary">Knowledge</b> is the ultimate information management system. With <b class="text-primary">Knowledge</b>, you can store and access all your digital resources, including PDFs, images, videos, documents, webpages, and more. <b class="text-primary">Knowledge</b> allows you to take control of your digital workflow by bringing structure to your digital resources. Let's get started!
         </div>
         <br>
         <div>
@@ -67,6 +86,41 @@ export class TutorialComponent implements OnInit {
       `,
       image: undefined,
       index: 0
+    },
+    {
+      title: 'Creating Your First Project',
+      body: '',
+      html: `
+        <div>
+            <div class="mx-5">
+            <h3>About</h3>
+                <p>
+                    Projects help break down concepts into small and digestible pieces.
+                    Think of it like organizing files on your computer. Just like you would group similar files into folders, you can group similar Sources into Projects.
+                </p>
+                <p>
+                  In Knowledge, the hierarchical structure of Projects helps to create a better understanding of the topics you're learning.
+                  This is important because the more organized your Sources are, the easier it is to find and understand them.
+                </p>
+                <p>
+                    <div class="text-primary">Pro Tip #1</div>
+                    The <span class="text-primary"><span class="pi pi-list"></span> Projects</span> Tree is a great way to navigate between Projects. You can click on the <span class="text-primary"><span class="pi pi-list"></span> Projects</span> button at the bottom of the window to toggle the <span class="text-primary"><span class="pi pi-list"></span> Projects</span> Tree sidebar.
+                </p>
+                <p>
+                    <div class="text-primary">Pro Tip #2</div>
+                    The footer will always show you where you are in the <span class="text-primary"><span class="pi pi-list"></span> Projects</span> Tree, starting from the top-level Project. You can click on any of the Projects in the footer to navigate to that Project.
+                </p>
+                <h3>Next steps</h3>
+                <p>
+                    Once you are done with this tutorial, click the <span class="text-primary">+<span class="pi pi-folder"></span></span> button on the top bar to create a new Project. You can also right-click on a Project inside the <span class="text-primary"><span class="pi pi-list"></span> Projects</span> Tree to create a Sub-Project.
+                </p>
+                <p>
+                    Learn more about Projects by visiting the <a target="_blank" class="no-underline text-primary" href="https://github.com/KnowledgeCanvas/knowledge/wiki/Basics:-Projects">Knowledge Wiki</a>
+                </p>
+            </div>
+        </div>
+      `,
+      index: 1
     },
     {
       title: 'Sources',
@@ -98,42 +152,6 @@ export class TutorialComponent implements OnInit {
         </ul>
       </div>
       `,
-      index: 1
-    },
-    {
-      title: 'Projects',
-      body: '',
-      html: `
-        <div>
-            <div class="mx-5">
-            <h3>About</h3>
-                <p>
-                    <b class="text-primary">Projects</b> are very similar to folders on your computer, except in <b class="text-primary">Knowledge</b>,
-                    they are also a great way to facilitate structured learning.
-                </p>
-                <p>
-                    Think of the image on the right. Each oval shape represents a concept, and each concept can have any number of sub-concepts.
-                    In this case, the top oval represents the field of Mathematics. Within the field of Mathematics are the fields of Arithmetic and Calculus.
-                    Each of those fields contain additional concepts, and so on.
-                </p>
-                <p>
-                    Projects bring structure to the learning process by organizing information into hierarchies.
-                    Just like with our Math example, the hierarchical structure of Projects help to break concepts into small and digestible pieces.
-                </p>
-                <h3>Next steps</h3>
-                <p>
-                    Once you are done with this tutorial, click the <span class="text-primary">+<span class="pi pi-folder"></span></span> button on the top bar to create a new Project. You can also right-click on a Project inside the <span class="text-primary"><span class="pi pi-list"></span> Projects</span> Tree to create a Sub-Project.
-                </p>
-
-                <p>
-                    Learn more about Projects by visiting the <a target="_blank" class="no-underline text-primary" href="https://github.com/KnowledgeCanvas/knowledge/wiki/Basics:-Projects">Knowledge Wiki</a>
-                </p>
-            </div>
-        </div>
-      `,
-      image: 'assets/img/tutorial/tutorial_1.svg',
-      imageHeight: 420,
-      imagePos: 'right',
       index: 2
     },
     {
@@ -166,16 +184,12 @@ export class TutorialComponent implements OnInit {
       <div class="ml-4 h-full">
         Navigation is easy using the bar on the left-hand side, but even easier using shortcut keys:
         <ul>
-        <li>
-          <code>⌘/ctrl + 1</code>: Switch to <span class="text-primary"><span class="pi pi-inbox"></span> Inbox</span></li>
-          <li>
-          <code>⌘/ctrl + 2</code>: Switch to <span class="text-primary"><span class="pi pi-list"></span> Projects</span></li>
-          <li>
-          <code>⌘/ctrl + 3</code>: Switch to <span class="text-primary"><span class="pi pi-table"></span> Table</span></li>
-          <li>
-          <code>⌘/ctrl + 4</code>: Switch to <span class="text-primary"><span class="pi pi-th-large"></span> Grid</span></li>
-          <li>
-          <code>⌘/ctrl + 5</code>: Switch to <span class="text-primary"><span class="pi pi-calendar"></span> Calendar</span></li>
+          <li><code>⌘/ctrl + 1</code>: Switch to <span class="text-primary"><span class="pi pi-inbox"></span> Inbox</span></li>
+          <li><code>⌘/ctrl + 2</code>: Switch to <span class="text-primary"><span class="pi pi-list"></span> Projects</span></li>
+          <li><code>⌘/ctrl + 3</code>: Switch to <span class="text-primary"><span class="pi pi-sitemap"></span> Graph</span></li>
+          <li><code>⌘/ctrl + 4</code>: Switch to <span class="text-primary"><span class="pi pi-table"></span> Table</span></li>
+          <li><code>⌘/ctrl + 5</code>: Switch to <span class="text-primary"><span class="pi pi-th-large"></span> Grid</span></li>
+          <li><code>⌘/ctrl + 6</code>: Switch to <span class="text-primary"><span class="pi pi-calendar"></span> Calendar</span></li>
         </ul>
 
         <div>You can see a complete list of Shortcut Keys in the <a target="_blank" class="no-underline text-primary" href="https://github.com/KnowledgeCanvas/knowledge/wiki/Shortcut-Keys">Knowledge Wiki</a></div>

@@ -110,6 +110,12 @@ import {Subject} from "rxjs";
 
               <div class="p-fluid grid">
                 <div class="field p-float-label sm:col-6 md:col-6 lg:col-6 mb-5">
+                  <input id="projectId" type="text" pInputText disabled
+                         ngModel="{{project.id.value}}">
+                  <label for="parentId">Project ID</label>
+                </div>
+
+                <div class="field p-float-label sm:col-6 md:col-6 lg:col-6 mb-5">
                   <input id="parentId" type="text" pInputText disabled
                          ngModel="{{project.parentId | projectName}}">
                   <label for="parentId">Parent Project</label>

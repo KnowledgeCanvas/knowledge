@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Rob Royce
+ * Copyright (c) 2022-2023 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -468,15 +468,13 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   @HostListener('document:keydown.Control.[')
   @HostListener('document:keydown.meta.[')
-  @HostListener('document:keydown.ArrowUp')
-  @HostListener('document:keydown.ArrowUp')
+  @HostListener('document:keydown.meta.ArrowUp')
   keyPressPrevious() {
     this.onPreviousSource();
   }
 
   @HostListener('document:keydown.Control.]')
   @HostListener('document:keydown.meta.]')
-  @HostListener('document:keydown.ArrowDown')
   @HostListener('document:keydown.meta.ArrowDown')
   keyPressNext() {
     this.onNextSource();
