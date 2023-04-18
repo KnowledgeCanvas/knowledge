@@ -1,19 +1,29 @@
-/**
- Copyright 2022 Rob Royce
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
- http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+/*
+ * Copyright (c) 2023 Rob Royce
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
  */
-import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SecurityContext, SimpleChanges} from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  Output,
+  SecurityContext,
+  SimpleChanges
+} from '@angular/core';
 import {ElectronIpcService} from "../../../services/ipc-services/electron-ipc.service";
 import {BrowserViewRequest, IpcMessage} from "../../../../../../kc_shared/models/electron.ipc.model";
 import {DomSanitizer} from "@angular/platform-browser";
@@ -136,13 +146,14 @@ export class BrowserViewComponent implements OnInit, OnChanges, OnDestroy {
       return;
     }
 
+    let zoomFactor = window.outerWidth / window.innerWidth;
     let position = this.getBrowserViewDimensions('browser-view');
     let request: BrowserViewRequest = {
       url: sanitizedUrl,
-      x: Math.floor(position.x),
-      y: Math.floor(position.y + 48),
-      width: Math.ceil(position.width),
-      height: Math.ceil(position.height)
+      x: Math.floor(position.x * zoomFactor),
+      y: Math.floor((position.y + 48) * zoomFactor),
+      width: Math.ceil(position.width * zoomFactor),
+      height: Math.ceil(position.height * zoomFactor),
     }
 
     this.ipcService.openBrowserView(request).then((response: IpcMessage) => {
