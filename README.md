@@ -1,3 +1,7 @@
+# Note about Chat
+
+The **Chat feature has *not* been released yet**, it will be included in version `0.8.0`. Follow [@RobRoyce_](https://twitter.com/RobRoyce_) on Twitter to stay up to date on release progress.
+
 # Description
 
 Knowledge is a tool for saving, searching, accessing, and exploring all of your favorite websites, documents and files.
