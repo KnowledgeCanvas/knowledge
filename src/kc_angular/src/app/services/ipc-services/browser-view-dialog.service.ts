@@ -14,37 +14,39 @@
  *  limitations under the License.
  */
 
-import {DialogService, DynamicDialogRef} from "primeng/dynamicdialog";
-import {Injectable} from '@angular/core';
-import {KnowledgeSource} from "@app/models/knowledge.source.model";
-import {KsPreviewComponent, KsPreviewInput} from "@components/source-components/ks-preview.component";
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { Injectable } from '@angular/core';
+import { KnowledgeSource } from '@app/models/knowledge.source.model';
+import {
+  KsPreviewComponent,
+  KsPreviewInput,
+} from '@components/source-components/ks-preview.component';
 
 export interface BrowserViewDialogConfig {
-  ks: KnowledgeSource
+  ks: KnowledgeSource;
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class BrowserViewDialogService {
-  constructor(public dialog: DialogService) {
-  }
+  constructor(public dialog: DialogService) {}
 
   open(options: BrowserViewDialogConfig): DynamicDialogRef | undefined {
     if (!this.validateURI(options.ks)) {
       return undefined;
     }
 
-    let ksPreviewInput: KsPreviewInput = {
-      ks: options.ks
-    }
+    const ksPreviewInput: KsPreviewInput = {
+      ks: options.ks,
+    };
 
     return this.dialog.open(KsPreviewComponent, {
       width: '100vw',
       height: '100vh',
-      contentStyle: {'padding-left': 0, 'padding-right': 0},
+      contentStyle: { 'padding-left': 0, 'padding-right': 0 },
       showHeader: false,
-      data: ksPreviewInput
+      data: ksPreviewInput,
     });
   }
 

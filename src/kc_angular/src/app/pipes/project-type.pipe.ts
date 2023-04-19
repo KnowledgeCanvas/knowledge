@@ -14,21 +14,24 @@
  *  limitations under the License.
  */
 
-import {KcProjectType} from "@shared/models/project.model";
-import {Pipe, PipeTransform} from '@angular/core';
-import {ProjectService} from "@services/factory-services/project.service";
+import { KcProjectType } from '@shared/models/project.model';
+import { Pipe, PipeTransform } from '@angular/core';
+import { ProjectService } from '@services/factory-services/project.service';
 
 @Pipe({
-  name: 'projectType'
+  name: 'projectType',
 })
 export class ProjectTypePipe implements PipeTransform {
-  constructor(private projectService: ProjectService) {
-  }
+  constructor(private projectService: ProjectService) {}
+
   transform(type: KcProjectType): string {
     if (!type) {
       return 'Default';
     } else {
-      return this.projectService.ProjectTypes.find(t => t.code === type)?.name ?? 'Default';
+      return (
+        this.projectService.ProjectTypes.find((t) => t.code === type)?.name ??
+        'Default'
+      );
     }
   }
 }

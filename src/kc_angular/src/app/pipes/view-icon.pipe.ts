@@ -13,28 +13,28 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import {Pipe, PipeTransform} from '@angular/core';
+import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'viewIcon'
+  name: 'viewIcon',
 })
 export class ViewIconPipe implements PipeTransform {
   transform(viewLabel: string): string {
     switch (viewLabel) {
       case 'inbox':
-        return 'pi pi-inbox'
+        return 'pi pi-inbox';
       case 'projects':
-        return 'pi pi-list'
+        return 'pi pi-list';
       case 'table':
-        return 'pi pi-table'
+        return 'pi pi-table';
       case 'grid':
-        return 'pi pi-th-large'
+        return 'pi pi-th-large';
       case 'graph':
-        return 'pi pi-sitemap'
+        return 'pi pi-sitemap';
       case 'calendar':
-        return 'pi pi-calendar'
+        return 'pi pi-calendar';
       default:
-        return ''
+        return '';
     }
   }
 }

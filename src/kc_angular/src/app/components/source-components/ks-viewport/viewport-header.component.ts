@@ -13,99 +13,121 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
-import {BrowserViewHeaderConfig, BrowserViewHeaderEvent} from "@shared/models/browser.view.model";
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
+import {
+  BrowserViewHeaderConfig,
+  BrowserViewHeaderEvent,
+} from '@shared/models/browser.view.model';
 
 @Component({
   selector: 'ks-lib-viewport-header',
   template: `
     <div class="ks-viewport-header" [ngClass]="customClass">
-
       <div class="ks-viewport-header-left">
         <div *ngIf="config.showNavButtons">
-          <button pButton
-                  [disabled]="!config.canGoBack"
-                  icon="pi pi-arrow-left"
-                  class="p-button-text"
-                  (click)="back()"
-                  [pTooltip]="backTooltip">
-          </button>
+          <button
+            pButton
+            [disabled]="!config.canGoBack"
+            icon="pi pi-arrow-left"
+            class="p-button-text"
+            (click)="back()"
+            [pTooltip]="backTooltip"
+          ></button>
 
-          <button pButton
-                  [disabled]="!config.canGoForward"
-                  (click)="forward()"
-                  icon="pi pi-arrow-right"
-                  class="p-button-text"
-                  [pTooltip]="forwardTooltip">
-          </button>
+          <button
+            pButton
+            [disabled]="!config.canGoForward"
+            (click)="forward()"
+            icon="pi pi-arrow-right"
+            class="p-button-text"
+            [pTooltip]="forwardTooltip"
+          ></button>
 
-          <button pButton
-                  [disabled]="!config.canRefresh"
-                  (click)="refresh()"
-                  icon="pi pi-refresh"
-                  class="p-button-text"
-                  [pTooltip]="refreshTooltip">
-          </button>
+          <button
+            pButton
+            [disabled]="!config.canRefresh"
+            (click)="refresh()"
+            icon="pi pi-refresh"
+            class="p-button-text"
+            [pTooltip]="refreshTooltip"
+          ></button>
         </div>
       </div>
 
-      <div *ngIf="config.showDisplayText"
-           class="ks-viewport-header-center p-fluid w-full">
-        <input *ngIf="config.displayText"
-               pInputText
-               type="text"
-               [readOnly]="config.displayTextReadOnly"
-               [(ngModel)]="config.displayText"
-               class="p-fluid w-full surface-300 text-900"
-               [disabled]="displayTextDisabled">
+      <div
+        *ngIf="config.showDisplayText"
+        class="ks-viewport-header-center p-fluid w-full"
+      >
+        <input
+          *ngIf="config.displayText"
+          pInputText
+          type="text"
+          [readOnly]="config.displayTextReadOnly"
+          [(ngModel)]="config.displayText"
+          class="p-fluid w-full surface-300 text-900"
+          [disabled]="displayTextDisabled"
+        />
       </div>
 
       <div class="ks-viewport-header-right">
-        <div *ngIf="config.showActionButtons" class="ks-viewport-header-right-contents">
-          <button pButton
-                  [disabled]="!config.canCopy"
-                  (click)="copy()"
-                  [icon]="copyIcon"
-                  class="p-button-text"
-                  [pTooltip]="copyTooltip"
-                  tooltipPosition="left">
-          </button>
+        <div
+          *ngIf="config.showActionButtons"
+          class="ks-viewport-header-right-contents"
+        >
+          <button
+            pButton
+            [disabled]="!config.canCopy"
+            (click)="copy()"
+            [icon]="copyIcon"
+            class="p-button-text"
+            [pTooltip]="copyTooltip"
+            tooltipPosition="left"
+          ></button>
 
-          <button pButton
-                  *ngIf="config.showOpenButton"
-                  (click)="open()"
-                  icon="pi pi-external-link"
-                  class="p-button-text"
-                  [pTooltip]="openTooltip"
-                  tooltipPosition="left">
-          </button>
+          <button
+            pButton
+            *ngIf="config.showOpenButton"
+            (click)="open()"
+            icon="pi pi-external-link"
+            class="p-button-text"
+            [pTooltip]="openTooltip"
+            tooltipPosition="left"
+          ></button>
 
-          <button pButton
-                  *ngIf="config.showSaveButton"
-                  [disabled]="!config.canSave"
-                  (click)="save()"
-                  [icon]="saveIcon"
-                  class="p-button-text"
-                  [pTooltip]="saveTooltip"
-                  tooltipPosition="left">
-          </button>
+          <button
+            pButton
+            *ngIf="config.showSaveButton"
+            [disabled]="!config.canSave"
+            (click)="save()"
+            [icon]="saveIcon"
+            class="p-button-text"
+            [pTooltip]="saveTooltip"
+            tooltipPosition="left"
+          ></button>
 
-          <button pButton
-                  *ngIf="config.showCloseButton"
-                  [disabled]="!config.canClose"
-                  (click)="close()"
-                  icon="pi pi-times"
-                  class="p-button-text"
-                  [pTooltip]="closeTooltip"
-                  tooltipPosition="left">
-          </button>
+          <button
+            pButton
+            *ngIf="config.showCloseButton"
+            [disabled]="!config.canClose"
+            (click)="close()"
+            icon="pi pi-times"
+            class="p-button-text"
+            [pTooltip]="closeTooltip"
+            tooltipPosition="left"
+          ></button>
         </div>
       </div>
     </div>
   `,
   styles: [
     `
-
       .ks-viewport-header {
         display: flex;
         flex-direction: row;
@@ -146,75 +168,69 @@ import {BrowserViewHeaderConfig, BrowserViewHeaderEvent} from "@shared/models/br
           }
         }
       }
-    `
-  ]
+    `,
+  ],
 })
-export class ViewportHeaderComponent implements OnInit, OnChanges {
+export class ViewportHeaderComponent implements OnChanges {
   @Input() config!: BrowserViewHeaderConfig;
   @Output() headerEvents = new EventEmitter<BrowserViewHeaderEvent>();
-  customClass: string = '';
+  customClass = '';
 
   // Default tooltip strings
-  backTooltip: string = "Go Back";
-  closeTooltip: string = 'Close';
-  copyTooltip: string = 'Copy to Clipboard';
-  forwardTooltip: string = 'Go Forward';
-  refreshTooltip: string = 'Reload this page';
-  saveTooltip: string = 'Send to Inbox'
-  openTooltip: string = 'Open in...';
+  backTooltip = 'Go Back';
+  closeTooltip = 'Close';
+  copyTooltip = 'Copy to Clipboard';
+  forwardTooltip = 'Go Forward';
+  refreshTooltip = 'Reload this page';
+  saveTooltip = 'Send to Inbox';
+  openTooltip = 'Open in...';
 
-  copyIcon: string = 'pi pi-copy';
-  saveIcon: string = 'pi pi-save';
+  copyIcon = 'pi pi-copy';
+  saveIcon = 'pi pi-save';
 
   // Putting this here for extensibility, but currently we are not supported letting the user type in a random URL (i.e. this is for display only)
-  displayTextDisabled: boolean = true;
-
-  constructor() {
-  }
-
-  ngOnInit(): void {
-  }
+  displayTextDisabled = true;
 
   ngOnChanges(changes: SimpleChanges) {
-    let config = changes.config.currentValue;
+    const config = changes.config.currentValue;
     if (config.customClass) {
       this.customClass = config.customClass;
     }
   }
 
   back() {
-    this.headerEvents.emit({backClicked: true});
+    this.headerEvents.emit({ backClicked: true });
   }
 
   close() {
-    this.headerEvents.emit({closeClicked: true});
+    this.headerEvents.emit({ closeClicked: true });
   }
 
   copy() {
-    this.headerEvents.emit({copyClicked: true});
+    this.headerEvents.emit({ copyClicked: true });
     this.copyIcon = 'pi pi-check';
     setTimeout(() => {
-      this.copyIcon = 'pi pi-copy'
-    }, 2000)
+      this.copyIcon = 'pi pi-copy';
+    }, 2000);
   }
 
   forward() {
-    this.headerEvents.emit({forwardClicked: true});
+    this.headerEvents.emit({ forwardClicked: true });
   }
 
   refresh() {
-    this.headerEvents.emit({refreshClicked: true});
+    this.headerEvents.emit({ refreshClicked: true });
   }
 
   save() {
-    this.headerEvents.emit({saveClicked: true});
+    this.headerEvents.emit({ saveClicked: true });
     this.saveIcon = 'pi pi-check';
     setTimeout(() => {
-      this.saveIcon = 'pi pi-save'
-    }, 2000)
+      this.saveIcon = 'pi pi-save';
+    }, 2000);
   }
 
   open() {
-    this.headerEvents.emit({openClicked: true});
+    this.headerEvents.emit({ openClicked: true });
   }
 }

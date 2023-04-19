@@ -24,111 +24,142 @@ import {
   OnInit,
   Output,
   SimpleChanges,
-  ViewChild
+  ViewChild,
 } from '@angular/core';
-import {KnowledgeSource} from "@app/models/knowledge.source.model";
-import {KsCommandService} from "@services/command-services/ks-command.service";
-import {Paginator} from "primeng/paginator";
-import {MenuItem, TreeNode} from "primeng/api";
-import {KsContextMenuService} from "@services/factory-services/ks-context-menu.service";
-import {ApplicationSettingsModel, CardOptions, CardSizeType, CardSortType} from "@shared/models/settings.model";
-import {SettingsService} from "@services/ipc-services/settings.service";
-import {NotificationsService} from "@services/user-services/notifications.service";
-import {BehaviorSubject, Subject, tap, throttleTime} from "rxjs";
-import {KcProject, ProjectUpdateRequest} from "@app/models/project.model";
-import {ProjectService} from "@services/factory-services/project.service";
-import {ProjectTreeFactoryService} from "@services/factory-services/project-tree-factory.service";
-import {ActivatedRoute} from "@angular/router";
-import {takeUntil} from "rxjs/operators";
+import { KnowledgeSource } from '@app/models/knowledge.source.model';
+import { KsCommandService } from '@services/command-services/ks-command.service';
+import { Paginator } from 'primeng/paginator';
+import { MenuItem, TreeNode } from 'primeng/api';
+import { KsContextMenuService } from '@services/factory-services/ks-context-menu.service';
+import {
+  ApplicationSettingsModel,
+  CardOptions,
+  CardSizeType,
+  CardSortType,
+} from '@shared/models/settings.model';
+import { SettingsService } from '@services/ipc-services/settings.service';
+import { NotificationsService } from '@services/user-services/notifications.service';
+import { BehaviorSubject, Subject, tap, throttleTime } from 'rxjs';
+import { KcProject, ProjectUpdateRequest } from '@app/models/project.model';
+import { ProjectService } from '@services/factory-services/project.service';
+import { ProjectTreeFactoryService } from '@services/factory-services/project-tree-factory.service';
+import { ActivatedRoute } from '@angular/router';
+import { takeUntil } from 'rxjs/operators';
 
 interface PaginateConfig {
-  page: number,
-  first: number,
-  rows: number,
-  pageCount: number,
-  projectId?: string
+  page: number;
+  first: number;
+  rows: number;
+  pageCount: number;
+  projectId?: string;
 }
 
 interface KsCardSorter {
-  label: string,
-  id: CardSortType,
-  icon: string,
-  sort: (ksList: KnowledgeSource[]) => KnowledgeSource[]
+  label: string;
+  id: CardSortType;
+  icon: string;
+  sort: (ksList: KnowledgeSource[]) => KnowledgeSource[];
 }
 
 interface KsCardSizer {
-  label: string,
-  id: CardSizeType,
-  gridColClass?: string,
-  truncateLength?: number
+  label: string;
+  id: CardSizeType;
+  gridColClass?: string;
+  truncateLength?: number;
 }
 
 interface KsCardListConfig {
-  label: string,
-  id: string,
-  value: boolean,
-  onChange: ($event: any) => void
+  label: string;
+  id: string;
+  value: boolean;
+  onChange: ($event: any) => void;
 }
-
 
 @Component({
   selector: 'app-ks-card-list',
   template: `
     <div class="w-full h-full flex-col-center-start">
-      <p-panel class="ks-grid-panel" styleClass="h-full flex flex-column flex-grow-1">
+      <p-panel
+        class="ks-grid-panel"
+        styleClass="h-full flex flex-column flex-grow-1"
+      >
         <ng-template pTemplate="header">
           <div class="flex-row-center-between w-full">
             <div class="w-16rem">
-              <p-dropdown placeholder="Sort by..."
-                          [options]="sorters"
-                          [autoDisplayFirst]="true"
-                          [(ngModel)]="selectedSorter"
-                          (onChange)="sortSelected($event)"
-                          [filter]="true">
+              <p-dropdown
+                placeholder="Sort by..."
+                [options]="sorters"
+                [autoDisplayFirst]="true"
+                [(ngModel)]="selectedSorter"
+                (onChange)="sortSelected($event)"
+                [filter]="true"
+              >
                 <ng-template let-sorter pTemplate="selectedItem">
-                  <i class="pi pi-{{sorter.icon}}"></i>
-                  {{sorter.label}}
+                  <i class="pi pi-{{ sorter.icon }}"></i>
+                  {{ sorter.label }}
                 </ng-template>
                 <ng-template pTemplate="item" let-sorter>
-                  <i class="pi pi-{{sorter.icon}}"></i>
-                  {{sorter.label}}
+                  <i class="pi pi-{{ sorter.icon }}"></i>
+                  {{ sorter.label }}
                 </ng-template>
               </p-dropdown>
             </div>
-            <div *ngIf="!allowMoveAll" class="p-inputgroup p-fluid mr-3 ml-3 w-24rem">
+            <div
+              *ngIf="!allowMoveAll"
+              class="p-inputgroup p-fluid mr-3 ml-3 w-24rem"
+            >
               <span class="p-inputgroup-addon">
                 <i class="pi pi-filter"></i>
               </span>
-              <input #tableFilter pInputText
-                     [(ngModel)]="filterTerm"
-                     type="text"
-                     placeholder="Filter by title, type, date, etc."
-                     (input)="filter()">
-              <span class="p-inputgroup-addon"
-                    [style.cursor]="tableFilter.value.length ? 'pointer' : 'unset'"
-                    (click)="clear()">
+              <input
+                #tableFilter
+                pInputText
+                [(ngModel)]="filterTerm"
+                type="text"
+                placeholder="Filter by title, type, date, etc."
+                (input)="filter()"
+              />
+              <span
+                class="p-inputgroup-addon"
+                [style.cursor]="tableFilter.value.length ? 'pointer' : 'unset'"
+                (click)="clear()"
+              >
                 <i class="pi pi-times"></i>
               </span>
             </div>
 
             <div class="p-fluid flex-row-center-between">
-              <app-ks-export *ngIf="allowExport" [data]="ksList"></app-ks-export>
-              <button type="button"
-                      *ngIf="allowCustomization || allowResize"
-                      pButton
-                      icon="pi pi-cog"
-                      style="margin-left: 10px"
-                      (click)="settingsOverlay.toggle($event)">
-              </button>
+              <app-ks-export
+                *ngIf="allowExport"
+                [data]="ksList"
+              ></app-ks-export>
+              <button
+                type="button"
+                *ngIf="allowCustomization || allowResize"
+                pButton
+                icon="pi pi-cog"
+                style="margin-left: 10px"
+                (click)="settingsOverlay.toggle($event)"
+              ></button>
             </div>
 
-            <div *ngIf="allowMoveAll" class="p-fluid mr-3 ml-3 w-24rem flex-row-center-between">
+            <div
+              *ngIf="allowMoveAll"
+              class="p-fluid mr-3 ml-3 w-24rem flex-row-center-between"
+            >
               <div class="p-fluid flex-grow-1">
-                <project-selector placeholder="Move to Project" (onSelect)="selectedProject = $event"></project-selector>
+                <project-selector
+                  placeholder="Move to Project"
+                  (onSelect)="selectedProject = $event"
+                ></project-selector>
               </div>
               <div class="flex-shrink-1 ml-4">
-                <button pButton label="Move All" [disabled]="!selectedProject?.key || treeNodes.length < 1"
-                        (click)="onMoveAll($event)"></button>
+                <button
+                  pButton
+                  label="Move All"
+                  [disabled]="!selectedProject?.key || treeNodes.length < 1"
+                  (click)="onMoveAll()"
+                ></button>
               </div>
             </div>
           </div>
@@ -137,38 +168,54 @@ interface KsCardListConfig {
         <ng-template pTemplate="content">
           <div class="h-full w-full p-4 overflow-y-auto">
             <div #top style="height: 0; width: 0"></div>
-            <div *ngIf="ksList.length > 0 else emptyList" class="grid w-full h-full justify-content-center"
-                 style="max-height: calc(100vh - 300px)">
-              <div *ngFor="let ks of displayList" [class]="selectedSizer.gridColClass" style="min-width: 24rem">
-                <app-ks-card [ks]="ks"
-                             (contextmenu)="setActiveKs(ks); cm.show($event)"
-                             [showIcon]="ksCardOptions.showIcon"
-                             [showContentType]="ksCardOptions.showContentType"
-                             [showDescription]="ksCardOptions.showDescription && !minimal"
-                             [showEdit]="ksCardOptions.showEdit"
-                             [showOpen]="ksCardOptions.showOpen"
-                             [showPreview]="ksCardOptions.showPreview"
-                             [showProjectBreadcrumbs]="ksCardOptions.showProjectName "
-                             [showProjectSelection]="ksCardOptions.showProjectSelection"
-                             [showRemove]="ksCardOptions.showRemove"
-                             [showFlag]="true"
-                             [showThumbnail]="ksCardOptions.showThumbnail && !minimal"
-                             [showTopics]="ksCardOptions.showTopics && !minimal"
-                             [projectTreeNodes]="treeNodes"
-                             [selectedProject]="ksCardOptions.showProjectSelection ? (ks.associatedProject | projectAsTreeNode: treeNodes) : undefined"
-                             (onEdit)="_onKsDetail($event)"
-                             (onOpen)="_onKsOpen($event)"
-                             (onPreview)="_onKsPreview($event)"
-                             (onRemove)="_onKsRemove($event)"
-                             (onTopicClick)="onTopicSearch.emit($event.topic)"
-                             (onProjectChange)="onProjectChange.emit($event)">
+            <div
+              *ngIf="ksList.length > 0; else emptyList"
+              class="grid w-full h-full justify-content-center"
+              style="max-height: calc(100vh - 300px)"
+            >
+              <div
+                *ngFor="let ks of displayList"
+                [class]="selectedSizer.gridColClass"
+                style="min-width: 24rem"
+              >
+                <app-ks-card
+                  [ks]="ks"
+                  (contextmenu)="setActiveKs(ks); cm.show($event)"
+                  [showIcon]="ksCardOptions.showIcon"
+                  [showContentType]="ksCardOptions.showContentType"
+                  [showDescription]="ksCardOptions.showDescription && !minimal"
+                  [showEdit]="ksCardOptions.showEdit"
+                  [showOpen]="ksCardOptions.showOpen"
+                  [showPreview]="ksCardOptions.showPreview"
+                  [showProjectBreadcrumbs]="ksCardOptions.showProjectName"
+                  [showProjectSelection]="ksCardOptions.showProjectSelection"
+                  [showRemove]="ksCardOptions.showRemove"
+                  [showFlag]="true"
+                  [showThumbnail]="ksCardOptions.showThumbnail && !minimal"
+                  [showTopics]="ksCardOptions.showTopics && !minimal"
+                  [projectTreeNodes]="treeNodes"
+                  [selectedProject]="
+                    ksCardOptions.showProjectSelection
+                      ? (ks.associatedProject | projectAsTreeNode : treeNodes)
+                      : undefined
+                  "
+                  (onEdit)="_onKsDetail($event)"
+                  (onOpen)="_onKsOpen($event)"
+                  (onPreview)="_onKsPreview($event)"
+                  (onRemove)="_onKsRemove($event)"
+                  (onTopicClick)="onTopicSearch.emit($event.topic)"
+                  (onProjectChange)="onProjectChange.emit($event)"
+                >
                 </app-ks-card>
               </div>
             </div>
             <ng-template #emptyList>
-              <div  class="h-full w-full">
-                <div class="flex-row-center-center text-2xl text-500" style="height: 12rem; width: 100% !important;">
-                  {{emptyMessage}}
+              <div class="h-full w-full">
+                <div
+                  class="flex-row-center-center text-2xl text-500"
+                  style="height: 12rem; width: 100% !important;"
+                >
+                  {{ emptyMessage }}
                 </div>
               </div>
             </ng-template>
@@ -176,25 +223,29 @@ interface KsCardListConfig {
         </ng-template>
 
         <ng-template pTemplate="footer" pStyleClass="surface-100">
-          <p-paginator #paginator
-                       [rows]="paginateConfig.rows"
-                       [first]="paginateConfig.first"
-                       [totalRecords]="filteredList.length"
-                       [rowsPerPageOptions]="[10, 20, 30, 40, 50]"
-                       [showJumpToPageDropdown]="true"
-                       [showPageLinks]="true"
-                       [showJumpToPageInput]="true"
-                       (onPageChange)="paginate($event)">
+          <p-paginator
+            #paginator
+            [rows]="paginateConfig.rows"
+            [first]="paginateConfig.first"
+            [totalRecords]="filteredList.length"
+            [rowsPerPageOptions]="[10, 20, 30, 40, 50]"
+            [showJumpToPageDropdown]="true"
+            [showPageLinks]="true"
+            [showJumpToPageInput]="true"
+            (onPageChange)="paginate($event)"
+          >
           </p-paginator>
         </ng-template>
       </p-panel>
     </div>
 
-    <p-contextMenu #cm
-                   styleClass="shadow-7"
-                   [model]="ksMenuItems"
-                   (onShow)="onKsContextMenu()"
-                   appendTo="body">
+    <p-contextMenu
+      #cm
+      styleClass="shadow-7"
+      [model]="ksMenuItems"
+      (onShow)="onKsContextMenu()"
+      appendTo="body"
+    >
     </p-contextMenu>
 
     <p-overlayPanel #settingsOverlay styleClass="surface-100 shadow-7">
@@ -203,10 +254,12 @@ interface KsCardListConfig {
           <div *ngIf="allowResize">
             <h3>Card Size</h3>
             <div class="flex-row-center-center pb-3">
-              <p-selectButton [options]="sizers"
-                              [(ngModel)]="selectedSizer"
-                              id="sizeSelect"
-                              (onChange)="sizeSelected($event)">
+              <p-selectButton
+                [options]="sizers"
+                [(ngModel)]="selectedSizer"
+                id="sizeSelect"
+                (onChange)="sizeSelected($event)"
+              >
               </p-selectButton>
             </div>
           </div>
@@ -217,7 +270,8 @@ interface KsCardListConfig {
                 [(ngModel)]="opt.value"
                 (onChange)="opt.onChange($event); saveConfig(opt)"
                 [binary]="true"
-                [label]="opt.label">
+                [label]="opt.label"
+              >
               </p-checkbox>
             </div>
           </div>
@@ -230,48 +284,52 @@ interface KsCardListConfig {
       .ks-grid-panel {
         width: 100%;
       }
-    `
-  ]
+    `,
+  ],
 })
 export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
   @ViewChild('top') dataListTop!: ElementRef;
 
   @Output() onKsRemove = new EventEmitter<KnowledgeSource>();
 
-  @Output() onProjectChange = new EventEmitter<{ ks: KnowledgeSource, old: string, new: string }>();
+  @Output() onProjectChange = new EventEmitter<{
+    ks: KnowledgeSource;
+    old: string;
+    new: string;
+  }>();
 
   @Input() ksList: KnowledgeSource[] = [];
 
-  @Input() emptyMessage: string = 'Empty'
+  @Input() emptyMessage = 'Empty';
 
   @Input() kcProject?: KcProject | null;
 
-  @Input() minimal: boolean = false;
+  @Input() minimal = false;
 
   /**
    * Enable or disable the ability to resize cards.
    * Default: true
    */
-  @Input() allowResize: boolean = true;
+  @Input() allowResize = true;
 
   /**
    * Enable or disable the ability to export.
    * Default: true
    */
-  @Input() allowExport: boolean = true;
+  @Input() allowExport = true;
 
   /**
    * Enable or disable the ability to customize card fields.
    * Default: true
    */
-  @Input() allowCustomization: boolean = true;
+  @Input() allowCustomization = true;
 
   /**
    * Enable or disable the ability to move all sources at once.
    * Automatically disables filtering
    * Default: false
    */
-  @Input() allowMoveAll: boolean = false;
+  @Input() allowMoveAll = false;
 
   /**
    * Emitted when a topic tag is clicked
@@ -290,14 +348,14 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
 
   displayList: KnowledgeSource[] = [];
 
-  filterTerm: string = '';
+  filterTerm = '';
 
   paginateConfig: PaginateConfig = {
     first: 0,
     page: 0,
     pageCount: 0,
-    rows: 10
-  }
+    rows: 10,
+  };
 
   @Input() ksCardOptions: CardOptions = {
     showContentType: true,
@@ -310,8 +368,8 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
     showProjectSelection: false,
     showRemove: true,
     showTopics: true,
-    showThumbnail: true
-  }
+    showThumbnail: true,
+  };
 
   ksCardListConfig: KsCardListConfig[] = [];
 
@@ -320,63 +378,75 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
       label: 'Title (Ascending)',
       icon: 'sort-alpha-up',
       id: 'title-a',
-      sort: ksList => ksList.sort((a, b) => {
-        const tA = a.title.toLocaleLowerCase(), tB = b.title.toLocaleLowerCase();
-        return tA > tB ? 1 : (tA < tB ? -1 : 0);
-      })
+      sort: (ksList) =>
+        ksList.sort((a, b) => {
+          const tA = a.title.toLocaleLowerCase(),
+            tB = b.title.toLocaleLowerCase();
+          return tA > tB ? 1 : tA < tB ? -1 : 0;
+        }),
     },
     {
       label: 'Title (Descending)',
       icon: 'sort-alpha-down',
       id: 'title-d',
-      sort: ksList => ksList.sort((a, b) => {
-        const tA = a.title.toLocaleLowerCase(), tB = b.title.toLocaleLowerCase();
-        return tA > tB ? -1 : (tA < tB ? 1 : 0);
-      })
+      sort: (ksList) =>
+        ksList.sort((a, b) => {
+          const tA = a.title.toLocaleLowerCase(),
+            tB = b.title.toLocaleLowerCase();
+          return tA > tB ? -1 : tA < tB ? 1 : 0;
+        }),
     },
     {
       label: 'Most Recently Created',
       icon: 'sort-up',
       id: 'created-d',
-      sort: ksList => ksList.sort((a, b) => {
-        const tA = a.dateCreated.valueOf(), tB = b.dateCreated.valueOf();
-        return tA > tB ? -1 : (tA < tB ? 1 : 0);
-      })
+      sort: (ksList) =>
+        ksList.sort((a, b) => {
+          const tA = a.dateCreated.valueOf(),
+            tB = b.dateCreated.valueOf();
+          return tA > tB ? -1 : tA < tB ? 1 : 0;
+        }),
     },
     {
       label: 'Least Recently Created',
       icon: 'sort-down',
       id: 'created-a',
-      sort: ksList => ksList.sort((a, b) => {
-        const tA = a.dateCreated.valueOf(), tB = b.dateCreated.valueOf();
-        return tA > tB ? 1 : (tA < tB ? -1 : 0);
-      })
+      sort: (ksList) =>
+        ksList.sort((a, b) => {
+          const tA = a.dateCreated.valueOf(),
+            tB = b.dateCreated.valueOf();
+          return tA > tB ? 1 : tA < tB ? -1 : 0;
+        }),
     },
     {
       label: 'Type (Ascending)',
       icon: 'sort-alpha-up',
       id: 'type-a',
-      sort: ksList => ksList.sort((a, b) => {
-        const tA = a.ingestType, tB = b.ingestType;
-        return tA > tB ? 1 : (tA < tB ? -1 : 0);
-      })
+      sort: (ksList) =>
+        ksList.sort((a, b) => {
+          const tA = a.ingestType,
+            tB = b.ingestType;
+          return tA > tB ? 1 : tA < tB ? -1 : 0;
+        }),
     },
     {
       label: 'Type (Descending)',
       icon: 'sort-alpha-down',
       id: 'type-d',
-      sort: ksList => ksList.sort((a, b) => {
-        const tA = a.ingestType, tB = b.ingestType;
-        return tA > tB ? -1 : (tA < tB ? 1 : 0);
-      })
-    }
+      sort: (ksList) =>
+        ksList.sort((a, b) => {
+          const tA = a.ingestType,
+            tB = b.ingestType;
+          return tA > tB ? -1 : tA < tB ? 1 : 0;
+        }),
+    },
   ];
   sizers: KsCardSizer[] = [
     {
       label: 'Auto',
       id: 'auto',
       gridColClass: 'sm:col-12 md:col-6 lg:col-4',
-      truncateLength: 64
+      truncateLength: 64,
     },
     {
       label: 'X-Small',
@@ -397,7 +467,7 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
       label: 'Large',
       id: 'lg',
       gridColClass: 'col-12',
-    }
+    },
   ];
 
   selectedSorter: KsCardSorter = this.sorters[0];
@@ -412,45 +482,60 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
 
   private _windowResize = new BehaviorSubject({});
 
-  constructor(private command: KsCommandService,
-              private menu: KsContextMenuService,
-              private settings: SettingsService,
-              private projects: ProjectService,
-              private tree: ProjectTreeFactoryService,
-              private route: ActivatedRoute,
-              private notifications: NotificationsService) {
-    projects.projectTree.pipe(
-      takeUntil(this.cleanUp),
-      tap((tree) => {
-        this.selectedProject = this.tree.findTreeNode(this.projects.getCurrentProjectId()?.value ?? '', tree) ?? {};
-      })
-    ).subscribe()
+  constructor(
+    private command: KsCommandService,
+    private menu: KsContextMenuService,
+    private settings: SettingsService,
+    private projects: ProjectService,
+    private tree: ProjectTreeFactoryService,
+    private route: ActivatedRoute,
+    private notifications: NotificationsService
+  ) {
+    projects.projectTree
+      .pipe(
+        takeUntil(this.cleanUp),
+        tap((tree) => {
+          this.selectedProject =
+            this.tree.findTreeNode(
+              this.projects.getCurrentProjectId()?.value ?? '',
+              tree
+            ) ?? {};
+        })
+      )
+      .subscribe();
 
-    tree.treeNodes.pipe(
-      takeUntil(this.cleanUp),
-      tap((nodes) => {
-        this.treeNodes = nodes;
-      })
-    ).subscribe()
+    tree.treeNodes
+      .pipe(
+        takeUntil(this.cleanUp),
+        tap((nodes) => {
+          this.treeNodes = nodes;
+        })
+      )
+      .subscribe();
 
-    settings.app.pipe(
-      takeUntil(this.cleanUp),
-      tap((appSettings) => {
-        if (appSettings && appSettings.grid) {
-          this.appSettings = appSettings;
-          this.loadSizer();
-          this.loadSorter();
-        }
-      })
-    ).subscribe();
+    settings.app
+      .pipe(
+        takeUntil(this.cleanUp),
+        tap((appSettings) => {
+          if (appSettings && appSettings.grid) {
+            this.appSettings = appSettings;
+            this.loadSizer();
+            this.loadSorter();
+          }
+        })
+      )
+      .subscribe();
 
-    this._windowResize.asObservable().pipe(
-      takeUntil(this.cleanUp),
-      throttleTime(50),
-      tap(() => {
-        this.setSizers();
-      })
-    ).subscribe()
+    this._windowResize
+      .asObservable()
+      .pipe(
+        takeUntil(this.cleanUp),
+        throttleTime(50),
+        tap(() => {
+          this.setSizers();
+        })
+      )
+      .subscribe();
   }
 
   configureCardList() {
@@ -465,7 +550,7 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
             return;
           }
           this.ksCardOptions.showContentType = checked;
-        }
+        },
       },
       {
         label: 'Show Projects',
@@ -477,7 +562,7 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
             return;
           }
           this.ksCardOptions.showProjectName = checked;
-        }
+        },
       },
       {
         label: 'Show Icons',
@@ -489,7 +574,7 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
             return;
           }
           this.ksCardOptions.showIcon = checked;
-        }
+        },
       },
       {
         label: 'Show Description',
@@ -500,8 +585,8 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
           if (checked === undefined || checked === null) {
             return;
           }
-          this.ksCardOptions.showDescription = $event.checked
-        }
+          this.ksCardOptions.showDescription = $event.checked;
+        },
       },
       {
         label: 'Show Topics',
@@ -512,8 +597,8 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
           if (checked === undefined || checked === null) {
             return;
           }
-          this.ksCardOptions.showTopics = checked
-        }
+          this.ksCardOptions.showTopics = checked;
+        },
       },
       {
         label: 'Show Actions',
@@ -528,7 +613,7 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
           this.ksCardOptions.showOpen = checked;
           this.ksCardOptions.showRemove = checked;
           this.ksCardOptions.showPreview = checked;
-        }
+        },
       },
     ];
   }
@@ -547,11 +632,10 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-
     if (changes.ksCardOptions?.currentValue) {
       setTimeout(() => {
         this.configureCardList();
-      })
+      });
     }
 
     try {
@@ -572,12 +656,19 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   setSizers() {
-    let colXs: string, colSm: string, colMd: string, colLg: string, colAuto: string;
+    let colXs: string,
+      colSm: string,
+      colMd: string,
+      colLg: string,
+      colAuto: string;
     let winWidth;
 
     const gridContainer = document.getElementById('grid-container');
     if (gridContainer) {
-      winWidth = gridContainer.clientWidth ?? gridContainer.scrollWidth ?? gridContainer.offsetWidth;
+      winWidth =
+        gridContainer.clientWidth ??
+        gridContainer.scrollWidth ??
+        gridContainer.offsetWidth;
     } else {
       winWidth = window.innerWidth;
     }
@@ -652,13 +743,16 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
     if (this.filterTerm === '') {
       this.filteredList = Object.assign([], this.ksList);
     } else {
-      this.filteredList = Object.assign([], this.ksList)
-        .filter(ks => JSON.stringify(ks)
+      this.filteredList = Object.assign([], this.ksList).filter((ks) =>
+        JSON.stringify(ks)
           .toLocaleLowerCase()
-          .includes(this.filterTerm.toLocaleLowerCase()));
+          .includes(this.filterTerm.toLocaleLowerCase())
+      );
     }
-    this.displayList = Object.assign([], this.filteredList)
-      .slice(this.paginateConfig.first, this.paginateConfig.first + this.paginateConfig.rows);
+    this.displayList = Object.assign([], this.filteredList).slice(
+      this.paginateConfig.first,
+      this.paginateConfig.first + this.paginateConfig.rows
+    );
   }
 
   _onKsPreview($event: KnowledgeSource) {
@@ -666,7 +760,7 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   _onKsOpen($event: KnowledgeSource) {
-    this.command.open($event)
+    this.command.open($event);
   }
 
   _onKsDetail($event: KnowledgeSource) {
@@ -704,38 +798,48 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
       if (config) {
         this.paginateConfig.rows = config.rows;
 
-        if ((config.projectId && config.projectId !== this.route.snapshot.params.projectId) || this.ksList.length < this.paginateConfig.rows) {
+        if (
+          (config.projectId &&
+            config.projectId !== this.route.snapshot.params.projectId) ||
+          this.ksList.length < this.paginateConfig.rows
+        ) {
           this.paginateConfig.page = 0;
           this.paginateConfig.first = 0;
         } else {
-          const page = Math.floor(this.ksList.length / this.paginateConfig.rows);
+          const page = Math.floor(
+            this.ksList.length / this.paginateConfig.rows
+          );
           this.paginateConfig.page = Math.min(page, config.page);
         }
 
-        this.paginateConfig.first = this.paginateConfig.page * this.paginateConfig.rows;
+        this.paginateConfig.first =
+          this.paginateConfig.page * this.paginateConfig.rows;
         this.savePaginator(this.paginateConfig);
       }
     }
   }
 
   savePaginator(config: PaginateConfig) {
-
     config.projectId = this.route.snapshot.params.projectId ?? '';
     localStorage.setItem('grid-paginator', JSON.stringify(config));
   }
 
   loadSizer() {
-    const sizer = this.sizers.find(s => s.id === this.appSettings.grid.size);
+    const sizer = this.sizers.find((s) => s.id === this.appSettings.grid.size);
     if (sizer) {
       this.selectedSizer = sizer;
     } else {
-      this.notifications.warn('GridView', 'Invalid Sizer', this.appSettings.grid.size);
+      this.notifications.warn(
+        'GridView',
+        'Invalid Sizer',
+        this.appSettings.grid.size
+      );
     }
   }
 
   saveSizer(sizerId: CardSizeType) {
     this.appSettings.grid.size = sizerId;
-    this.settings.set({app: this.appSettings});
+    this.settings.set({ app: this.appSettings });
   }
 
   sizeSelected($event: any) {
@@ -760,16 +864,22 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   loadSorter() {
-    const sorter = this.sorters.find(s => s.id === this.appSettings.grid.sorter);
+    const sorter = this.sorters.find(
+      (s) => s.id === this.appSettings.grid.sorter
+    );
     if (sorter) {
       this.selectedSorter = sorter;
     } else {
-      this.notifications.warn('GridView', 'Invalid Sorter', this.appSettings.grid.sorter);
+      this.notifications.warn(
+        'GridView',
+        'Invalid Sorter',
+        this.appSettings.grid.sorter
+      );
     }
   }
 
   loadAllConfig() {
-    for (let opt of this.ksCardListConfig) {
+    for (const opt of this.ksCardListConfig) {
       this.loadConfig(opt);
     }
   }
@@ -777,22 +887,30 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
   loadConfig(cardListConfig: KsCardListConfig) {
     const str = localStorage.getItem(cardListConfig.id);
     if (!str) {
-      this.notifications.warn('Card List', 'Option Unavailable', cardListConfig.label);
+      this.notifications.warn(
+        'Card List',
+        'Option Unavailable',
+        cardListConfig.label
+      );
       return;
     }
 
-    const val = JSON.parse(str)
+    const val = JSON.parse(str);
     if (val === undefined || typeof val !== 'boolean') {
-      this.notifications.warn('Card List', 'Option Invalid', cardListConfig.label);
+      this.notifications.warn(
+        'Card List',
+        'Option Invalid',
+        cardListConfig.label
+      );
       return;
     }
 
     cardListConfig.value = val;
-    cardListConfig.onChange({checked: val});
+    cardListConfig.onChange({ checked: val });
   }
 
   saveConfig(cardListConfig: KsCardListConfig) {
-    const cfg = this.ksCardListConfig.find(o => o.id === cardListConfig.id);
+    const cfg = this.ksCardListConfig.find((o) => o.id === cardListConfig.id);
 
     if (cfg) {
       localStorage.setItem(cfg.id, JSON.stringify(cfg.value));
@@ -801,7 +919,7 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
 
   saveSorter(sorterId: CardSortType) {
     this.appSettings.grid.sorter = sorterId;
-    this.settings.set({app: this.appSettings});
+    this.settings.set({ app: this.appSettings });
   }
 
   sortSelected($event: any) {
@@ -821,32 +939,47 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
     this.ksSelection = ks;
   }
 
-  onMoveAll(_: MouseEvent) {
-    if (!this.selectedProject || !this.selectedProject.key || this.selectedProject.key.trim() === '') {
-      this.notifications.error('Source Card List', 'Failed to Move', 'No project selected.');
+  onMoveAll() {
+    if (
+      !this.selectedProject ||
+      !this.selectedProject.key ||
+      this.selectedProject.key.trim() === ''
+    ) {
+      this.notifications.error(
+        'Source Card List',
+        'Failed to Move',
+        'No project selected.'
+      );
       return;
     }
 
-    let updates: ProjectUpdateRequest[] = [];
+    const updates: ProjectUpdateRequest[] = [];
 
-    for (let ks of this.ksList) {
+    for (const ks of this.ksList) {
       if (this.selectedProject.key !== ks.associatedProject.value) {
         updates.push({
           id: ks.associatedProject,
-          moveKnowledgeSource: {ks: ks, new: {value: this.selectedProject.key ?? ''}}
+          moveKnowledgeSource: {
+            ks: ks,
+            new: { value: this.selectedProject.key ?? '' },
+          },
         });
       }
     }
 
     if (updates.length > 0) {
       this.projects.updateProjects(updates).then(() => {
-        this.notifications.success('Source Card List', `Source${this.ksList.length > 1 ? 's' : ''} Moved`, this.ksList.map(k => k.title).join(', '));
+        this.notifications.success(
+          'Source Card List',
+          `Source${this.ksList.length > 1 ? 's' : ''} Moved`,
+          this.ksList.map((k) => k.title).join(', ')
+        );
       });
     }
   }
 
   @HostListener('window:resize', ['$event'])
-  onResize(_: any) {
+  onResize() {
     this._windowResize.next({});
   }
 
@@ -855,7 +988,8 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
   keyPressNext() {
     const next = this.paginateConfig.first + this.paginateConfig.rows;
     if (next < this.ksList.length) {
-      this.paginateConfig.first = this.paginateConfig.first + this.paginateConfig.rows;
+      this.paginateConfig.first =
+        this.paginateConfig.first + this.paginateConfig.rows;
     }
     this.assignCopy();
     this.dataListTop.nativeElement.scrollIntoView();
@@ -864,7 +998,10 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
   @HostListener('document:keydown.Control.[')
   @HostListener('document:keydown.meta.[')
   keyPressPrevious() {
-    this.paginateConfig.first = Math.max(0, this.paginateConfig.first - this.paginateConfig.rows);
+    this.paginateConfig.first = Math.max(
+      0,
+      this.paginateConfig.first - this.paginateConfig.rows
+    );
     this.assignCopy();
     this.dataListTop.nativeElement.scrollIntoView();
   }

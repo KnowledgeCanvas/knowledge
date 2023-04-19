@@ -14,7 +14,6 @@
  *  limitations under the License.
  */
 
-
 import {
   Component,
   EventEmitter,
@@ -22,100 +21,140 @@ import {
   Input,
   OnChanges,
   OnDestroy,
-  OnInit,
   Output,
-  SimpleChanges
+  SimpleChanges,
 } from '@angular/core';
-import {KnowledgeSource} from "@app/models/knowledge.source.model";
-import {TreeNode} from "primeng/api";
-import {Subscription} from "rxjs";
-import {UUID} from "@shared/models/uuid.model";
-import {KsCommandService} from "@services/command-services/ks-command.service";
-
+import { KnowledgeSource } from '@app/models/knowledge.source.model';
+import { TreeNode } from 'primeng/api';
+import { Subscription } from 'rxjs';
+import { UUID } from '@shared/models/uuid.model';
+import { KsCommandService } from '@services/command-services/ks-command.service';
 
 @Component({
   selector: 'app-ks-card',
   template: `
-    <div *ngIf="ks" (dblclick)="onEdit.emit(ks)"
-         class="hover:shadow-1 border-round-2xl border-1 border-dotted border-400 h-full flex flex-column overflow-hidden justify-content-between surface-card">
+    <div
+      *ngIf="ks"
+      (dblclick)="onEdit.emit(ks)"
+      class="hover:shadow-1 border-round-2xl border-1 border-dotted border-400 h-full flex flex-column overflow-hidden justify-content-between surface-card"
+    >
       <div class="flex flex-grow-1">
-        <app-ks-thumbnail *ngIf="showThumbnail" [ks]="ks" class="w-full"></app-ks-thumbnail>
+        <app-ks-thumbnail
+          *ngIf="showThumbnail"
+          [ks]="ks"
+          class="w-full"
+        ></app-ks-thumbnail>
       </div>
       <div class="flex flex-column justify-content-end p-3">
         <div class="flex-row-center-between pb-1">
-            <span class="font-bold text-xl cursor-pointer"
-                  (click)="onEdit.emit(this.ks)" [pTooltip]="ks.title" tooltipPosition="top">
-              {{ks.title |truncate: [truncate ? 28 : 64]}}
-            </span>
-          <i *ngIf="showContentType"
-             class="pi pi-{{ks.ingestType | ksIngestTypeIcon}}"
-             [pTooltip]="ks.ingestType | titlecase">
+          <span
+            class="font-bold text-xl cursor-pointer"
+            (click)="onEdit.emit(this.ks)"
+            [pTooltip]="ks.title"
+            tooltipPosition="top"
+          >
+            {{ ks.title | truncate : [truncate ? 28 : 64] }}
+          </span>
+          <i
+            *ngIf="showContentType"
+            class="pi pi-{{ ks.ingestType | ksIngestTypeIcon }}"
+            [pTooltip]="ks.ingestType | titlecase"
+          >
           </i>
         </div>
 
         <div *ngIf="showProjectBreadcrumbs" class="text-500 font-bold pb-1">
-          {{ks.associatedProject | projectName}}
+          {{ ks.associatedProject | projectName }}
         </div>
 
         <div *ngIf="showDescription" class="pb-1">
-          <div *ngIf="description else noDescription" class="text-500" style="height: 4rem">
-            {{description | truncate: [truncate ? 64 : 128]}}
+          <div
+            *ngIf="description; else noDescription"
+            class="text-500"
+            style="height: 4rem"
+          >
+            {{ description | truncate : [truncate ? 64 : 128] }}
           </div>
           <ng-template #noDescription>
             <div class="text-500" style="height: 4rem">
-              {{descriptionPlaceholder}}
+              {{ descriptionPlaceholder }}
             </div>
           </ng-template>
         </div>
 
-        <div class="col-12 pb-1" *ngIf="showProjectSelection && projectTreeNodes.length">
-          <p-treeSelect [(ngModel)]="selectedProject"
-                        [options]="projectTreeNodes"
-                        selectionMode="single"
-                        class="p-fluid w-full"
-                        (onNodeSelect)="onProjectSelected($event)"
-                        appendTo="body"
-                        placeholder="Choose a Project">
+        <div
+          class="col-12 pb-1"
+          *ngIf="showProjectSelection && projectTreeNodes.length"
+        >
+          <p-treeSelect
+            [(ngModel)]="selectedProject"
+            [options]="projectTreeNodes"
+            selectionMode="single"
+            class="p-fluid w-full"
+            (onNodeSelect)="onProjectSelected($event)"
+            appendTo="body"
+            placeholder="Choose a Project"
+          >
           </p-treeSelect>
         </div>
 
-        <div *ngIf="showTopics" class="overflow-y-auto overflow-x-hidden"
-             [style]="{'height':'5rem'}">
-          <p-chips [allowDuplicate]="false"
-                   [addOnBlur]="true"
-                   [addOnTab]="true"
-                   (onChipClick)="onTopicClick.emit({ks: ks, topic: $event.value})"
-                   (onAdd)="onTopicAdd()"
-                   (onRemove)="onTopicRemove()"
-                   [(ngModel)]="keywords"
-                   class="p-fluid w-full"
-                   placeholder="Start typing to add a topic...">
+        <div
+          *ngIf="showTopics"
+          class="overflow-y-auto overflow-x-hidden"
+          [style]="{ height: '5rem' }"
+        >
+          <p-chips
+            [allowDuplicate]="false"
+            [addOnBlur]="true"
+            [addOnTab]="true"
+            (onChipClick)="onTopicClick.emit({ ks: ks, topic: $event.value })"
+            (onAdd)="onTopicAdd()"
+            (onRemove)="onTopicRemove()"
+            [(ngModel)]="keywords"
+            class="p-fluid w-full"
+            placeholder="Start typing to add a topic..."
+          >
           </p-chips>
         </div>
 
-        <div *ngIf="showIcon || showRemove || showOpen || showEdit || showPreview || showFlag"
-             class="flex-row-center-between">
+        <div
+          *ngIf="
+            showIcon ||
+            showRemove ||
+            showOpen ||
+            showEdit ||
+            showPreview ||
+            showFlag
+          "
+          class="flex-row-center-between"
+        >
           <div class="col text-left">
             <app-ks-icon [ks]="ks" *ngIf="showIcon"></app-ks-icon>
           </div>
-          <div *ngIf="showRemove || showOpen || showEdit || showPreview || showFlag">
-            <app-action-bar [showEdit]="showEdit"
-                            [showPreview]="showPreview"
-                            [showOpen]="showOpen"
-                            [showRemove]="showRemove"
-                            [showFlag]="showFlag"
-                            [flagged]="ks.flagged"
-                            (onEdit)="onEdit.emit(this.ks)"
-                            (onPreview)="onPreview.emit(this.ks)"
-                            (onOpen)="onOpen.emit(this.ks)"
-                            (onRemove)="onRemove.emit(this.ks)"
-                            (onFlagged)="onFlagged(this.ks, $event.checked)">
+          <div
+            *ngIf="
+              showRemove || showOpen || showEdit || showPreview || showFlag
+            "
+          >
+            <app-action-bar
+              [showEdit]="showEdit"
+              [showPreview]="showPreview"
+              [showOpen]="showOpen"
+              [showRemove]="showRemove"
+              [showFlag]="showFlag"
+              [flagged]="ks.flagged"
+              (onEdit)="onEdit.emit(this.ks)"
+              (onPreview)="onPreview.emit(this.ks)"
+              (onOpen)="onOpen.emit(this.ks)"
+              (onRemove)="onRemove.emit(this.ks)"
+              (onFlagged)="onFlagged(this.ks, $event.checked)"
+            >
             </app-action-bar>
           </div>
         </div>
 
         <div *ngIf="label" class="w-full text-center text-500 pt-2">
-          {{label}}
+          {{ label }}
         </div>
       </div>
     </div>
@@ -127,10 +166,10 @@ import {KsCommandService} from "@services/command-services/ks-command.service";
           cursor: pointer;
         }
       }
-    `
-  ]
+    `,
+  ],
 })
-export class KsCardComponent implements OnInit, OnDestroy, OnChanges {
+export class KsCardComponent implements OnDestroy, OnChanges {
   /**
    * The Knowledge Source to be displayed on this card
    */
@@ -155,73 +194,72 @@ export class KsCardComponent implements OnInit, OnDestroy, OnChanges {
   /**
    * Determines whether to display KS thumbnail in header (default: true)
    */
-  @Input() showThumbnail: boolean = true;
+  @Input() showThumbnail = true;
 
   /**
    * Determines whether to display KS description (default: true)
    */
-  @Input() showDescription: boolean = true;
+  @Input() showDescription = true;
 
   /**
    * Determines whether to display Project selector (default: false)
    */
-  @Input() showProjectSelection: boolean = false;
+  @Input() showProjectSelection = false;
 
   /**
    * Determines whether to display list of KS Tags as a Tooltip (default: true)
    */
-  @Input() showTopics: boolean = true;
+  @Input() showTopics = true;
 
   /**
    * Determines whether to display the "Remove" button (default: true)
    */
-  @Input() showRemove: boolean = true;
+  @Input() showRemove = true;
 
   /**
    * Determines whether to display the "Preview" button (default: true)
    */
-  @Input() showPreview: boolean = true;
+  @Input() showPreview = true;
 
   /**
    * Determines whether to display the "Edit" button (default: true)
    */
-  @Input() showEdit: boolean = true;
+  @Input() showEdit = true;
 
   /**
    * Determines whether to display the "Open" button (default: true)
    */
-  @Input() showOpen: boolean = true;
+  @Input() showOpen = true;
 
   /**
    * Determines whether to display the "Important" button (default: true)
    */
-  @Input() showFlag: boolean = true;
+  @Input() showFlag = true;
 
   /**
    * Determines whether to show Content Type property (default: true)
    */
-  @Input() showContentType: boolean = true;
+  @Input() showContentType = true;
 
   /**
    * Determines whether to show KS icon (default: true)
    */
-  @Input() showIcon: boolean = true;
+  @Input() showIcon = true;
 
   /**
    * Determines whether to truncate certain fields to avoid spilling text, etc (default: true)
    */
-  @Input() truncate: boolean = true;
+  @Input() truncate = true;
 
   /**
    * Determines whether to show name of the Associated Project (default: false)
    */
-  @Input() showProjectBreadcrumbs: boolean = false;
+  @Input() showProjectBreadcrumbs = false;
 
   /**
    * Set the description placeholder if description is blank.
    */
-  @Input() descriptionPlaceholder: string = 'Double-click to add a description';
-
+  @Input() descriptionPlaceholder = 'Double-click to add a description';
 
   /**
    * Set an optional label
@@ -251,14 +289,21 @@ export class KsCardComponent implements OnInit, OnDestroy, OnChanges {
   /**
    * EventEmitter that is triggered when the KS has been reassigned to a new Project
    */
-  @Output() onProjectChange = new EventEmitter<{ ks: KnowledgeSource, old: string, new: string }>();
+  @Output() onProjectChange = new EventEmitter<{
+    ks: KnowledgeSource;
+    old: string;
+    new: string;
+  }>();
 
   /**
    * EventEmitter that is triggered when a topic is clicked
    */
-  @Output() onTopicClick = new EventEmitter<{ ks: KnowledgeSource, topic: string }>();
+  @Output() onTopicClick = new EventEmitter<{
+    ks: KnowledgeSource;
+    topic: string;
+  }>();
 
-  hovering: boolean = false;
+  hovering = false;
 
   contentType?: string;
 
@@ -268,16 +313,12 @@ export class KsCardComponent implements OnInit, OnDestroy, OnChanges {
 
   actionButtonTooltipOptions = {
     showDelay: 750,
-    tooltipPosition: 'top'
+    tooltipPosition: 'top',
   };
 
   private _subProjectTree?: Subscription;
 
-  constructor(private command: KsCommandService) {
-  }
-
-  ngOnInit(): void {
-  }
+  constructor(private command: KsCommandService) {}
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes.ks?.currentValue) {
@@ -303,23 +344,21 @@ export class KsCardComponent implements OnInit, OnDestroy, OnChanges {
 
   @HostListener('mouseover')
   onCardHover() {
-    if (!this.hovering)
-      this.hovering = true;
+    if (!this.hovering) this.hovering = true;
   }
 
   @HostListener('mouseleave')
   onCardHoverExit() {
-    if (this.hovering)
-      this.hovering = false;
+    if (this.hovering) this.hovering = false;
   }
 
   async getContentType() {
     if (this.ks.ingestType === 'file') {
       return `File (${this.ks.reference.source.file?.type || 'unknown'})`;
     } else {
-      let meta = this.ks.reference.source.website?.metadata?.meta;
+      const meta = this.ks.reference.source.website?.metadata?.meta;
       if (meta) {
-        let ogType = meta.find(m => m.key === 'og:type');
+        const ogType = meta.find((m) => m.key === 'og:type');
         if (ogType && ogType.value) {
           return ogType.value;
         }
@@ -333,24 +372,24 @@ export class KsCardComponent implements OnInit, OnDestroy, OnChanges {
       return this.ks.topics;
     }
 
-    let tags: string[] = [];
+    const tags: string[] = [];
 
     if (this.ks.topics) {
-      for (let topic of this.ks.topics) {
+      for (const topic of this.ks.topics) {
         tags.push(topic);
       }
     }
 
-    let meta = this.ks.reference.source.website?.metadata?.meta;
+    const meta = this.ks.reference.source.website?.metadata?.meta;
     if (meta) {
-      let keywords = meta.find(m => m.key === 'keywords');
+      const keywords = meta.find((m) => m.key === 'keywords');
       if (keywords && keywords.value) {
-        let kwds = keywords.value
+        const kwds = keywords.value
           .trim()
           .split(',')
-          .filter(k => k.trim() !== '');
+          .filter((k) => k.trim() !== '');
         if (kwds && kwds.length) {
-          for (let kwd of kwds) {
+          for (const kwd of kwds) {
             tags.push(kwd);
           }
         }
@@ -365,9 +404,9 @@ export class KsCardComponent implements OnInit, OnDestroy, OnChanges {
       return undefined;
     }
 
-    let meta = this.ks.reference.source.website?.metadata?.meta;
+    const meta = this.ks.reference.source.website?.metadata?.meta;
     if (meta) {
-      let description = meta.find(m => m.key?.includes('description'));
+      const description = meta.find((m) => m.key?.includes('description'));
       if (description && description.value) {
         return description.value;
       }
@@ -381,7 +420,11 @@ export class KsCardComponent implements OnInit, OnDestroy, OnChanges {
       return;
     }
 
-    this.onProjectChange.emit({ks: this.ks, old: this.ks.associatedProject.value, new: $event.node.key});
+    this.onProjectChange.emit({
+      ks: this.ks,
+      old: this.ks.associatedProject.value,
+      new: $event.node.key,
+    });
   }
 
   onTopicRemove() {

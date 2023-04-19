@@ -13,27 +13,27 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import {Injectable, NgZone} from '@angular/core';
-import {BehaviorSubject} from 'rxjs';
+import { Injectable, NgZone } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 import {
   BrowserViewRequest,
   IpcMessage,
   PromptForDirectoryRequest,
-  ThumbnailRequest
-} from "@shared/models/electron.ipc.model";
-import {UUID} from "@shared/models/uuid.model";
+  ThumbnailRequest,
+} from '@shared/models/electron.ipc.model';
+import { UUID } from '@shared/models/uuid.model';
 
 export interface ElectronNavEvent {
-  stack: string[]
+  stack: string[];
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ElectronIpcService {
   receiveChannels = {
-    browserViewExtractText: 'E2A:BrowserView:ExtractedText'
-  }
+    browserViewExtractText: 'E2A:BrowserView:ExtractedText',
+  };
   private ClassName = 'ElectronIpcService';
   private send = window.api.send;
   private receive = window.api.receive;
@@ -70,8 +70,8 @@ export class ElectronIpcService {
     promptForDirectory: 'A2E:FileSystem:DirectoryPrompt',
     promptForDirectoryResults: 'E2A:FileSystem:DirectoryPrompt',
     showItemInFolder: 'A2E:FileSystem:ShowFile',
-    showItemInFolderResults: 'E2A:FileSystem:ShowFile'
-  }
+    showItemInFolderResults: 'E2A:FileSystem:ShowFile',
+  };
   // Subscribers will be alerted when the browser view navigates to a new URL
   private browserViewNavEvent = new BehaviorSubject<string>('');
   navEvent = this.browserViewNavEvent.asObservable();
@@ -86,15 +86,21 @@ export class ElectronIpcService {
   private _bvUrl = new BehaviorSubject<string>('');
   browserViewCurrentUrlResult = this._bvUrl.asObservable();
 
-  private _bvStateTimer: any = Date.now()
+  private _bvStateTimer: any = Date.now();
 
   private _currentVersion = new BehaviorSubject<string>('');
   version = this._currentVersion.asObservable();
 
-  private _thumbnails = new BehaviorSubject<{ id: string, thumbnail: any }>({id: '', thumbnail: undefined});
+  private _thumbnails = new BehaviorSubject<{ id: string; thumbnail: any }>({
+    id: '',
+    thumbnail: undefined,
+  });
   thumbnail = this._thumbnails.asObservable();
 
-  private _extractedText = new BehaviorSubject<{ url: string, text: string }>({url: '', text: ''});
+  private _extractedText = new BehaviorSubject<{ url: string; text: string }>({
+    url: '',
+    text: '',
+  });
   extractedText = this._extractedText.asObservable();
 
   constructor(private zone: NgZone) {
@@ -105,9 +111,12 @@ export class ElectronIpcService {
       console.log('Auto update message: ', response);
     });
 
-    this.receive(this.channels.checkCurrentVersionResults, (response: IpcMessage) => {
-      this._currentVersion.next(response.success?.data);
-    });
+    this.receive(
+      this.channels.checkCurrentVersionResults,
+      (response: IpcMessage) => {
+        this._currentVersion.next(response.success?.data);
+      }
+    );
 
     /**
      * Listen for incoming browser extension results
@@ -118,7 +127,7 @@ export class ElectronIpcService {
           console.error(response.error);
           return;
         } else if (response.success?.data) {
-          let url = response.success.data;
+          const url = response.success.data;
           this.browserViewNavEvent.next(url);
         }
         this.triggerBrowserViewStateUpdate();
@@ -129,40 +138,53 @@ export class ElectronIpcService {
      * Pre-register call backs which will feed the above observables
      *
      */
-    this.receive(this.channels.browserViewCanGoBackResults, (response: IpcMessage) => {
-      this.run(() => {
-        if (response.success)
-          this._bvCanGoBack.next(response.success.data);
-      });
-    });
-
-    this.receive(this.channels.browserViewCanGoForwardResults, (response: IpcMessage) => {
-      this.run(() => {
-        if (response.success)
-          this._bvCanGoForward.next(response.success.data);
-      });
-    });
-
-    this.receive(this.channels.browserViewCurrentUrlResults, (response: IpcMessage) => {
-      this.run(() => {
-        if (response.success)
-          this._bvUrl.next(response.success.data);
-      });
-    });
-
-    this.receive(this.receiveChannels.browserViewExtractText, (response: any) => {
-      this._extractedText.next(response);
-    })
-
-    this.receive(this.channels.getFileThumbnailResults, (response: IpcMessage[]) => {
-      for (let res of response) {
+    this.receive(
+      this.channels.browserViewCanGoBackResults,
+      (response: IpcMessage) => {
         this.run(() => {
-          if (res.success?.data) {
-            this._thumbnails.next(res.success.data);
-          }
+          if (response.success) this._bvCanGoBack.next(response.success.data);
         });
       }
-    });
+    );
+
+    this.receive(
+      this.channels.browserViewCanGoForwardResults,
+      (response: IpcMessage) => {
+        this.run(() => {
+          if (response.success)
+            this._bvCanGoForward.next(response.success.data);
+        });
+      }
+    );
+
+    this.receive(
+      this.channels.browserViewCurrentUrlResults,
+      (response: IpcMessage) => {
+        this.run(() => {
+          if (response.success) this._bvUrl.next(response.success.data);
+        });
+      }
+    );
+
+    this.receive(
+      this.receiveChannels.browserViewExtractText,
+      (response: any) => {
+        this._extractedText.next(response);
+      }
+    );
+
+    this.receive(
+      this.channels.getFileThumbnailResults,
+      (response: IpcMessage[]) => {
+        for (const res of response) {
+          this.run(() => {
+            if (res.success?.data) {
+              this._thumbnails.next(res.success.data);
+            }
+          });
+        }
+      }
+    );
   }
 
   checkForUpdates() {
@@ -203,42 +225,47 @@ export class ElectronIpcService {
     this._bvCanGoForward.next(false);
     this._bvUrl.next('');
 
-    this.receiveOnce(this.channels.closeBrowserViewResults, (response: IpcMessage) => {
-      this.removeAllListeners(this.channels.closeBrowserViewResults);
-      this.run(() => {
-        if (response.success) {
-          return response.success.data;
-        } else {
-          console.error('ElectronIpcService -- ', response.error);
-        }
-      });
-    });
+    this.receiveOnce(
+      this.channels.closeBrowserViewResults,
+      (response: IpcMessage) => {
+        this.removeAllListeners(this.channels.closeBrowserViewResults);
+        this.run(() => {
+          if (response.success) {
+            return response.success.data;
+          } else {
+            console.error('ElectronIpcService -- ', response.error);
+          }
+        });
+      }
+    );
     this.send(this.channels.closeBrowserView);
   }
 
   run = (fn: () => void) => {
     this.zone.run(fn);
-  }
+  };
 
   getFileIcon(paths: string[]): Promise<any[]> {
     return new Promise<any[]>((resolve) => {
-      this.receiveOnce(this.channels.getFileIconResults, (responses: IpcMessage[]) => {
-        if (paths.length <= 0) {
+      this.receiveOnce(
+        this.channels.getFileIconResults,
+        (responses: IpcMessage[]) => {
+          if (paths.length <= 0) {
+            this.run(() => {
+              resolve([]);
+            });
+          }
+
+          const icons: any[] = [];
+          for (const response of responses) {
+            if (response.success?.data) icons.push(response.success.data);
+          }
+
           this.run(() => {
-            resolve([]);
-          })
+            resolve(icons);
+          });
         }
-
-        let icons: any[] = [];
-        for (let response of responses) {
-          if (response.success?.data)
-            icons.push(response.success.data);
-        }
-
-        this.run(() => {
-          resolve(icons);
-        })
-      });
+      );
       this.send(this.channels.getFileIcon, paths);
     });
   }
@@ -251,30 +278,36 @@ export class ElectronIpcService {
 
   promptForDirectory(request: PromptForDirectoryRequest): Promise<string> {
     return new Promise<string>((resolve, reject) => {
-      this.receiveOnce(this.channels.promptForDirectoryResults, (response: IpcMessage) => {
-        this.removeAllListeners(this.channels.promptForDirectoryResults);
-        this.run(() => {
-          if (response.error) {
-            console.error(response.error);
-            reject(response.error);
-          }
-          if (response.success) {
-            resolve(response.success.data);
-          }
-        });
-      });
+      this.receiveOnce(
+        this.channels.promptForDirectoryResults,
+        (response: IpcMessage) => {
+          this.removeAllListeners(this.channels.promptForDirectoryResults);
+          this.run(() => {
+            if (response.error) {
+              console.error(response.error);
+              reject(response.error);
+            }
+            if (response.success) {
+              resolve(response.success.data);
+            }
+          });
+        }
+      );
       this.send(this.channels.promptForDirectory, request);
     });
   }
 
   openBrowserView(request: BrowserViewRequest): Promise<IpcMessage> {
     return new Promise<IpcMessage>((resolve) => {
-      this.receiveOnce(this.channels.browserViewResults, (response: IpcMessage) => {
-        this.removeAllListeners(this.channels.browserViewResults);
-        this.run(() => {
-          resolve(response);
-        });
-      });
+      this.receiveOnce(
+        this.channels.browserViewResults,
+        (response: IpcMessage) => {
+          this.removeAllListeners(this.channels.browserViewResults);
+          this.run(() => {
+            resolve(response);
+          });
+        }
+      );
       this.send(this.channels.browserView, request);
     });
   }
@@ -285,16 +318,19 @@ export class ElectronIpcService {
         resolve(false);
       }
 
-      this.receiveOnce(this.channels.openLocalFileResults, (response: IpcMessage) => {
-        this.removeAllListeners(this.channels.openLocalFileResults);
-        this.run(() => {
-          if (response.success?.data) {
-            resolve(true);
-          } else {
-            resolve(false);
-          }
-        });
-      });
+      this.receiveOnce(
+        this.channels.openLocalFileResults,
+        (response: IpcMessage) => {
+          this.removeAllListeners(this.channels.openLocalFileResults);
+          this.run(() => {
+            if (response.success?.data) {
+              resolve(true);
+            } else {
+              resolve(false);
+            }
+          });
+        }
+      );
       this.send(this.channels.openLocalFile, path);
     });
   }
@@ -305,23 +341,29 @@ export class ElectronIpcService {
         resolve([]);
       }
 
-      this.receiveOnce(this.channels.generateUuidResults, (response: IpcMessage) => {
-        this.removeAllListeners(this.channels.generateUuidResults);
-        this.run(() => {
-          if (response.success?.data) {
-            let uuids: UUID[] = [];
-            for (let id of response.success.data) {
-              let uuid = {value: id};
-              uuids.push(uuid);
+      this.receiveOnce(
+        this.channels.generateUuidResults,
+        (response: IpcMessage) => {
+          this.removeAllListeners(this.channels.generateUuidResults);
+          this.run(() => {
+            if (response.success?.data) {
+              const uuids: UUID[] = [];
+              for (const id of response.success.data) {
+                const uuid = { value: id };
+                uuids.push(uuid);
+              }
+              resolve(uuids);
+            } else {
+              console.error(
+                `${this.ClassName} error generating UUIDs: `,
+                response.error
+              );
+              reject([]);
             }
-            resolve(uuids);
-          } else {
-            console.error(`${this.ClassName} error generating UUIDs: `, response.error);
-            reject([]);
-          }
-        });
-      });
-      this.send(this.channels.generateUuid, {quantity: quantity});
+          });
+        }
+      );
+      this.send(this.channels.generateUuid, { quantity: quantity });
     });
   }
 

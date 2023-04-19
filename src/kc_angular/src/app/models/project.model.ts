@@ -13,22 +13,21 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import {EventModel, ProjectCalendar} from "@shared/models/event.model";
-import {KcProjectModel, KcProjectType} from "@shared/models/project.model";
-import {KnowledgeSource} from "./knowledge.source.model";
-import {UUID} from "@shared/models/uuid.model";
-
+import { EventModel, ProjectCalendar } from '@shared/models/event.model';
+import { KcProjectModel, KcProjectType } from '@shared/models/project.model';
+import { KnowledgeSource } from './knowledge.source.model';
+import { UUID } from '@shared/models/uuid.model';
 
 export class KcProject implements KcProjectModel {
   readonly id: UUID;
-  name: string = '';
+  name = '';
   authors: string[] = [];
-  description: string = '';
-  parentId: UUID = {value: ''};
+  description = '';
+  parentId: UUID = { value: '' };
   subprojects: string[] = [];
   topics: string[] = [];
   type: KcProjectType;
-  expanded: boolean = false;
+  expanded = false;
 
   // TODO: this needs to be changed to an array of UUID instead of KS. The KS should be looked up
   sources: UUID[];
@@ -43,20 +42,18 @@ export class KcProject implements KcProjectModel {
   dateModified: Date;
   dateAccessed: Date;
 
-
   constructor(name: string, id: UUID, type?: KcProjectType, parentId?: UUID) {
     this.name = name;
     this.id = id;
     this.type = type ? type : 'default';
-    this.parentId = parentId ?? {value: ''};
+    this.parentId = parentId ?? { value: '' };
     this.dateCreated = new Date();
     this.dateModified = new Date();
     this.dateAccessed = new Date();
-    this.calendar = {events: [], start: null, end: null};
+    this.calendar = { events: [], start: null, end: null };
     this.sources = [];
   }
 }
-
 
 export interface ProjectCreationRequest {
   name: string;
@@ -73,7 +70,7 @@ export interface ProjectCreationRequest {
   calendar: ProjectCalendar;
 }
 
-export type ProjectMoveRequest = { ks: KnowledgeSource, new: UUID };
+export type ProjectMoveRequest = { ks: KnowledgeSource; new: UUID };
 
 export interface ProjectUpdateRequest {
   id: UUID;
@@ -92,5 +89,5 @@ export interface ProjectUpdateRequest {
   addKnowledgeSource?: KnowledgeSource[];
   removeKnowledgeSource?: KnowledgeSource[];
   updateKnowledgeSource?: KnowledgeSource[];
-  moveKnowledgeSource?: ProjectMoveRequest
+  moveKnowledgeSource?: ProjectMoveRequest;
 }

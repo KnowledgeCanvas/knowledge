@@ -14,84 +14,214 @@
  *  limitations under the License.
  */
 
-import {DOCUMENT} from "@angular/common";
-import {EventEmitter, Inject, Injectable} from '@angular/core';
-import {KcTheme} from "@shared/models/style.model";
+import { DOCUMENT } from '@angular/common';
+import { EventEmitter, Inject, Injectable } from '@angular/core';
+import { KcTheme } from '@shared/models/style.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ThemeService {
   onThemeChange = new EventEmitter();
 
   private readonly _themes: KcTheme[] = [
-    {name: 'Lara Light Blue', code: 'lara-light-blue', isDark: false, isDual: true},
-    {name: 'Lara Dark Blue', code: 'lara-dark-blue', isDark: true, isDual: true},
-    {name: 'Lara Light Indigo', code: 'lara-light-indigo', isDark: false, isDual: true},
-    {name: 'Lara Dark Indigo', code: 'lara-dark-indigo', isDark: true, isDual: true},
-    {name: 'Lara Light Purple', code: 'lara-light-purple', isDark: false, isDual: true},
-    {name: 'Lara Dark Purple', code: 'lara-dark-purple', isDark: true, isDual: true},
-    {name: 'Lara Light Teal', code: 'lara-light-teal', isDark: false, isDual: true},
-    {name: 'Lara Dark Teal', code: 'lara-dark-teal', isDark: true, isDual: true},
-    {name: 'Arya Blue', code: 'arya-blue', isDark: true, isDual: false},
-    {name: 'Arya Green', code: 'arya-green', isDark: true, isDual: false},
-    {name: 'Arya Orange', code: 'arya-orange', isDark: true, isDual: false},
-    {name: 'Arya Purple', code: 'arya-purple', isDark: true, isDual: false},
-    {name: 'Saga Blue', code: 'saga-blue', isDark: false, isDual: false},
-    {name: 'Saga Green', code: 'saga-green', isDark: false, isDual: false},
-    {name: 'Saga Orange', code: 'saga-orange', isDark: false, isDual: false},
-    {name: 'Saga Purple', code: 'saga-purple', isDark: false, isDual: false},
-    {name: 'Vela Blue', code: 'vela-blue', isDark: true, isDual: false},
-    {name: 'Vela Green', code: 'vela-green', isDark: true, isDual: false},
-    {name: 'Vela Orange', code: 'vela-orange', isDark: true, isDual: false},
-    {name: 'Vela Purple', code: 'vela-purple', isDark: true, isDual: false},
+    {
+      name: 'Lara Light Blue',
+      code: 'lara-light-blue',
+      isDark: false,
+      isDual: true,
+    },
+    {
+      name: 'Lara Dark Blue',
+      code: 'lara-dark-blue',
+      isDark: true,
+      isDual: true,
+    },
+    {
+      name: 'Lara Light Indigo',
+      code: 'lara-light-indigo',
+      isDark: false,
+      isDual: true,
+    },
+    {
+      name: 'Lara Dark Indigo',
+      code: 'lara-dark-indigo',
+      isDark: true,
+      isDual: true,
+    },
+    {
+      name: 'Lara Light Purple',
+      code: 'lara-light-purple',
+      isDark: false,
+      isDual: true,
+    },
+    {
+      name: 'Lara Dark Purple',
+      code: 'lara-dark-purple',
+      isDark: true,
+      isDual: true,
+    },
+    {
+      name: 'Lara Light Teal',
+      code: 'lara-light-teal',
+      isDark: false,
+      isDual: true,
+    },
+    {
+      name: 'Lara Dark Teal',
+      code: 'lara-dark-teal',
+      isDark: true,
+      isDual: true,
+    },
+    { name: 'Arya Blue', code: 'arya-blue', isDark: true, isDual: false },
+    { name: 'Arya Green', code: 'arya-green', isDark: true, isDual: false },
+    { name: 'Arya Orange', code: 'arya-orange', isDark: true, isDual: false },
+    { name: 'Arya Purple', code: 'arya-purple', isDark: true, isDual: false },
+    { name: 'Saga Blue', code: 'saga-blue', isDark: false, isDual: false },
+    { name: 'Saga Green', code: 'saga-green', isDark: false, isDual: false },
+    { name: 'Saga Orange', code: 'saga-orange', isDark: false, isDual: false },
+    { name: 'Saga Purple', code: 'saga-purple', isDark: false, isDual: false },
+    { name: 'Vela Blue', code: 'vela-blue', isDark: true, isDual: false },
+    { name: 'Vela Green', code: 'vela-green', isDark: true, isDual: false },
+    { name: 'Vela Orange', code: 'vela-orange', isDark: true, isDual: false },
+    { name: 'Vela Purple', code: 'vela-purple', isDark: true, isDual: false },
   ];
 
   private readonly _groupedThemes: KcTheme[] = [
     {
-      name: 'Lara', code: 'lara-light', isDark: false, isDual: true,
+      name: 'Lara',
+      code: 'lara-light',
+      isDark: false,
+      isDual: true,
       items: [
-        {name: 'Lara Light Blue', code: 'lara-light-blue', isDark: false, isDual: true},
-        {name: 'Lara Light Indigo', code: 'lara-light-indigo', isDark: false, isDual: true},
-        {name: 'Lara Light Purple', code: 'lara-light-purple', isDark: false, isDual: true},
-        {name: 'Lara Light Teal', code: 'lara-light-teal', isDark: false, isDual: true},
-      ]
+        {
+          name: 'Lara Light Blue',
+          code: 'lara-light-blue',
+          isDark: false,
+          isDual: true,
+        },
+        {
+          name: 'Lara Light Indigo',
+          code: 'lara-light-indigo',
+          isDark: false,
+          isDual: true,
+        },
+        {
+          name: 'Lara Light Purple',
+          code: 'lara-light-purple',
+          isDark: false,
+          isDual: true,
+        },
+        {
+          name: 'Lara Light Teal',
+          code: 'lara-light-teal',
+          isDark: false,
+          isDual: true,
+        },
+      ],
     },
     {
-      name: 'Lara', code: 'lara-dark', isDark: true, isDual: true,
+      name: 'Lara',
+      code: 'lara-dark',
+      isDark: true,
+      isDual: true,
       items: [
-        {name: 'Lara Dark Blue', code: 'lara-dark-blue', isDark: true, isDual: true},
-        {name: 'Lara Dark Indigo', code: 'lara-dark-indigo', isDark: true, isDual: true},
-        {name: 'Lara Dark Purple', code: 'lara-dark-purple', isDark: true, isDual: true},
-        {name: 'Lara Dark Teal', code: 'lara-dark-teal', isDark: true, isDual: true},
-      ]
+        {
+          name: 'Lara Dark Blue',
+          code: 'lara-dark-blue',
+          isDark: true,
+          isDual: true,
+        },
+        {
+          name: 'Lara Dark Indigo',
+          code: 'lara-dark-indigo',
+          isDark: true,
+          isDual: true,
+        },
+        {
+          name: 'Lara Dark Purple',
+          code: 'lara-dark-purple',
+          isDark: true,
+          isDual: true,
+        },
+        {
+          name: 'Lara Dark Teal',
+          code: 'lara-dark-teal',
+          isDark: true,
+          isDual: true,
+        },
+      ],
     },
     {
-      name: 'Arya', code: 'arya', isDark: true, isDual: false,
+      name: 'Arya',
+      code: 'arya',
+      isDark: true,
+      isDual: false,
       items: [
-        {name: 'Arya Blue', code: 'arya-blue', isDark: true, isDual: false},
-        {name: 'Arya Green', code: 'arya-green', isDark: true, isDual: false},
-        {name: 'Arya Orange', code: 'arya-orange', isDark: true, isDual: false},
-        {name: 'Arya Purple', code: 'arya-purple', isDark: true, isDual: false},
-      ]
+        { name: 'Arya Blue', code: 'arya-blue', isDark: true, isDual: false },
+        { name: 'Arya Green', code: 'arya-green', isDark: true, isDual: false },
+        {
+          name: 'Arya Orange',
+          code: 'arya-orange',
+          isDark: true,
+          isDual: false,
+        },
+        {
+          name: 'Arya Purple',
+          code: 'arya-purple',
+          isDark: true,
+          isDual: false,
+        },
+      ],
     },
     {
-      name: 'Saga', code: 'saga', isDark: false, isDual: false,
+      name: 'Saga',
+      code: 'saga',
+      isDark: false,
+      isDual: false,
       items: [
-        {name: 'Saga Blue', code: 'saga-blue', isDark: false, isDual: false},
-        {name: 'Saga Green', code: 'saga-green', isDark: false, isDual: false},
-        {name: 'Saga Orange', code: 'saga-orange', isDark: false, isDual: false},
-        {name: 'Saga Purple', code: 'saga-purple', isDark: false, isDual: false},
-      ]
+        { name: 'Saga Blue', code: 'saga-blue', isDark: false, isDual: false },
+        {
+          name: 'Saga Green',
+          code: 'saga-green',
+          isDark: false,
+          isDual: false,
+        },
+        {
+          name: 'Saga Orange',
+          code: 'saga-orange',
+          isDark: false,
+          isDual: false,
+        },
+        {
+          name: 'Saga Purple',
+          code: 'saga-purple',
+          isDark: false,
+          isDual: false,
+        },
+      ],
     },
     {
-      name: 'Vela', code: 'vela', isDark: true, isDual: false,
+      name: 'Vela',
+      code: 'vela',
+      isDark: true,
+      isDual: false,
       items: [
-        {name: 'Vela Blue', code: 'vela-blue', isDark: true, isDual: false},
-        {name: 'Vela Green', code: 'vela-green', isDark: true, isDual: false},
-        {name: 'Vela Orange', code: 'vela-orange', isDark: true, isDual: false},
-        {name: 'Vela Purple', code: 'vela-purple', isDark: true, isDual: false},
-      ]
+        { name: 'Vela Blue', code: 'vela-blue', isDark: true, isDual: false },
+        { name: 'Vela Green', code: 'vela-green', isDark: true, isDual: false },
+        {
+          name: 'Vela Orange',
+          code: 'vela-orange',
+          isDark: true,
+          isDual: false,
+        },
+        {
+          name: 'Vela Purple',
+          code: 'vela-purple',
+          isDark: true,
+          isDual: false,
+        },
+      ],
     },
   ];
 
@@ -110,11 +240,16 @@ export class ThemeService {
   }
 
   get defaultTheme(): KcTheme {
-    return {name: 'Lara Light Indigo', code: 'lara-light-indigo', isDark: false, isDual: true};
+    return {
+      name: 'Lara Light Indigo',
+      code: 'lara-light-indigo',
+      isDark: false,
+      isDual: true,
+    };
   }
 
   get localTheme(): KcTheme {
-    let lts = localStorage.getItem('theme');
+    const lts = localStorage.getItem('theme');
     let lt: KcTheme;
     if (!lts) {
       lt = this.defaultTheme;
@@ -126,41 +261,53 @@ export class ThemeService {
   }
 
   async switchTheme(theme: string) {
-    let _theme = this._themes.filter(t => t.code === theme || t.name === theme)[0];
+    let _theme = this._themes.filter(
+      (t) => t.code === theme || t.name === theme
+    )[0];
 
     if (!_theme) {
       console.warn(`Could not find theme "${theme}"`);
       _theme = this.defaultTheme;
     }
 
-    return fetch(`${_theme.code}.css`).then((res) => {
-      if (res.status !== 200) {
-        console.error('Unable to set theme - invalid style-sheet');
+    return fetch(`${_theme.code}.css`)
+      .then((res) => {
+        if (res.status !== 200) {
+          console.error('Unable to set theme - invalid style-sheet');
+          return false;
+        }
+
+        const themeLink = this.document.getElementById(
+          'app-theme'
+        ) as HTMLLinkElement;
+        if (themeLink) {
+          themeLink.href = `${_theme.code}.css`;
+          this._active = _theme;
+          localStorage.setItem('theme', JSON.stringify(_theme));
+          return true;
+        }
+
         return false;
-      }
-
-      let themeLink = this.document.getElementById('app-theme') as HTMLLinkElement;
-      if (themeLink) {
-        themeLink.href = `${_theme.code}.css`;
-        this._active = _theme;
-        localStorage.setItem('theme', JSON.stringify(_theme));
-        return true;
-      }
-
-      return false;
-    }).catch((_) => {
-      console.warn('Unable to set theme - invalid style-sheet');
-      return false;
-    }).finally(() => {
-      this.onThemeChange.emit();
-    });
+      })
+      .catch(() => {
+        console.warn('Unable to set theme - invalid style-sheet');
+        return false;
+      })
+      .finally(() => {
+        this.onThemeChange.emit();
+      });
   }
 
   /**
    * Sets and returns the default (light) theme
    */
   restoreDefault(): KcTheme {
-    let def: KcTheme = {name: 'Lara Light Indigo', code: 'lara-light-indigo', isDark: false, isDual: true};
+    const def: KcTheme = {
+      name: 'Lara Light Indigo',
+      code: 'lara-light-indigo',
+      isDark: false,
+      isDual: true,
+    };
     this.switchTheme(def.code);
     return def;
   }

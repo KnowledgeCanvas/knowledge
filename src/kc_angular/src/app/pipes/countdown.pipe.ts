@@ -14,17 +14,16 @@
  *  limitations under the License.
  */
 
-import {Pipe, PipeTransform} from '@angular/core';
+import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'countdown'
+  name: 'countdown',
 })
 export class CountdownPipe implements PipeTransform {
-
-  transform(value: Date, ...args: unknown[]): unknown {
-    let then = new Date(value);
-    let now = new Date();
-    let diffTime = dateDiffInDays(then, now);
+  transform(value: Date): unknown {
+    const then = new Date(value);
+    const now = new Date();
+    const diffTime = this.dateDiffInDays(then, now);
     let countdown;
     if (diffTime > 365 || diffTime <= -365) {
       countdown = `1yr+`;
@@ -35,14 +34,13 @@ export class CountdownPipe implements PipeTransform {
     }
     return countdown;
   }
-}
 
-const _MS_PER_DAY = 1000 * 60 * 60 * 24;
-
-// a and b are javascript Date objects
-function dateDiffInDays(a: any, b: any) {
-  // Discard the time and time-zone information.
-  const utc1 = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate());
-  const utc2 = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate());
-  return Math.floor((utc2 - utc1) / _MS_PER_DAY);
+  // a and b are javascript Date objects
+  dateDiffInDays(a: any, b: any) {
+    const _MS_PER_DAY = 1000 * 60 * 60 * 24;
+    // Discard the time and time-zone information.
+    const utc1 = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate());
+    const utc2 = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate());
+    return Math.floor((utc2 - utc1) / _MS_PER_DAY);
+  }
 }

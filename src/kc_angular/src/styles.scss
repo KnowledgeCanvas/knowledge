@@ -1,5 +1,5 @@
 /*!
- * Copyright (c) 2022 Rob Royce
+ * Copyright (c) 2022-2023 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-
 
 @import "styles/kc-styles";
 @import '../../../node_modules/primeflex/primeflex.min.css';
@@ -81,6 +80,122 @@ app-ks-ingest {
     height: 100%;
     flex-basis: 80%;
   }
+}
+
+.ks-description > p > img {
+  max-width: 48rem;
+}
+
+
+// Remove margin from top and bottom of ul eles
+.ks-description > ul,
+.message-text > ul,
+.ks-description > ol,
+.message-text > ol {
+  margin: 0 !important;
+}
+
+// Remove margin and padding from <p> tags inside ks-description and message-text elements
+.ks-description > p,
+.message-text > p,
+.ks-description > ul > li > p,
+.ks-description > ol > li > p,
+.message-text > ul > li > p,
+.message-text > ol > li > p {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.message-text > h1,
+.ks-description > h1 {
+  font-size: 1.5rem;
+  font-weight: 500;
+  margin: 0.5rem 0;
+}
+
+.message-text > h2,
+.ks-description > h2 {
+  font-size: 1.25rem;
+  font-weight: 500;
+  margin: 0.5rem 0;
+}
+
+.message-text > h3,
+.ks-description > h4 {
+  font-size: 1.125rem;
+  font-weight: 500;
+  margin: 0.5rem 0;
+}
+
+.message-text > h4,
+.ks-description > h4 {
+  font-size: 1rem;
+  font-weight: 500;
+  margin: 0.5rem 0;
+}
+
+.message-text > h5,
+.ks-description > h5 {
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin: 0.5rem 0;
+}
+
+.topic-markdown {
+  background-color: var(--surface-ground);
+  color: var(--primary-color);
+  border-radius: 6px;
+  font-weight: bold;
+  padding: 0.1rem 0.5rem;
+}
+
+.highlight-selector-lightblue {
+  background-color: lightskyblue !important;
+  color: lightskyblue !important;
+}
+
+.highlight-selector-green {
+  background-color: lightgreen !important;
+  color: lightgreen !important;
+}
+
+.highlight-selector-red {
+  background-color: orangered !important;
+  color: orangered !important;
+}
+
+.highlight-selector-yellow {
+  background-color: yellow !important;
+  color: yellow !important;
+}
+
+.highlight-lightblue {
+  background-color: lightskyblue !important;
+}
+
+.highlight-green {
+  background-color: lightgreen !important;
+}
+
+.highlight-red {
+  background-color: orangered !important;
+}
+
+.highlight-yellow {
+  background-color: yellow !important;
+}
+
+.indicator {
+  background-color: var(--surface-hover);
+  position: relative;
+  z-index: 99999999 !important;
+}
+
+.indicator__cta {
+  top: -20px;
+  left: 50%;
+  position: relative;
+  z-index: 99999999 !important;
 }
 
 @media (min-width: 140rem) {

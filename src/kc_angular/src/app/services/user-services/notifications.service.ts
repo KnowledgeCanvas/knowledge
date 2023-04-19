@@ -13,31 +13,39 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import {DisplaySettingsModel, LoggingSettingsModel} from "@shared/models/settings.model";
-import {Injectable} from '@angular/core';
-import {Message, MessageService} from "primeng/api";
-import {SettingsService} from "@services/ipc-services/settings.service";
+import {
+  DisplaySettingsModel,
+  LoggingSettingsModel,
+} from '@shared/models/settings.model';
+import { Injectable } from '@angular/core';
+import { Message, MessageService } from 'primeng/api';
+import { SettingsService } from '@services/ipc-services/settings.service';
 
-export type KcNotificationPresentation = 'banner' | 'none' | 'toast'
+export type KcNotificationPresentation = 'banner' | 'none' | 'toast';
 
 export interface KcNotification extends Message {
-  presentation: KcNotificationPresentation
+  presentation: KcNotificationPresentation;
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class NotificationsService {
   logSettings: LoggingSettingsModel = {
     warn: false,
     error: false,
-    debug: false
-  }
+    debug: false,
+  };
 
-  constructor(private messageService: MessageService, private settingsService: SettingsService) {
-    settingsService.display.subscribe((displaySettings: DisplaySettingsModel) => {
-      this.logSettings = displaySettings.logging;
-    })
+  constructor(
+    private messageService: MessageService,
+    private settingsService: SettingsService
+  ) {
+    settingsService.display.subscribe(
+      (displaySettings: DisplaySettingsModel) => {
+        this.logSettings = displaySettings.logging;
+      }
+    );
   }
 
   toast(msg: KcNotification) {
@@ -47,90 +55,126 @@ export class NotificationsService {
   }
 
   banner(msg: KcNotification) {
-    msg.key = 'app-banner'
+    msg.key = 'app-banner';
     msg.life = msg.life ?? 5000;
-    msg.sticky = msg.sticky ? msg.sticky : false
+    msg.sticky = msg.sticky ? msg.sticky : false;
     this.messageService.add(msg);
   }
 
   datetime = (): string => {
-    return new Date().toLocaleString()
-  }
+    return new Date().toLocaleString();
+  };
 
-  debug(component: string, summary: string, detail: string | any, presentation: KcNotificationPresentation = 'none') {
+  debug(
+    component: string,
+    summary: string,
+    detail: string | any,
+    presentation: KcNotificationPresentation = 'none'
+  ) {
     if (this.settingsService.get()?.display?.logging?.debug) {
-      console.debug(`[Debug]-[${this.datetime()}]-[${component}]: ${summary} - `, detail);
+      console.debug(
+        `[Debug]-[${this.datetime()}]-[${component}]: ${summary} - `,
+        detail
+      );
       const msg: KcNotification = {
         severity: 'info',
         summary: summary,
         detail: detail,
         closable: true,
         life: 3000,
-        presentation: presentation
-      }
+        presentation: presentation,
+      };
       this.broadcast(msg);
     }
   }
 
-  error(component: string, summary: string, detail: string, presentation: KcNotificationPresentation = 'none') {
-    console.error(`[Error]-[${this.datetime()}]-[${component}]: ${summary} - ${detail}`);
+  error(
+    component: string,
+    summary: string,
+    detail: string,
+    presentation: KcNotificationPresentation = 'none'
+  ) {
+    console.error(
+      `[Error]-[${this.datetime()}]-[${component}]: ${summary} - ${detail}`
+    );
     const msg: KcNotification = {
       severity: 'error',
       summary: summary,
       detail: detail,
       life: 5000,
       closable: true,
-      presentation: presentation
-    }
+      presentation: presentation,
+    };
     this.broadcast(msg);
   }
 
   log(component: string, summary: string, detail: string) {
-    console.log(`[Info ]-[${this.datetime()}]-[${component}]: ${summary} - ${detail}`);
+    console.log(
+      `[Info ]-[${this.datetime()}]-[${component}]: ${summary} - ${detail}`
+    );
   }
 
-  success(component: string, summary: string, detail: string, presentation: KcNotificationPresentation = 'toast') {
-    console.log(`[Info ]-[${this.datetime()}]-[${component}]: ${summary} - ${detail}`);
+  success(
+    component: string,
+    summary: string,
+    detail: string,
+    presentation: KcNotificationPresentation = 'toast'
+  ) {
+    console.log(
+      `[Info ]-[${this.datetime()}]-[${component}]: ${summary} - ${detail}`
+    );
     const msg: KcNotification = {
       severity: 'success',
       summary: summary,
       detail: detail,
       closable: true,
-      presentation: presentation
-    }
+      presentation: presentation,
+    };
     this.broadcast(msg);
   }
 
-  warn(component: string, summary: string, detail: string, presentation: KcNotificationPresentation = 'none') {
-    console.warn(`[Warn]-[${this.datetime()}]-[${component}]: ${summary} - ${detail}`);
+  warn(
+    component: string,
+    summary: string,
+    detail: string,
+    presentation: KcNotificationPresentation = 'none'
+  ) {
+    console.warn(
+      `[Warn]-[${this.datetime()}]-[${component}]: ${summary} - ${detail}`
+    );
     const msg: KcNotification = {
       severity: 'warn',
       summary: summary,
       detail: detail,
       life: 5000,
       closable: true,
-      presentation: presentation
-    }
+      presentation: presentation,
+    };
     this.broadcast(msg);
   }
 
   broadcast(msg: KcNotification) {
     switch (msg.presentation) {
-      case "none":
+      case 'none':
         if (this.logSettings?.debug) {
           this.toast(msg);
         }
         break;
-      case "toast":
+      case 'toast':
         this.toast(msg);
         break;
-      case "banner":
+      case 'banner':
         // this.banner(msg);
         // TODO: the banner is broken with the current layout (in apps.component), it sticks to the top and looks bad.
         this.toast(msg);
         break;
       default:
-        this.error('NotificationsService', 'Invalid Presentation Type', msg.presentation, 'none');
+        this.error(
+          'NotificationsService',
+          'Invalid Presentation Type',
+          msg.presentation,
+          'none'
+        );
     }
   }
 }

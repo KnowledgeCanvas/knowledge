@@ -14,34 +14,32 @@
  *  limitations under the License.
  */
 
-import {Pipe, PipeTransform} from '@angular/core';
-import {ImportMethod} from "@shared/models/knowledge.source.model";
+import { Pipe, PipeTransform } from '@angular/core';
+import { ImportMethod } from '@shared/models/knowledge.source.model';
 
 @Pipe({
-  name: 'importMethod'
+  name: 'importMethod',
 })
 export class ImportMethodPipe implements PipeTransform {
-
   transform(value?: ImportMethod): unknown {
     if (!value) {
       return '';
     }
     switch (value) {
-      case "autoscan":
+      case 'autoscan':
         return 'Autoscan';
-      case "dnd":
+      case 'dnd':
         return 'Drag/Drop';
-      case "extension":
+      case 'extension':
         return 'Browser Extension';
-      case "manual":
+      case 'manual':
         return 'Manual';
-      case "example":
+      case 'example':
         return 'Example';
-      case "recommend":
-        return "Recommended"
+      case 'recommend':
+        return 'Recommended';
       default:
-        return ''
+        return '';
     }
   }
-
 }

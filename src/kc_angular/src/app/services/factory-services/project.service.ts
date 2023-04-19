@@ -14,17 +14,21 @@
  *  limitations under the License.
  */
 
-import {BehaviorSubject, Observable} from 'rxjs';
-import {EventModel} from "@shared/models/event.model";
-import {Injectable} from '@angular/core';
-import {KcProject, ProjectCreationRequest, ProjectUpdateRequest} from "@app/models/project.model";
-import {KcProjectType} from "@shared/models/project.model";
-import {KnowledgeSource} from "@app/models/knowledge.source.model";
-import {NotificationsService} from "@services/user-services/notifications.service";
-import {ProjectTree, ProjectTreeNode} from "@app/models/project.tree.model";
-import {StorageService} from "@services/ipc-services/storage.service";
-import {UUID} from "@shared/models/uuid.model";
-import {UuidService} from "@services/ipc-services/uuid.service";
+import { BehaviorSubject, Observable } from 'rxjs';
+import { EventModel } from '@shared/models/event.model';
+import { Injectable } from '@angular/core';
+import {
+  KcProject,
+  ProjectCreationRequest,
+  ProjectUpdateRequest,
+} from '@app/models/project.model';
+import { KcProjectType } from '@shared/models/project.model';
+import { KnowledgeSource } from '@app/models/knowledge.source.model';
+import { NotificationsService } from '@services/user-services/notifications.service';
+import { ProjectTree, ProjectTreeNode } from '@app/models/project.tree.model';
+import { StorageService } from '@services/ipc-services/storage.service';
+import { UUID } from '@shared/models/uuid.model';
+import { UuidService } from '@services/ipc-services/uuid.service';
 
 export interface ProjectIdentifiers {
   id: string;
@@ -32,16 +36,20 @@ export interface ProjectIdentifiers {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ProjectService {
-  private allProjects: BehaviorSubject<ProjectTreeNode[]> = new BehaviorSubject<ProjectTreeNode[]>([]);
+  private allProjects: BehaviorSubject<ProjectTreeNode[]> = new BehaviorSubject<
+    ProjectTreeNode[]
+  >([]);
   projectTree: Observable<ProjectTreeNode[]> = this.allProjects.asObservable();
 
   private selectedSource = new BehaviorSubject<KcProject | null>(null);
   currentProject = this.selectedSource.asObservable();
 
-  private allProjectModels: BehaviorSubject<KcProject[]> = new BehaviorSubject<KcProject[]>([]);
+  private allProjectModels: BehaviorSubject<KcProject[]> = new BehaviorSubject<
+    KcProject[]
+  >([]);
   projects = this.allProjectModels.asObservable();
 
   private addedSources = new BehaviorSubject<KnowledgeSource[]>([]);
@@ -51,9 +59,11 @@ export class ProjectService {
   private projectSource: KcProject[] = [];
   private lookup: Map<string, KcProject>;
 
-  constructor(private storageService: StorageService,
-              private uuidService: UuidService,
-              private notifications: NotificationsService) {
+  constructor(
+    private storageService: StorageService,
+    private uuidService: UuidService,
+    private notifications: NotificationsService
+  ) {
     this.allProjects = new BehaviorSubject<ProjectTreeNode[]>([]);
     this.projectTree = this.allProjects.asObservable();
     this.tree = new ProjectTree();
@@ -66,22 +76,22 @@ export class ProjectService {
    * Returns a list of Project types. The first element is guaranteed to be the default type
    * @constructor
    */
-  get ProjectTypes(): { code: KcProjectType, name: string }[] {
+  get ProjectTypes(): { code: KcProjectType; name: string }[] {
     return [
-      {code: 'default', name: 'Default'},
-      {code: 'school', name: 'School'},
-      {code: 'hobby', name: 'Hobby'},
-      {code: 'work', name: 'Work'}
+      { code: 'default', name: 'Default' },
+      { code: 'school', name: 'School' },
+      { code: 'hobby', name: 'Hobby' },
+      { code: 'work', name: 'Work' },
     ];
   }
 
   get ProjectIdentifiers(): ProjectIdentifiers[] {
-    let ids: ProjectIdentifiers[] = [];
-    for (let project of this.projectSource) {
-      let id: ProjectIdentifiers = {
+    const ids: ProjectIdentifiers[] = [];
+    for (const project of this.projectSource) {
+      const id: ProjectIdentifiers = {
         id: project.id.value,
-        title: project.name
-      }
+        title: project.name,
+      };
       ids.push(id);
     }
     return ids;
@@ -91,7 +101,8 @@ export class ProjectService {
     this.lookup = new Map();
     this.tree = new ProjectTree();
 
-    this.getAllProjects().then((projects: KcProject[]) => {
+    this.getAllProjects().then(
+      (projects: KcProject[]) => {
         this.projectSource = [];
         for (const project of projects) {
           this.lookup.set(project.id.value, project);
@@ -105,10 +116,11 @@ export class ProjectService {
         this.buildTree(this.projectSource);
         this.initialize();
       },
-      error => {
+      (error) => {
         console.error('ProjectService: Unable to get projects from source...');
         console.error(error);
-      });
+      }
+    );
   }
 
   deleteProject(id: UUID | string) {
@@ -121,7 +133,6 @@ export class ProjectService {
 
     // If we are deleting the active project
     if (this.storageService.kcCurrentProject === id) {
-
       // If there are other projects available, choose the first one as active
       if (this.projectSource.length > 0) {
         this.storageService.kcCurrentProject = this.projectSource[0].id.value;
@@ -151,10 +162,12 @@ export class ProjectService {
   async newProject(project: ProjectCreationRequest) {
     // Generate UUID
     let uuid: UUID[] = this.uuidService.generate(1);
-    let projectId: UUID = uuid[0];
+    const projectId: UUID = uuid[0];
 
-    let newProject: KcProject = {
-      calendar: project.calendar ? project.calendar : {events: [], start: null, end: null},
+    const newProject: KcProject = {
+      calendar: project.calendar
+        ? project.calendar
+        : { events: [], start: null, end: null },
       dateCreated: new Date(),
       dateAccessed: new Date(),
       dateModified: new Date(),
@@ -172,19 +185,19 @@ export class ProjectService {
       parentId: project.parentId,
       subprojects: [],
       topics: project.topics,
-      type: project.type
-    }
+      type: project.type,
+    };
 
-    let subProjects: KcProject[] = [];
+    const subProjects: KcProject[] = [];
 
     if (project.subProjects && project.subProjects.length > 0) {
       uuid = this.uuidService.generate(project.subProjects.length);
 
       for (let i = 0; i < project.subProjects.length; i++) {
-        let subRequest = project.subProjects[i];
-        let newSubProject = {
+        const subRequest = project.subProjects[i];
+        const newSubProject = {
           authors: [],
-          calendar: {events: [], start: null, end: null},
+          calendar: { events: [], start: null, end: null },
           dateAccessed: new Date(),
           dateCreated: new Date(),
           dateModified: new Date(),
@@ -201,8 +214,8 @@ export class ProjectService {
           parentId: subRequest.parentId,
           subprojects: [],
           topics: subRequest.topics,
-          type: subRequest.type
-        }
+          type: subRequest.type,
+        };
 
         subProjects.push(newSubProject);
         newProject.subprojects.push(newSubProject.id.value);
@@ -212,20 +225,23 @@ export class ProjectService {
     this.projectSource.push(newProject);
     await this.storageService.saveProject(newProject);
 
-    for (let subProject of subProjects) {
+    for (const subProject of subProjects) {
       this.projectSource.push(subProject);
       await this.storageService.saveProject(subProject);
     }
 
     if (project.parentId?.value) {
-      let parent = this.getProject(project.parentId.value);
+      const parent = this.getProject(project.parentId.value);
 
       if (parent && parent.subprojects && parent.subprojects.length > 0) {
         parent.subprojects.push(newProject.id.value);
       } else if (parent) {
         parent.subprojects = [newProject.id.value];
       } else {
-        console.error('Parent project not found <newProject>: ', project.parentId);
+        console.error(
+          'Parent project not found <newProject>: ',
+          project.parentId
+        );
       }
       if (parent) {
         parent.expanded = true;
@@ -246,21 +262,30 @@ export class ProjectService {
    * e.g. create an update with ID (required) and an array removeKnowledgeSource[], etc.
    */
   async updateProjects(updates: ProjectUpdateRequest[]) {
-    for (let update of updates) {
+    for (const update of updates) {
       // Make sure the target project exists
-      let target = this.projectSource.find(p => p.id.value === update.id.value);
+      let target = this.projectSource.find(
+        (p) => p.id.value === update.id.value
+      );
       if (!target) {
-        console.error(`Attempting to update non-existant project with ID:`, update.id.value);
+        console.error(
+          `Attempting to update non-existant project with ID:`,
+          update.id.value
+        );
         return;
       }
 
       // Description accumulator, used by each operation to describe what actions occured in a meaningful way.
       // TODO: make sure all operations are accounted for before commiting this...
-      let description: string = '';
-      let setDescription = (operation: string, summary: string) => {
-        this.notifications.debug('ProjectService', `Update Operation: ${operation}`, summary);
+      let description = '';
+      const setDescription = (operation: string, summary: string) => {
+        this.notifications.debug(
+          'ProjectService',
+          `Update Operation: ${operation}`,
+          summary
+        );
         description += `${operation}: ${summary}, `;
-      }
+      };
 
       if (update.name && update.name !== target.name) {
         setDescription('Name', `from ${target.name} to ${update.name}`);
@@ -272,41 +297,56 @@ export class ProjectService {
 
       // Handle parentId update
       if (update.parentId) {
-        const next = this.projectSource.find(p => p.id.value === update.parentId);
-        const current = target?.parentId ? this.projectSource.find(p => p.id.value === target!.parentId.value) : undefined;
+        const next = this.projectSource.find(
+          (p) => p.id.value === update.parentId
+        );
+        const current = target?.parentId
+          ? this.projectSource.find(
+              (p) => p.id.value === target!.parentId.value
+            )
+          : undefined;
         if (next) {
-          if (!current) { // Parent
+          if (!current) {
+            // Parent
             // TODO: finish this after working on getting the app to work properly again
           }
           setDescription('Move', `from ${current?.name ?? ''} to ${next.name}`);
-          target.parentId = {value: update.parentId};
+          target.parentId = { value: update.parentId };
         }
       }
 
       // Handle add subproject update
       if (update.addSubprojects && update.addSubprojects.length) {
         if (target.subprojects) {
-          for (let subp of update.addSubprojects) {
+          for (const subp of update.addSubprojects) {
             target.subprojects.push(subp);
-
           }
-          setDescription('Add Subprojects', `${update.addSubprojects.length} subprojects added`);
+          setDescription(
+            'Add Subprojects',
+            `${update.addSubprojects.length} subprojects added`
+          );
         }
       }
 
       // Handle remove subproject update
       if (update.removeSubprojects && update.removeSubprojects.length) {
-        for (let subp of update.removeSubprojects) {
+        for (const subp of update.removeSubprojects) {
           if (target.subprojects) {
-            target.subprojects = target.subprojects.filter(s => s !== subp);
+            target.subprojects = target.subprojects.filter((s) => s !== subp);
           }
         }
-        setDescription('Remove Subprojects', `${update.removeSubprojects.length} subprojects removed`);
+        setDescription(
+          'Remove Subprojects',
+          `${update.removeSubprojects.length} subprojects removed`
+        );
       }
 
       // Handle knowledge source removal
       if (update.removeKnowledgeSource && update.removeKnowledgeSource.length) {
-        target = this.removeKnowledgeSource(target, update.removeKnowledgeSource);
+        target = this.removeKnowledgeSource(
+          target,
+          update.removeKnowledgeSource
+        );
       }
 
       // Handle moving knowledge source from project to project
@@ -320,24 +360,28 @@ export class ProjectService {
       }
 
       // Handle knowledge source update
-      if (update.updateKnowledgeSource && update.updateKnowledgeSource.length > 0) {
-        target = this.updateKnowledgeSource(target, update.updateKnowledgeSource);
+      if (
+        update.updateKnowledgeSource &&
+        update.updateKnowledgeSource.length > 0
+      ) {
+        target = this.updateKnowledgeSource(
+          target,
+          update.updateKnowledgeSource
+        );
       }
 
       // Handle topic insertion
       if (update.addTopic && update.addTopic.length > 0) {
-        if (!target.topics)
-          target.topics = [];
-        for (let topic of update.addTopic)
-          target.topics.push(topic);
+        if (!target.topics) target.topics = [];
+        for (const topic of update.addTopic) target.topics.push(topic);
       }
 
       // Handle topic removal
       if (update.removeTopic && update.removeTopic.length > 0) {
         if (target.topics) {
-          let removeTopics: string[] = update.removeTopic;
-          for (let topic of removeTopics) {
-            target.topics = target.topics.filter(t => t !== topic);
+          const removeTopics: string[] = update.removeTopic;
+          for (const topic of removeTopics) {
+            target.topics = target.topics.filter((t) => t !== topic);
           }
         }
       }
@@ -346,16 +390,16 @@ export class ProjectService {
         target.topics = update.overWriteTopics;
       }
 
-      let event: EventModel = {
+      const event: EventModel = {
         description: description,
         type: 'update',
-        timestamp: Date()
-      }
+        timestamp: Date(),
+      };
       target.calendar.events.push(event);
       target.dateModified = new Date();
 
       if (target.knowledgeSource) {
-        for (let ks of target.knowledgeSource) {
+        for (const ks of target.knowledgeSource) {
           ks.associatedProject = target.id;
         }
       }
@@ -363,7 +407,9 @@ export class ProjectService {
       // Persist project to storage system
       await this.storageService.updateProject(target);
 
-      this.projectSource = this.projectSource.filter(p => p.id.value !== update.id.value);
+      this.projectSource = this.projectSource.filter(
+        (p) => p.id.value !== update.id.value
+      );
       this.projectSource.push(target);
     }
 
@@ -376,7 +422,7 @@ export class ProjectService {
       return;
     }
 
-    let project = this.projectSource.find(p => p.id.value === id);
+    const project = this.projectSource.find((p) => p.id.value === id);
 
     if (project) {
       // Update access date any time a project is viewed
@@ -392,7 +438,10 @@ export class ProjectService {
       this.storageService.kcCurrentProject = project.id.value;
     } else {
       this.setDefaultProject();
-      console.error('ProjectService failed to find ID in setCurrentProject: ', id);
+      console.error(
+        'ProjectService failed to find ID in setCurrentProject: ',
+        id
+      );
     }
   }
 
@@ -405,9 +454,8 @@ export class ProjectService {
       id = id.value;
     }
 
-    for (let project of this.projectSource) {
-      if (project.id.value === id)
-        return project;
+    for (const project of this.projectSource) {
+      if (project.id.value === id) return project;
     }
     return undefined;
   }
@@ -417,16 +465,19 @@ export class ProjectService {
       id = id.value;
     }
 
-    let project = this.projectSource.find(k => k.id.value === id);
+    const project = this.projectSource.find((k) => k.id.value === id);
     let ret: ProjectIdentifiers[] = [];
     if (!project) {
-      console.error('Attempting to find project that doesn\'t exist with ID: ', id);
+      console.error(
+        "Attempting to find project that doesn't exist with ID: ",
+        id
+      );
       return ret;
     }
 
-    ret.push({id: project.id.value, title: project.name});
+    ret.push({ id: project.id.value, title: project.name });
     if (project.subprojects && project.subprojects.length > 0) {
-      for (let subProjectId of project.subprojects) {
+      for (const subProjectId of project.subprojects) {
         ret = ret.concat(this.getSubTree(subProjectId));
       }
     }
@@ -434,14 +485,17 @@ export class ProjectService {
   }
 
   getAncestors(id: string): ProjectIdentifiers[] {
-    let project = this.projectSource.find(k => k.id.value === id);
+    const project = this.projectSource.find((k) => k.id.value === id);
     let ret: ProjectIdentifiers[] = [];
     if (!project) {
-      console.error('Attempting to find project that doesn\'t exist with ID: ', id);
+      console.error(
+        "Attempting to find project that doesn't exist with ID: ",
+        id
+      );
       return ret;
     }
 
-    ret.push({id: project.id.value, title: project.name});
+    ret.push({ id: project.id.value, title: project.name });
     if (project.parentId && project.parentId.value !== '') {
       ret = [...this.getAncestors(project.parentId.value), ...ret];
     }
@@ -449,7 +503,7 @@ export class ProjectService {
   }
 
   async setAllExpanded(expanded: boolean) {
-    for (let project of this.projectSource) {
+    for (const project of this.projectSource) {
       project.expanded = expanded;
     }
     this.storageService.saveProjectList(this.projectSource);
@@ -466,51 +520,62 @@ export class ProjectService {
   }
 
   private recursiveDelete(id: string) {
-    let project = this.projectSource.find(p => p.id.value === id);
+    const project = this.projectSource.find((p) => p.id.value === id);
 
     if (!project) {
       console.error('Project not found <recursive delete>: ', id);
       return;
     }
 
-    for (let ks of project.knowledgeSource) {
+    for (const ks of project.knowledgeSource) {
       this.storageService.deleteKnowledgeSource(ks);
     }
 
     if (project.parentId) {
-      let parent = this.projectSource.find(p => p.id.value === project?.parentId?.value);
+      const parent = this.projectSource.find(
+        (p) => p.id.value === project?.parentId?.value
+      );
       if (parent && parent.subprojects) {
-        parent.subprojects = parent.subprojects.filter(p => p !== id);
+        parent.subprojects = parent.subprojects.filter((p) => p !== id);
         this.storageService.updateProject(parent);
       }
     }
 
     if (project.subprojects && project.subprojects.length > 0) {
-      for (let subProject of project.subprojects) {
+      for (const subProject of project.subprojects) {
         this.recursiveDelete(subProject);
       }
     }
 
-    this.projectSource = this.projectSource.filter(item => item.id.value !== id);
-    this.notifications.warn('Project Service', 'Deleting Project', project.name);
+    this.projectSource = this.projectSource.filter(
+      (item) => item.id.value !== id
+    );
+    this.notifications.warn(
+      'Project Service',
+      'Deleting Project',
+      project.name
+    );
     this.storageService.deleteProject(id);
   }
 
   private initialize(): void {
     const data = this.buildFileTree(this.tree.asArray(), 0);
     this.allProjects.next(data);
-    let currentProject = this.storageService.kcCurrentProject;
+    const currentProject = this.storageService.kcCurrentProject;
 
     if (currentProject) {
-      let found = this.projectSource.find(p => p.id.value === currentProject);
-      if (found)
-        this.setCurrentProject(currentProject);
-      else
-        this.setCurrentProject(null);
+      const found = this.projectSource.find(
+        (p) => p.id.value === currentProject
+      );
+      if (found) this.setCurrentProject(currentProject);
+      else this.setCurrentProject(null);
     }
   }
 
-  private buildFileTree(source: ProjectTreeNode[], level: number): ProjectTreeNode[] {
+  private buildFileTree(
+    source: ProjectTreeNode[],
+    level: number
+  ): ProjectTreeNode[] {
     const tree: ProjectTreeNode[] = [];
 
     for (const node of source) {
@@ -544,17 +609,29 @@ export class ProjectService {
   }
 
   private modelToNode(model: KcProject): ProjectTreeNode {
-    return new ProjectTreeNode(model.name, model.id.value, 'project', [], model.expanded);
+    return new ProjectTreeNode(
+      model.name,
+      model.id.value,
+      'project',
+      [],
+      model.expanded
+    );
   }
 
-  private addKnowledgeSource(project: KcProject, add: KnowledgeSource[]): KcProject {
+  private addKnowledgeSource(
+    project: KcProject,
+    add: KnowledgeSource[]
+  ): KcProject {
     // Assume knowledge source icons have not been persisted to local memory yet...
     // TODO: this would be better suited for StorageService
-    for (let ks of add) {
+    for (const ks of add) {
       if (ks.ingestType === 'file') {
         localStorage.setItem(`icon-${ks.id.value}`, ks.icon);
 
-        if (ks.importMethod === 'autoscan' && typeof ks.accessLink === 'string') {
+        if (
+          ks.importMethod === 'autoscan' &&
+          typeof ks.accessLink === 'string'
+        ) {
           ks.accessLink = ks.accessLink.replace('pending-', '');
         }
       }
@@ -563,14 +640,19 @@ export class ProjectService {
     if (!project.knowledgeSource || project.knowledgeSource.length === 0) {
       project.knowledgeSource = add;
     } else {
-      let ksList: KnowledgeSource[] = [];
-      for (let addKs of add) {
-        let found = project.knowledgeSource.find(k => k.id.value === addKs.id.value);
+      const ksList: KnowledgeSource[] = [];
+      for (const addKs of add) {
+        const found = project.knowledgeSource.find(
+          (k) => k.id.value === addKs.id.value
+        );
         if (!found) {
           addKs.associatedProject = project.id;
           ksList.push(addKs);
         } else
-          console.warn('ProjectService: Invalid request to add duplicate knowledge source to project ', project.name);
+          console.warn(
+            'ProjectService: Invalid request to add duplicate knowledge source to project ',
+            project.name
+          );
       }
       project.knowledgeSource = [...project.knowledgeSource, ...ksList];
     }
@@ -580,20 +662,32 @@ export class ProjectService {
     return project;
   }
 
-  private removeKnowledgeSource(project: KcProject, remove: KnowledgeSource[]): KcProject {
+  private removeKnowledgeSource(
+    project: KcProject,
+    remove: KnowledgeSource[]
+  ): KcProject {
     if (project.knowledgeSource && project.knowledgeSource.length > 0) {
-      for (let toRemove of remove) {
+      for (const toRemove of remove) {
         this.storageService.deleteKnowledgeSource(toRemove);
-        project.knowledgeSource = project.knowledgeSource.filter(ks => ks.id.value !== toRemove.id.value);
+        project.knowledgeSource = project.knowledgeSource.filter(
+          (ks) => ks.id.value !== toRemove.id.value
+        );
       }
     } else {
-      console.error(`Attempting to remove ${remove.length} knowledge source(s) from project with no knowledge sources...`);
+      console.error(
+        `Attempting to remove ${remove.length} knowledge source(s) from project with no knowledge sources...`
+      );
     }
     return project;
   }
 
-  private moveKnowledgeSource(project: KcProject, move: { ks: KnowledgeSource, new: UUID }): KcProject {
-    const newProject = this.projectSource.find(p => p.id.value === move.new.value);
+  private moveKnowledgeSource(
+    project: KcProject,
+    move: { ks: KnowledgeSource; new: UUID }
+  ): KcProject {
+    const newProject = this.projectSource.find(
+      (p) => p.id.value === move.new.value
+    );
     if (!newProject) {
       return project;
     }
@@ -603,25 +697,34 @@ export class ProjectService {
     }
     move.ks.events.push({
       date: new Date(),
-      label: `Moved`
+      label: `Moved`,
     });
     newProject.knowledgeSource.push(move.ks);
     this.storageService.updateProject(newProject);
 
     // Remove ks from old project and return
-    project.knowledgeSource = project.knowledgeSource.filter(k => k.id.value !== move.ks.id.value);
+    project.knowledgeSource = project.knowledgeSource.filter(
+      (k) => k.id.value !== move.ks.id.value
+    );
     return project;
   }
 
-  private updateKnowledgeSource(project: KcProject, update: KnowledgeSource[]): KcProject {
+  private updateKnowledgeSource(
+    project: KcProject,
+    update: KnowledgeSource[]
+  ): KcProject {
     if (project.knowledgeSource && project.knowledgeSource.length > 0) {
-      for (let ks of update) {
+      for (const ks of update) {
         // Make sure the item does not already exist in the project
-        let idx = project.knowledgeSource.findIndex(p => p.id.value === ks.id.value);
+        const idx = project.knowledgeSource.findIndex(
+          (p) => p.id.value === ks.id.value
+        );
         if (idx >= 0) {
           project.knowledgeSource[idx] = ks;
         } else {
-          console.error('Error attempting to update Knowledge Source with no matching ID...');
+          console.error(
+            'Error attempting to update Knowledge Source with no matching ID...'
+          );
         }
       }
     }

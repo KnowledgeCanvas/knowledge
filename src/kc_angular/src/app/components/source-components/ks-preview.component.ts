@@ -13,90 +13,106 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {KnowledgeSource} from "@app/models/knowledge.source.model";
-import {ElectronIpcService} from "@services/ipc-services/electron-ipc.service";
-import {Clipboard} from "@angular/cdk/clipboard";
-import {ExtractorService} from "@services/ingest-services/extractor.service";
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { KnowledgeSource } from '@app/models/knowledge.source.model';
+import { ElectronIpcService } from '@services/ipc-services/electron-ipc.service';
+import { Clipboard } from '@angular/cdk/clipboard';
+import { ExtractorService } from '@services/ingest-services/extractor.service';
 import {
   BrowserViewClickEvent,
   BrowserViewConfig,
   BrowserViewNavEvent,
   FileViewClickEvent,
-  FileViewConfig
-} from "@shared/models/browser.view.model";
-import {KsFactoryService} from "@services/factory-services/ks-factory.service";
-import {IngestService} from "@services/ingest-services/ingest.service";
-import {DynamicDialogConfig, DynamicDialogRef} from "primeng/dynamicdialog";
-import {NotificationsService} from "@services/user-services/notifications.service";
-import {KsCommandService} from "@services/command-services/ks-command.service";
+  FileViewConfig,
+} from '@shared/models/browser.view.model';
+import { KsFactoryService } from '@services/factory-services/ks-factory.service';
+import { IngestService } from '@services/ingest-services/ingest.service';
+import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { NotificationsService } from '@services/user-services/notifications.service';
+import { KsCommandService } from '@services/command-services/ks-command.service';
 
 export interface KsPreviewInput {
-  ks: KnowledgeSource
+  ks: KnowledgeSource;
 }
 
 @Component({
   selector: 'app-ks-preview',
   template: `
     <div class="ks-preview-viewport">
-      <div class="ks-preview-body" [ngStyle]="{'background-color' : backgroundColor}">
-        <ks-lib-browser-view *ngIf="browserViewConfig"
-                             (clickEvent)="onBrowserViewClickEvent($event)"
-                             (navEvent)="onBrowserViewNavEvent($event)"
-                             (viewReady)="setViewReady($event)"
-                             [kcBrowserViewConfig]="browserViewConfig">
+      <div
+        class="ks-preview-body"
+        [ngStyle]="{ 'background-color': backgroundColor }"
+      >
+        <ks-lib-browser-view
+          *ngIf="browserViewConfig"
+          (clickEvent)="onBrowserViewClickEvent($event)"
+          (navEvent)="onBrowserViewNavEvent($event)"
+          (viewReady)="setViewReady($event)"
+          [kcBrowserViewConfig]="browserViewConfig"
+        >
         </ks-lib-browser-view>
 
-        <ks-lib-file-view *ngIf="fileViewConfig"
-                          (clickEvent)="onFileViewClickEvent($event)"
-                          (fileError)="onError($event)"
-                          (viewReady)="setViewReady($event)"
-                          [config]="fileViewConfig">
+        <ks-lib-file-view
+          *ngIf="fileViewConfig"
+          (clickEvent)="onFileViewClickEvent($event)"
+          (fileError)="onError($event)"
+          (viewReady)="setViewReady($event)"
+          [config]="fileViewConfig"
+        >
         </ks-lib-file-view>
       </div>
 
       <div class="ks-preview-footer w-full flex-row-center-center">
         <div *ngIf="!viewReady">
           <div>
-            <img src="assets/img/kc-icon-greyscale.png"
-                 alt="Knowledge Logo"
-                 class="pulsate-fwd"
-                 style="filter: drop-shadow(0 0 1px var(--primary-color)); height: 8rem; position: absolute; left: calc(50vw - 4rem); top: calc(50vh - 4rem)">
+            <img
+              src="assets/img/kc-icon-greyscale.png"
+              alt="Knowledge Logo"
+              class="pulsate-fwd"
+              style="filter: drop-shadow(0 0 1px var(--primary-color)); height: 8rem; position: absolute; left: calc(50vw - 4rem); top: calc(50vh - 4rem)"
+            />
           </div>
         </div>
-        <p-progressBar *ngIf="!viewReady" mode="indeterminate" id="progress-bar" class="p-fluid w-full"></p-progressBar>
+        <p-progressBar
+          *ngIf="!viewReady"
+          mode="indeterminate"
+          id="progress-bar"
+          class="p-fluid w-full"
+        ></p-progressBar>
       </div>
     </div>
   `,
-  styles: [`
-    .ks-preview-viewport {
-      //background-color: black;
-      min-height: calc(100vh - 48px);
-      max-height: calc(100vh - 48px);
-      min-width: 100%;
-      max-width: 100%;
-      overflow: hidden;
-    }
-
-    .ks-preview-body {
-      // The dialog itself should be opened with a height of 100vh, the footer should be 8px, and the header should be 32px
-      height: calc(100vh - 48px);
-    }
-
-    .ks-preview-footer {
-      height: 8px;
-      display: flex;
-      flex-direction: column;
-      flex-wrap: nowrap;
-      justify-content: flex-end;
-    }
-
-    ::ng-deep {
-      .p-dialog {
-        max-height: unset;
+  styles: [
+    `
+      .ks-preview-viewport {
+        //background-color: black;
+        min-height: calc(100vh - 48px);
+        max-height: calc(100vh - 48px);
+        min-width: 100%;
+        max-width: 100%;
+        overflow: hidden;
       }
-    }
-  `]
+
+      .ks-preview-body {
+        // The dialog itself should be opened with a height of 100vh, the footer should be 8px, and the header should be 32px
+        height: calc(100vh - 48px);
+      }
+
+      .ks-preview-footer {
+        height: 8px;
+        display: flex;
+        flex-direction: column;
+        flex-wrap: nowrap;
+        justify-content: flex-end;
+      }
+
+      ::ng-deep {
+        .p-dialog {
+          max-height: unset;
+        }
+      }
+    `,
+  ],
 })
 export class KsPreviewComponent implements OnInit, OnDestroy {
   // Must be configured to display file view. Should be undefined when displaying browser view
@@ -106,38 +122,40 @@ export class KsPreviewComponent implements OnInit, OnDestroy {
   browserViewConfig: BrowserViewConfig | undefined = undefined;
 
   // Can be set to any color, rgb, rgba, or hex
-  backgroundColor: string = 'white'
+  backgroundColor = 'white';
 
   // The KS for which this preview is being opened
   ks: KnowledgeSource;
 
   // Set to true if something changes that requires the KS to be updated after dialog close
-  ksChanged: boolean = false;
+  ksChanged = false;
 
   // An array of file types that have been tested and are to be supported in file viewer
   supportedFileTypes: string[] = ['pdf', 'jpeg', 'png', 'mp4'];
 
   // Set to true once file or browser viewers have loaded properly
-  viewReady: boolean = false;
+  viewReady = false;
 
   // Should be set to file path (if file) or current browser view URL (if website)
-  private activeBrowserViewUrl: string = '';
+  private activeBrowserViewUrl = '';
 
-  constructor(private extractor: ExtractorService,
-              private ref: DynamicDialogRef,
-              private config: DynamicDialogConfig,
-              private ipc: ElectronIpcService,
-              private factory: KsFactoryService,
-              private command: KsCommandService,
-              private ingest: IngestService,
-              private clipboard: Clipboard,
-              private notifications: NotificationsService) {
+  constructor(
+    private extractor: ExtractorService,
+    private ref: DynamicDialogRef,
+    private config: DynamicDialogConfig,
+    private ipc: ElectronIpcService,
+    private factory: KsFactoryService,
+    private command: KsCommandService,
+    private ingest: IngestService,
+    private clipboard: Clipboard,
+    private notifications: NotificationsService
+  ) {
     this.ks = config.data.ks;
   }
 
   ngOnInit(): void {
     switch (this.ks.reference.ingestType) {
-      case "file":
+      case 'file':
         this.previewFile();
         break;
       default:
@@ -162,7 +180,11 @@ export class KsPreviewComponent implements OnInit, OnDestroy {
 
   onFileViewClickEvent(clickEvent: FileViewClickEvent) {
     if (!this.fileViewConfig) {
-      this.notifications.error('Preview', 'Invalid File', 'Expected file view configuration.');
+      this.notifications.error(
+        'Preview',
+        'Invalid File',
+        'Expected file view configuration.'
+      );
       return;
     }
 
@@ -180,7 +202,11 @@ export class KsPreviewComponent implements OnInit, OnDestroy {
 
   onBrowserViewClickEvent(clickEvent: BrowserViewClickEvent) {
     if (!this.browserViewConfig) {
-      this.notifications.error('Preview', 'Invalid File', 'Expected file view configuration.');
+      this.notifications.error(
+        'Preview',
+        'Invalid File',
+        'Expected file view configuration.'
+      );
       return;
     }
 
@@ -204,33 +230,45 @@ export class KsPreviewComponent implements OnInit, OnDestroy {
   onBrowserViewNavEvent(navEvent: BrowserViewNavEvent) {
     this.activeBrowserViewUrl = navEvent.url?.href || '';
 
-    if (!this.browserViewConfig)
-      return;
+    if (!this.browserViewConfig) return;
 
     if (navEvent.url?.href !== this.browserViewConfig.url.href) {
-      this.browserViewConfig = {...this.browserViewConfig, ...{canSave: true}};
+      this.browserViewConfig = {
+        ...this.browserViewConfig,
+        ...{ canSave: true },
+      };
     } else {
-      this.browserViewConfig = {...this.browserViewConfig, ...{canSave: undefined}};
+      this.browserViewConfig = {
+        ...this.browserViewConfig,
+        ...{ canSave: undefined },
+      };
     }
   }
 
   previewFile() {
     // Make sure browserViewConfig is undefined
     this.browserViewConfig = undefined;
-    if (!this.ks.reference.source.file || typeof this.ks.accessLink !== 'string') {
+    if (
+      !this.ks.reference.source.file ||
+      typeof this.ks.accessLink !== 'string'
+    ) {
       return;
     }
 
-    let fileType = this.ks.reference.source.file.type;
+    const fileType = this.ks.reference.source.file.type;
 
     if (fileType === '') {
-      this.notifications.error('Source Preview', 'Unsupported File Type', `Knowledge cannot preview that file`);
+      this.notifications.error(
+        'Source Preview',
+        'Unsupported File Type',
+        `Knowledge cannot preview that file`
+      );
       this.ref.close();
       return;
     }
 
-    let supported: boolean = false;
-    for (let supportedType of this.supportedFileTypes) {
+    let supported = false;
+    for (const supportedType of this.supportedFileTypes) {
       if (fileType.indexOf(supportedType) > 0) {
         supported = true;
         this.previewSupportedType(supportedType);
@@ -239,7 +277,11 @@ export class KsPreviewComponent implements OnInit, OnDestroy {
     }
 
     if (!supported) {
-      this.notifications.error('Source Preview', 'Unsupported File Type', `Knowledge cannot preview ${fileType} files`);
+      this.notifications.error(
+        'Source Preview',
+        'Unsupported File Type',
+        `Knowledge cannot preview ${fileType} files`
+      );
       this.ref.close();
     }
   }
@@ -258,27 +300,35 @@ export class KsPreviewComponent implements OnInit, OnDestroy {
 
   previewPdf() {
     if (typeof this.ks.accessLink !== 'string') {
-      this.notifications.error('Preview', 'Invalid Path', 'Expected a path to the PDF file.');
+      this.notifications.error(
+        'Preview',
+        'Invalid Path',
+        'Expected a path to the PDF file.'
+      );
       return;
     }
 
     this.fileViewConfig = {
       filePath: this.ks.accessLink,
-      isDialog: true
-    }
+      isDialog: true,
+    };
     this.viewReady = true;
   }
 
   previewImage() {
     if (typeof this.ks.accessLink !== 'string') {
-      this.notifications.error('Preview', 'Invalid Path', 'Expected a path to the image file.');
+      this.notifications.error(
+        'Preview',
+        'Invalid Path',
+        'Expected a path to the image file.'
+      );
       return;
     }
 
     this.fileViewConfig = {
       filePath: this.ks.accessLink,
-      isDialog: true
-    }
+      isDialog: true,
+    };
 
     this.viewReady = true;
   }
@@ -295,21 +345,27 @@ export class KsPreviewComponent implements OnInit, OnDestroy {
 
     this.browserViewConfig = {
       url: webUrl,
-      isDialog: true
-    }
+      isDialog: true,
+    };
   }
 
-
   save() {
-    this.factory.make('website', this.activeBrowserViewUrl).then((ks) => {
-      if (!ks) {
-        this.notifications.warn('Preview', 'Invalid Source', 'Success was reported but the Source is undefined.');
-        return;
-      }
-      this.ingest.enqueue([ks]);
-    }).catch((reason) => {
-      this.notifications.error('KsPreview', 'Invalid Import', reason);
-    });
+    this.factory
+      .make('website', this.activeBrowserViewUrl)
+      .then((ks) => {
+        if (!ks) {
+          this.notifications.warn(
+            'Preview',
+            'Invalid Source',
+            'Success was reported but the Source is undefined.'
+          );
+          return;
+        }
+        this.ingest.enqueue([ks]);
+      })
+      .catch((reason) => {
+        this.notifications.error('KsPreview', 'Invalid Import', reason);
+      });
   }
 
   setViewReady(viewReady: boolean) {

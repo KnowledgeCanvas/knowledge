@@ -13,66 +13,61 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import {Injectable} from '@angular/core';
-import {KcProject} from "@app/models/project.model";
-import {KnowledgeSource} from "@app/models/knowledge.source.model";
-import {ProjectCalendarEvent} from "@components/project-components/project-calendar.component";
+import { Injectable } from '@angular/core';
+import { KcProject } from '@app/models/project.model';
+import { KnowledgeSource } from '@app/models/knowledge.source.model';
+import { ProjectCalendarEvent } from '@components/project-components/project-calendar.component';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class EventService {
-
-  constructor() {
-  }
-
   fromProject(project: KcProject) {
     const projectColor = 'yellow';
-    const projectTextColor = 'black'
+    const projectTextColor = 'black';
     return [
       {
         title: `"${project.name}" (Created)`,
         start: project.dateCreated,
         color: projectColor,
         textColor: projectTextColor,
-        url: 'project'
+        url: 'project',
       },
       {
         title: `"${project.name}" (Modified)`,
         start: project.dateModified,
         color: projectColor,
         textColor: projectTextColor,
-        url: 'project'
+        url: 'project',
       },
       {
         title: `"${project.name}" (Accessed)`,
         start: project.dateAccessed,
         color: projectColor,
         textColor: projectTextColor,
-        url: 'project'
-      }
+        url: 'project',
+      },
     ];
-
   }
 
   fromSourceList(sources: KnowledgeSource[]) {
     const createdColor = 'var(--green-500)';
     const modifiedColor = 'var(--yellow-500)';
     const accessedColor = 'var(--blue-500)';
-    let events: ProjectCalendarEvent[] = [];
-    for (let ks of sources) {
+    const events: ProjectCalendarEvent[] = [];
+    for (const ks of sources) {
       events.push({
         title: `${ks.title}`,
         start: ks.dateCreated,
         url: ks.id.value,
-        color: createdColor
+        color: createdColor,
       });
       ks.dateModified.forEach((d) => {
         events.push({
           title: `${ks.title}`,
           start: d,
           url: ks.id.value,
-          color: modifiedColor
+          color: modifiedColor,
         });
       });
       ks.dateAccessed.forEach((d) => {
@@ -80,7 +75,7 @@ export class EventService {
           title: `${ks.title}`,
           start: d,
           url: ks.id.value,
-          color: accessedColor
+          color: accessedColor,
         });
       });
       if (ks.dateDue) {
@@ -88,12 +83,10 @@ export class EventService {
           title: `${ks.title}`,
           start: ks.dateDue,
           color: 'var(--pink-500)',
-          url: ks.id.value
+          url: ks.id.value,
         });
       }
     }
     return events;
   }
-
-
 }

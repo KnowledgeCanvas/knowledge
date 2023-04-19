@@ -13,60 +13,60 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import {NgModule} from '@angular/core';
-import {RouterModule, Routes} from "@angular/router";
-import {DisplaySettingsComponent} from "@components/settings/display-settings.component";
-import {SearchSettingsComponent} from "@components/settings/search-settings.component";
-import {IngestSettingsComponent} from "@components/settings/ingest-settings.component";
-import {HomeComponent} from "@components/home.component";
-import {ProjectsComponent} from "@components/projects.component";
-import {TableComponent} from "@components/table.component";
-import {GridComponent} from "@components/grid.component";
-import {CalendarComponent} from "@components/calendar.component";
-import {StorageSettingsComponent} from "@components/settings/storage-settings.component";
-import {GraphComponent} from "@components/graph.component";
-import {GraphSettingsComponent} from "@components/settings/graph-settings.component";
-import {ChatComponent} from "@components/chat.component";
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+import { DisplaySettingsComponent } from '@components/settings/display-settings.component';
+import { SearchSettingsComponent } from '@components/settings/search-settings.component';
+import { IngestSettingsComponent } from '@components/settings/ingest-settings.component';
+import { HomeComponent } from '@components/home.component';
+import { ProjectsComponent } from '@components/projects.component';
+import { TableComponent } from '@components/table.component';
+import { GridComponent } from '@components/grid.component';
+import { CalendarComponent } from '@components/calendar.component';
+import { StorageSettingsComponent } from '@components/settings/storage-settings.component';
+import { GraphComponent } from '@components/graph.component';
+import { GraphSettingsComponent } from '@components/settings/graph-settings.component';
+import { ChatComponent } from '@components/chat.component';
 
 const routes: Routes = [
-  {path: '', redirectTo: '/app/inbox/undefined', pathMatch: 'full'},
+  { path: '', redirectTo: '/app/inbox/undefined', pathMatch: 'full' },
   {
     path: 'app',
     children: [
       {
         path: 'inbox/:projectId',
         component: HomeComponent,
-        data: {animation: 'Inbox'} // See routeAnimations trigger in animation.ts
+        data: { animation: 'Inbox' }, // See routeAnimations trigger in animation.ts
       },
       {
         path: 'projects/:projectId',
         component: ProjectsComponent,
-        data: {animation: 'Projects'}
+        data: { animation: 'Projects' },
       },
       {
         path: 'graph/:projectId',
         component: GraphComponent,
-        data: {animation: 'Graph'}
+        data: { animation: 'Graph' },
       },
       {
         path: 'table/:projectId',
         component: TableComponent,
-        data: {animation: 'Table'}
+        data: { animation: 'Table' },
       },
       {
         path: 'grid/:projectId',
         component: GridComponent,
-        data: {animation: 'Grid'}
+        data: { animation: 'Grid' },
       },
       {
         path: 'calendar/:projectId',
         component: CalendarComponent,
-        data: {animation: 'Calendar'}
+        data: { animation: 'Calendar' },
       },
       {
         path: 'chat/:projectId',
         component: ChatComponent,
-        data: {animation: 'Chat'}
+        data: { animation: 'Chat' },
       },
       {
         path: 'display',
@@ -91,16 +91,15 @@ const routes: Routes = [
       {
         path: 'storage',
         outlet: 'settings',
-        component: StorageSettingsComponent
-      }
-    ]
+        component: StorageSettingsComponent,
+      },
+    ],
   },
-  {path: '**', redirectTo: '/app/inbox'},
-]
+  { path: '**', redirectTo: '/app/inbox' },
+];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule {
-}
+export class AppRoutingModule {}

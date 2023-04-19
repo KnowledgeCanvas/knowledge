@@ -13,74 +13,81 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {ProjectService} from "@services/factory-services/project.service";
-import {MenuItem, TreeNode} from "primeng/api";
-import {ProjectCommandService} from "@services/command-services/project-command.service";
-import {ProjectTreeFactoryService} from "@services/factory-services/project-tree-factory.service";
-import {BehaviorSubject, merge, skip, Subject, tap} from "rxjs";
-import {ProjectContextMenuService} from "@services/factory-services/project-context-menu.service";
-import {debounceTime, takeUntil} from "rxjs/operators";
-import {NotificationsService} from "@services/user-services/notifications.service";
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ProjectService } from '@services/factory-services/project.service';
+import { MenuItem, TreeNode } from 'primeng/api';
+import { ProjectCommandService } from '@services/command-services/project-command.service';
+import { ProjectTreeFactoryService } from '@services/factory-services/project-tree-factory.service';
+import { BehaviorSubject, merge, skip, Subject, tap } from 'rxjs';
+import { ProjectContextMenuService } from '@services/factory-services/project-context-menu.service';
+import { debounceTime, takeUntil } from 'rxjs/operators';
+import { NotificationsService } from '@services/user-services/notifications.service';
 
 @Component({
   selector: 'app-projects-tree',
   template: `
-    <p-tree class="h-full"
-            emptyMessage=" "
-            selectionMode="single"
-            scrollHeight="flex"
-            [style]="{'max-height': '100%'}"
-            [contextMenu]="cm"
-            [filter]="true"
-            [value]="projectTree"
-            [selection]="currentProject"
-            (selectionChange)="selectionChange($event)"
-            (onNodeContextMenuSelect)="onContextMenu($event)"
-            (onNodeCollapse)="onNodeCollapse($event, true)"
-            (onNodeExpand)="onNodeCollapse($event, false)">
+    <p-tree
+      class="h-full"
+      emptyMessage=" "
+      selectionMode="single"
+      scrollHeight="flex"
+      [style]="{ 'max-height': '100%' }"
+      [contextMenu]="cm"
+      [filter]="true"
+      [value]="projectTree"
+      [selection]="currentProject"
+      (selectionChange)="selectionChange($event)"
+      (onNodeContextMenuSelect)="onContextMenu($event)"
+      (onNodeCollapse)="onNodeCollapse($event, true)"
+      (onNodeExpand)="onNodeCollapse($event, false)"
+    >
       <ng-template pTemplate="header">
         <div class="flex-row-center-between">
-          <button pButton
-                  icon="pi pi-plus"
-                  label="Project"
-                  (click)="onNewProject()"
-                  class="p-button-text p-button-plain">
-          </button>
-          <button pButton
-                  icon="pi pi-trash"
-                  label="Remove"
-                  [disabled]="!projectTree"
-                  (click)="onRemoveProject(currentProject)"
-                  class="p-button-text p-button-plain p-button-danger">
-          </button>
+          <button
+            pButton
+            icon="pi pi-plus"
+            label="Project"
+            (click)="onNewProject()"
+            class="p-button-text p-button-plain"
+          ></button>
+          <button
+            pButton
+            icon="pi pi-trash"
+            label="Remove"
+            [disabled]="!projectTree"
+            (click)="onRemoveProject(currentProject)"
+            class="p-button-text p-button-plain p-button-danger"
+          ></button>
         </div>
       </ng-template>
 
       <ng-template pTemplate="footer">
         <div class="flex-row-center-between border-top-1 border-400">
-          <button pButton
-                  icon="pi pi-arrow-down"
-                  label="Expand"
-                  [disabled]="!projectTree || projectTree.length === 0"
-                  (click)="expandAll(projectTree, true)"
-                  class="p-button-text p-button-plain outline-none border-none shadow-none">
-          </button>
-          <button pButton
-                  icon="pi pi-circle"
-                  class="p-button-text border-none outline-none shadow-none"
-                  [disabled]="!projectTree || projectTree.length === 0"
-                  pTooltip="Show current project"
-                  tooltipPosition="top"
-                  (click)="showSelected()">
-          </button>
-          <button pButton
-                  icon="pi pi-arrow-up"
-                  label="Collapse"
-                  [disabled]="!projectTree || projectTree.length === 0"
-                  (click)="expandAll(projectTree, false)"
-                  class="p-button-text p-button-plain outline-none border-none shadow-none">
-          </button>
+          <button
+            pButton
+            icon="pi pi-arrow-down"
+            label="Expand"
+            [disabled]="!projectTree || projectTree.length === 0"
+            (click)="expandAll(projectTree, true)"
+            class="p-button-text p-button-plain outline-none border-none shadow-none"
+          ></button>
+          <button
+            pButton
+            icon="pi pi-circle"
+            class="p-button-text border-none outline-none shadow-none"
+            [disabled]="!projectTree || projectTree.length === 0"
+            pTooltip="Show current project"
+            tooltipPosition="top"
+            (click)="showSelected()"
+          ></button>
+          <button
+            pButton
+            icon="pi pi-arrow-up"
+            label="Collapse"
+            [disabled]="!projectTree || projectTree.length === 0"
+            (click)="expandAll(projectTree, false)"
+            class="p-button-text p-button-plain outline-none border-none shadow-none"
+          ></button>
         </div>
       </ng-template>
     </p-tree>
@@ -94,11 +101,11 @@ import {NotificationsService} from "@services/user-services/notifications.servic
           border: none;
         }
       }
-    `
-  ]
+    `,
+  ],
 })
 export class ProjectsTreeComponent implements OnInit, OnDestroy {
-  projectId: string = '';
+  projectId = '';
 
   currentProject?: TreeNode;
 
@@ -110,20 +117,25 @@ export class ProjectsTreeComponent implements OnInit, OnDestroy {
 
   private cleanUp: Subject<any> = new Subject<any>();
 
-  constructor(private notifications: NotificationsService,
-              private projects: ProjectService,
-              private pCommand: ProjectCommandService,
-              private pContext: ProjectContextMenuService,
-              private tree: ProjectTreeFactoryService) {
+  constructor(
+    private notifications: NotificationsService,
+    private projects: ProjectService,
+    private pCommand: ProjectCommandService,
+    private pContext: ProjectContextMenuService,
+    private tree: ProjectTreeFactoryService
+  ) {
     /* When user selects a project in the project tree, set current project via project service */
-    this.projectChange.asObservable().pipe(
-      takeUntil(this.cleanUp),
-      skip(1),
-      debounceTime(500),
-      tap((projectId) => {
-        this.projects.setCurrentProject(projectId);
-      })
-    ).subscribe()
+    this.projectChange
+      .asObservable()
+      .pipe(
+        takeUntil(this.cleanUp),
+        skip(1),
+        debounceTime(500),
+        tap((projectId) => {
+          this.projects.setCurrentProject(projectId);
+        })
+      )
+      .subscribe();
 
     /* When the project tree is updated, make sure the correct project is selected in the tree */
     const treeSub$ = tree.treeNodes.pipe(
@@ -131,7 +143,7 @@ export class ProjectsTreeComponent implements OnInit, OnDestroy {
       tap((nodes) => {
         this.projectTree = nodes;
       })
-    )
+    );
 
     /* When the current project changes, make sure the correct project is selected in the tree */
     const projectSub$ = projects.currentProject.pipe(
@@ -139,22 +151,29 @@ export class ProjectsTreeComponent implements OnInit, OnDestroy {
       tap((project) => {
         this.projectId = project?.id.value ?? this.projectId;
       })
-    )
+    );
 
-    merge(treeSub$, projectSub$).pipe(
-      takeUntil(this.cleanUp),
-      debounceTime(500),
-      tap(() => {
-        if (this.projectTree.length > 0) {
-          this.notifications.debug('Project Tree', 'Setting Active Project', `${this.projectId}`);
-          this.currentProject = tree.findTreeNode(this.projectId, this.projectTree) ?? undefined;
-          if (this.currentProject) {
-            this.expandPath(this.currentProject);
-            this.scrollToActive();
+    merge(treeSub$, projectSub$)
+      .pipe(
+        takeUntil(this.cleanUp),
+        debounceTime(500),
+        tap(() => {
+          if (this.projectTree.length > 0) {
+            this.notifications.debug(
+              'Project Tree',
+              'Setting Active Project',
+              `${this.projectId}`
+            );
+            this.currentProject =
+              tree.findTreeNode(this.projectId, this.projectTree) ?? undefined;
+            if (this.currentProject) {
+              this.expandPath(this.currentProject);
+              this.scrollToActive();
+            }
           }
-        }
-      })
-    ).subscribe()
+        })
+      )
+      .subscribe();
   }
 
   ngOnInit(): void {
@@ -172,14 +191,16 @@ export class ProjectsTreeComponent implements OnInit, OnDestroy {
       curr.expanded = true;
       curr = curr.parent;
     }
-  }
+  };
 
   selectionChange($event: any) {
     this.projectChange.next($event.key);
   }
 
   onNewProject(currentProject?: TreeNode) {
-    this.pCommand.new(currentProject?.key ? {value: currentProject.key} : undefined);
+    this.pCommand.new(
+      currentProject?.key ? { value: currentProject.key } : undefined
+    );
   }
 
   onRemoveProject(currentProject?: TreeNode) {
@@ -192,12 +213,12 @@ export class ProjectsTreeComponent implements OnInit, OnDestroy {
   }
 
   expandAll = async (root: TreeNode[], expand: boolean) => {
-    for (let t of root) {
+    for (const t of root) {
       t.expanded = expand;
       if (t.children && t.children.length > 0)
-        await this.expandAll(t.children, expand)
+        await this.expandAll(t.children, expand);
     }
-  }
+  };
 
   onContextMenu($event: any) {
     if ($event.node) {
@@ -211,13 +232,15 @@ export class ProjectsTreeComponent implements OnInit, OnDestroy {
     }
   }
 
-  scrollToActive(timeout: number = 0) {
+  scrollToActive(timeout = 0) {
     setTimeout(() => {
-      const classElement = document.getElementsByClassName('p-treenode-content p-treenode-selectable p-highlight');
+      const classElement = document.getElementsByClassName(
+        'p-treenode-content p-treenode-selectable p-highlight'
+      );
       if (classElement.length > 0) {
-        classElement[0].scrollIntoView({behavior: 'smooth'});
+        classElement[0].scrollIntoView({ behavior: 'smooth' });
       }
-    }, timeout)
+    }, timeout);
   }
 
   showSelected() {
@@ -230,12 +253,14 @@ export class ProjectsTreeComponent implements OnInit, OnDestroy {
   onNodeCollapse($event: any, collapsed: boolean) {
     const node = $event.node;
     if (node?.key) {
-      let project = this.projects.getProject(node.key)
+      const project = this.projects.getProject(node.key);
       if (project) {
-        this.projects.updateProjects([{
-          id: project.id,
-          expanded: !collapsed
-        }])
+        this.projects.updateProjects([
+          {
+            id: project.id,
+            expanded: !collapsed,
+          },
+        ]);
       }
     }
   }
