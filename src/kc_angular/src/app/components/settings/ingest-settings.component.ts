@@ -13,22 +13,22 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import {Component, OnInit} from '@angular/core';
-import {SettingsService} from "@services/ipc-services/settings.service";
-import {ElectronIpcService} from "@services/ipc-services/electron-ipc.service";
-import {IngestSettingsModel} from "@shared/models/settings.model";
-import {NotificationsService} from "@services/user-services/notifications.service";
-import {PromptForDirectoryRequest} from "@shared/models/electron.ipc.model";
-import {debounceTime, distinctUntilChanged, tap} from "rxjs/operators";
-import {FormBuilder, FormGroup} from "@angular/forms";
+import { Component } from '@angular/core';
+import { SettingsService } from '@services/ipc-services/settings.service';
+import { ElectronIpcService } from '@services/ipc-services/electron-ipc.service';
+import { IngestSettingsModel } from '@shared/models/settings.model';
+import { NotificationsService } from '@services/user-services/notifications.service';
+import { PromptForDirectoryRequest } from '@shared/models/electron.ipc.model';
+import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
+import { FormBuilder, FormGroup } from '@angular/forms';
 
 export type FileManagerTarget = 'autoscan' | 'all';
 
 export type SelectButtonOption = {
-  name: string,
-  value: FileManagerTarget,
-  disabled: boolean
-}
+  name: string;
+  value: FileManagerTarget;
+  disabled: boolean;
+};
 
 @Component({
   selector: 'app-ingest-settings',
@@ -44,29 +44,66 @@ export type SelectButtonOption = {
             </ng-template>
             <ng-template pTemplate="content">
               <div class="w-full h-full flex flex-column">
-                <app-setting-template label="Autoscan (Beta)"
-                                      labelHelp="Enable or disable watching for new files in a pre-designated folder."
-                                      labelHelpLink="https://github.com/KnowledgeCanvas/knowledge/wiki/Basics:-Sources#how-are-sources-imported"
-                                      labelSubtext="{{form.controls.autoscan.value | switchLabel}}">
-                  <p-inputSwitch class="settings-input" formControlName="autoscan"></p-inputSwitch>
+                <app-setting-template
+                  label="Autoscan (Beta)"
+                  labelHelp="Enable or disable watching for new files in a pre-designated folder."
+                  labelHelpLink="https://github.com/KnowledgeCanvas/knowledge/wiki/Basics:-Sources#how-are-sources-imported"
+                  labelSubtext="{{
+                    form.controls.autoscan.value | switchLabel
+                  }}"
+                >
+                  <p-inputSwitch
+                    class="settings-input"
+                    formControlName="autoscan"
+                  ></p-inputSwitch>
                 </app-setting-template>
 
                 <p-divider layout="horizontal"></p-divider>
 
-                <app-setting-template label="Autoscan Location" labelHelp="Files saved to this location will automatically be added to your Inbox.">
+                <app-setting-template
+                  label="Autoscan Location"
+                  labelHelp="Files saved to this location will automatically be added to your Inbox."
+                >
                   <div class="settings-input p-inputgroup w-30rem">
-                    <button pButton [disabled]="!form.controls.autoscan.value" icon="pi pi-folder" (click)="getAutoscanPath()"></button>
-                    <input pInputText type="text" #autoscanLocation id="autoscanLocation" style="width: calc(100% - 10rem)" formControlName="autoscanPath">
-                    <button pButton label="Show" (click)="show(autoscanLocation.value)"></button>
+                    <button
+                      pButton
+                      [disabled]="!form.controls.autoscan.value"
+                      icon="pi pi-folder"
+                      (click)="getAutoscanPath()"
+                    ></button>
+                    <input
+                      pInputText
+                      type="text"
+                      #autoscanLocation
+                      id="autoscanLocation"
+                      style="width: calc(100% - 10rem)"
+                      formControlName="autoscanPath"
+                    />
+                    <button
+                      pButton
+                      label="Show"
+                      (click)="show(autoscanLocation.value)"
+                    ></button>
                   </div>
                 </app-setting-template>
 
                 <p-divider layout="horizontal"></p-divider>
 
-                <app-setting-template label="Scan Interval" labelHelp="How frequently Knowledge will scan the directory.">
-                  <p-inputNumber formControlName="autoscanInterval" [suffix]="' seconds'"
-                                 inputId="autoscan-interval" class="settings-input w-16rem" [showButtons]="true"
-                                 [useGrouping]="false" [allowEmpty]="false" [min]="10" [max]="600"></p-inputNumber>
+                <app-setting-template
+                  label="Scan Interval"
+                  labelHelp="How frequently Knowledge will scan the directory."
+                >
+                  <p-inputNumber
+                    formControlName="autoscanInterval"
+                    [suffix]="' seconds'"
+                    inputId="autoscan-interval"
+                    class="settings-input w-16rem"
+                    [showButtons]="true"
+                    [useGrouping]="false"
+                    [allowEmpty]="false"
+                    [min]="10"
+                    [max]="600"
+                  ></p-inputNumber>
                 </app-setting-template>
               </div>
             </ng-template>
@@ -84,25 +121,55 @@ export type SelectButtonOption = {
             <ng-template pTemplate="content">
               <div class="w-full h-full flex flex-column">
                 <!-- TODO: re-enable this once the feature is fully built out and supported -->
-                <app-setting-template label="Managed Files"
-                                      labelHelp="Choose which imported files are moved to a centralized location on your computer. Note that Autoscan files are always moved."
-                                      labelSubtext="{{form.controls.managerTarget.value | titlecase}}">
-                  <p-selectButton [options]="fileManagerStates" [disabled]="true" formControlName="managerTarget"
-                                  pTooltip="Knowledge currently only supports managing files that were imported using Autoscan"
-                                  class="settings-input w-30rem" id="managed-files" optionLabel="name" optionValue="value" optionDisabled="disabled"></p-selectButton>
+                <app-setting-template
+                  label="Managed Files"
+                  labelHelp="Choose which imported files are moved to a centralized location on your computer. Note that Autoscan files are always moved."
+                  labelSubtext="{{
+                    form.controls.managerTarget.value | titlecase
+                  }}"
+                >
+                  <p-selectButton
+                    [options]="fileManagerStates"
+                    [disabled]="true"
+                    formControlName="managerTarget"
+                    pTooltip="Knowledge currently only supports managing files that were imported using Autoscan"
+                    class="settings-input w-30rem"
+                    id="managed-files"
+                    optionLabel="name"
+                    optionValue="value"
+                    optionDisabled="disabled"
+                  ></p-selectButton>
                 </app-setting-template>
 
                 <p-divider layout="horizontal"></p-divider>
 
-                <app-setting-template label="Storage Location"
-                                      labelHelp="Files imported using Autoscan will be moved from their original location to this location.">
+                <app-setting-template
+                  label="Storage Location"
+                  labelHelp="Files imported using Autoscan will be moved from their original location to this location."
+                >
                   <div class="settings-input p-inputgroup w-30rem">
-                    <button pButton [disabled]="true" icon="pi pi-folder" (click)="getStoragePath()"
-                            pTooltip="Changing storage location will be supported in a future version of Knowledge"></button>
+                    <button
+                      pButton
+                      [disabled]="true"
+                      icon="pi pi-folder"
+                      (click)="getStoragePath()"
+                      pTooltip="Changing storage location will be supported in a future version of Knowledge"
+                    ></button>
 
-                    <input pInputText type="text" formControlName="managerPath" id="storage-path" #filestorage style="width: calc(100% - 10rem)">
+                    <input
+                      pInputText
+                      type="text"
+                      formControlName="managerPath"
+                      id="storage-path"
+                      #filestorage
+                      style="width: calc(100% - 10rem)"
+                    />
 
-                    <button pButton label="Show" (click)="show(filestorage.value)"></button>
+                    <button
+                      pButton
+                      label="Show"
+                      (click)="show(filestorage.value)"
+                    ></button>
                   </div>
                 </app-setting-template>
               </div>
@@ -119,26 +186,52 @@ export type SelectButtonOption = {
             </ng-template>
             <ng-template pTemplate="content">
               <div class="w-full h-full flex flex-column">
-                <app-setting-template label="Browser Extensions (Beta)"
-                                      labelHelp="Enable or disable communication with the Knowledge browser extension."
-                                      labelHelpLink="https://github.com/KnowledgeCanvas/extensions"
-                                      labelSubtext="{{form.controls.extensions.value | switchLabel}}">
-                  <p-inputSwitch class="settings-input" formControlName="extensions"></p-inputSwitch>
+                <app-setting-template
+                  label="Browser Extensions (Beta)"
+                  labelHelp="Enable or disable communication with the Knowledge browser extension."
+                  labelHelpLink="https://github.com/KnowledgeCanvas/extensions"
+                  labelSubtext="{{
+                    form.controls.extensions.value | switchLabel
+                  }}"
+                >
+                  <p-inputSwitch
+                    class="settings-input"
+                    formControlName="extensions"
+                  ></p-inputSwitch>
                 </app-setting-template>
 
                 <p-divider layout="horizontal"></p-divider>
 
-                <app-setting-template label="Port" labelHelp="The port used to communicate between Knowledge and the browser extension.">
-                  <p-inputNumber formControlName="extensionsPort" inputId="port-number" class="settings-input w-16rem"
-                                 [showButtons]="true" [useGrouping]="false" [allowEmpty]="false" [min]="1025" [max]="65535"></p-inputNumber>
+                <app-setting-template
+                  label="Port"
+                  labelHelp="The port used to communicate between Knowledge and the browser extension."
+                >
+                  <p-inputNumber
+                    formControlName="extensionsPort"
+                    inputId="port-number"
+                    class="settings-input w-16rem"
+                    [showButtons]="true"
+                    [useGrouping]="false"
+                    [allowEmpty]="false"
+                    [min]="1025"
+                    [max]="65535"
+                  ></p-inputNumber>
                 </app-setting-template>
 
                 <p-divider layout="horizontal"></p-divider>
 
-                <app-setting-template label="Download Extensions" labelHelp="Extensions are currently in Beta and require enabling 'Developer Mode' in Chrome.">
+                <app-setting-template
+                  label="Download Extensions"
+                  labelHelp="Extensions are currently in Beta and require enabling 'Developer Mode' in Chrome."
+                >
                   <div class="settings-input">
-                    <a target="_blank" href="https://github.com/KnowledgeCanvas/extensions/releases/download/v0.1.0/knowledge-extensions.zip">
-                      <app-ks-icon iconUrl="assets/img/icons/chrome_icon.svg"></app-ks-icon>
+                    <a
+                      target="_blank"
+                      href="https://github.com/KnowledgeCanvas/extensions/releases/download/v0.1.0/knowledge-extensions.zip"
+                    >
+                      <app-ks-icon
+                        iconUrl="assets/img/icons/chrome_icon.svg"
+                      ></app-ks-icon>
                     </a>
                   </div>
                 </app-setting-template>
@@ -149,22 +242,24 @@ export type SelectButtonOption = {
       </form>
     </div>
   `,
-  styles: []
+  styles: [],
 })
-export class IngestSettingsComponent implements OnInit {
+export class IngestSettingsComponent {
   ingestSettings: IngestSettingsModel = new IngestSettingsModel();
 
   form: FormGroup;
 
   fileManagerStates: SelectButtonOption[] = [
-    {name: 'Autoscan Files Only', value: 'autoscan', disabled: false},
-    {name: 'All Imported Files', value: 'all', disabled: false}
+    { name: 'Autoscan Files Only', value: 'autoscan', disabled: false },
+    { name: 'All Imported Files', value: 'all', disabled: false },
   ];
 
-  constructor(private settings: SettingsService,
-              private notifications: NotificationsService,
-              private ipc: ElectronIpcService,
-              private formBuilder: FormBuilder) {
+  constructor(
+    private settings: SettingsService,
+    private notifications: NotificationsService,
+    private ipc: ElectronIpcService,
+    private formBuilder: FormBuilder
+  ) {
     if (!settings.get().ingest) {
       this.set();
     } else {
@@ -185,44 +280,52 @@ export class IngestSettingsComponent implements OnInit {
 
     this.disable();
 
-    this.form.valueChanges.pipe(
-      debounceTime(500),
-      distinctUntilChanged((prev, curr) => {
-        if (curr.managerPath !== prev.managerPath) {
-          this.notifications.error('Import Settings', 'Invalid Path', 'File manager path cannot be changed at this time.')
-          return true;
-        }
-        return (curr.autoscan === prev.autoscan)
-          && (curr.autoscanPath === prev.autoscanPath)
-          && (curr.autoscanInterval === prev.autoscanInterval)
-          && (curr.extensions === prev.extensions)
-          && (curr.extensionsPort === prev.extensionsPort)
-          && (curr.extensionsPath === prev.extensionsPath)
-          && (curr.manager === prev.manager)
-          && (curr.managerPath === prev.managerPath)
-          && (curr.managerTarget === prev.managerTarget);
-      }),
-      tap((formValue) => {
-        this.ingestSettings = {
-          autoscan: {
-            enabled: formValue.autoscan,
-            path: formValue.autoscanPath,
-            interval: formValue.autoscanInterval
-          },
-          extensions: {
-            enabled: formValue.extensions,
-            port: formValue.extensionsPort,
-            // NOTE: This setting not changed because it is currently disabled
-            path: this.ingestSettings.extensions.path
-          },
-          // NOTE: These settings not changed because they are currently disabled
-          manager: this.ingestSettings.manager
-        }
+    this.form.valueChanges
+      .pipe(
+        debounceTime(500),
+        distinctUntilChanged((prev, curr) => {
+          if (curr.managerPath !== prev.managerPath) {
+            this.notifications.error(
+              'Import Settings',
+              'Invalid Path',
+              'File manager path cannot be changed at this time.'
+            );
+            return true;
+          }
+          return (
+            curr.autoscan === prev.autoscan &&
+            curr.autoscanPath === prev.autoscanPath &&
+            curr.autoscanInterval === prev.autoscanInterval &&
+            curr.extensions === prev.extensions &&
+            curr.extensionsPort === prev.extensionsPort &&
+            curr.extensionsPath === prev.extensionsPath &&
+            curr.manager === prev.manager &&
+            curr.managerPath === prev.managerPath &&
+            curr.managerTarget === prev.managerTarget
+          );
+        }),
+        tap((formValue) => {
+          this.ingestSettings = {
+            autoscan: {
+              enabled: formValue.autoscan,
+              path: formValue.autoscanPath,
+              interval: formValue.autoscanInterval,
+            },
+            extensions: {
+              enabled: formValue.extensions,
+              port: formValue.extensionsPort,
+              // NOTE: This setting not changed because it is currently disabled
+              path: this.ingestSettings.extensions.path,
+            },
+            // NOTE: These settings not changed because they are currently disabled
+            manager: this.ingestSettings.manager,
+          };
 
-        this.disable();
-        this.set();
-      })
-    ).subscribe();
+          this.disable();
+          this.set();
+        })
+      )
+      .subscribe();
   }
 
   disable() {
@@ -255,16 +358,18 @@ export class IngestSettingsComponent implements OnInit {
 
   set() {
     this.settings.set({
-      ingest: this.ingestSettings
-    })
-  }
-
-  ngOnInit(): void {
+      ingest: this.ingestSettings,
+    });
   }
 
   show(location: string) {
     this.ipc.showItemInFolder(location);
-    this.notifications.debug('IngestSettings', 'Locating Folder', location, 'toast');
+    this.notifications.debug(
+      'IngestSettings',
+      'Locating Folder',
+      location,
+      'toast'
+    );
   }
 
   getStoragePath() {
@@ -285,20 +390,34 @@ export class IngestSettingsComponent implements OnInit {
 
   getAutoscanPath() {
     // TODO: we should verify that the selected folder is completely empty (or at least does not contain any folders)
-    let req: PromptForDirectoryRequest = {
+    const req: PromptForDirectoryRequest = {
       title: 'Autoscan Location',
       defaultPath: this.ingestSettings.autoscan.path,
       properties: ['openDirectory', 'createDirectory'],
-      message: 'Please select an EMPTY directory.'
-    }
-    this.ipc.promptForDirectory(req).then((path) => {
-      this.ingestSettings.autoscan.path = path;
-      this.settings.set({ingest: this.ingestSettings});
-      this.form.controls.autoscanPath.setValue(this.ingestSettings.autoscan.path);
-      this.notifications.debug('IngestSettings', 'Autoscan Path Changed', path, 'toast');
-    }).catch((reason) => {
-      this.notifications.error('IngestSettings', 'Invalid Autoscan Path', reason.message);
-      console.error(reason);
-    });
+      message: 'Please select an EMPTY directory.',
+    };
+    this.ipc
+      .promptForDirectory(req)
+      .then((path) => {
+        this.ingestSettings.autoscan.path = path;
+        this.settings.set({ ingest: this.ingestSettings });
+        this.form.controls.autoscanPath.setValue(
+          this.ingestSettings.autoscan.path
+        );
+        this.notifications.debug(
+          'IngestSettings',
+          'Autoscan Path Changed',
+          path,
+          'toast'
+        );
+      })
+      .catch((reason) => {
+        this.notifications.error(
+          'IngestSettings',
+          'Invalid Autoscan Path',
+          reason.message
+        );
+        console.error(reason);
+      });
   }
 }

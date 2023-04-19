@@ -14,9 +14,9 @@
  *  limitations under the License.
  */
 
-import {Component, OnInit} from '@angular/core';
-import {StorageService} from "@services/ipc-services/storage.service";
-import {FormBuilder, FormGroup} from "@angular/forms";
+import { Component, OnInit } from '@angular/core';
+import { StorageService } from '@services/ipc-services/storage.service';
+import { FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-storage-settings',
@@ -34,17 +34,30 @@ import {FormBuilder, FormGroup} from "@angular/forms";
               <div class="w-full h-full flex flex-column">
                 <app-setting-template class="w-full" label="Export All">
                   <div class="settings-input">
-                    <button pButton label="Export" [loading]="exporting" (click)="onExport($event, exportType)"></button>
+                    <button
+                      pButton
+                      label="Export"
+                      [loading]="exporting"
+                      (click)="onExport($event, exportType)"
+                    ></button>
                   </div>
-
                 </app-setting-template>
 
                 <p-divider layout="horizontal"></p-divider>
 
                 <app-setting-template class="w-full" label="Import from File">
                   <div class="settings-input">
-                    <input #importUpload class="hidden" (change)="onImport($event)" type="file">
-                    <button pButton label="Import" (click)="importUpload.click()"></button>
+                    <input
+                      #importUpload
+                      class="hidden"
+                      (change)="onImport($event)"
+                      type="file"
+                    />
+                    <button
+                      pButton
+                      label="Import"
+                      (click)="importUpload.click()"
+                    ></button>
                   </div>
                 </app-setting-template>
               </div>
@@ -54,7 +67,7 @@ import {FormBuilder, FormGroup} from "@angular/forms";
       </form>
     </div>
   `,
-  styles: []
+  styles: [],
 })
 export class StorageSettingsComponent implements OnInit {
   exportType: string = 'Everything';
@@ -63,12 +76,14 @@ export class StorageSettingsComponent implements OnInit {
 
   form: FormGroup;
 
-  constructor(private storage: StorageService, private formBuilder: FormBuilder) {
-    this.form = formBuilder.group({})
+  constructor(
+    private storage: StorageService,
+    private formBuilder: FormBuilder
+  ) {
+    this.form = formBuilder.group({});
   }
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   async onExport($event: MouseEvent, exportType: string) {
     this.exporting = true;
@@ -85,53 +100,53 @@ export class StorageSettingsComponent implements OnInit {
 
     console.log('Files: ', files);
     if (files.length > 1) {
-
     }
 
     const file: File = files[0];
     console.log('File: ', file);
 
-    file.text().then((importFile) => {
-      console.log('Import file size: ', importFile.length);
+    file
+      .text()
+      .then((importFile) => {
+        console.log('Import file size: ', importFile.length);
 
-      const imported = JSON.parse(importFile);
-      if (imported?.projects) {
-        console.log('Imported: ', imported);
+        const imported = JSON.parse(importFile);
+        if (imported?.projects) {
+          console.log('Imported: ', imported);
 
-        const projects = imported.projects;
-        let projectList: string[] = [];
-        for (let project of projects) {
-          projectList.push(project.id.value);
-          const id = project.id.value;
-          const pStr = JSON.stringify(project);
-          if (pStr) {
-            localStorage.setItem(id, pStr);
+          const projects = imported.projects;
+          let projectList: string[] = [];
+          for (let project of projects) {
+            projectList.push(project.id.value);
+            const id = project.id.value;
+            const pStr = JSON.stringify(project);
+            if (pStr) {
+              localStorage.setItem(id, pStr);
+            }
+          }
+
+          const projectsStr = localStorage.getItem('kc-projects');
+          if (projectsStr) {
+            console.log('Adding to projects: ', projectsStr, projectList);
+            let ids: string[] = JSON.parse(projectsStr);
+            if (ids) {
+              const nextIds = [];
+              for (let id of ids) {
+                nextIds.push(id);
+              }
+              for (let id of projectList) {
+                nextIds.push(id);
+              }
+              ids.concat(projectList);
+              let idStr = JSON.stringify(nextIds);
+              console.log('Id strings: ', idStr);
+              localStorage.setItem('kc-projects', idStr);
+            }
           }
         }
-
-        const projectsStr = localStorage.getItem('kc-projects');
-        if (projectsStr) {
-          console.log('Adding to projects: ', projectsStr, projectList);
-          let ids: string[] = JSON.parse(projectsStr);
-          if (ids) {
-            const nextIds = [];
-            for (let id of ids) {
-              nextIds.push(id);
-            }
-            for (let id of projectList) {
-              nextIds.push(id);
-            }
-            ids.concat(projectList);
-            let idStr = JSON.stringify(nextIds);
-            console.log('Id strings: ', idStr);
-            localStorage.setItem('kc-projects', idStr)
-          }
-        }
-      }
-
-
-    }).catch((error) => {
-      console.error('Error on file read: ', error);
-    })
+      })
+      .catch((error) => {
+        console.error('Error on file read: ', error);
+      });
   }
 }

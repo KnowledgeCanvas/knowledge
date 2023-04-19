@@ -22,52 +22,57 @@ import {
   OnChanges,
   OnInit,
   Output,
-  SimpleChanges,
-  ViewChild
+  ViewChild,
 } from '@angular/core';
-import {CalendarOptions, FullCalendarComponent, FullCalendarModule} from "@fullcalendar/angular";
-import {KcProject} from "@app/models/project.model";
-import {UUID} from "@shared/models/uuid.model";
+import {
+  CalendarOptions,
+  FullCalendarComponent,
+  FullCalendarModule,
+} from '@fullcalendar/angular';
+import { KcProject } from '@app/models/project.model';
+import { UUID } from '@shared/models/uuid.model';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import listPlugin from '@fullcalendar/list';
-import {KnowledgeSource} from "@app/models/knowledge.source.model";
-import {EventService} from "@services/user-services/event.service";
+import { KnowledgeSource } from '@app/models/knowledge.source.model';
+import { EventService } from '@services/user-services/event.service';
 
 FullCalendarModule.registerPlugins([
   dayGridPlugin,
   timeGridPlugin,
   listPlugin,
-  interactionPlugin
+  interactionPlugin,
 ]);
 
 export interface ProjectCalendarEvent {
-  title: string,
-  start: Date,
-  color?: string,
-  textColor?: string,
-  url?: string | UUID
+  title: string;
+  start: Date;
+  color?: string;
+  textColor?: string;
+  url?: string | UUID;
 }
 
 export interface KcCardRequest {
-  event: any,
-  element: any,
-  ksId?: UUID,
-  projectId?: UUID
+  event: any;
+  element: any;
+  ksId?: UUID;
+  projectId?: UUID;
 }
 
 @Component({
   selector: 'app-project-calendar',
   template: `
-    <div *ngIf="viewReady else loading" class="h-full w-full">
-      <full-calendar #calendar
-                     [deepChangeDetection]="deepChangeDetection"
-                     class="h-full w-full"
-                     style="max-height: calc(100vh - 180px)"
-                     [options]="calendarOptions">
+    <div *ngIf="viewReady; else loading" class="h-full w-full">
+      <full-calendar
+        #calendar
+        [deepChangeDetection]="deepChangeDetection"
+        class="h-full w-full"
+        style="max-height: calc(100vh - 180px)"
+        [options]="calendarOptions"
+      >
       </full-calendar>
-      <br>
+      <br />
       <div class="text-right">
         <span class="calendar-legend-dot green"></span> Created
         <span class="calendar-legend-dot orange"></span> Modified
@@ -78,7 +83,7 @@ export interface KcCardRequest {
 
     <ng-template #loading>
       <p-skeleton width="100%" height="40px"></p-skeleton>
-      <br>
+      <br />
       <p-skeleton width="100%" height="65vh"></p-skeleton>
     </ng-template>
   `,
@@ -122,8 +127,8 @@ export interface KcCardRequest {
           color: var(--primary-color-text) !important;
         }
       }
-    `
-  ]
+    `,
+  ],
 })
 export class ProjectCalendarComponent implements OnInit, OnChanges {
   @ViewChild('calendar') calendar!: FullCalendarComponent;
@@ -136,24 +141,23 @@ export class ProjectCalendarComponent implements OnInit, OnChanges {
 
   @Output() onKsClick = new EventEmitter<KcCardRequest>();
 
-  calendarOptions: CalendarOptions = {events: []};
+  calendarOptions: CalendarOptions = { events: [] };
 
-  deepChangeDetection: boolean = true;
+  deepChangeDetection = true;
 
-  viewReady: boolean = false;
+  viewReady = false;
 
-  views = ['dayGridMonth', 'timeGridWeek', 'timeGridDay', 'listYear']
+  views = ['dayGridMonth', 'timeGridWeek', 'timeGridDay', 'listYear'];
 
   viewIndex = 3;
 
-  constructor(private events: EventService) {
-  }
+  constructor(private events: EventService) {}
 
   ngOnInit(): void {
     this.configureCalendar();
   }
 
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges() {
     if (this.kcProject) {
       this.setupCalendar();
       setTimeout(() => {
@@ -179,7 +183,8 @@ export class ProjectCalendarComponent implements OnInit, OnChanges {
   @HostListener('document:keydown.Control.[')
   @HostListener('document:keydown.meta.[')
   keyPressPrevious() {
-    this.viewIndex = this.viewIndex === 0 ? this.views.length - 1 : (this.viewIndex - 1) % 4;
+    this.viewIndex =
+      this.viewIndex === 0 ? this.views.length - 1 : (this.viewIndex - 1) % 4;
     this.calendar.getApi().changeView(this.views[this.viewIndex]);
   }
 
@@ -213,8 +218,8 @@ export class ProjectCalendarComponent implements OnInit, OnChanges {
     this.calendarOptions.headerToolbar = {
       left: 'prev,next today',
       center: 'title',
-      right: 'dayGridMonth,timeGridWeek,timeGridDay listYear'
-    }
+      right: 'dayGridMonth,timeGridWeek,timeGridDay listYear',
+    };
 
     this.calendarOptions.eventClick = (args) => {
       args.jsEvent.preventDefault();
@@ -223,18 +228,18 @@ export class ProjectCalendarComponent implements OnInit, OnChanges {
         this.onProjectClick.emit({
           event: args.jsEvent,
           element: args.el,
-          projectId: this.kcProject?.id ?? {value: ''}
+          projectId: this.kcProject?.id ?? { value: '' },
         });
       } else {
         if (args.event._def.url) {
           this.onKsClick.emit({
             event: args.jsEvent,
             element: args.el,
-            ksId: {value: args.event._def.url}
-          })
+            ksId: { value: args.event._def.url },
+          });
         }
       }
-    }
+    };
   }
 
   setupCalendar() {
@@ -243,10 +248,13 @@ export class ProjectCalendarComponent implements OnInit, OnChanges {
     } else {
       // this.ksList = this.kcProject.knowledgeSource;
       if (!this.kcProject?.calendar)
-        this.kcProject.calendar = {events: [], start: null, end: null};
+        this.kcProject.calendar = { events: [], start: null, end: null };
 
-      // @ts-ignore
-      this.calendarOptions.events = this.events.fromProject(this.kcProject).concat(this.events.fromSourceList(this.ksList));
+      this.calendarOptions.events = this.events
+        .fromProject(this.kcProject)
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
+        .concat(this.events.fromSourceList(this.ksList));
       this.viewReady = true;
     }
   }

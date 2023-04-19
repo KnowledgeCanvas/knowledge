@@ -13,55 +13,66 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges} from '@angular/core';
-import {ProjectTreeFactoryService} from "@services/factory-services/project-tree-factory.service";
-import {BehaviorSubject, merge, Observable, skip, Subject, tap} from "rxjs";
-import {filter, map, takeUntil} from "rxjs/operators";
-import {ProjectService} from "@services/factory-services/project.service";
-import {TreeNode} from "primeng/api";
-import {constructTreeNodes} from "@app/workers/tree.worker";
-import {NotificationsService} from "@services/user-services/notifications.service";
+
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnDestroy,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
+import { ProjectTreeFactoryService } from '@services/factory-services/project-tree-factory.service';
+import { BehaviorSubject, merge, Observable, skip, Subject, tap } from 'rxjs';
+import { filter, map, takeUntil } from 'rxjs/operators';
+import { ProjectService } from '@services/factory-services/project.service';
+import { TreeNode } from 'primeng/api';
+import { constructTreeNodes } from '@app/workers/tree.worker';
+import { NotificationsService } from '@services/user-services/notifications.service';
 
 @Component({
   selector: 'project-selector',
   template: `
-    <p-treeSelect [ngModel]="selected | async"
-                  [options]="(nodes | async) ?? []"
-                  [filter]="filter"
-                  id="projectSelector"
-                  [selectionMode]="selectionMode"
-                  [placeholder]="placeholder"
-                  [class]="styleClass"
-                  [disabled]="disabled"
-                  [showClear]="showClear"
-                  [inputId]="inputId"
-                  (onClear)="onSelect.emit(undefined)"
-                  (onNodeSelect)="onSelect.emit($event.node)"
-                  emptyMessage="No Projects"
-                  appendTo="body">
+    <p-treeSelect
+      [ngModel]="selected | async"
+      [options]="(nodes | async) ?? []"
+      [filter]="filter"
+      id="projectSelector"
+      [selectionMode]="selectionMode"
+      [placeholder]="placeholder"
+      [class]="styleClass"
+      [disabled]="disabled"
+      [showClear]="showClear"
+      [inputId]="inputId"
+      (onClear)="onSelect.emit(undefined)"
+      (onNodeSelect)="onSelect.emit($event.node)"
+      emptyMessage="No Projects"
+      appendTo="body"
+    >
     </p-treeSelect>
-    <label *ngIf="label" for="projectSelector">{{label}}</label>
+    <label *ngIf="label" for="projectSelector">{{ label }}</label>
   `,
-  styles: []
+  styles: [],
 })
-export class ProjectSelectorComponent implements OnInit, OnDestroy, OnChanges {
-  @Input() filter: boolean = true;
+export class ProjectSelectorComponent implements OnDestroy, OnChanges {
+  @Input() filter = true;
 
-  @Input() selectionMode: 'single' = 'single';
+  @Input() selectionMode = 'single' as const;
 
-  @Input() placeholder: string = 'Choose a Project';
+  @Input() placeholder = 'Choose a Project';
 
-  @Input() styleClass: string = 'p-fluid w-full'
+  @Input() styleClass = 'p-fluid w-full';
 
-  @Input() disabled: boolean = false;
+  @Input() disabled = false;
 
-  @Input() showClear: boolean = true;
+  @Input() showClear = true;
 
-  @Input() setDefault: boolean = true;
+  @Input() setDefault = true;
 
-  @Input() setById?: string = ''
+  @Input() setById?: string = '';
 
-  @Input() inputId: string = '';
+  @Input() inputId = '';
 
   @Input() label?: string = '';
 
@@ -73,49 +84,57 @@ export class ProjectSelectorComponent implements OnInit, OnDestroy, OnChanges {
 
   private _setById = new BehaviorSubject<TreeNode>({});
 
-  private cleanUp: Subject<any> = new Subject<any>();
+  private cleanUp: Subject<undefined> = new Subject<undefined>();
 
-  constructor(private tree: ProjectTreeFactoryService, private projects: ProjectService, private notifications: NotificationsService) {
+  constructor(
+    private tree: ProjectTreeFactoryService,
+    private projects: ProjectService,
+    private notifications: NotificationsService
+  ) {
     const fromTree = this.tree.selected.pipe(
       takeUntil(this.cleanUp),
-      filter(x => this.setDefault)
-    )
+      filter(() => this.setDefault)
+    );
 
-    const fromInput = this._setById.asObservable().pipe(
-      takeUntil(this.cleanUp),
-      skip(1)
-    )
+    const fromInput = this._setById
+      .asObservable()
+      .pipe(takeUntil(this.cleanUp), skip(1));
 
     this.selected = merge(fromTree, fromInput).pipe(
       tap((selected) => {
         setTimeout(() => {
           this.onSelect.emit(selected);
-        })
+        });
       })
-    )
+    );
 
     this.nodes = this.projects.projectTree.pipe(
       takeUntil(this.cleanUp),
-      map(pt => constructTreeNodes(pt, true))
-    )
-  }
-
-  ngOnInit(): void {
+      map((pt) => constructTreeNodes(pt, true))
+    );
   }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes.setById?.currentValue) {
-      const node = this.tree.findTreeNode(changes.setById.currentValue)
+      const node = this.tree.findTreeNode(changes.setById.currentValue);
       if (node) {
-        this.notifications.debug('Project Selector', 'Setting by Project ID', node);
+        this.notifications.debug(
+          'Project Selector',
+          'Setting by Project ID',
+          node
+        );
         this._setById.next(node);
       }
     }
   }
 
   ngOnDestroy() {
-    this.notifications.debug('Project Selector', 'On Destroy', 'Cleaning up...');
-    this.cleanUp.next({});
+    this.notifications.debug(
+      'Project Selector',
+      'On Destroy',
+      'Cleaning up...'
+    );
+    this.cleanUp.next(undefined);
     this.cleanUp.complete();
   }
 }

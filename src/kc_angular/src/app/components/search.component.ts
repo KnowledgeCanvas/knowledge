@@ -13,38 +13,45 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import {Component, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {KnowledgeSource} from "../models/knowledge.source.model";
-import {DataService} from "@services/user-services/data.service";
-import {KsCommandService} from "@services/command-services/ks-command.service";
-import {KsFactoryService} from "@services/factory-services/ks-factory.service";
-import {BrowserViewDialogService} from "@services/ipc-services/browser-view-dialog.service";
-import {AutoComplete} from "primeng/autocomplete";
-import {KcProject} from "../models/project.model";
-import {SearchService} from "@services/user-services/search.service";
-import {take, takeUntil, tap} from "rxjs/operators";
-import {fadeIn} from "../animations";
-import {Subject} from "rxjs";
-
+import {
+  Component,
+  HostListener,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
+import { KnowledgeSource } from '../models/knowledge.source.model';
+import { DataService } from '@services/user-services/data.service';
+import { KsCommandService } from '@services/command-services/ks-command.service';
+import { KsFactoryService } from '@services/factory-services/ks-factory.service';
+import { BrowserViewDialogService } from '@services/ipc-services/browser-view-dialog.service';
+import { AutoComplete } from 'primeng/autocomplete';
+import { KcProject } from '../models/project.model';
+import { SearchService } from '@services/user-services/search.service';
+import { take, takeUntil, tap } from 'rxjs/operators';
+import { fadeIn } from '../animations';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-search',
   template: `
     <div class="p-inputgroup">
-      <p-autoComplete #searchBar
-                      [(ngModel)]="query"
-                      [suggestions]="suggestions"
-                      [showClear]="true"
-                      [minLength]="2"
-                      [scrollHeight]="'50vh'"
-                      appendTo="body"
-                      placeholder="🔍 Search"
-                      prefix="search"
-                      (completeMethod)="search(query)"
-                      (onSelect)="onSelect($event)"
-                      styleClass="lg:w-30rem md:w-24rem sm:w-auto" [style]="{height: '28px'}"
-                      panelStyleClass="search-panel shadow-6">
-
+      <p-autoComplete
+        #searchBar
+        [(ngModel)]="query"
+        [suggestions]="suggestions"
+        [showClear]="true"
+        [minLength]="2"
+        [scrollHeight]="'50vh'"
+        appendTo="body"
+        placeholder="🔍 Search"
+        prefix="search"
+        (completeMethod)="search(query)"
+        (onSelect)="onSelect($event)"
+        styleClass="lg:w-30rem md:w-24rem sm:w-auto"
+        [style]="{ height: '28px' }"
+        panelStyleClass="search-panel shadow-6"
+      >
         <ng-template let-item pTemplate="item">
           <div class="flex-row-center-between border-200 w-full">
             <div class="flex-row-center-between w-full">
@@ -53,39 +60,65 @@ import {Subject} from "rxjs";
                   <app-ks-icon [ks]="item.item"></app-ks-icon>
                 </div>
                 <div class="m-1 flex flex-column h-full">
-                  <b class="text-lg">{{item.item.title | truncate: [92]}}</b>
-                  <div class="text-500" *ngIf="item.item.associatedProject">{{item.item.associatedProject | projectBreadcrumb}}</div>
+                  <b class="text-lg">{{ item.item.title | truncate : [92] }}</b>
+                  <div class="text-500" *ngIf="item.item.associatedProject">
+                    {{ item.item.associatedProject | projectBreadcrumb }}
+                  </div>
                 </div>
               </div>
               <div class="mr-2">
-                <div *ngIf="item.item.id.value === 'search' && suggestions.length > 0">
+                <div
+                  *ngIf="
+                    item.item.id.value === 'search' && suggestions.length > 0
+                  "
+                >
                   <b *ngIf="suggestions.length === 1">No results</b>
-                  <b *ngIf="suggestions.length > 1">{{suggestions.length - 1}} reult{{suggestions.length > 2 ? 's' : ''}}</b>
+                  <b *ngIf="suggestions.length > 1"
+                    >{{ suggestions.length - 1 }} reult{{
+                      suggestions.length > 2 ? 's' : ''
+                    }}</b
+                  >
                 </div>
-                <div *ngIf="item.item.id.value !== 'search'" class="h-full w-full flex-row-center-end">
+                <div
+                  *ngIf="item.item.id.value !== 'search'"
+                  class="h-full w-full flex-row-center-end"
+                >
                   <div *ngIf="item.item.flagged">
-                    <button pButton class="p-button-rounded p-button-sm" icon="pi pi-flag"></button>
+                    <button
+                      pButton
+                      class="p-button-rounded p-button-sm"
+                      icon="pi pi-flag"
+                    ></button>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <div *ngIf="item.item.topics && item.item.topics.length > 0" class="flex-row-center-start overflow-x-auto pt-2 w-full mr-2">
-            <p-chips [allowDuplicate]="false"
-                     [addOnBlur]="false"
-                     [addOnTab]="false"
-                     [showClear]="false"
-                     [ngModel]="item.item.topics"
-                     class="p-fluid w-full">
+          <div
+            *ngIf="item.item.topics && item.item.topics.length > 0"
+            class="flex-row-center-start overflow-x-auto pt-2 w-full mr-2"
+          >
+            <p-chips
+              [allowDuplicate]="false"
+              [addOnBlur]="false"
+              [addOnTab]="false"
+              [showClear]="false"
+              [ngModel]="item.item.topics"
+              class="p-fluid w-full"
+            >
             </p-chips>
           </div>
-          <p-divider *ngIf="item.item.id.value === 'search' && suggestions.length > 1" layout="horizontal"></p-divider>
+          <p-divider
+            *ngIf="item.item.id.value === 'search' && suggestions.length > 1"
+            layout="horizontal"
+          ></p-divider>
         </ng-template>
       </p-autoComplete>
-      <div class="p-inputgroup-addon pi pi-sliders-h cursor-pointer"
-           style="height: 28px"
-           (click)="onSearchSettings($event)">
-      </div>
+      <div
+        class="p-inputgroup-addon pi pi-sliders-h cursor-pointer"
+        style="height: 28px"
+        (click)="onSearchSettings()"
+      ></div>
     </div>
   `,
   styles: [
@@ -105,8 +138,9 @@ import {Subject} from "rxjs";
           height: 1.5rem;
         }
       }
-    `
-  ], animations: [fadeIn]
+    `,
+  ],
+  animations: [fadeIn],
 })
 export class SearchComponent implements OnInit, OnDestroy {
   @ViewChild('searchBar') searchBar!: AutoComplete;
@@ -117,35 +151,37 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   private cleanUp: Subject<any> = new Subject<any>();
 
-  constructor(private data: DataService,
-              private command: KsCommandService,
-              private factory: KsFactoryService,
-              private browser: BrowserViewDialogService,
-              private _search: SearchService) {
-  }
+  constructor(
+    private data: DataService,
+    private command: KsCommandService,
+    private factory: KsFactoryService,
+    private browser: BrowserViewDialogService,
+    private _search: SearchService
+  ) {}
 
   @HostListener('document:keydown.Control.f')
   @HostListener('document:keydown.meta.f')
   focusSearch() {
-    this.searchBar.focusInput()
+    this.searchBar.focusInput();
   }
 
   ngOnInit(): void {
-    this._search.query.pipe(
-      takeUntil(this.cleanUp),
-      tap((term) => {
-        if (term && term.trim().length > 0) {
-          this.query = term;
-          this.searchBar.search({}, term);
+    this._search.query
+      .pipe(
+        takeUntil(this.cleanUp),
+        tap((term) => {
+          if (term && term.trim().length > 0) {
+            this.query = term;
+            this.searchBar.search({}, term);
 
-          setTimeout(() => {
-            this.searchBar.focusInput();
-            this.searchBar.show();
-          })
-
-        }
-      })
-    ).subscribe()
+            setTimeout(() => {
+              this.searchBar.focusInput();
+              this.searchBar.show();
+            });
+          }
+        })
+      )
+      .subscribe();
   }
 
   ngOnDestroy() {
@@ -164,56 +200,68 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.suggestions = [];
 
     if (query.trim().length > 0) {
-      this.suggestions.push({title: `Search ${provider.title} for: ${query}`, icon: provider.iconUrl, iconUrl: provider.iconUrl, id: {value: 'search'}, query: query});
+      this.suggestions.push({
+        title: `Search ${provider.title} for: ${query}`,
+        icon: provider.iconUrl,
+        iconUrl: provider.iconUrl,
+        id: { value: 'search' },
+        query: query,
+      });
     }
 
-    this._search.forTerm(query)
+    this._search
+      .forTerm(query)
       .pipe(
         take(1),
         tap((results: Partial<KnowledgeSource & KcProject & any>[]) => {
           if (results && results.length > 0) {
             this.suggestions = [
               {
-                item:
-                  {
-                    title: `Search ${provider.title} for: ${query}`,
-                    icon: provider.iconUrl,
-                    iconUrl: provider.iconUrl,
-                    id: {value: 'search'},
-                    query: query
-                  }
+                item: {
+                  title: `Search ${provider.title} for: ${query}`,
+                  icon: provider.iconUrl,
+                  iconUrl: provider.iconUrl,
+                  id: { value: 'search' },
+                  query: query,
+                },
               },
-              ...results
+              ...results,
             ];
           } else {
             this.suggestions = [
               {
-                item:
-                  {
-                    title: `Search ${provider.title} for: ${query}`,
-                    icon: provider.iconUrl,
-                    iconUrl: provider.iconUrl,
-                    id: {value: 'search'},
-                    query: query
-                  }
-              }
+                item: {
+                  title: `Search ${provider.title} for: ${query}`,
+                  icon: provider.iconUrl,
+                  iconUrl: provider.iconUrl,
+                  id: { value: 'search' },
+                  query: query,
+                },
+              },
             ];
           }
-        }))
+        })
+      )
       .subscribe();
   }
 
-  onSelect($event: { item: Partial<KnowledgeSource>, score: number, refIndex: number }) {
+  onSelect($event: {
+    item: Partial<KnowledgeSource>;
+    score: number;
+    refIndex: number;
+  }) {
     if ($event.item.id?.value === 'search') {
-      let ks = this.factory.searchKS(this.query.item.query ?? this.query ?? '');
-      this.browser.open({ks: ks});
+      const ks = this.factory.searchKS(
+        this.query.item.query ?? this.query ?? ''
+      );
+      this.browser.open({ ks: ks });
     } else {
       this.command.detail($event.item as KnowledgeSource, true);
     }
     this.query = '';
   }
 
-  onSearchSettings(_: MouseEvent) {
+  onSearchSettings() {
     this._search.show();
   }
 }

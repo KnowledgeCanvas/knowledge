@@ -13,26 +13,35 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import {Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
-import {ProjectService} from "@services/factory-services/project.service";
-import {MenuItem} from "primeng/api";
-import {UUID} from "@shared/models/uuid.model";
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
+import { ProjectService } from '@services/factory-services/project.service';
+import { MenuItem } from 'primeng/api';
+import { UUID } from '@shared/models/uuid.model';
 
 @Component({
   selector: 'app-project-breadcrumb',
   template: `
-    <p-breadcrumb [model]="breadcrumbs"
-                  [home]="breadcrumbHeader"
-                  styleClass="surface-ground h-full flex-row-center-start"
-                  (onItemClick)="onBreadcrumbClick($event)">
+    <p-breadcrumb
+      [model]="breadcrumbs"
+      [home]="breadcrumbHeader"
+      styleClass="surface-ground h-full flex-row-center-start"
+      (onItemClick)="onBreadcrumbClick($event)"
+    >
     </p-breadcrumb>
   `,
-  styles: []
+  styles: [],
 })
 export class ProjectBreadcrumbComponent implements OnChanges {
-  @Input() projectId: string = '';
+  @Input() projectId = '';
 
-  @Input() disabled: boolean = false;
+  @Input() disabled = false;
 
   @Output() onShowProjectTree = new EventEmitter<boolean>();
 
@@ -44,15 +53,14 @@ export class ProjectBreadcrumbComponent implements OnChanges {
     disabled: this.disabled,
     command: () => {
       this.onShowProjectTree.emit(true);
-    }
-  }
+    },
+  };
 
-  constructor(private projects: ProjectService) {
-  }
+  constructor(private projects: ProjectService) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.projectId?.currentValue) {
-      this.setupBreadcrumbs({value: changes.projectId.currentValue});
+      this.setupBreadcrumbs({ value: changes.projectId.currentValue });
     }
 
     if (changes.disabled?.currentValue) {
@@ -62,8 +70,8 @@ export class ProjectBreadcrumbComponent implements OnChanges {
         disabled: this.disabled,
         command: () => {
           this.onShowProjectTree.emit(true);
-        }
-      }
+        },
+      };
     }
   }
 
@@ -74,24 +82,25 @@ export class ProjectBreadcrumbComponent implements OnChanges {
   }
 
   setupBreadcrumbs(id: UUID) {
-    let ancestors = this.projects.getAncestors(id.value);
+    const ancestors = this.projects.getAncestors(id.value);
 
     this.breadcrumbs = [];
 
-    for (let ancestor of ancestors) {
+    for (const ancestor of ancestors) {
       this.breadcrumbs.push({
         label: ancestor.title,
         id: ancestor.id,
         title: ancestor.title,
         disabled: this.disabled,
-        items: [{
-          label: ancestor.title,
-          disabled: this.disabled,
-          id: ancestor.id,
-          title: ancestor.title,
-        }]
+        items: [
+          {
+            label: ancestor.title,
+            disabled: this.disabled,
+            id: ancestor.id,
+            title: ancestor.title,
+          },
+        ],
       });
     }
   }
-
 }

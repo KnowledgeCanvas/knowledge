@@ -13,49 +13,52 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import {Component, Input, OnInit} from '@angular/core';
-import {EventModel} from "@shared/models/event.model";
+import { Component, Input } from '@angular/core';
+import { EventModel } from '@shared/models/event.model';
 
 @Component({
   selector: 'app-timeline',
   template: `
     <div class="h-full w-full">
       <p-scrollPanel class="w-full h-full">
-        <p-timeline *ngIf="events" [value]="events" layout="horizontal" styleClass="w-full max-w-30rem ml-4 my-2">
+        <p-timeline
+          *ngIf="events"
+          [value]="events"
+          layout="horizontal"
+          styleClass="w-full max-w-30rem ml-4 my-2"
+        >
           <ng-template pTemplate="opposite" let-event>
-            <div class="w-full flex-row-center-start py-4 pr-4" style="min-width: 16rem">
+            <div
+              class="w-full flex-row-center-start py-4 pr-4"
+              style="min-width: 16rem"
+            >
               <small class="p-text-secondary">
-                {{event.status}}
+                {{ event.status }}
               </small>
             </div>
           </ng-template>
           <ng-template pTemplate="marker" let-event>
             <!--                TODO: add custom icons for different types of events-->
             <div class="flex-shrink-0">
-              <div class="border-circle border-1 border-primary" style="width: 1rem; height: 1rem;"></div>
+              <div
+                class="border-circle border-1 border-primary"
+                style="width: 1rem; height: 1rem;"
+              ></div>
             </div>
           </ng-template>
           <ng-template pTemplate="content" let-event>
             <div class="w-full flex-row-center-start" style="min-width: 16rem">
               <small class="p-text-secondary">
                 <!--                TODO: this should be standardized...-->
-                {{event.date ?? event.timestamp | date: 'short'}}
+                {{ event.date ?? event.timestamp | date : 'short' }}
               </small>
             </div>
           </ng-template>
-
         </p-timeline>
       </p-scrollPanel>
     </div>
-  `
+  `,
 })
-export class TimelineComponent implements OnInit {
+export class TimelineComponent {
   @Input() events?: EventModel[] = [];
-
-  constructor() {
-  }
-
-  ngOnInit(): void {
-  }
-
 }

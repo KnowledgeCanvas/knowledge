@@ -13,44 +13,47 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute} from "@angular/router";
-import {KnowledgeSource} from "@app/models/knowledge.source.model";
-import {DataService} from "@services/user-services/data.service";
-import {ProjectService} from "@services/factory-services/project.service";
-import {NotificationsService} from "@services/user-services/notifications.service";
-import {KsCommandService} from "@services/command-services/ks-command.service";
-import {TopicService} from "@services/user-services/topic.service";
-import {Observable} from "rxjs";
+import { Component } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { KnowledgeSource } from '@app/models/knowledge.source.model';
+import { DataService } from '@services/user-services/data.service';
+import { ProjectService } from '@services/factory-services/project.service';
+import { NotificationsService } from '@services/user-services/notifications.service';
+import { KsCommandService } from '@services/command-services/ks-command.service';
+import { TopicService } from '@services/user-services/topic.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-grid',
   template: `
     <div class="h-full w-full flex-col-center-center">
-      <div class="width-constrained w-full h-full flex-col-center-between surface-section">
-        <app-ks-card-list class="h-full w-full p-4"
-                          [ksList]="(sources | async)!"
-                          (onKsRemove)="onKsRemove($event)"
-                          (onTopicSearch)="onTopicSearch($event)">
+      <div
+        class="width-constrained w-full h-full flex-col-center-between surface-section"
+      >
+        <app-ks-card-list
+          class="h-full w-full p-4"
+          [ksList]="(sources | async)!"
+          (onKsRemove)="onKsRemove($event)"
+          (onTopicSearch)="onTopicSearch($event)"
+        >
         </app-ks-card-list>
       </div>
     </div>
   `,
-  styles: []
+  styles: [],
 })
-export class GridComponent implements OnInit {
+export class GridComponent {
   sources: Observable<KnowledgeSource[]>;
 
-  constructor(private data: DataService,
-              private activated: ActivatedRoute,
-              private command: KsCommandService,
-              private notifications: NotificationsService,
-              private projects: ProjectService,
-              private topics: TopicService,) {
+  constructor(
+    private data: DataService,
+    private activated: ActivatedRoute,
+    private command: KsCommandService,
+    private notifications: NotificationsService,
+    private projects: ProjectService,
+    private topics: TopicService
+  ) {
     this.sources = data.ksList;
-  }
-
-  ngOnInit(): void {
   }
 
   onKsRemove($event: KnowledgeSource) {
