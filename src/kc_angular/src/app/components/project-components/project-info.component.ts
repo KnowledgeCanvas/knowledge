@@ -14,14 +14,14 @@
  *  limitations under the License.
  */
 import {Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
-import {KcProject} from "../../models/project.model";
-import {EventService} from "../../services/user-services/event.service";
+import {KcProject} from "@app/models/project.model";
+import {EventService} from "@services/user-services/event.service";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {debounceTime, distinctUntilChanged, takeUntil, tap} from "rxjs/operators";
-import {ProjectService} from "../../services/factory-services/project.service";
-import {NotificationsService} from "../../services/user-services/notifications.service";
-import {EventModel} from "../../../../../kc_shared/models/event.model";
-import {TopicService} from "../../services/user-services/topic.service";
+import {ProjectService} from "@services/factory-services/project.service";
+import {NotificationsService} from "@services/user-services/notifications.service";
+import {EventModel} from "@shared/models/event.model";
+import {TopicService} from "@services/user-services/topic.service";
 import {Subject} from "rxjs";
 
 

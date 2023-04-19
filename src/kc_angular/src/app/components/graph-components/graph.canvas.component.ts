@@ -25,17 +25,17 @@ import {
   Output,
   SimpleChanges
 } from '@angular/core';
-import {KnowledgeSource} from "../../models/knowledge.source.model";
-import {KcProject} from "../../models/project.model";
-import {ThemeService} from "../../services/user-services/theme.service";
+import {KnowledgeSource} from "@app/models/knowledge.source.model";
+import {KcProject} from "@app/models/project.model";
+import {ThemeService} from "@services/user-services/theme.service";
 import {CytoscapeLayout, GraphLayouts} from "./graph.layouts";
 import cytoscape, {CytoscapeOptions, ExportBlobOptions, LayoutOptions} from "cytoscape";
 import {GraphStyles} from "./graph.styles";
 import {bufferTime, debounceTime, delay, filter, take, takeUntil, tap} from "rxjs/operators";
-import {SettingsService} from "../../services/ipc-services/settings.service";
-import {NotificationsService} from "../../services/user-services/notifications.service";
+import {SettingsService} from "@services/ipc-services/settings.service";
+import {NotificationsService} from "@services/user-services/notifications.service";
 import {BehaviorSubject, forkJoin, Observable, skip, Subject} from "rxjs";
-import {SearchService} from "../../services/user-services/search.service";
+import {SearchService} from "@services/user-services/search.service";
 import {SearchResult} from "./graph-search.component";
 
 /* Cytoscape Plugin Imports */

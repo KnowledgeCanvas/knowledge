@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 import {Component, Input, OnInit} from '@angular/core';
-import {KnowledgeSource} from "../../models/knowledge.source.model";
+import {KnowledgeSource} from "@app/models/knowledge.source.model";
 
 @Component({
   selector: 'app-ks-message',

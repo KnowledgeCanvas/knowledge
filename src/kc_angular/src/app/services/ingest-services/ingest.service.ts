@@ -1,32 +1,31 @@
-/**
- Copyright 2022 Rob Royce
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
- http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+/*
+ * Copyright (c) 2023 Rob Royce
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
  */
-import {Injectable, OnDestroy, SecurityContext} from '@angular/core';
-import {BehaviorSubject} from "rxjs";
-import {FaviconService} from "./favicon.service";
-
-import {SettingsService} from "../ipc-services/settings.service";
-import {NotificationsService} from "../user-services/notifications.service";
 import {AutoscanService} from "./autoscan.service";
-import {ElectronIpcService} from "../ipc-services/electron-ipc.service";
-import {KnowledgeSourceIngestTask} from "../../../../../kc_shared/models/knowledge.source.model";
-import {KsFactoryService} from "../factory-services/ks-factory.service";
+import {BehaviorSubject} from "rxjs";
 import {DomSanitizer} from "@angular/platform-browser";
+import {ElectronIpcService} from "../ipc-services/electron-ipc.service";
 import {ExtensionService} from "./extension.service";
-import {KnowledgeSource, KnowledgeSourceReference, SourceModel} from "../../models/knowledge.source.model";
+import {FaviconService} from "./favicon.service";
+import {Injectable, OnDestroy, SecurityContext} from '@angular/core';
+import {KnowledgeSource, KnowledgeSourceReference, SourceModel} from "@app/models/knowledge.source.model";
+import {KnowledgeSourceIngestTask} from "@shared/models/knowledge.source.model";
+import {KsFactoryService} from "../factory-services/ks-factory.service";
+import {NotificationsService} from "../user-services/notifications.service";
 import {ProjectService} from "../factory-services/project.service";
+import {SettingsService} from "../ipc-services/settings.service";
 
 
 @Injectable({

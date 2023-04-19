@@ -15,12 +15,38 @@
     "experimentalDecorators": true,
     "moduleResolution": "node",
     "importHelpers": true,
-    "target": "es2017",
+    "target": "es2020",
     "module": "es2020",
     "lib": [
       "es2018",
       "dom"
-    ]
+    ],
+    "paths": {
+      "@app/*": [
+        "src/app/*"
+      ],
+      "@assets/*": [
+        "src/assets/*"
+      ],
+      "@environments/*": [
+        "src/environments/*"
+      ],
+      "@styles/*": [
+        "src/styles/*"
+      ],
+      "@components/*": [
+        "src/app/components/*"
+      ],
+      "@pipes/*": [
+        "src/app/pipes/*"
+      ],
+      "@shared/*": [
+        "../kc_shared/*"
+      ],
+      "@services/*": [
+        "src/app/services/*"
+      ]
+    }
   },
   "files": [
     "src/main.ts",

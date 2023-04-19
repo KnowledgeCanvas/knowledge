@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Rob Royce
+ * Copyright (c) 2022-2023 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -26,23 +26,18 @@ import {
   SimpleChanges,
   ViewChild
 } from '@angular/core';
-import {KnowledgeSource} from "../../models/knowledge.source.model";
-import {KsCommandService} from "../../services/command-services/ks-command.service";
+import {KnowledgeSource} from "@app/models/knowledge.source.model";
+import {KsCommandService} from "@services/command-services/ks-command.service";
 import {Paginator} from "primeng/paginator";
 import {MenuItem, TreeNode} from "primeng/api";
-import {KsContextMenuService} from "../../services/factory-services/ks-context-menu.service";
-import {
-  ApplicationSettingsModel,
-  CardOptions,
-  CardSizeType,
-  CardSortType
-} from "../../../../../kc_shared/models/settings.model";
-import {SettingsService} from "../../services/ipc-services/settings.service";
-import {NotificationsService} from "../../services/user-services/notifications.service";
+import {KsContextMenuService} from "@services/factory-services/ks-context-menu.service";
+import {ApplicationSettingsModel, CardOptions, CardSizeType, CardSortType} from "@shared/models/settings.model";
+import {SettingsService} from "@services/ipc-services/settings.service";
+import {NotificationsService} from "@services/user-services/notifications.service";
 import {BehaviorSubject, Subject, tap, throttleTime} from "rxjs";
-import {KcProject, ProjectUpdateRequest} from "../../models/project.model";
-import {ProjectService} from "../../services/factory-services/project.service";
-import {ProjectTreeFactoryService} from "../../services/factory-services/project-tree-factory.service";
+import {KcProject, ProjectUpdateRequest} from "@app/models/project.model";
+import {ProjectService} from "@services/factory-services/project.service";
+import {ProjectTreeFactoryService} from "@services/factory-services/project-tree-factory.service";
 import {ActivatedRoute} from "@angular/router";
 import {takeUntil} from "rxjs/operators";
 

@@ -16,20 +16,20 @@
 
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
-import {ProjectService} from "../services/factory-services/project.service";
-import {KcProject} from "../models/project.model";
+import {ProjectService} from "@services/factory-services/project.service";
+import {KcProject} from "@app/models/project.model";
 import {BehaviorSubject, fromEvent, skip, skipUntil, Subject, throttleTime} from "rxjs";
-import {KsContextMenuService} from "../services/factory-services/ks-context-menu.service";
-import {KnowledgeSource} from "../models/knowledge.source.model";
-import {KsCommandService} from "../services/command-services/ks-command.service";
+import {KsContextMenuService} from "@services/factory-services/ks-context-menu.service";
+import {KnowledgeSource} from "@app/models/knowledge.source.model";
+import {KsCommandService} from "@services/command-services/ks-command.service";
 import {ConfirmationService, MenuItem} from "primeng/api";
 import {ContextMenu} from "primeng/contextmenu";
-import {ProjectCommandService} from "../services/command-services/project-command.service";
+import {ProjectCommandService} from "@services/command-services/project-command.service";
 import {distinctUntilChanged, map, take, takeUntil, tap} from "rxjs/operators";
-import {ProjectContextMenuService} from "../services/factory-services/project-context-menu.service";
-import {SettingsService} from "../services/ipc-services/settings.service";
-import {NotificationsService} from "../services/user-services/notifications.service";
-import {createGraph} from "../workers/graph.worker";
+import {ProjectContextMenuService} from "@services/factory-services/project-context-menu.service";
+import {SettingsService} from "@services/ipc-services/settings.service";
+import {NotificationsService} from "@services/user-services/notifications.service";
+import {createGraph} from "@app/workers/graph.worker";
 
 
 @Component({

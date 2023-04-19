@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Rob Royce
+ * Copyright (c) 2022-2023 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ import {CytoscapeLayout} from "./graph.layouts";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {Subject, tap} from "rxjs";
 import {debounceTime, distinctUntilChanged, map} from "rxjs/operators";
-import {SettingsService} from "../../services/ipc-services/settings.service";
+import {SettingsService} from "@services/ipc-services/settings.service";
 
 
 @Component({

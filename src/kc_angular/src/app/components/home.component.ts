@@ -13,21 +13,22 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
+
 import {Component, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {KnowledgeSource} from "../models/knowledge.source.model";
-import {IngestService} from "../services/ingest-services/ingest.service";
-import {ProjectService} from "../services/factory-services/project.service";
-import {Observable, Subject} from "rxjs";
-import {KcProject} from "../models/project.model";
 import {ConfirmationService, FilterService, MenuItem, TreeNode} from "primeng/api";
-import {NotificationsService} from "../services/user-services/notifications.service";
-import {KsContextMenuService} from "../services/factory-services/ks-context-menu.service";
+import {DragAndDropService} from "@services/ingest-services/drag-and-drop.service";
+import {IngestService} from "@services/ingest-services/ingest.service";
+import {KcProject} from "@app/models/project.model";
+import {KnowledgeSource} from "@app/models/knowledge.source.model";
+import {KsContextMenuService} from "@services/factory-services/ks-context-menu.service";
+import {KsFactoryService} from "@services/factory-services/ks-factory.service";
+import {NotificationsService} from "@services/user-services/notifications.service";
+import {Observable, Subject} from "rxjs";
+import {ProjectService} from "@services/factory-services/project.service";
+import {ProjectTreeFactoryService} from "@services/factory-services/project-tree-factory.service";
+import {SettingsService} from "@services/ipc-services/settings.service";
 import {Splitter} from "primeng/splitter";
-import {KsFactoryService} from "../services/factory-services/ks-factory.service";
 import {map, take, takeUntil, tap} from "rxjs/operators";
-import {DragAndDropService} from "../services/ingest-services/drag-and-drop.service";
-import {ProjectTreeFactoryService} from "../services/factory-services/project-tree-factory.service";
-import {SettingsService} from "../services/ipc-services/settings.service";
 
 @Component({
   selector: 'app-home',

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Rob Royce
+ * Copyright (c) 2022-2023 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -15,15 +15,15 @@
  */
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
-import {ProjectService} from "../services/factory-services/project.service";
+import {ProjectService} from "@services/factory-services/project.service";
 import {Observable, Subscription} from "rxjs";
 import {KcProject} from "../models/project.model";
 import {KnowledgeSource} from "../models/knowledge.source.model";
 import {KcCardRequest} from "./project-components/project-calendar.component";
-import {DataService} from "../services/user-services/data.service";
+import {DataService} from "@services/user-services/data.service";
 import {OverlayPanel} from "primeng/overlaypanel";
-import {KsCommandService} from "../services/command-services/ks-command.service";
-import {TopicService} from "../services/user-services/topic.service";
+import {KsCommandService} from "@services/command-services/ks-command.service";
+import {TopicService} from "@services/user-services/topic.service";
 import {take, tap} from "rxjs/operators";
 
 @Component({

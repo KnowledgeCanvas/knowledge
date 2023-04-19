@@ -15,8 +15,8 @@
  */
 import {Component, OnInit} from '@angular/core';
 import {DynamicDialogConfig, DynamicDialogRef} from "primeng/dynamicdialog";
-import {KnowledgeSource} from "../../models/knowledge.source.model";
-import {NotificationsService} from "../../services/user-services/notifications.service";
+import {KnowledgeSource} from "@app/models/knowledge.source.model";
+import {NotificationsService} from "@services/user-services/notifications.service";
 
 @Component({
   selector: 'app-details',

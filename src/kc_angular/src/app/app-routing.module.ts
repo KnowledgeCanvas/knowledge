@@ -15,18 +15,18 @@
  */
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from "@angular/router";
-import {DisplaySettingsComponent} from "./components/settings/display-settings.component";
-import {SearchSettingsComponent} from "./components/settings/search-settings.component";
-import {IngestSettingsComponent} from "./components/settings/ingest-settings.component";
-import {HomeComponent} from "./components/home.component";
-import {ProjectsComponent} from "./components/projects.component";
-import {TableComponent} from "./components/table.component";
-import {GridComponent} from "./components/grid.component";
-import {CalendarComponent} from "./components/calendar.component";
-import {StorageSettingsComponent} from "./components/settings/storage-settings.component";
-import {GraphComponent} from "./components/graph.component";
-import {GraphSettingsComponent} from "./components/settings/graph-settings.component";
-import {ChatComponent} from "./components/chat.component";
+import {DisplaySettingsComponent} from "@components/settings/display-settings.component";
+import {SearchSettingsComponent} from "@components/settings/search-settings.component";
+import {IngestSettingsComponent} from "@components/settings/ingest-settings.component";
+import {HomeComponent} from "@components/home.component";
+import {ProjectsComponent} from "@components/projects.component";
+import {TableComponent} from "@components/table.component";
+import {GridComponent} from "@components/grid.component";
+import {CalendarComponent} from "@components/calendar.component";
+import {StorageSettingsComponent} from "@components/settings/storage-settings.component";
+import {GraphComponent} from "@components/graph.component";
+import {GraphSettingsComponent} from "@components/settings/graph-settings.component";
+import {ChatComponent} from "@components/chat.component";
 
 const routes: Routes = [
   {path: '', redirectTo: '/app/inbox/undefined', pathMatch: 'full'},

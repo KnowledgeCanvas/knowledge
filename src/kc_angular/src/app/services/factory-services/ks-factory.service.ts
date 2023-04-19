@@ -1,30 +1,30 @@
-/**
- Copyright 2022 Rob Royce
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
- http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+/*
+ * Copyright (c) 2023 Rob Royce
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
  */
-import {Injectable} from '@angular/core';
-import {UuidService} from "../ipc-services/uuid.service";
-import {IngestType, KnowledgeSource, KnowledgeSourceReference, SourceModel} from "../../models/knowledge.source.model";
-import {ElectronIpcService} from "../ipc-services/electron-ipc.service";
-import {ExtractorService} from "../ingest-services/extractor.service";
-import {FaviconService} from "../ingest-services/favicon.service";
-import {SettingsService} from "../ipc-services/settings.service";
-import {FileSourceModel} from "../../../../../kc_shared/models/file.source.model";
-import {UUID} from "../../../../../kc_shared/models/uuid.model";
-import {Observable} from "rxjs";
-import {map} from "rxjs/operators";
+import {ElectronIpcService} from "@services/ipc-services/electron-ipc.service";
+import {ExtractorService} from "@services/ingest-services/extractor.service";
+import {FaviconService} from "@services/ingest-services/favicon.service";
+import {FileSourceModel} from "@shared/models/file.source.model";
 import {HttpClient} from "@angular/common/http";
+import {IngestType, KnowledgeSource, KnowledgeSourceReference, SourceModel} from "@app/models/knowledge.source.model";
+import {Injectable} from '@angular/core';
+import {Observable} from "rxjs";
+import {SettingsService} from "@services/ipc-services/settings.service";
+import {UUID} from "@shared/models/uuid.model";
+import {UuidService} from "@services/ipc-services/uuid.service";
+import {map} from "rxjs/operators";
 
 export interface KnowledgeSourceFactoryRequest {
   ingestType: IngestType,

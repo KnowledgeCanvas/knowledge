@@ -14,25 +14,25 @@
  *  limitations under the License.
  */
 import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
-import {environment} from "../environments/environment";
-import {SettingsService} from "./services/ipc-services/settings.service";
-import {DialogService, DynamicDialogRef} from "primeng/dynamicdialog";
-import {ProjectService} from "./services/factory-services/project.service";
-import {KsFactoryService} from "./services/factory-services/ks-factory.service";
-import {ElectronIpcService} from "./services/ipc-services/electron-ipc.service";
-import {ThemeService} from "./services/user-services/theme.service";
-import {NotificationsService} from "./services/user-services/notifications.service";
-import {IngestService} from "./services/ingest-services/ingest.service";
-import {DragAndDropService} from "./services/ingest-services/drag-and-drop.service";
-import {KsCommandService} from "./services/command-services/ks-command.service";
-import {ProjectTreeFactoryService} from "./services/factory-services/project-tree-factory.service";
 import {ChildrenOutletContexts, NavigationEnd, Router} from "@angular/router";
-import {KsDetailsComponent} from "./components/source-components/ks-details.component";
+import {DialogService, DynamicDialogRef} from "primeng/dynamicdialog";
+import {environment} from "@environments/environment";
+import {SettingsService} from "@services/ipc-services/settings.service";
+import {ProjectService} from "@services/factory-services/project.service";
+import {KsFactoryService} from "@services/factory-services/ks-factory.service";
+import {ElectronIpcService} from "@services/ipc-services/electron-ipc.service";
+import {ThemeService} from "@services/user-services/theme.service";
+import {NotificationsService} from "@services/user-services/notifications.service";
+import {IngestService} from "@services/ingest-services/ingest.service";
+import {DragAndDropService} from "@services/ingest-services/drag-and-drop.service";
+import {KsCommandService} from "@services/command-services/ks-command.service";
+import {ProjectTreeFactoryService} from "@services/factory-services/project-tree-factory.service";
+import {KsDetailsComponent} from "@components/source-components/ks-details.component";
 import {map, take, takeUntil, tap} from "rxjs/operators";
 import {BehaviorSubject, Subject, throttleTime} from "rxjs";
-import {StartupService} from "./services/ipc-services/startup.service";
-import {ProjectCommandService} from "./services/command-services/project-command.service";
-import {ProjectDetailsComponent} from "./components/project-components/project-details.component";
+import {StartupService} from "@services/ipc-services/startup.service";
+import {ProjectCommandService} from "@services/command-services/project-command.service";
+import {ProjectDetailsComponent} from "@components/project-components/project-details.component";
 import {fadeIn, fadeInAndOut, flyInOut} from "./animations";
 
 

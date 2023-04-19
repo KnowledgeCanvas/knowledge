@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Rob Royce
+ * Copyright (c) 2022-2023 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -14,14 +14,14 @@
  *  limitations under the License.
  */
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {ProjectService} from "../../services/factory-services/project.service";
+import {ProjectService} from "@services/factory-services/project.service";
 import {MenuItem, TreeNode} from "primeng/api";
-import {ProjectCommandService} from "../../services/command-services/project-command.service";
-import {ProjectTreeFactoryService} from "../../services/factory-services/project-tree-factory.service";
+import {ProjectCommandService} from "@services/command-services/project-command.service";
+import {ProjectTreeFactoryService} from "@services/factory-services/project-tree-factory.service";
 import {BehaviorSubject, merge, skip, Subject, tap} from "rxjs";
-import {ProjectContextMenuService} from "../../services/factory-services/project-context-menu.service";
+import {ProjectContextMenuService} from "@services/factory-services/project-context-menu.service";
 import {debounceTime, takeUntil} from "rxjs/operators";
-import {NotificationsService} from "../../services/user-services/notifications.service";
+import {NotificationsService} from "@services/user-services/notifications.service";
 
 @Component({
   selector: 'app-projects-tree',

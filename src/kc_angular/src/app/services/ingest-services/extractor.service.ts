@@ -13,15 +13,10 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import {Injectable} from '@angular/core';
+import {ArticleModel, CodeModel, WebsiteMetadataModel, WebsiteMetaTagsModel} from "@shared/models/web.source.model";
 import {HttpClient} from "@angular/common/http";
-import {NotificationsService} from "../user-services/notifications.service";
-import {
-  ArticleModel,
-  CodeModel,
-  WebsiteMetadataModel,
-  WebsiteMetaTagsModel
-} from "../../../../../kc_shared/models/web.source.model";
+import {Injectable} from '@angular/core';
+import {NotificationsService} from "@services/user-services/notifications.service";
 
 @Injectable({
   providedIn: 'root'

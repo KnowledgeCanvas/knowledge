@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Rob Royce
+ * Copyright (c) 2022-2023 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -13,13 +13,13 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import {Injectable} from '@angular/core';
-import {SettingsService} from "../ipc-services/settings.service";
-import {DataService} from "./data.service";
-import {BehaviorSubject, Observable} from "rxjs";
-import {KnowledgeSource} from "../../models/knowledge.source.model";
-import {KcProject} from "../../models/project.model";
 import Fuse from "fuse.js";
+import {BehaviorSubject, Observable} from "rxjs";
+import {DataService} from "@services/user-services/data.service";
+import {Injectable} from '@angular/core';
+import {KcProject} from "@app/models/project.model";
+import {KnowledgeSource} from "@app/models/knowledge.source.model";
+import {SettingsService} from "@services/ipc-services/settings.service";
 import {map, take, tap} from "rxjs/operators";
 
 export type SearchProvider = {
