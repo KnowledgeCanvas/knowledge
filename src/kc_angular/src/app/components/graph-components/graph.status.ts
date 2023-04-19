@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Rob Royce
+ * Copyright (c) 2022-2023 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -14,14 +14,18 @@
  *  limitations under the License.
  */
 
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from "@angular/core";
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 
 @Component({
   selector: 'graph-status',
   template: `
     <div class="graph-status">
-      <div class="pt-2 flex flex-row justify-content-between align-items-center text-500">
-        <div #run *ngIf="running else done">Running... ({{runtime | number: '1.1'}}s elapsed)</div>
+      <div
+        class="pt-2 flex flex-row justify-content-between align-items-center text-500"
+      >
+        <div #run *ngIf="running; else done">
+          Running... ({{ runtime | number : '1.1' }}s elapsed)
+        </div>
         <ng-template #done>Done</ng-template>
       </div>
     </div>
@@ -34,22 +38,15 @@ import {Component, Input, OnChanges, OnInit, SimpleChanges} from "@angular/core"
         bottom: 5rem;
         padding-left: 0.5rem;
       }
-    `
-  ]
+    `,
+  ],
 })
-export class GraphStatusComponent implements OnInit, OnChanges {
+export class GraphStatusComponent implements OnChanges {
+  @Input() running = false;
 
-  @Input() running: boolean = false;
+  runtime = 0;
 
-  runtime: number = 0;
-
-  runtimeInterval: any;
-
-  constructor() {
-  }
-
-  ngOnInit(): void {
-  }
+  runtimeInterval?: NodeJS.Timer;
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes?.running?.currentValue !== undefined) {
@@ -57,7 +54,7 @@ export class GraphStatusComponent implements OnInit, OnChanges {
         this.runtime = 0;
         this.runtimeInterval = setInterval(() => {
           this.runtime += 0.5;
-        }, 500)
+        }, 500);
       } else {
         if (this.runtimeInterval) {
           clearInterval(this.runtimeInterval);
@@ -66,4 +63,3 @@ export class GraphStatusComponent implements OnInit, OnChanges {
     }
   }
 }
-

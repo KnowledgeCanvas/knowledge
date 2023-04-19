@@ -14,55 +14,84 @@
  *  limitations under the License.
  */
 
-import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
-import {CytoscapeLayout} from "./graph.layouts";
-import {FormBuilder, FormGroup} from "@angular/forms";
-import {Subject, tap} from "rxjs";
-import {debounceTime, distinctUntilChanged, map} from "rxjs/operators";
-import {SettingsService} from "@services/ipc-services/settings.service";
-
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  Output,
+} from '@angular/core';
+import { CytoscapeLayout } from './graph.layouts';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { Subject, tap } from 'rxjs';
+import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
+import { SettingsService } from '@services/ipc-services/settings.service';
 
 @Component({
   selector: 'graph-controls',
   template: `
-    <div class="graph-controls border-1 border-primary-300 border-round-2xl p-3 surface-ground">
+    <div
+      class="graph-controls border-1 border-primary-300 border-round-2xl p-3 surface-ground"
+    >
       <div class="flex flex-row gap-2 justify-content-between">
         <div>
-          <button pButton icon="pi pi-arrows-alt" (click)="onFit.emit()"></button>
+          <button
+            pButton
+            icon="pi pi-arrows-alt"
+            (click)="onFit.emit()"
+          ></button>
         </div>
         <div class="graph-search">
           <form [formGroup]="form">
-            <input class="w-full"
-                   #graphSearch
-                   pInputText
-                   formControlName="search"
-                   type="search"
-                   (keydown.enter)="onNext(graphSearch.value)"
-                   placeholder="Search">
+            <input
+              class="w-full"
+              #graphSearch
+              pInputText
+              formControlName="search"
+              type="search"
+              (keydown.enter)="onNext(graphSearch.value)"
+              placeholder="Search"
+            />
           </form>
         </div>
       </div>
 
       <div class="flex flex-row gap-2 justify-content-between">
         <div class="flex">
-          <button pButton icon="pi pi-download" class="p-button-secondary" (click)="onScreenshot.emit()"></button>
+          <button
+            pButton
+            icon="pi pi-download"
+            class="p-button-secondary"
+            (click)="onScreenshot.emit()"
+          ></button>
         </div>
 
         <div class="flex w-full p-inputgroup">
-          <p-dropdown [options]="layouts"
-                      [(ngModel)]="selectedLayout"
-                      [disabled]="running"
-                      optionLabel="name"
-                      class="w-full p-fluid flex"
-                      (onChange)="onLayout.emit(selectedLayout)">
+          <p-dropdown
+            [options]="layouts"
+            [(ngModel)]="selectedLayout"
+            [disabled]="running"
+            optionLabel="name"
+            class="w-full p-fluid flex"
+            (onChange)="onLayout.emit(selectedLayout)"
+          >
           </p-dropdown>
-          <span class="p-inputgroup-addon cursor-pointer" [class.p-disabled]="running" (click)="onRun.emit()">
+          <span
+            class="p-inputgroup-addon cursor-pointer"
+            [class.p-disabled]="running"
+            (click)="onRun.emit()"
+          >
             <i class="pi pi-refresh"></i>
           </span>
         </div>
 
         <div class="flex">
-          <button pButton icon="pi pi-cog" class="p-button-secondary" (click)="onSettings.emit()"></button>
+          <button
+            pButton
+            icon="pi pi-cog"
+            class="p-button-secondary"
+            (click)="onSettings.emit()"
+          ></button>
         </div>
       </div>
     </div>
@@ -88,15 +117,15 @@ import {SettingsService} from "@services/ipc-services/settings.service";
         width: 100%;
         padding-bottom: 1rem;
       }
-    `
-  ]
+    `,
+  ],
 })
-export class GraphControlsComponent implements OnInit, OnDestroy {
-  @Input() showSources: boolean = false;
+export class GraphControlsComponent implements OnDestroy {
+  @Input() showSources = false;
 
   @Input() layouts: CytoscapeLayout[] = [];
 
-  @Input() running: boolean = false;
+  @Input() running = false;
 
   @Output() onFit = new EventEmitter();
 
@@ -116,7 +145,7 @@ export class GraphControlsComponent implements OnInit, OnDestroy {
 
   @Output() onSearch = new EventEmitter<string>();
 
-  @Output() onSearchNext = new EventEmitter<string>()
+  @Output() onSearchNext = new EventEmitter<string>();
 
   @Output() onSearchPrevious = new EventEmitter<string>();
 
@@ -128,25 +157,26 @@ export class GraphControlsComponent implements OnInit, OnDestroy {
 
   private timeout?: any = undefined;
 
-
-  constructor(private formBuilder: FormBuilder, private settings: SettingsService) {
+  constructor(
+    private formBuilder: FormBuilder,
+    private settings: SettingsService
+  ) {
     this.form = formBuilder.group({
-      search: ['']
-    })
+      search: [''],
+    });
 
-    this.form.valueChanges.pipe(
-      debounceTime(500),
-      distinctUntilChanged((previous, current) => {
-        return previous.search === current.search;
-      }),
-      map(fv => fv.search),
-      tap((term) => {
-        this.onSearch.emit(term)
-      })
-    ).subscribe()
-  }
-
-  ngOnInit(): void {
+    this.form.valueChanges
+      .pipe(
+        debounceTime(500),
+        distinctUntilChanged((previous, current) => {
+          return previous.search === current.search;
+        }),
+        map((fv) => fv.search),
+        tap((term) => {
+          this.onSearch.emit(term);
+        })
+      )
+      .subscribe();
   }
 
   ngOnDestroy() {
@@ -159,9 +189,12 @@ export class GraphControlsComponent implements OnInit, OnDestroy {
       return;
     } else {
       this.onSearchNext.emit(value);
-      this.timeout = setTimeout(() => {
-        this.timeout = undefined;
-      }, this.settings.get().app.graph.animation.enabled ? 50 : 0)
+      this.timeout = setTimeout(
+        () => {
+          this.timeout = undefined;
+        },
+        this.settings.get().app.graph.animation.enabled ? 50 : 0
+      );
     }
   }
 }

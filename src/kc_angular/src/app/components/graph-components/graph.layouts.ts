@@ -1,45 +1,45 @@
-/**
- Copyright 2022 Rob Royce
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
- http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+/*
+ * Copyright (c) 2023 Rob Royce
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
  */
 
-import {LayoutOptions} from "cytoscape";
+import { LayoutOptions } from 'cytoscape';
 
 export interface CytoscapeLayout {
-  name: string,
-  code: string,
-  options: LayoutOptions
+  name: string;
+  code: string;
+  options: LayoutOptions;
 }
 
 export class GraphLayouts {
-  constructor(common?: Partial<LayoutOptions>) {
-    this.commonOptions = common ?? this.commonOptions;
-    this.setLayouts();
-  }
-
-  commonOptions: Partial<LayoutOptions & { simulate: boolean, maxSimulationTime: number }> = {
+  commonOptions: Partial<
+    LayoutOptions & { simulate: boolean; maxSimulationTime: number }
+  > = {
     animate: true,
     animationDuration: 500,
     fit: false,
     nodeDimensionsIncludeLabels: true,
     padding: 30,
     simulate: true,
-    maxSimulationTime: 5000
-  }
+    maxSimulationTime: 5000,
+  };
+  layouts: Partial<CytoscapeLayout | any>[] = [];
 
-  // @ts-ignore
-  layouts: CytoscapeLayout[] = [];
+  constructor(common?: Partial<LayoutOptions>) {
+    this.commonOptions = common ?? this.commonOptions;
+    this.setLayouts();
+  }
 
   setLayouts() {
     this.layouts = [
@@ -49,7 +49,6 @@ export class GraphLayouts {
         options: {
           ...this.commonOptions,
           name: 'fcose',
-          // @ts-ignore
           padding: 20, // fit padding
           componentSpacing: 1.2,
           nodeSeparation: 100,
@@ -59,11 +58,11 @@ export class GraphLayouts {
           nodeDimensionsIncludeLabels: true, // Applies a multiplicative factor (>0) to expand or compress the overall area that the nodes take up
           initialTemp: 99999,
           gravity: 50,
-          idealEdgeLength: (_: any) => 100,
-          nodeRepulsion(_: any): number {
+          idealEdgeLength: () => 100,
+          nodeRepulsion(): number {
             return 999999;
-          }
-        }
+          },
+        },
       },
       {
         name: 'Hierarchical',
@@ -71,9 +70,8 @@ export class GraphLayouts {
         options: {
           ...this.commonOptions,
           name: 'klay',
-          // @ts-ignore
-          klay: {}
-        }
+          klay: {},
+        },
       },
       {
         name: 'Directed',
@@ -81,7 +79,7 @@ export class GraphLayouts {
         options: {
           ...this.commonOptions,
           name: 'dagre',
-        }
+        },
       },
       {
         name: 'Breadth-first',
@@ -103,12 +101,12 @@ export class GraphLayouts {
           depthSort: undefined, // a sorting function to order nodes at equal depth. e.g. function(a, b){ return a.data('weight') - b.data('weight') }
 
           animationEasing: undefined, // easing of animation if enabled,
-          animateFilter: function (_) {
+          animateFilter: function () {
             return true;
           }, // a function that determines whether the node should be animated.  All nodes animated by default on animate enabled.  Non-animated nodes are positioned immediately when the layout starts
           ready: undefined, // callback on layoutready
           stop: undefined, // callback on layoutstop
-        }
+        },
       },
       {
         name: 'Circular',
@@ -116,7 +114,7 @@ export class GraphLayouts {
         options: {
           ...this.commonOptions,
           name: 'circle',
-        }
+        },
       },
       {
         name: 'Concentric',
@@ -124,7 +122,7 @@ export class GraphLayouts {
         options: {
           ...this.commonOptions,
           name: 'concentric',
-        }
+        },
       },
       {
         name: 'Simulate',
@@ -132,7 +130,6 @@ export class GraphLayouts {
         options: {
           ...this.commonOptions,
           name: 'cola',
-          // @ts-ignore
           animate: true,
           refresh: 2, // number of ticks per frame; higher is faster but more jerky
           ungrabifyWhileSimulating: false, // so you can't drag nodes during layout
@@ -145,14 +142,13 @@ export class GraphLayouts {
           avoidOverlap: true, // if true, prevents overlap of node bounding boxes
           handleDisconnected: true, // if true, avoids disconnected components from overlapping
           convergenceThreshold: 0.01, // when the alpha value (system energy) falls below this value, the layout stops
-          nodeSpacing: (_: any) => {
+          nodeSpacing: () => {
             return 10;
           }, // extra spacing around nodes
           flow: undefined, // use DAG/tree flow layout if specified, e.g. { axis: 'y', minSeparation: 30 }
           alignment: undefined, // relative alignment constraints on nodes, e.g. function( node ){ return { x: 0, y: 1 } }
           gapInequalities: undefined, // list of inequality constraints for the gap between the nodes, e.g. [{"axis":"y", "left":node1, "right":node2, "gap":25}]
           centerGraph: false, // adjusts the node positions initially to center the graph (pass false if you want to start the layout from the current position)
-
 
           // different methods of specifying edge length
           // each can be a constant numerical value or a function like `function( edge ){ return 2; }`
@@ -166,10 +162,9 @@ export class GraphLayouts {
           allConstIter: undefined, // initial layout iterations with all constraints including non-overlap
 
           // infinite layout options
-          infinite: false // overrides all other options for a forces-all-the-time mode
-        }
-      }
-    ]
+          infinite: false, // overrides all other options for a forces-all-the-time mode
+        },
+      },
+    ];
   }
 }
-

@@ -14,56 +14,93 @@
  *  limitations under the License.
  */
 
-import {Component, OnInit} from '@angular/core';
-import {DynamicDialogRef} from "primeng/dynamicdialog";
+import { Component } from '@angular/core';
+import { DynamicDialogRef } from 'primeng/dynamicdialog';
 
 type TutorialState = {
-  title: string,
-  body: string,
-  html?: string,
-  image?: any,
-  imagePos?: 'left' | 'right',
-  imageHeight?: number,
-  index: number
-}
+  title: string;
+  body: string;
+  html?: string;
+  image?: any;
+  imagePos?: 'left' | 'right';
+  imageHeight?: number;
+  index: number;
+};
 
 @Component({
   selector: 'app-tutorial',
   template: `
     <div class="w-full h-full flex-col-center-between">
-      <div class="tutorial-header w-full flex flex-row justify-content-between pt-4">
-        <b class="text-lg">{{state.title}}</b>
+      <div
+        class="tutorial-header w-full flex flex-row justify-content-between pt-4"
+      >
+        <b class="text-lg">{{ state.title }}</b>
         <div>
           <div class="pi pi-times cursor-pointer" (click)="close()"></div>
         </div>
       </div>
-      <div class="tutorial-content w-full flex flex-row flex-grow-1 my-3 justify-content-between"
-           [class.flex-row-reverse]="state.imagePos && state.imagePos === 'right'"
-           style="min-height: 8rem">
+      <div
+        class="tutorial-content w-full flex flex-row flex-grow-1 my-3 justify-content-between"
+        [class.flex-row-reverse]="state.imagePos && state.imagePos === 'right'"
+        style="min-height: 8rem"
+      >
         <div class="tutorial-image flex flex-column flex-shrink-1">
-          <img *ngIf="state.image" [src]="state.image" [height]="state.imageHeight" class="border-round"
-               alt="Tutorial Image"/>
+          <img
+            *ngIf="state.image"
+            [src]="state.image"
+            [height]="state.imageHeight"
+            class="border-round"
+            alt="Tutorial Image"
+          />
         </div>
-        <div class="tutorial-body flex flex-column flex-grow-1 h-full w-full text-lg">
-          <div *ngIf="state.html" style="max-width: 64rem" [innerHtml]="state.html"></div>
+        <div
+          class="tutorial-body flex flex-column flex-grow-1 h-full w-full text-lg"
+        >
+          <div
+            *ngIf="state.html"
+            style="max-width: 64rem"
+            [innerHtml]="state.html"
+          ></div>
         </div>
       </div>
-      <div class="tutorial-footer w-full flex flex-row flex-shrink-1 justify-content-between" style="min-width: 32rem">
-        <p-checkbox [(ngModel)]="showAgain" [binary]="true" label="Show on startup"></p-checkbox>
+      <div
+        class="tutorial-footer w-full flex flex-row flex-shrink-1 justify-content-between"
+        style="min-width: 32rem"
+      >
+        <p-checkbox
+          [(ngModel)]="showAgain"
+          [binary]="true"
+          label="Show on startup"
+        ></p-checkbox>
         <div class="flex flex-row">
-          <button pButton [disabled]="state.index === 0" label="Previous" class="p-button-text"
-                  (click)="prev()"></button>
-          <button pButton *ngIf="state.index < states.length - 1" label="Next" class="p-button-text"
-                  (click)="next()"></button>
-          <button pButton *ngIf="state.index === states.length - 1" label="Close" class="p-button-danger p-button-text"
-                  (click)="close()"></button>
+          <button
+            pButton
+            [disabled]="state.index === 0"
+            label="Previous"
+            class="p-button-text"
+            (click)="prev()"
+          ></button>
+          <button
+            pButton
+            *ngIf="state.index < states.length - 1"
+            label="Next"
+            class="p-button-text"
+            (click)="next()"
+          ></button>
+          <button
+            pButton
+            *ngIf="state.index === states.length - 1"
+            label="Close"
+            class="p-button-danger p-button-text"
+            (click)="close()"
+          ></button>
         </div>
       </div>
     </div>
-  `
+  `,
 })
-export class TutorialComponent implements OnInit {
-  showAgain: boolean = true;
+export class TutorialComponent {
+  showAgain = true;
 
   states: TutorialState[] = [
     {
@@ -85,7 +122,7 @@ export class TutorialComponent implements OnInit {
       </div>
       `,
       image: undefined,
-      index: 0
+      index: 0,
     },
     {
       title: 'Creating Your First Project',
@@ -120,7 +157,7 @@ export class TutorialComponent implements OnInit {
             </div>
         </div>
       `,
-      index: 1
+      index: 1,
     },
     {
       title: 'Sources',
@@ -152,7 +189,7 @@ export class TutorialComponent implements OnInit {
         </ul>
       </div>
       `,
-      index: 2
+      index: 2,
     },
     {
       title: 'Inbox',
@@ -175,7 +212,7 @@ export class TutorialComponent implements OnInit {
                     Try right-clicking on Sources for a list of actions (e.g. preview, show in files, copy links, etc.)
                 </p>
       `,
-      index: 3
+      index: 3,
     },
     {
       title: 'Getting around',
@@ -195,7 +232,7 @@ export class TutorialComponent implements OnInit {
         <div>You can see a complete list of Shortcut Keys in the <a target="_blank" class="no-underline text-primary" href="https://github.com/KnowledgeCanvas/knowledge/wiki/Shortcut-Keys">Knowledge Wiki</a></div>
       </div>
       `,
-      index: 4
+      index: 4,
     },
     {
       title: 'Learn more',
@@ -209,17 +246,13 @@ export class TutorialComponent implements OnInit {
         <li><a target="_blank" class="no-underline text-primary" href="https://github.com/KnowledgeCanvas/knowledge/wiki/Debugging">Debugging</a></li>
       </ul>
       `,
-      index: 5
-    }
-  ]
+      index: 5,
+    },
+  ];
 
   state: TutorialState = this.states[0];
 
-  constructor(private ref: DynamicDialogRef) {
-  }
-
-  ngOnInit(): void {
-  }
+  constructor(private ref: DynamicDialogRef) {}
 
   close() {
     this.ref.close(this.showAgain);

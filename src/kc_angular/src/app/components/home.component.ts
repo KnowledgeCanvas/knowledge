@@ -14,70 +14,102 @@
  *  limitations under the License.
  */
 
-import {Component, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {ConfirmationService, FilterService, MenuItem, TreeNode} from "primeng/api";
-import {DragAndDropService} from "@services/ingest-services/drag-and-drop.service";
-import {IngestService} from "@services/ingest-services/ingest.service";
-import {KcProject} from "@app/models/project.model";
-import {KnowledgeSource} from "@app/models/knowledge.source.model";
-import {KsContextMenuService} from "@services/factory-services/ks-context-menu.service";
-import {KsFactoryService} from "@services/factory-services/ks-factory.service";
-import {NotificationsService} from "@services/user-services/notifications.service";
-import {Observable, Subject} from "rxjs";
-import {ProjectService} from "@services/factory-services/project.service";
-import {ProjectTreeFactoryService} from "@services/factory-services/project-tree-factory.service";
-import {SettingsService} from "@services/ipc-services/settings.service";
-import {Splitter} from "primeng/splitter";
-import {map, take, takeUntil, tap} from "rxjs/operators";
+import { Component, HostListener, OnDestroy, ViewChild } from '@angular/core';
+import {
+  ConfirmationService,
+  FilterService,
+  MenuItem,
+  TreeNode,
+} from 'primeng/api';
+import { DragAndDropService } from '@services/ingest-services/drag-and-drop.service';
+import { IngestService } from '@services/ingest-services/ingest.service';
+import { KcProject } from '@app/models/project.model';
+import { KnowledgeSource } from '@app/models/knowledge.source.model';
+import { KsContextMenuService } from '@services/factory-services/ks-context-menu.service';
+import { KsFactoryService } from '@services/factory-services/ks-factory.service';
+import { NotificationsService } from '@services/user-services/notifications.service';
+import { Observable, Subject } from 'rxjs';
+import { ProjectService } from '@services/factory-services/project.service';
+import { ProjectTreeFactoryService } from '@services/factory-services/project-tree-factory.service';
+import { SettingsService } from '@services/ipc-services/settings.service';
+import { Splitter } from 'primeng/splitter';
+import { map, take, takeUntil, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-home',
   template: `
-    <p-contextMenu #cm
-                   styleClass="shadow-7"
-                   [model]="ksMenuItems"
-                   [baseZIndex]="999999"
-                   [autoZIndex]="true"
-                   appendTo="body">
+    <p-contextMenu
+      #cm
+      styleClass="shadow-7"
+      [model]="ksMenuItems"
+      [baseZIndex]="999999"
+      [autoZIndex]="true"
+      appendTo="body"
+    >
     </p-contextMenu>
 
-    <div class="inbox-container width-constrained flex flex-column h-full w-full align-items-center">
+    <div
+      class="inbox-container width-constrained flex flex-column h-full w-full align-items-center"
+    >
       <div class="inbox-header flex-grow-0 w-full">
-        <div class="flex flex-row justify-content-between align-items-center p-2 border-bottom-1 surface-border mb-2">
+        <div
+          class="flex flex-row justify-content-between align-items-center p-2 border-bottom-1 surface-border mb-2"
+        >
           <div class="flex flex-row">
-            <button pButton label="Import" icon="pi pi-download"
-                    [disabled]="!upNext || upNext.length === 0 || !selectedProject.key"
-                    (click)="onProjectImport()"></button>
-            <project-selector [disabled]="!upNext || upNext.length === 0" class="w-16rem px-2"
-                              [showClear]="false"
-                              (onSelect)="selectedProject = $event"
-                              placeholder="Import to Project..."></project-selector>
-            <p-checkbox [binary]="true" label="Import All" [(ngModel)]="importAll"
-                        [disabled]="!upNext || upNext.length === 0 || !selectedProject.key"></p-checkbox>
+            <button
+              pButton
+              label="Import"
+              icon="pi pi-download"
+              [disabled]="
+                !upNext || upNext.length === 0 || !selectedProject.key
+              "
+              (click)="onProjectImport()"
+            ></button>
+            <project-selector
+              [disabled]="!upNext || upNext.length === 0"
+              class="w-16rem px-2"
+              [showClear]="false"
+              (onSelect)="selectedProject = $event"
+              placeholder="Import to Project..."
+            ></project-selector>
+            <p-checkbox
+              [binary]="true"
+              label="Import All"
+              [(ngModel)]="importAll"
+              [disabled]="
+                !upNext || upNext.length === 0 || !selectedProject.key
+              "
+            ></p-checkbox>
           </div>
 
           <div class="flex flex-row">
-            <button pButton
-                    icon="pi pi-arrow-down"
-                    label="Expand"
-                    [disabled]="!active"
-                    (click)="expandAll()"
-                    class="p-button-rounded p-button-text shadow-none"></button>
-            <button pButton
-                    icon="pi pi-arrow-up"
-                    label="Collapse"
-                    [disabled]="!active"
-                    (click)="collapseAll()"
-                    class="p-button-rounded p-button-text shadow-none"></button>
+            <button
+              pButton
+              icon="pi pi-arrow-down"
+              label="Expand"
+              [disabled]="!active"
+              (click)="expandAll()"
+              class="p-button-rounded p-button-text shadow-none"
+            ></button>
+            <button
+              pButton
+              icon="pi pi-arrow-up"
+              label="Collapse"
+              [disabled]="!active"
+              (click)="collapseAll()"
+              class="p-button-rounded p-button-text shadow-none"
+            ></button>
           </div>
 
           <div class="flex flex-row">
-            <button pButton
-                    icon="pi pi-trash"
-                    label="Remove All"
-                    class="p-button-danger p-button-text"
-                    (click)="onKsRemove(upNext)"
-                    [disabled]="!upNext || upNext.length === 0"></button>
+            <button
+              pButton
+              icon="pi pi-trash"
+              label="Remove All"
+              class="p-button-danger p-button-text"
+              (click)="onKsRemove(upNext)"
+              [disabled]="!upNext || upNext.length === 0"
+            ></button>
           </div>
         </div>
       </div>
@@ -85,68 +117,97 @@ import {map, take, takeUntil, tap} from "rxjs/operators";
       <div class="inbox-content flex-grow-1 h-full w-full overflow-y-auto">
         <div class="w-full h-full flex app-splitter-container">
           <div class="app-splitter-left">
-            <div *ngIf="upNext.length > 0" class="h-full pl-2" style="overflow-y: auto">
+            <div
+              *ngIf="upNext.length > 0"
+              class="h-full pl-2"
+              style="overflow-y: auto"
+            >
               <div class="">
                 <div class="p-input-icon-left w-full">
                   <i class="pi pi-filter"></i>
-                  <input type="text"
-                         pInputText
-                         #filter
-                         style="height: 40px; width: 100%"
-                         placeholder="Filter"
-                         (input)="onFilter($event, filter.value)"
-                         class="w-full p-fluid">
+                  <input
+                    type="text"
+                    pInputText
+                    #filter
+                    style="height: 40px; width: 100%"
+                    placeholder="Filter"
+                    (input)="onFilter($event, filter.value)"
+                    class="w-full p-fluid"
+                  />
                 </div>
               </div>
               <div>
-                <app-ks-message *ngFor="let ks of filtered"
-                                [ks]="ks"
-                                (click)="setActive(ks, $event)"
-                                (contextmenu)="setContext(ks); onKsContextMenu(context); cm.show($event)"
-                                [active]="active && (ks.id.value === (active.id.value))">
+                <app-ks-message
+                  *ngFor="let ks of filtered"
+                  [ks]="ks"
+                  (click)="setActive(ks)"
+                  (contextmenu)="
+                    setContext(ks); onKsContextMenu(context); cm.show($event)
+                  "
+                  [active]="active && ks.id.value === active.id.value"
+                >
                 </app-ks-message>
               </div>
             </div>
 
-            <div *ngIf="upNext.length == 0" class="" id="inbox-side-panel" #inboxSidePanel>
-              <div style="width: 100%;" class="hover:surface-hover text-primary">
-                <app-ks-message class="cursor-pointer hover:surface-hover"
-                                (click)="loadExamples()"
-                                status="Load Examples">
+            <div
+              *ngIf="upNext.length == 0"
+              class=""
+              id="inbox-side-panel"
+              #inboxSidePanel
+            >
+              <div
+                style="width: 100%;"
+                class="hover:surface-hover text-primary"
+              >
+                <app-ks-message
+                  class="cursor-pointer hover:surface-hover"
+                  (click)="loadExamples()"
+                  status="Load Examples"
+                >
                 </app-ks-message>
               </div>
             </div>
             <div class="w-full" *ngIf="loading">
-              <p-progressBar mode="indeterminate" [style]="{'height': '0.5rem'}"></p-progressBar>
+              <p-progressBar
+                mode="indeterminate"
+                [style]="{ height: '0.5rem' }"
+              ></p-progressBar>
             </div>
           </div>
 
           <div class="app-splitter-right">
             <div *ngIf="active" class="w-full h-full flex flex-column">
               <div class="overflow-y-auto">
-                <app-ks-info *ngIf="active"
-                             [ks]="active"
-                             [collapseAll]="collapsed"
-                             (onRemove)="onKsRemove([$event])">
+                <app-ks-info
+                  *ngIf="active"
+                  [ks]="active"
+                  [collapseAll]="collapsed"
+                  (onRemove)="onKsRemove([$event])"
+                >
                 </app-ks-info>
               </div>
             </div>
 
             <div *ngIf="!active" class="w-full h-full flex flex-column">
-              <app-dropzone [shouldShorten]="upNext.length > 0"
-                            [supportedTypes]="supportedTypes"
-                            hintMessage="Supported types: {{supportedTypes.join(', ')}}">
+              <app-dropzone
+                [shouldShorten]="upNext.length > 0"
+                [supportedTypes]="supportedTypes"
+                hintMessage="Supported types: {{ supportedTypes.join(', ') }}"
+              >
               </app-dropzone>
-              <div class="inactive-inbox surface-hover gap-4 border-round-bottom-2xl">
+              <div
+                class="inactive-inbox surface-hover gap-4 border-round-bottom-2xl"
+              >
                 <div (dragstart)="$event.preventDefault()">
-                  <img src="assets/img/kc-icon-greyscale.png"
-                       alt="Knowledge Logo"
-                       [class.pulsate-fwd]="animate"
-                       style="filter: drop-shadow(0 0 1px var(--primary-color)); height: 8rem">
+                  <img
+                    src="assets/img/kc-icon-greyscale.png"
+                    alt="Knowledge Logo"
+                    [class.pulsate-fwd]="animate"
+                    style="filter: drop-shadow(0 0 1px var(--primary-color)); height: 8rem"
+                  />
                 </div>
-                <div class="text-600 text-2xl">
-                  You're all caught up.
-                </div>
+                <div class="text-600 text-2xl">You're all caught up.</div>
               </div>
             </div>
           </div>
@@ -178,15 +239,22 @@ import {map, take, takeUntil, tap} from "rxjs/operators";
         align-items: center;
         justify-content: center;
       }
-    `
-  ]
+    `,
+  ],
 })
-export class HomeComponent implements OnInit, OnDestroy {
+export class HomeComponent implements OnDestroy {
   @ViewChild('splitter') splitter!: Splitter;
 
   upNext: KnowledgeSource[] = [];
 
-  activeIndex: number = 0;
+  /**
+   * The index of the active Source in the inbox
+   * @type {number}
+   * @memberof HomeComponent
+   *
+   * @todo: This should be a BehaviorSubject
+   */
+  activeIndex = 0;
 
   active?: KnowledgeSource;
 
@@ -200,79 +268,88 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   selectedProject: any;
 
-  collapsed: boolean = false;
+  collapsed = false;
 
   ksMenuItems: MenuItem[] = [];
 
-  loading: boolean = false;
+  loading = false;
 
-  supportedTypes: string[] = ["Links", "Files"];
+  supportedTypes: string[] = ['Links', 'Files'];
 
-  animate: boolean = true;
+  animate = true;
 
-  importAll: boolean = false;
+  importAll = false;
 
   private cleanUp: Subject<any> = new Subject<any>();
 
-  constructor(private confirm: ConfirmationService,
-              private dnd: DragAndDropService,
-              private factory: KsFactoryService,
-              private filterService: FilterService,
-              private ingest: IngestService,
-              private projects: ProjectService,
-              private menu: KsContextMenuService,
-              private notifications: NotificationsService,
-              private tree: ProjectTreeFactoryService,
-              private settings: SettingsService) {
+  constructor(
+    private confirm: ConfirmationService,
+    private dnd: DragAndDropService,
+    private factory: KsFactoryService,
+    private filterService: FilterService,
+    private ingest: IngestService,
+    private projects: ProjectService,
+    private menu: KsContextMenuService,
+    private notifications: NotificationsService,
+    private tree: ProjectTreeFactoryService,
+    private settings: SettingsService
+  ) {
     this.kcProject = projects.currentProject;
 
     this.supportedTypes = dnd.supportedTypes;
 
-    settings.display.pipe(
-      takeUntil(this.cleanUp),
-      map(d => d.animations),
-      tap(animate => this.animate = animate)
-    ).subscribe()
+    settings.display
+      .pipe(
+        takeUntil(this.cleanUp),
+        map((d) => d.animations),
+        tap((animate) => (this.animate = animate))
+      )
+      .subscribe();
 
-    tree.treeNodes.pipe(
-      takeUntil(this.cleanUp),
-      tap((nodes) => {
-        this.treeNodes = nodes;
-      })
-    ).subscribe()
+    tree.treeNodes
+      .pipe(
+        takeUntil(this.cleanUp),
+        tap((nodes) => {
+          this.treeNodes = nodes;
+        })
+      )
+      .subscribe();
 
-    tree.selected.pipe(
-      takeUntil(this.cleanUp),
-      tap((selected) => {
-        this.selectedProject = selected;
-      })
-    ).subscribe()
+    tree.selected
+      .pipe(
+        takeUntil(this.cleanUp),
+        tap((selected) => {
+          this.selectedProject = selected;
+        })
+      )
+      .subscribe();
 
-    ingest.queue.pipe(
-      takeUntil(this.cleanUp),
-      tap((upNext) => {
-        this.loading = true;
-        this.upNext = upNext;
+    ingest.queue
+      .pipe(
+        takeUntil(this.cleanUp),
+        tap((upNext) => {
+          this.loading = true;
+          this.upNext = upNext;
 
-        // Sort messages by date received (most recent appears at the top)
-        this.filtered = this.upNext.sort((a, b) => {
-          if (a.dateCreated > b.dateCreated) {
-            return -1;
-          } else if (a.dateCreated < b.dateCreated) {
-            return 1;
-          } else {
-            return 0;
-          }
-        });
-        const activeIndex = this.upNext.findIndex((ks => ks.id.value === this.active?.id.value));
-        this.activeIndex = activeIndex === -1 ? 0 : activeIndex;
-        this.active = this.upNext[this.activeIndex];
-        this.loading = false;
-      })
-    ).subscribe()
-  }
-
-  ngOnInit(): void {
+          // Sort messages by date received (most recent appears at the top)
+          this.filtered = this.upNext.sort((a, b) => {
+            if (a.dateCreated > b.dateCreated) {
+              return -1;
+            } else if (a.dateCreated < b.dateCreated) {
+              return 1;
+            } else {
+              return 0;
+            }
+          });
+          const activeIndex = this.upNext.findIndex(
+            (ks) => ks.id.value === this.active?.id.value
+          );
+          this.activeIndex = activeIndex === -1 ? 0 : activeIndex;
+          this.active = this.upNext[this.activeIndex];
+          this.loading = false;
+        })
+      )
+      .subscribe();
   }
 
   ngOnDestroy() {
@@ -281,44 +358,38 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   onKsRemove(sources: KnowledgeSource[]) {
-    if (sources.length === 1) {
-      let source = sources[0];
-      this.confirm.confirm({
-        message: `Permanently remove ${source.title}?`,
-        header: `Remove Source`,
-        acceptLabel: 'Remove',
-        rejectLabel: 'Keep',
-        acceptButtonStyleClass: 'p-button-text p-button-danger',
-        rejectButtonStyleClass: 'p-button-text',
-        acceptIcon: 'pi pi-trash',
-        icon: 'pi pi-exclamation-triangle',
-        accept: () => {
-          this.ingest.remove(source);
-          this.activeIndex = this.activeIndex > 0 ? this.activeIndex - 1 : 0;
-        }
-      })
-    } else {
-      this.confirm.confirm({
-        message: `Permanently remove ${sources.length} Sources?`,
-        header: `Remove Sources`,
-        acceptLabel: 'Remove',
-        rejectLabel: 'Keep',
-        acceptButtonStyleClass: 'p-button-text p-button-danger',
-        rejectButtonStyleClass: 'p-button-text',
-        acceptIcon: 'pi pi-trash',
-        icon: 'pi pi-exclamation-triangle',
-        accept: () => {
-          for (let source of sources) {
-            this.ingest.remove(source);
-          }
-          this.activeIndex = 0;
-        }
-      })
-    }
+    const message =
+      sources.length === 1
+        ? `Permanently remove ${sources[0].title}?`
+        : `Permanently remove ${sources.length} Sources?`;
+    const header = sources.length === 1 ? `Remove Source` : `Remove Sources`;
 
+    // Prompt user to confirm removal
+    this.confirm.confirm({
+      message: message,
+      header: header,
+      acceptLabel: 'Remove',
+      rejectLabel: 'Keep',
+      acceptButtonStyleClass: 'p-button-text p-button-danger',
+      rejectButtonStyleClass: 'p-button-text',
+      acceptIcon: 'pi pi-trash',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        const newIndex =
+          sources.length === 1
+            ? this.activeIndex > 0
+              ? this.activeIndex - 1
+              : 0
+            : 0;
+        for (const source of sources) {
+          this.ingest.remove(source);
+        }
+        this.activeIndex = newIndex;
+      },
+    });
   }
 
-  setActive(ks: KnowledgeSource, _?: MouseEvent) {
+  setActive(ks: KnowledgeSource) {
     const found = this.upNext.indexOf(ks);
     if (found) {
       this.activeIndex = found;
@@ -330,7 +401,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   setContext(ks: KnowledgeSource) {
     const found = this.upNext.indexOf(ks);
-    let index = found ? found : 0;
+    const index = found ? found : 0;
     this.context = this.upNext[index];
   }
 
@@ -354,36 +425,52 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   onProjectImport() {
     if (!this.selectedProject) {
-      this.notifications.warn('Inbox', 'Invalid Project', 'You must select a valid project to import.');
+      this.notifications.warn(
+        'Inbox',
+        'Invalid Project',
+        'You must select a valid project to import.'
+      );
       return;
     }
 
     const project = this.projects.getProject(this.selectedProject.key);
     if (!project) {
-      this.notifications.error('Home', 'Invalid Project', 'That project cannot be found in storage.');
+      this.notifications.error(
+        'Home',
+        'Invalid Project',
+        'That project cannot be found in storage.'
+      );
       return;
     }
 
     if (this.importAll) {
-      this.projects.updateProjects([{
-        id: project.id,
-        addKnowledgeSource: this.upNext
-      }]).then((_) => {
-        if (this.active) {
-          for (let source of this.upNext) {
-            this.ingest.add(source);
+      this.projects
+        .updateProjects([
+          {
+            id: project.id,
+            addKnowledgeSource: this.upNext,
+          },
+        ])
+        .then(() => {
+          if (this.active) {
+            for (const source of this.upNext) {
+              this.ingest.add(source);
+            }
           }
-        }
-      })
+        });
     } else if (this.active) {
-      this.projects.updateProjects([{
-        id: project.id,
-        addKnowledgeSource: [this.active]
-      }]).then((_) => {
-        if (this.active) {
-          this.ingest.add(this.active);
-        }
-      })
+      this.projects
+        .updateProjects([
+          {
+            id: project.id,
+            addKnowledgeSource: [this.active],
+          },
+        ])
+        .then(() => {
+          if (this.active) {
+            this.ingest.add(this.active);
+          }
+        });
     }
   }
 
@@ -391,33 +478,44 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.collapsed = true;
     setTimeout(() => {
       this.collapsed = false;
-    })
+    });
   }
 
   collapseAll() {
     this.collapsed = false;
     setTimeout(() => {
       this.collapsed = true;
-    })
+    });
   }
 
   onKsContextMenu(ks: KnowledgeSource | undefined) {
     if (ks) {
-      this.ksMenuItems = this.menu.generate(ks).filter(k => (k.label !== 'Details') && (k.label !== 'Goto Project') && (k.label !== 'Move'));
+      this.ksMenuItems = this.menu
+        .generate(ks)
+        .filter(
+          (k) =>
+            k.label !== 'Details' &&
+            k.label !== 'Goto Project' &&
+            k.label !== 'Move'
+        );
 
-      let removeItem = this.ksMenuItems.find(k => k.label === 'Remove');
+      const removeItem = this.ksMenuItems.find((k) => k.label === 'Remove');
 
       if (removeItem) {
         removeItem.command = () => {
           this.onKsRemove([ks]);
-        }
+        };
       }
     }
   }
 
   onFilter($event: Event, value: string) {
     if (value) {
-      this.filtered = this.upNext.filter(ks => JSON.stringify(ks).toLocaleLowerCase().includes(value.toLocaleLowerCase()));
+      this.filtered = this.upNext.filter((ks) =>
+        JSON.stringify(ks)
+          .toLocaleLowerCase()
+          .includes(value.toLocaleLowerCase())
+      );
     } else {
       this.filtered = this.upNext;
     }
@@ -428,43 +526,58 @@ export class HomeComponent implements OnInit, OnDestroy {
       return;
     }
     this.loading = true;
-    this.factory.examples().pipe(
-      take(1),
-      tap((ks: { 'title': string, 'accessLink': string, 'topics': string[] }[]) => {
-        this.factory.many({
-          ingestType: "website",
-          links: ks.map(k => k.accessLink)
-        }).then((ksList) => {
-          ksList.map((k) => {
-            k.importMethod = 'example';
-            return k;
-          })
+    this.factory
+      .examples()
+      .pipe(
+        take(1),
+        tap((ks: { title: string; accessLink: string; topics: string[] }[]) => {
+          this.factory
+            .many({
+              ingestType: 'website',
+              links: ks.map((k) => k.accessLink),
+            })
+            .then((ksList) => {
+              ksList.map((k) => {
+                k.importMethod = 'example';
+                return k;
+              });
 
-          if (ksList.length == ks.length) {
-            for (let i = 0; i < ksList.length; i++) {
-              ksList[i].title = ks[i].title;
-              ksList[i].topics = ks[i].topics;
-            }
-          }
+              if (ksList.length == ks.length) {
+                for (let i = 0; i < ksList.length; i++) {
+                  ksList[i].title = ks[i].title;
+                  ksList[i].topics = ks[i].topics;
+                }
+              }
 
-          this.ingest.enqueue(ksList);
-          this.loading = false;
-        }).catch((error) => {
-          setTimeout(() => {
-            this.loading = false;
-            this.notifications.error('Inbox', 'Unable to Load Examples', error, 'toast');
-          }, 1000);
+              this.ingest.enqueue(ksList);
+              this.loading = false;
+            })
+            .catch((error) => {
+              setTimeout(() => {
+                this.loading = false;
+                this.notifications.error(
+                  'Inbox',
+                  'Unable to Load Examples',
+                  error,
+                  'toast'
+                );
+              }, 1000);
+            });
         })
-      })
-    ).subscribe({
+      )
+      .subscribe({
         error: (error: any) => {
           setTimeout(() => {
             this.loading = false;
-            this.notifications.error('Inbox', 'Unable to Load Examples', error, 'toast');
+            this.notifications.error(
+              'Inbox',
+              'Unable to Load Examples',
+              error,
+              'toast'
+            );
           }, 1000);
-        }
-      }
-    )
+        },
+      });
   }
 
   @HostListener('document:keydown.Control.[')

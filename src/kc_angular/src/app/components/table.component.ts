@@ -13,43 +13,47 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {ActivatedRoute} from "@angular/router";
-import {KnowledgeSource} from "../models/knowledge.source.model";
-import {Observable, Subject, tap} from "rxjs";
-import {DataService} from "@services/user-services/data.service";
-import {takeUntil} from "rxjs/operators";
+import { Component, OnDestroy } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { KnowledgeSource } from '../models/knowledge.source.model';
+import { Observable, Subject, tap } from 'rxjs';
+import { DataService } from '@services/user-services/data.service';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-table',
   template: `
     <div class="h-full w-full flex-col-center-center">
-      <div class="width-constrained w-full h-full flex-col-center-between surface-section p-4">
-        <ks-table class="w-full h-full" [ksList]="(sources | async)!"></ks-table>
+      <div
+        class="width-constrained w-full h-full flex-col-center-between surface-section p-4"
+      >
+        <ks-table
+          class="w-full h-full"
+          [ksList]="(sources | async)!"
+        ></ks-table>
       </div>
     </div>
   `,
-  styles: []
+  styles: [],
 })
-export class TableComponent implements OnInit, OnDestroy {
+export class TableComponent implements OnDestroy {
   sources: Observable<KnowledgeSource[]>;
 
-  projectId: string = '';
+  projectId = '';
 
   private cleanUp: Subject<any> = new Subject();
 
   constructor(private data: DataService, private route: ActivatedRoute) {
-    route.paramMap.pipe(
-      takeUntil(this.cleanUp),
-      tap((params) => {
-        this.projectId = params.get('projectId') ?? '';
-      })
-    ).subscribe()
+    route.paramMap
+      .pipe(
+        takeUntil(this.cleanUp),
+        tap((params) => {
+          this.projectId = params.get('projectId') ?? '';
+        })
+      )
+      .subscribe();
 
     this.sources = data.ksList;
-  }
-
-  ngOnInit(): void {
   }
 
   ngOnDestroy() {
