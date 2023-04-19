@@ -13,34 +13,43 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import {BehaviorSubject, Observable} from "rxjs";
-import {Injectable, NgZone} from '@angular/core';
-import {IpcMessage} from "@shared/models/electron.ipc.model";
-import {KnowledgeSource} from "@app/models/knowledge.source.model";
-import {NotificationsService} from "@services/user-services/notifications.service";
-import {WebSourceModel} from "@shared/models/web.source.model";
+import { BehaviorSubject, Observable } from 'rxjs';
+import { Injectable, NgZone } from '@angular/core';
+import { IpcMessage } from '@shared/models/electron.ipc.model';
+import { KnowledgeSource } from '@app/models/knowledge.source.model';
+import { NotificationsService } from '@services/user-services/notifications.service';
+import { WebSourceModel } from '@shared/models/web.source.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ExtensionService {
   private channels = {
-    import: 'E2A:Extension:Import'
-  }
+    import: 'E2A:Extension:Import',
+  };
 
   private receive = window.api.receive;
 
-  private __links = new BehaviorSubject<Partial<WebSourceModel & KnowledgeSource>>({} as any);
-  links: Observable<Partial<WebSourceModel & KnowledgeSource>> = this.__links.asObservable();
+  private __links = new BehaviorSubject<
+    Partial<WebSourceModel & KnowledgeSource>
+  >({} as any);
+  links: Observable<Partial<WebSourceModel & KnowledgeSource>> =
+    this.__links.asObservable();
 
-
-  constructor(private zone: NgZone, private notifications: NotificationsService) {
+  constructor(
+    private zone: NgZone,
+    private notifications: NotificationsService
+  ) {
     this.receive(this.channels.import, (msg: IpcMessage) => {
       this.zone.run(() => {
         if (msg.success?.data) {
           const data = msg.success.data;
 
-          notifications.debug('ExtensionService', 'Extension Import', data.title);
+          notifications.debug(
+            'ExtensionService',
+            'Extension Import',
+            data.title
+          );
 
           /* TODO: need to copy over other fields, like flagged, rawText, etc... but how? */
           /* TODO: standardize the model so we don't need to do a manual conversion */
@@ -49,37 +58,42 @@ export class ExtensionService {
             title: data.title,
             accessLink: data.accessLink,
             topics: data.topics ?? [],
-            metadata: {meta: data.metadata},
+            metadata: { meta: data.metadata },
             flagged: data.flagged,
             rawText: data.rawText,
             thumbnail: data.thumbnail,
             description: data.description,
-            markup: {notes: [], highlights: [], stickers: []}
-          }
+            markup: { notes: [], highlights: [], stickers: [] },
+          };
 
           if (data.rawText) {
             webSource.markup = {
-              notes: [{
-                title: 'Selected Text',
-                body: data.rawText,
-                type: 'highlight',
-                event: {
-                  timestamp: new Date().toLocaleString(),
-                  type: 'create',
-                  description: 'Imported as selected text from browser extension.'
-                }
-              }]
-            }
+              notes: [
+                {
+                  title: 'Selected Text',
+                  body: data.rawText,
+                  type: 'highlight',
+                  event: {
+                    timestamp: new Date().toLocaleString(),
+                    type: 'create',
+                    description:
+                      'Imported as selected text from browser extension.',
+                  },
+                },
+              ],
+            };
           }
 
           this.__links.next(webSource);
         } else {
-          notifications.error('ExtensionService', 'Extension Import', msg.error?.message ?? 'Unable to import.')
+          notifications.error(
+            'ExtensionService',
+            'Extension Import',
+            msg.error?.message ?? 'Unable to import.'
+          );
           // TODO: subscriber.error(msg.error);
         }
       });
-    })
+    });
   }
-
-
 }

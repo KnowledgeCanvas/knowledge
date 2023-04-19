@@ -13,20 +13,23 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import {BehaviorSubject, Observable} from "rxjs";
-import {FileSourceModel, FileWatcherUpdate} from "@shared/models/file.source.model";
-import {Injectable, NgZone} from '@angular/core';
-import {IpcMessage} from "@shared/models/electron.ipc.model";
-import {NotificationsService} from "@services/user-services/notifications.service";
-import {UUID} from "@shared/models/uuid.model";
+import { BehaviorSubject, Observable } from 'rxjs';
+import {
+  FileSourceModel,
+  FileWatcherUpdate,
+} from '@shared/models/file.source.model';
+import { Injectable, NgZone } from '@angular/core';
+import { IpcMessage } from '@shared/models/electron.ipc.model';
+import { NotificationsService } from '@services/user-services/notifications.service';
+import { UUID } from '@shared/models/uuid.model';
 
 type FileManagerMove = {
-  id: string,
-  newPath: string
-}
+  id: string;
+  newPath: string;
+};
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AutoscanService {
   private send = window.api.send;
@@ -37,8 +40,8 @@ export class AutoscanService {
     fmDelete: 'A2E:Autoscan:Delete',
     fmFinalize: `A2E:Autoscan:Finalize`,
     fmWarn: 'E2A:FileManager:Warn',
-    fmConfirmAdd: 'E2A:FileManager:ConfirmAdd'
-  }
+    fmConfirmAdd: 'E2A:FileManager:ConfirmAdd',
+  };
 
   private __files = new BehaviorSubject<FileSourceModel[]>([]);
   files: Observable<FileSourceModel[]> = this.__files.asObservable();
@@ -46,13 +49,15 @@ export class AutoscanService {
   private __move = new BehaviorSubject<FileManagerMove>({} as any);
   move = this.__move.asObservable();
 
-  constructor(private zone: NgZone,
-              private notifications: NotificationsService) {
+  constructor(
+    private zone: NgZone,
+    private notifications: NotificationsService
+  ) {
     this.receive(this.channels.fmNewFiles, (responses: IpcMessage[]) => {
       this.zone.run(() => {
-        let files: FileSourceModel[] = [];
+        const files: FileSourceModel[] = [];
 
-        for (let response of responses) {
+        for (const response of responses) {
           if (response.error) {
             console.error('Ignoring invalid file from ingest-watcher...');
             console.error(response.error);
@@ -63,29 +68,37 @@ export class AutoscanService {
         }
         this.__files.next(files);
       });
-    })
+    });
 
     this.receive(this.channels.fmError, (message: IpcMessage) => {
       this.zone.run(() => {
         if (message.error) {
-          this.notifications.error('FileWatcher', `${message.error.label}`, `${message.error.message} (${message.error.code})`);
+          this.notifications.error(
+            'FileWatcher',
+            `${message.error.label}`,
+            `${message.error.message} (${message.error.code})`
+          );
         }
-      })
-    })
+      });
+    });
 
     this.receive(this.channels.fmWarn, (message: IpcMessage) => {
       this.zone.run(() => {
         if (message.error) {
-          this.notifications.warn('FileWatcher', `${message.error.label}`, `${message.error.message}`);
+          this.notifications.warn(
+            'FileWatcher',
+            `${message.error.label}`,
+            `${message.error.message}`
+          );
         }
-      })
-    })
+      });
+    });
 
     this.receive(this.channels.fmConfirmAdd, (message: IpcMessage) => {
       if (message.success?.data?.id && message.success.data.newPath) {
         this.__move.next(message.success.data);
       }
-    })
+    });
   }
 
   /**
@@ -96,8 +109,8 @@ export class AutoscanService {
   finalize(id: UUID, operation: 'add' | 'remove' | 'delay') {
     const update: FileWatcherUpdate = {
       id: id.value,
-      method: operation
-    }
+      method: operation,
+    };
     this.send(this.channels.fmFinalize, update);
   }
 

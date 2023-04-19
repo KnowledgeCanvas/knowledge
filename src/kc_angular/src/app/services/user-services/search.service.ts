@@ -13,42 +13,42 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import Fuse from "fuse.js";
-import {BehaviorSubject, Observable} from "rxjs";
-import {DataService} from "@services/user-services/data.service";
-import {Injectable} from '@angular/core';
-import {KcProject} from "@app/models/project.model";
-import {KnowledgeSource} from "@app/models/knowledge.source.model";
-import {SettingsService} from "@services/ipc-services/settings.service";
-import {map, take, tap} from "rxjs/operators";
+import Fuse from 'fuse.js';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { DataService } from '@services/user-services/data.service';
+import { Injectable } from '@angular/core';
+import { KcProject } from '@app/models/project.model';
+import { KnowledgeSource } from '@app/models/knowledge.source.model';
+import { SettingsService } from '@services/ipc-services/settings.service';
+import { map, take, tap } from 'rxjs/operators';
 
 export type SearchProvider = {
-  id: string,
-  title: string
-  iconUrl: string
-}
+  id: string;
+  title: string;
+  iconUrl: string;
+};
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SearchService {
-  fuzzy: boolean = true;
+  fuzzy = true;
   private providers: SearchProvider[] = [
     {
       id: 'google',
       title: 'Google',
-      iconUrl: 'https://www.google.com/favicon.ico'
+      iconUrl: 'https://www.google.com/favicon.ico',
     },
     {
       id: 'bing',
       title: 'Bing',
-      iconUrl: 'https://www.bing.com/sa/simg/favicon-trans-bg-blue-mg.ico'
+      iconUrl: 'https://www.bing.com/sa/simg/favicon-trans-bg-blue-mg.ico',
     },
     {
       id: 'duck',
       title: 'DuckDuckGo',
-      iconUrl: 'https://duckduckgo.com/favicon.ico'
-    }
+      iconUrl: 'https://duckduckgo.com/favicon.ico',
+    },
   ];
 
   provider: SearchProvider = this.providers[0];
@@ -67,43 +67,52 @@ export class SearchService {
     keys: [
       {
         name: 'title',
-        weight: 4
+        weight: 4,
       },
       {
         name: 'topics',
-        weight: 2
+        weight: 2,
       },
       {
         name: 'ingestType',
-        weight: 8
+        weight: 8,
       },
       {
         name: 'description',
-        weight: 1
+        weight: 1,
       },
       {
         name: 'rawText',
-        weight: 0.5
-      }
-    ]
-  }
+        weight: 0.5,
+      },
+    ],
+  };
 
   constructor(private data: DataService, private settings: SettingsService) {
-    settings.search.pipe(
-      tap((searchSettings) => {
-        const provider = this.providers.find(s => s.id === searchSettings.provider);
-        if (provider) {
-          this.provider = provider;
-        }
+    settings.search
+      .pipe(
+        tap((searchSettings) => {
+          const provider = this.providers.find(
+            (s) => s.id === searchSettings.provider
+          );
+          if (provider) {
+            this.provider = provider;
+          }
 
-        if (searchSettings.fuzzy !== undefined) {
-          this.fuzzy = searchSettings.fuzzy;
-        }
+          if (searchSettings.fuzzy !== undefined) {
+            this.fuzzy = searchSettings.fuzzy;
+          }
 
-        if (searchSettings.threshold !== undefined && searchSettings.threshold >= 0 && searchSettings.threshold <= 100) {
-          this.searchOptions.threshold = searchSettings.threshold / 100;
-        }
-      })).subscribe();
+          if (
+            searchSettings.threshold !== undefined &&
+            searchSettings.threshold >= 0 &&
+            searchSettings.threshold <= 100
+          ) {
+            this.searchOptions.threshold = searchSettings.threshold / 100;
+          }
+        })
+      )
+      .subscribe();
   }
 
   executeSearch(term: string) {
@@ -112,10 +121,12 @@ export class SearchService {
     }
   }
 
-  forTerm(term: string): Observable<Partial<KnowledgeSource & KcProject & any>[]> {
+  forTerm(
+    term: string
+  ): Observable<Partial<KnowledgeSource & KcProject & any>[]> {
     return this.data.allKs.pipe(
       take(1),
-      map(ks => {
+      map((ks) => {
         return new Fuse(ks, this.searchOptions).search(term);
       })
     );
@@ -131,26 +142,26 @@ export class SearchService {
       keys: [
         {
           name: 'title',
-          weight: 10
+          weight: 10,
         },
         {
           name: 'name',
-          weight: 10
+          weight: 10,
         },
         {
           name: 'topics',
-          weight: 5
+          weight: 5,
         },
         {
           name: 'description',
-          weight: 1
+          weight: 1,
         },
         {
           name: 'accessLink',
-          weight: 4
-        }
-      ]
-    }
+          weight: 4,
+        },
+      ],
+    };
     const fuse = new Fuse(data, options);
     return fuse.search(term);
   }

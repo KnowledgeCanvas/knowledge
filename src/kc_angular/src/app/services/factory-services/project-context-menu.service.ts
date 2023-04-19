@@ -14,26 +14,29 @@
  *  limitations under the License.
  */
 
-import {Injectable} from '@angular/core';
-import {KcProject} from "@app/models/project.model";
-import {MenuItem, PrimeIcons} from "primeng/api";
-import {ProjectCommandService} from "@services/command-services/project-command.service";
-import {ProjectService} from "./project.service";
+import { Injectable } from '@angular/core';
+import { KcProject } from '@app/models/project.model';
+import { MenuItem, PrimeIcons } from 'primeng/api';
+import { ProjectCommandService } from '@services/command-services/project-command.service';
+import { ProjectService } from './project.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ProjectContextMenuService {
-
-  constructor(private projects: ProjectService, private pCommand: ProjectCommandService) {
-  }
+  constructor(
+    private projects: ProjectService,
+    private pCommand: ProjectCommandService
+  ) {}
 
   generate(project: KcProject, projects?: KcProject[]): MenuItem[] {
     return [
       {
-        label: project.name.substring(0, 16) + (project.name.length > 16 ? '...' : ''),
+        label:
+          project.name.substring(0, 16) +
+          (project.name.length > 16 ? '...' : ''),
         disabled: true,
-        icon: 'pi pi-folder'
+        icon: 'pi pi-folder',
       },
       {
         label: '',
@@ -44,14 +47,14 @@ export class ProjectContextMenuService {
         icon: PrimeIcons.INFO,
         command: () => {
           this.pCommand.detail(project);
-        }
+        },
       },
       {
         label: 'Add Subproject',
         icon: PrimeIcons.PLUS,
         command: () => {
           this.pCommand.new(project.id);
-        }
+        },
       },
       {
         label: '',
@@ -62,14 +65,14 @@ export class ProjectContextMenuService {
         icon: PrimeIcons.ARROW_CIRCLE_RIGHT,
         command: () => {
           this.projects.setCurrentProject(project.id.value);
-        }
+        },
       },
       {
         label: 'Copy as JSON',
         icon: PrimeIcons.COPY,
         command: () => {
           this.pCommand.copyJSON(projects ? projects : [project]);
-        }
+        },
       },
       {
         label: '',
@@ -79,8 +82,8 @@ export class ProjectContextMenuService {
         label: 'Remove',
         icon: PrimeIcons.TRASH,
         command: () => {
-          this.pCommand.remove([project])
-        }
+          this.pCommand.remove([project]);
+        },
       },
     ];
   }

@@ -14,24 +14,26 @@
  *  limitations under the License.
  */
 
-import {Pipe, PipeTransform} from '@angular/core';
-import {ProjectService} from "@services/factory-services/project.service";
-import {UUID} from "@shared/models/uuid.model";
+import { Pipe, PipeTransform } from '@angular/core';
+import { ProjectService } from '@services/factory-services/project.service';
+import { UUID } from '@shared/models/uuid.model';
 
 @Pipe({
-  name: 'projectName'
+  name: 'projectName',
 })
 export class ProjectNamePipe implements PipeTransform {
-  constructor(private projectService: ProjectService) {
-  }
+  constructor(private projectService: ProjectService) {}
 
   transform(id: UUID | string): string {
-    const pid: UUID = typeof id === 'string' ? {value: id} : id;
+    const pid: UUID = typeof id === 'string' ? { value: id } : id;
 
     if (!id) {
-      return 'None'
+      return 'None';
     } else {
-      return this.projectService.ProjectIdentifiers.find(p => p.id === pid.value)?.title ?? 'None';
+      return (
+        this.projectService.ProjectIdentifiers.find((p) => p.id === pid.value)
+          ?.title ?? 'None'
+      );
     }
   }
 }

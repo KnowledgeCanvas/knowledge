@@ -13,19 +13,19 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import {BehaviorSubject, Subject, tap} from "rxjs";
-import {FaviconService} from "@services/ingest-services/favicon.service";
-import {Injectable, OnDestroy} from '@angular/core';
-import {KcProject} from "@app/models/project.model";
-import {KnowledgeSource} from "@app/models/knowledge.source.model";
-import {ProjectService} from "@services/factory-services/project.service";
-import {SettingsService} from "@services/ipc-services/settings.service";
-import {StorageService} from "@services/ipc-services/storage.service";
-import {UUID} from "@shared/models/uuid.model";
-import {map, takeUntil} from "rxjs/operators";
+import { BehaviorSubject, Subject, tap } from 'rxjs';
+import { FaviconService } from '@services/ingest-services/favicon.service';
+import { Injectable, OnDestroy } from '@angular/core';
+import { KcProject } from '@app/models/project.model';
+import { KnowledgeSource } from '@app/models/knowledge.source.model';
+import { ProjectService } from '@services/factory-services/project.service';
+import { SettingsService } from '@services/ipc-services/settings.service';
+import { StorageService } from '@services/ipc-services/storage.service';
+import { UUID } from '@shared/models/uuid.model';
+import { map, takeUntil } from 'rxjs/operators';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class DataService implements OnDestroy {
   private __allKs = new BehaviorSubject<KnowledgeSource[]>([]);
@@ -37,13 +37,15 @@ export class DataService implements OnDestroy {
   private __projectList = new BehaviorSubject<KcProject[]>([]);
   projectList = this.__projectList.asObservable();
 
-  private __currentProject = new BehaviorSubject<KcProject | undefined>(undefined);
+  private __currentProject = new BehaviorSubject<KcProject | undefined>(
+    undefined
+  );
   currentProject = this.__currentProject.asObservable();
 
   private __selectedKs = new BehaviorSubject<KnowledgeSource[]>([]);
   selectKs = this.__selectedKs.asObservable();
 
-  private projectInheritance: boolean = true;
+  private projectInheritance = true;
 
   private cleanUp: Subject<any> = new Subject<any>();
 
@@ -53,8 +55,8 @@ export class DataService implements OnDestroy {
     },
 
     get: async (uuids: UUID[]): Promise<KnowledgeSource[]> => {
-      let ksList: KnowledgeSource[] = [];
-      for (let id of uuids) {
+      const ksList: KnowledgeSource[] = [];
+      for (const id of uuids) {
         const lookup = `ks-${id.value}`;
         const kstr = localStorage.getItem(lookup);
         if (kstr) {
@@ -68,7 +70,7 @@ export class DataService implements OnDestroy {
     },
 
     update: async (ksList: KnowledgeSource[]) => {
-      for (let ks of ksList) {
+      for (const ks of ksList) {
         const lookup = `ks-${ks.id.value}`;
         const kstr = JSON.stringify(ks);
         if (kstr) {
@@ -77,73 +79,81 @@ export class DataService implements OnDestroy {
       }
 
       // TODO: Remove this after projects no longer carry entire KS objects...
-      for (let ks of ksList) {
-        await this._projects.updateProjects([{
-          id: ks.associatedProject,
-          updateKnowledgeSource: [ks]
-        }]);
+      for (const ks of ksList) {
+        await this._projects.updateProjects([
+          {
+            id: ks.associatedProject,
+            updateKnowledgeSource: [ks],
+          },
+        ]);
       }
     },
 
     delete: async (ksList: KnowledgeSource[]) => {
-      for (let ks of ksList) {
+      for (const ks of ksList) {
         const lookup = `ks-${ks.id.value}`;
         localStorage.removeItem(lookup);
       }
     },
 
-    count: this.__ksList.asObservable().pipe(
-      map(sources => sources.length)
-    ),
+    count: this.__ksList.asObservable().pipe(map((sources) => sources.length)),
 
     typeCount: this.__ksList.asObservable().pipe(
       map((sources) => {
-        let counts = {
+        const counts = {
           websites: 0,
-          files: 0
-        }
+          files: 0,
+        };
 
-        sources.map(s => s.ingestType).forEach((ingestType) => {
-          if (ingestType === "website") {
-            counts.websites += 1;
-          } else if (ingestType === 'file') {
-            counts.files += 1;
-          }
-        });
+        sources
+          .map((s) => s.ingestType)
+          .forEach((ingestType) => {
+            if (ingestType === 'website') {
+              counts.websites += 1;
+            } else if (ingestType === 'file') {
+              counts.files += 1;
+            }
+          });
 
         return counts;
       })
-    )
-  }
+    ),
+  };
 
   projects = {
-    subprojectCount: this.__projectList.asObservable().pipe(
-      map(projects => projects.length)
-    )
-  }
+    subprojectCount: this.__projectList
+      .asObservable()
+      .pipe(map((projects) => projects.length)),
+  };
 
-  constructor(private storage: StorageService,
-              private settings: SettingsService,
-              private favicon: FaviconService,
-              private _projects: ProjectService) {
-    settings.app.pipe(
-      takeUntil(this.cleanUp),
-      tap((app) => {
-        try {
-          this.projectInheritance = app.projects.ksInherit;
-        } catch (e) {
-          this.projectInheritance = true;
-          this.settings.set({app: {projects: {ksInherit: true}}});
-        }
-      })
-    ).subscribe()
+  constructor(
+    private storage: StorageService,
+    private settings: SettingsService,
+    private favicon: FaviconService,
+    private _projects: ProjectService
+  ) {
+    settings.app
+      .pipe(
+        takeUntil(this.cleanUp),
+        tap((app) => {
+          try {
+            this.projectInheritance = app.projects.ksInherit;
+          } catch (e) {
+            this.projectInheritance = true;
+            this.settings.set({ app: { projects: { ksInherit: true } } });
+          }
+        })
+      )
+      .subscribe();
 
-    _projects.newSources.pipe(
-      takeUntil(this.cleanUp),
-      tap((sources) => {
-        this.__allKs.next(this.__allKs.value.concat(sources));
-      })
-    ).subscribe()
+    _projects.newSources
+      .pipe(
+        takeUntil(this.cleanUp),
+        tap((sources) => {
+          this.__allKs.next(this.__allKs.value.concat(sources));
+        })
+      )
+      .subscribe();
 
     storage.ksList().then((ksList) => {
       this.favicon.extractFromKsList(ksList).then((ready) => {
@@ -153,40 +163,42 @@ export class DataService implements OnDestroy {
 
     this.projectList = _projects.projects;
 
-    _projects.currentProject.pipe(
-      takeUntil(this.cleanUp),
-      tap((project) => {
-        if (!project) {
-          return;
-        }
-        let ksList: KnowledgeSource[] = [];
-        let projectList: KcProject[] = [project];
-        let queue: KcProject[] = [project];
-
-        while (queue.length > 0) {
-          let p = queue.shift();
-          if (p && p.knowledgeSource) {
-            ksList = ksList.concat(p.knowledgeSource);
+    _projects.currentProject
+      .pipe(
+        takeUntil(this.cleanUp),
+        tap((project) => {
+          if (!project) {
+            return;
           }
+          let ksList: KnowledgeSource[] = [];
+          const projectList: KcProject[] = [project];
+          const queue: KcProject[] = [project];
 
-          if (p && this.projectInheritance) {
-            for (let sub of p.subprojects) {
-              let s = this._projects.getProject(sub);
-              if (s) {
-                queue.push(s);
-                projectList.push(s);
+          while (queue.length > 0) {
+            const p = queue.shift();
+            if (p && p.knowledgeSource) {
+              ksList = ksList.concat(p.knowledgeSource);
+            }
+
+            if (p && this.projectInheritance) {
+              for (const sub of p.subprojects) {
+                const s = this._projects.getProject(sub);
+                if (s) {
+                  queue.push(s);
+                  projectList.push(s);
+                }
               }
             }
           }
-        }
 
-        this.__projectList.next(projectList);
+          this.__projectList.next(projectList);
 
-        this.favicon.extractFromKsList(ksList).then((ready) => {
-          this.__ksList.next(ready);
+          this.favicon.extractFromKsList(ksList).then((ready) => {
+            this.__ksList.next(ready);
+          });
         })
-      })
-    ).subscribe()
+      )
+      .subscribe();
   }
 
   ngOnDestroy() {

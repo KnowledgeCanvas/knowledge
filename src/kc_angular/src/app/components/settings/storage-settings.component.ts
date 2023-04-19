@@ -14,9 +14,10 @@
  *  limitations under the License.
  */
 
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { StorageService } from '@services/ipc-services/storage.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { NotificationsService } from '@services/user-services/notifications.service';
 
 @Component({
   selector: 'app-storage-settings',
@@ -38,7 +39,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
                       pButton
                       label="Export"
                       [loading]="exporting"
-                      (click)="onExport($event, exportType)"
+                      (click)="onExport()"
                     ></button>
                   </div>
                 </app-setting-template>
@@ -69,54 +70,42 @@ import { FormBuilder, FormGroup } from '@angular/forms';
   `,
   styles: [],
 })
-export class StorageSettingsComponent implements OnInit {
-  exportType: string = 'Everything';
+export class StorageSettingsComponent {
+  exportType = 'Everything';
 
-  exporting: boolean = false;
+  exporting = false;
 
   form: FormGroup;
 
   constructor(
     private storage: StorageService,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private notifications: NotificationsService
   ) {
     this.form = formBuilder.group({});
   }
 
-  ngOnInit(): void {}
-
-  async onExport($event: MouseEvent, exportType: string) {
+  async onExport() {
     this.exporting = true;
     await this.storage.export();
     this.exporting = false;
   }
 
   onImport($event: any) {
-    console.log('Import: ', $event);
     const files: any[] = $event.target.files;
     if (!files) {
       return;
     }
 
-    console.log('Files: ', files);
-    if (files.length > 1) {
-    }
-
     const file: File = files[0];
-    console.log('File: ', file);
-
     file
       .text()
       .then((importFile) => {
-        console.log('Import file size: ', importFile.length);
-
         const imported = JSON.parse(importFile);
         if (imported?.projects) {
-          console.log('Imported: ', imported);
-
           const projects = imported.projects;
-          let projectList: string[] = [];
-          for (let project of projects) {
+          const projectList: string[] = [];
+          for (const project of projects) {
             projectList.push(project.id.value);
             const id = project.id.value;
             const pStr = JSON.stringify(project);
@@ -127,26 +116,28 @@ export class StorageSettingsComponent implements OnInit {
 
           const projectsStr = localStorage.getItem('kc-projects');
           if (projectsStr) {
-            console.log('Adding to projects: ', projectsStr, projectList);
-            let ids: string[] = JSON.parse(projectsStr);
+            const ids: string[] = JSON.parse(projectsStr);
             if (ids) {
               const nextIds = [];
-              for (let id of ids) {
+              for (const id of ids) {
                 nextIds.push(id);
               }
-              for (let id of projectList) {
+              for (const id of projectList) {
                 nextIds.push(id);
               }
               ids.concat(projectList);
-              let idStr = JSON.stringify(nextIds);
-              console.log('Id strings: ', idStr);
+              const idStr = JSON.stringify(nextIds);
               localStorage.setItem('kc-projects', idStr);
             }
           }
         }
       })
-      .catch((error) => {
-        console.error('Error on file read: ', error);
+      .catch(() => {
+        this.notifications.error(
+          'Storage Settings',
+          'File Error',
+          'Unable to read file.'
+        );
       });
   }
 }

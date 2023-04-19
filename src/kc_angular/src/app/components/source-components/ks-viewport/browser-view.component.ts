@@ -22,20 +22,22 @@ import {
   OnInit,
   Output,
   SecurityContext,
-  SimpleChanges
+  SimpleChanges,
 } from '@angular/core';
-import {ElectronIpcService} from "@services/ipc-services/electron-ipc.service";
-import {BrowserViewRequest, IpcMessage} from "@shared/models/electron.ipc.model";
-import {DomSanitizer} from "@angular/platform-browser";
+import { ElectronIpcService } from '@services/ipc-services/electron-ipc.service';
+import {
+  BrowserViewRequest,
+  IpcMessage,
+} from '@shared/models/electron.ipc.model';
+import { DomSanitizer } from '@angular/platform-browser';
 import {
   BrowserViewClickEvent,
   BrowserViewConfig,
   BrowserViewHeaderConfig,
   BrowserViewHeaderEvent,
-  BrowserViewNavEvent
-} from "@shared/models/browser.view.model";
-import {Subscription} from "rxjs";
-
+  BrowserViewNavEvent,
+} from '@shared/models/browser.view.model';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'ks-lib-browser-view',
@@ -43,7 +45,8 @@ import {Subscription} from "rxjs";
     <ks-lib-viewport-header
       *ngIf="headerConfig"
       [config]="headerConfig"
-      (headerEvents)="headerEvents($event)">
+      (headerEvents)="headerEvents($event)"
+    >
     </ks-lib-viewport-header>
 
     <div class="browser-view" id="browser-view">
@@ -57,8 +60,8 @@ import {Subscription} from "rxjs";
         width: 100%;
         background-color: var(--surface-a);
       }
-    `
-  ]
+    `,
+  ],
 })
 export class BrowserViewComponent implements OnInit, OnChanges, OnDestroy {
   @Input() kcBrowserViewConfig!: BrowserViewConfig;
@@ -74,7 +77,10 @@ export class BrowserViewComponent implements OnInit, OnChanges, OnDestroy {
   private goForwardSubscription: Subscription = new Subscription();
   private urlSubscription: Subscription = new Subscription();
 
-  constructor(private ipcService: ElectronIpcService, private sanitizer: DomSanitizer) {
+  constructor(
+    private ipcService: ElectronIpcService,
+    private sanitizer: DomSanitizer
+  ) {
     this.headerConfig = {
       canClose: true,
       canCopy: true,
@@ -88,29 +94,32 @@ export class BrowserViewComponent implements OnInit, OnChanges, OnDestroy {
       showActionButtons: true,
       showDisplayText: true,
       showCloseButton: true,
-      showOpenButton: true
-    }
+      showOpenButton: true,
+    };
   }
 
   ngOnInit(): void {
-    this.goBackSubscription = this.ipcService.browserViewCanGoBackResult.subscribe((canGoBack) => {
-      if (this.headerConfig)
-        this.headerConfig.canGoBack = canGoBack;
-    });
+    this.goBackSubscription =
+      this.ipcService.browserViewCanGoBackResult.subscribe((canGoBack) => {
+        if (this.headerConfig) this.headerConfig.canGoBack = canGoBack;
+      });
 
-    this.goForwardSubscription = this.ipcService.browserViewCanGoForwardResult.subscribe((canGoForward) => {
-      if (this.headerConfig)
-        this.headerConfig.canGoForward = canGoForward;
-    });
+    this.goForwardSubscription =
+      this.ipcService.browserViewCanGoForwardResult.subscribe(
+        (canGoForward) => {
+          if (this.headerConfig) this.headerConfig.canGoForward = canGoForward;
+        }
+      );
 
-    this.urlSubscription = this.ipcService.browserViewCurrentUrlResult.subscribe((url) => {
-      if (this.headerConfig)
-        this.headerConfig.displayText = url;
-    });
+    this.urlSubscription =
+      this.ipcService.browserViewCurrentUrlResult.subscribe((url) => {
+        if (this.headerConfig) this.headerConfig.displayText = url;
+      });
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    let kcBrowserViewConfig: BrowserViewConfig = changes.kcBrowserViewConfig.currentValue;
+    const kcBrowserViewConfig: BrowserViewConfig =
+      changes.kcBrowserViewConfig.currentValue;
 
     // Only load browser view once (on first change, i.e. when the input first arrives)
     if (changes.kcBrowserViewConfig.isFirstChange()) {
@@ -127,12 +136,10 @@ export class BrowserViewComponent implements OnInit, OnChanges, OnDestroy {
       this.headerConfig.canClose = kcBrowserViewConfig.isDialog;
       this.headerConfig.canSave = kcBrowserViewConfig.canSave;
     }
-
   }
 
   ngOnDestroy() {
-    if (this.stateCheckInterval)
-      clearInterval(this.stateCheckInterval);
+    if (this.stateCheckInterval) clearInterval(this.stateCheckInterval);
     this.navEventSubscription.unsubscribe();
     this.goBackSubscription.unsubscribe();
     this.goForwardSubscription.unsubscribe();
@@ -140,21 +147,24 @@ export class BrowserViewComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   loadBrowserView() {
-    let sanitizedUrl = this.sanitizer.sanitize(SecurityContext.URL, this.kcBrowserViewConfig.url.href);
+    const sanitizedUrl = this.sanitizer.sanitize(
+      SecurityContext.URL,
+      this.kcBrowserViewConfig.url.href
+    );
     if (!sanitizedUrl) {
       console.error('Unable to load resource with invalid URL...');
       return;
     }
 
-    let zoomFactor = window.outerWidth / window.innerWidth;
-    let position = this.getBrowserViewDimensions('browser-view');
-    let request: BrowserViewRequest = {
+    const zoomFactor = window.outerWidth / window.innerWidth;
+    const position = this.getBrowserViewDimensions('browser-view');
+    const request: BrowserViewRequest = {
       url: sanitizedUrl,
       x: Math.floor(position.x * zoomFactor),
       y: Math.floor((position.y + 48) * zoomFactor),
       width: Math.ceil(position.width * zoomFactor),
       height: Math.ceil(position.height * zoomFactor),
-    }
+    };
 
     this.ipcService.openBrowserView(request).then((response: IpcMessage) => {
       if (response.success) {
@@ -168,17 +178,16 @@ export class BrowserViewComponent implements OnInit, OnChanges, OnDestroy {
         return;
       }
 
-      let navEvent: BrowserViewNavEvent = {
+      const navEvent: BrowserViewNavEvent = {
         urlChanged: true,
-        url: new URL(url)
-      }
+        url: new URL(url),
+      };
       this.navEvent.emit(navEvent);
     });
   }
 
-
   getBrowserViewDimensions(elementName: string): any {
-    let element = document.getElementById(elementName);
+    const element = document.getElementById(elementName);
     if (element) {
       return element.getBoundingClientRect();
     }
@@ -186,7 +195,9 @@ export class BrowserViewComponent implements OnInit, OnChanges, OnDestroy {
 
   getBrowserViewState() {
     if (!this.ipcService) {
-      console.warn('Unable to get browser view state because IPC service does not exist...');
+      console.warn(
+        'Unable to get browser view state because IPC service does not exist...'
+      );
       return;
     }
     this.ipcService.triggerBrowserViewStateUpdate();

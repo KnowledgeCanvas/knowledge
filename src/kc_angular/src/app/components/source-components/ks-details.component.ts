@@ -13,10 +13,10 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import {Component, OnInit} from '@angular/core';
-import {DynamicDialogConfig, DynamicDialogRef} from "primeng/dynamicdialog";
-import {KnowledgeSource} from "@app/models/knowledge.source.model";
-import {NotificationsService} from "@services/user-services/notifications.service";
+import { Component } from '@angular/core';
+import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { KnowledgeSource } from '@app/models/knowledge.source.model';
+import { NotificationsService } from '@services/user-services/notifications.service';
 
 @Component({
   selector: 'app-details',
@@ -24,21 +24,27 @@ import {NotificationsService} from "@services/user-services/notifications.servic
     <div class="w-full flex-row-center-between my-2 px-2 sticky">
       <div class="flex-row-center-start">
         <app-ks-icon [ks]="ks" class="pr-3"></app-ks-icon>
-        <app-project-breadcrumb [disabled]="true"
-                                [projectId]="ks.associatedProject.value">
+        <app-project-breadcrumb
+          [disabled]="true"
+          [projectId]="ks.associatedProject.value"
+        >
         </app-project-breadcrumb>
       </div>
       <div class="flex flex-row align-items-center justify-content-center">
-        <button pButton
-                icon="pi pi-arrow-down"
-                label="Expand"
-                (click)="expandAll()"
-                class="p-button-rounded p-button-text shadow-none"></button>
-        <button pButton
-                icon="pi pi-arrow-up"
-                label="Collapse"
-                (click)="collapseAll()"
-                class="p-button-rounded p-button-text shadow-none"></button>
+        <button
+          pButton
+          icon="pi pi-arrow-down"
+          label="Expand"
+          (click)="expandAll()"
+          class="p-button-rounded p-button-text shadow-none"
+        ></button>
+        <button
+          pButton
+          icon="pi pi-arrow-up"
+          label="Collapse"
+          (click)="collapseAll()"
+          class="p-button-rounded p-button-text shadow-none"
+        ></button>
       </div>
       <div class="flex-row-center-end" style="width: 10rem">
         <div *ngIf="saved" class="flex-row-center-start text-primary">
@@ -46,41 +52,49 @@ import {NotificationsService} from "@services/user-services/notifications.servic
           <div class="px-3">Saved</div>
         </div>
         <div>
-          <button pButton class="p-button-text p-button-rounded"
-                  icon="pi pi-times" (click)="onClose()">
-          </button>
+          <button
+            pButton
+            class="p-button-text p-button-rounded"
+            icon="pi pi-times"
+            (click)="onClose()"
+          ></button>
         </div>
       </div>
     </div>
     <div style="height: calc(100% - 65px); overflow-y: auto">
-      <app-ks-info [ks]="ks"
-                   [isDialog]="true"
-                   (onSaved)="onSaved($event)"
-                   (shouldClose)="onClose()"
-                   [collapseAll]="collapsed">
+      <app-ks-info
+        [ks]="ks"
+        [isDialog]="true"
+        (onSaved)="onSaved()"
+        (shouldClose)="onClose()"
+        [collapseAll]="collapsed"
+      >
       </app-ks-info>
     </div>
   `,
-  styles: ['']
+  styles: [''],
 })
-export class KsDetailsComponent implements OnInit {
+export class KsDetailsComponent {
   ks!: KnowledgeSource;
 
-  collapsed: boolean = false;
+  collapsed = false;
 
-  saved: boolean = false;
+  saved = false;
 
-  constructor(private config: DynamicDialogConfig,
-              private ref: DynamicDialogRef,
-              private notifications: NotificationsService) {
+  constructor(
+    private config: DynamicDialogConfig,
+    private ref: DynamicDialogRef,
+    private notifications: NotificationsService
+  ) {
     if (config?.data?.ks) {
       this.ks = config.data.ks;
     } else {
-      this.notifications.error('Source Details', 'Invalid Source', 'Could not find a source to display.');
+      this.notifications.error(
+        'Source Details',
+        'Invalid Source',
+        'Could not find a source to display.'
+      );
     }
-  }
-
-  ngOnInit(): void {
   }
 
   onClose() {
@@ -91,17 +105,17 @@ export class KsDetailsComponent implements OnInit {
     this.collapsed = true;
     setTimeout(() => {
       this.collapsed = false;
-    })
+    });
   }
 
   collapseAll() {
     this.collapsed = false;
     setTimeout(() => {
       this.collapsed = true;
-    })
+    });
   }
 
-  onSaved(_: KnowledgeSource) {
+  onSaved() {
     this.saved = true;
     setTimeout(() => {
       this.saved = false;

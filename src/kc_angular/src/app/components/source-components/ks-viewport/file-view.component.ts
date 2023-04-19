@@ -13,21 +13,31 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
-import {DomSanitizer, SafeUrl} from "@angular/platform-browser";
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import {
   BrowserViewHeaderConfig,
   BrowserViewHeaderEvent,
   FileViewClickEvent,
-  FileViewConfig
-} from "@shared/models/browser.view.model";
+  FileViewConfig,
+} from '@shared/models/browser.view.model';
 
 @Component({
   selector: 'ks-lib-file-view',
   template: `
-    <ks-lib-viewport-header *ngIf="headerConfig"
-                            [config]="headerConfig"
-                            (headerEvents)="headerEvents($event)">
+    <ks-lib-viewport-header
+      *ngIf="headerConfig"
+      [config]="headerConfig"
+      (headerEvents)="headerEvents($event)"
+    >
     </ks-lib-viewport-header>
     <iframe class="file-view" *ngIf="ready" [src]="safeUrl"></iframe>
   `,
@@ -37,21 +47,20 @@ import {
         height: calc(100vh - 68px);
         width: 100%;
       }
-    `
-  ]
+    `,
+  ],
 })
 export class FileViewComponent implements OnInit, OnChanges {
   @Input() config!: FileViewConfig;
-  @Input() showHeader: boolean = false;
+  @Input() showHeader = false;
   @Output() viewReady = new EventEmitter<boolean>();
   @Output() clickEvent = new EventEmitter<FileViewClickEvent>();
   @Output() fileError = new EventEmitter<string>();
   safeUrl: SafeUrl | undefined;
   headerConfig: BrowserViewHeaderConfig | undefined;
-  ready: boolean = false;
+  ready = false;
 
-  constructor(private sanitizer: DomSanitizer) {
-  }
+  constructor(private sanitizer: DomSanitizer) {}
 
   ngOnInit(): void {
     this.headerConfig = {
@@ -62,8 +71,8 @@ export class FileViewComponent implements OnInit, OnChanges {
       showActionButtons: true,
       showDisplayText: true,
       showCloseButton: true,
-      showOpenButton: true
-    }
+      showOpenButton: true,
+    };
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -71,11 +80,15 @@ export class FileViewComponent implements OnInit, OnChanges {
     if (config) {
       if (config.filePath) {
         if (this.validateFileURI(config.filePath)) {
-          this.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl('file://' + encodeURI(config.filePath));
+          this.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
+            'file://' + encodeURI(config.filePath)
+          );
           this.ready = true;
           this.viewReady.emit(true);
         } else {
-          this.fileError.emit('The file path contains invalid characters and cannot be previewed.');
+          this.fileError.emit(
+            'The file path contains invalid characters and cannot be previewed.'
+          );
         }
       }
     }

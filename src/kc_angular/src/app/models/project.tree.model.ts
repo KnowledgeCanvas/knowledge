@@ -14,16 +14,22 @@
  *  limitations under the License.
  */
 
-import {ProjectGraphNode} from "@shared/models/graph.model";
+import { ProjectGraphNode } from '@shared/models/graph.model';
 
 export class ProjectTreeNode implements ProjectGraphNode {
   name: string;
   id: string;
   type: string;
-  expanded: boolean = false;
+  expanded = false;
   subprojects: ProjectTreeNode[];
 
-  constructor(name: string, id: string, type: string, subprojects: ProjectTreeNode[], expanded: boolean) {
+  constructor(
+    name: string,
+    id: string,
+    type: string,
+    subprojects: ProjectTreeNode[],
+    expanded: boolean
+  ) {
     this.name = name ? name : '';
     this.id = id ? id : '';
     this.type = type ? type : '';
@@ -41,9 +47,9 @@ export class ProjectTree {
 
   asArray(): ProjectTreeNode[] {
     const arr: ProjectTreeNode[] = [];
-    this.root.subprojects.forEach(((value) => {
+    this.root.subprojects.forEach((value) => {
       arr.push(value);
-    }));
+    });
     return arr;
   }
 
@@ -73,7 +79,11 @@ export class ProjectTree {
     }
   }
 
-  private addChild(node: ProjectTreeNode, parentId: string, current: ProjectTreeNode): void {
+  private addChild(
+    node: ProjectTreeNode,
+    parentId: string,
+    current: ProjectTreeNode
+  ): void {
     if (current.id === parentId) {
       current.subprojects.push(node);
     } else {

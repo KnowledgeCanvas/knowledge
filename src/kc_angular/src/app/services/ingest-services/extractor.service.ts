@@ -13,203 +13,240 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import {ArticleModel, CodeModel, WebsiteMetadataModel, WebsiteMetaTagsModel} from "@shared/models/web.source.model";
-import {HttpClient} from "@angular/common/http";
-import {Injectable} from '@angular/core';
-import {NotificationsService} from "@services/user-services/notifications.service";
+import {
+  ArticleModel,
+  CodeModel,
+  WebsiteMetadataModel,
+  WebsiteMetaTagsModel,
+} from '@shared/models/web.source.model';
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { NotificationsService } from '@services/user-services/notifications.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ExtractorService {
-  private MIN_CODE_LENGTH: number = 64;
+  private MIN_CODE_LENGTH = 64;
 
-  constructor(private httpClient: HttpClient, private notifications: NotificationsService) {
-  }
+  constructor(
+    private httpClient: HttpClient,
+    private notifications: NotificationsService
+  ) {}
 
   websiteToPdf(url: string, outFileName?: string) {
     // TODO: move this to ipc service...
-    window.api.receive("E2A:Extraction:Website", (data: any) => {
-      this.notifications.debug('ExtractorService', 'E2A:Extraction:Website', 'Not implemented yet.');
+    window.api.receive('E2A:Extraction:Website', () => {
+      this.notifications.debug(
+        'ExtractorService',
+        'E2A:Extraction:Website',
+        'Not implemented yet.'
+      );
     });
 
     // Send message to Electron ipcMain
-    let args: object = {
+    const args: object = {
       url: url,
       filename: outFileName,
-    }
-    window.api.send("A2E:Extraction:Website", args);
+    };
+    window.api.send('A2E:Extraction:Website', args);
   }
 
   async extractWebsiteArticle(url: string) {
-    this.httpClient.get(url, {responseType: 'text'}).subscribe((htmlString) => {
-      let parser = new DOMParser();
-      let htmlDoc = parser.parseFromString(htmlString, 'text/html');
-      let articles = htmlDoc.getElementsByTagName('article');
+    this.httpClient
+      .get(url, { responseType: 'text' })
+      .subscribe((htmlString) => {
+        const parser = new DOMParser();
+        const htmlDoc = parser.parseFromString(htmlString, 'text/html');
+        const articles = htmlDoc.getElementsByTagName('article');
 
-      if (!articles) {
-        return null;
-      }
+        if (!articles) {
+          return null;
+        }
 
-      if (articles.length > 1) {
-        this.notifications.debug('ExtractorService', 'Multiple Articles Detected', 'Returning first instance only.');
-      }
+        if (articles.length > 1) {
+          this.notifications.debug(
+            'ExtractorService',
+            'Multiple Articles Detected',
+            'Returning first instance only.'
+          );
+        }
 
-      let article = articles[0];
-      let title = '';
+        const article = articles[0];
+        let title = '';
 
-      if (article.title) {
-        title = article.title
-      } else {
-        article.childNodes.forEach((value, key) => {
-          if (value.nodeName === 'H1' || value.nodeName === 'h1') {
-            if (value.textContent) {
-              title = value.textContent;
-              return;
+        if (article.title) {
+          title = article.title;
+        } else {
+          article.childNodes.forEach((value) => {
+            if (value.nodeName === 'H1' || value.nodeName === 'h1') {
+              if (value.textContent) {
+                title = value.textContent;
+                return;
+              }
             }
-          }
-        });
-      }
+          });
+        }
 
-      let articleModel: ArticleModel = {
-        title: title,
-        type: article.attributes.getNamedItem('itemtype')?.nodeValue ?? undefined,
-        text: article.textContent ?? undefined,
-        html: article.innerHTML
-      };
+        const articleModel: ArticleModel = {
+          title: title,
+          type:
+            article.attributes.getNamedItem('itemtype')?.nodeValue ?? undefined,
+          text: article.textContent ?? undefined,
+          html: article.innerHTML,
+        };
 
-      return articleModel;
-    })
+        return articleModel;
+      });
   }
 
   async extractWebsiteCode(url: string) {
-    this.httpClient.get(url, {responseType: 'text'}).subscribe((htmlString) => {
-      let parser = new DOMParser();
-      let htmlDoc = parser.parseFromString(htmlString, 'text/html');
+    this.httpClient
+      .get(url, { responseType: 'text' })
+      .subscribe((htmlString) => {
+        const parser = new DOMParser();
+        const htmlDoc = parser.parseFromString(htmlString, 'text/html');
 
-      // Code tags
-      let code = htmlDoc.getElementsByTagName('code');
-      if (!code || code.length === 0) {
-        return null;
-      }
-
-      let codeHtml: CodeModel[] = [];
-      for (let i = 0; i < code.length; i++) {
-        if (code[i].textContent?.length && (code[i].textContent?.length ?? 0) > this.MIN_CODE_LENGTH) {
-          let c: CodeModel = {
-            html: code[i].outerHTML
-          }
-          codeHtml.push(c);
+        // Code tags
+        const code = htmlDoc.getElementsByTagName('code');
+        if (!code || code.length === 0) {
+          return null;
         }
-      }
-      return codeHtml;
-    })
+
+        const codeHtml: CodeModel[] = [];
+        for (let i = 0; i < code.length; i++) {
+          if (
+            code[i].textContent?.length &&
+            (code[i].textContent?.length ?? 0) > this.MIN_CODE_LENGTH
+          ) {
+            const c: CodeModel = {
+              html: code[i].outerHTML,
+            };
+            codeHtml.push(c);
+          }
+        }
+        return codeHtml;
+      });
   }
 
   async extractWebsiteAnswers(url: string) {
-    this.httpClient.get(url, {responseType: 'text'}).subscribe((htmlString) => {
-      let parser = new DOMParser();
-      let htmlDoc = parser.parseFromString(htmlString, 'text/html');
+    this.httpClient
+      .get(url, { responseType: 'text' })
+      .subscribe((htmlString) => {
+        const parser = new DOMParser();
+        const htmlDoc = parser.parseFromString(htmlString, 'text/html');
 
-      // Answers (StackOverflow)
-      let answers = htmlDoc.getElementById('answers');
-      if (answers) {
-        this.notifications.debug('ExtractorService', '"Answers" Detected', 'Not implemented yet.')
-      }
-    })
+        // Answers (StackOverflow)
+        const answers = htmlDoc.getElementById('answers');
+        if (answers) {
+          this.notifications.debug(
+            'ExtractorService',
+            '"Answers" Detected',
+            'Not implemented yet.'
+          );
+        }
+      });
   }
 
   extractWebsiteMetadata(url: string): Promise<WebsiteMetadataModel> {
     return new Promise<WebsiteMetadataModel>((resolve) => {
-      let metadata: WebsiteMetadataModel = {};
-      this.httpClient.get(url, {responseType: 'text'}).subscribe((htmlString) => {
-        let parser = new DOMParser();
-        let htmlDoc = parser.parseFromString(htmlString, 'text/html');
+      const metadata: WebsiteMetadataModel = {};
+      this.httpClient.get(url, { responseType: 'text' }).subscribe(
+        (htmlString) => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(htmlString, 'text/html');
 
-        let extractMetaTags = (doc: any) => {
-          let metatags: WebsiteMetaTagsModel[] = [];
-          let meta = doc.getElementsByTagName('meta');
+          const extractMetaTags = (doc: any) => {
+            const metatags: WebsiteMetaTagsModel[] = [];
+            const meta = doc.getElementsByTagName('meta');
 
-          for (let i = 0; i < meta.length; i++) {
-            let names = [
-              meta[i].name,
-              meta[i].attributes.getNamedItem('property')?.textContent,
-            ].filter(n => n);
+            for (let i = 0; i < meta.length; i++) {
+              const names = [
+                meta[i].name,
+                meta[i].attributes.getNamedItem('property')?.textContent,
+              ].filter((n) => n);
 
-            const isTarget = names.some(n => n && (
-              n.startsWith('og:') || /* OpenGraph */
-              n.startsWith('dc:') || /* Dublin Core */
-              (n.startsWith('twitter:') && !n.startsWith('twitter:app:')) || /* Twitter (but not app) */
-              n.startsWith('description') || /* Description */
-              n.startsWith('article:') || /* Articles */
-              n.startsWith('keywords') /* Keywords */
-            ));
+              const isTarget = names.some(
+                (n) =>
+                  n &&
+                  (n.startsWith('og:') /* OpenGraph */ ||
+                    n.startsWith('dc:') /* Dublin Core */ ||
+                    (n.startsWith('twitter:') &&
+                      !n.startsWith(
+                        'twitter:app:'
+                      )) /* Twitter (but not app) */ ||
+                    n.startsWith('description') /* Description */ ||
+                    n.startsWith('article:') /* Articles */ ||
+                    n.startsWith('keywords')) /* Keywords */
+              );
 
-            if (isTarget) {
-              let contents = [
-                meta[i].content,
-              ].filter(c => c);
+              if (isTarget) {
+                const contents = [meta[i].content].filter((c) => c);
 
-              for (let name of names) {
-                for (let content of contents) {
-                  metatags.push({
-                    key: name,
-                    value: content,
-                    property: ''
-                  });
+                for (const name of names) {
+                  for (const content of contents) {
+                    metatags.push({
+                      key: name,
+                      value: content,
+                      property: '',
+                    });
+                  }
                 }
               }
             }
+            return metatags;
+          };
+
+          // Title Tag
+          const title = htmlDoc.getElementsByTagName('title');
+          if (title && title.length > 0) {
+            metadata.title = title[0].innerText;
+          } else {
+            metadata.title = url;
           }
-          return metatags
-        }
 
-        // Title Tag
-        let title = htmlDoc.getElementsByTagName('title')
-        if (title && title.length > 0) {
-          metadata.title = title[0].innerText;
-        } else {
+          // Meta Tags
+          metadata.meta = extractMetaTags(htmlDoc);
+
+          resolve(metadata);
+        },
+        () => {
+          this.notifications.error(
+            'ExtractorService',
+            'extractWebsiteMetadata',
+            'Error retrieving website.'
+          );
           metadata.title = url;
+          resolve(metadata);
         }
-
-        // Meta Tags
-        metadata.meta = extractMetaTags(htmlDoc);
-
-        resolve(metadata);
-      }, (error) => {
-        this.notifications.error('ExtractorService', 'extractWebsiteMetadata', 'Error retrieving website.');
-        metadata.title = url;
-        resolve(metadata);
-      });
+      );
     });
   }
 
   async textFromFile(file: File): Promise<any> {
     return new Promise<string>((resolve, reject) => {
-      let headers = new Headers();
-      headers.append("Content-Type", file.type);
+      const headers = new Headers();
+      headers.append('Content-Type', file.type);
       headers.append('Accept', 'text/html');
       headers.append('X-Tika-OCRLanguage', 'eng');
 
-      let requestOptions: RequestInit = {
+      const requestOptions: RequestInit = {
         method: 'PUT',
         headers: headers,
         body: file,
-        redirect: 'follow'
+        redirect: 'follow',
       };
 
-      fetch("http://localhost:9998/tika", requestOptions)
-        .then(response => {
+      fetch('http://localhost:9998/tika', requestOptions)
+        .then((response) => {
           response.text().then((raw) => {
-            let parser = new DOMParser();
-            let doc = parser.parseFromString(raw, 'text/html');
             resolve(raw);
-          })
+          });
         })
-        .catch(error => {
+        .catch((error) => {
           this.notifications.error('ExtractorService', 'Tika Error', error);
-          reject(error)
+          reject(error);
         });
-    })
+    });
   }
 }

@@ -13,13 +13,20 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import {AuthorModel} from "../../../../kc_shared/models/author.model";
-import {FileSourceModel} from "../../../../kc_shared/models/file.source.model";
-import {UUID} from "../../../../kc_shared/models/uuid.model";
-import {ImportMethod} from "../../../../kc_shared/models/knowledge.source.model";
-import {WebSourceModel} from "../../../../kc_shared/models/web.source.model";
+import { AuthorModel } from '../../../../kc_shared/models/author.model';
+import { FileSourceModel } from '../../../../kc_shared/models/file.source.model';
+import { UUID } from '../../../../kc_shared/models/uuid.model';
+import { ImportMethod } from '../../../../kc_shared/models/knowledge.source.model';
+import { WebSourceModel } from '../../../../kc_shared/models/web.source.model';
 
-export type IngestType = 'file' | 'website' | 'generic' | 'topic' | 'search' | 'note' | 'message';
+export type IngestType =
+  | 'file'
+  | 'website'
+  | 'generic'
+  | 'topic'
+  | 'search'
+  | 'note'
+  | 'message';
 
 export class SourceModel {
   file: FileSourceModel | undefined;
@@ -47,13 +54,13 @@ export class KnowledgeSourceReference {
 }
 
 export type KnowledgeSourceEvent = {
-  date: Date,
-  label: string,
-  hash?: string,
-  primeIcon?: string
-  imageIcon?: string
-  iconText?: string
-}
+  date: Date;
+  label: string;
+  hash?: string;
+  primeIcon?: string;
+  imageIcon?: string;
+  iconText?: string;
+};
 
 export class KnowledgeSource {
   associatedProject: UUID;
@@ -62,7 +69,7 @@ export class KnowledgeSource {
   dateCreated: Date;
   dateAccessed: Date[];
   dateModified: Date[];
-  description: string = '';
+  description = '';
   events?: KnowledgeSourceEvent[] = [];
   icon?: any;
   iconUrl?: string;
@@ -77,24 +84,31 @@ export class KnowledgeSource {
   importMethod?: ImportMethod = 'manual';
   thumbnail?: string;
 
-  constructor(title: string, id: UUID, ingestType: IngestType, reference: KnowledgeSourceReference) {
+  constructor(
+    title: string,
+    id: UUID,
+    ingestType: IngestType,
+    reference: KnowledgeSourceReference
+  ) {
     this.title = title;
     this.id = id;
-    this.associatedProject = {value: ''};
+    this.associatedProject = { value: '' };
     this.authors = [];
     this.reference = reference;
     this.ingestType = ingestType;
     this.dateCreated = new Date();
     this.dateModified = [];
-    this.dateAccessed = []
+    this.dateAccessed = [];
     this.accessLink = reference.link;
     this.flagged = false;
     this.topics = [];
     // TODO: this should be replaced with the new EventModel
-    this.events = [{
-      date: new Date(),
-      label: 'Created'
-    }];
+    this.events = [
+      {
+        date: new Date(),
+        label: 'Created',
+      },
+    ];
   }
 }
 
@@ -116,6 +130,4 @@ export class KnowledgeSourceNote {
   }
 }
 
-export class KnowledgeSourceMarkup {
-
-}
+export class KnowledgeSourceMarkup {}

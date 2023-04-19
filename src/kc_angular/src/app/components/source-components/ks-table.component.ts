@@ -14,75 +14,109 @@
  *  limitations under the License.
  */
 
-
-import {Component, ElementRef, HostListener, Input, OnChanges, OnInit, SimpleChanges, ViewChild} from '@angular/core';
-import {KnowledgeSource} from "@app/models/knowledge.source.model";
-import {MenuItem, SortEvent} from "primeng/api";
-import {Table} from "primeng/table";
-import {KsCommandService} from "@services/command-services/ks-command.service";
-import {ProjectService} from "@services/factory-services/project.service";
-import {OverlayPanel} from "primeng/overlaypanel";
-import {KsContextMenuService} from "@services/factory-services/ks-context-menu.service";
-import {TopicService} from "@services/user-services/topic.service";
+import {
+  Component,
+  ElementRef,
+  HostListener,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+  ViewChild,
+} from '@angular/core';
+import { KnowledgeSource } from '@app/models/knowledge.source.model';
+import { MenuItem, SortEvent } from 'primeng/api';
+import { Table } from 'primeng/table';
+import { KsCommandService } from '@services/command-services/ks-command.service';
+import { ProjectService } from '@services/factory-services/project.service';
+import { OverlayPanel } from 'primeng/overlaypanel';
+import { KsContextMenuService } from '@services/factory-services/ks-context-menu.service';
+import { TopicService } from '@services/user-services/topic.service';
 
 @Component({
   selector: 'ks-table',
   template: `
     <div class="w-full h-full flex-col-center-start">
-      <div class="p-card w-full h-full" style="border: 1px solid var(--surface-100)">
-        <p-table #dataTable
-                 *ngIf="ksTableShouldExist"
-                 [(selection)]="ksSelected"
-                 [value]="ksList"
-                 [rowsPerPageOptions]="[10, 20, 30, 40, 50]"
-                 [(rows)]="rows"
-                 (rowsChange)="onRowChange($event)"
-                 [(first)]="first"
-                 [columns]="selectedColumns"
-                 [scrollable]="true"
-                 scrollHeight="calc(100vh - 350px)"
-                 [(contextMenuSelection)]="ksTableContextMenuSelectedKs"
-                 [selectionPageOnly]="true"
-                 [contextMenu]="cm"
-                 [resizableColumns]="false"
-                 columnResizeMode="expand"
-                 [globalFilterFields]="ksTableGlobalFilterFields"
-                 [customSort]="true"
-                 (sortFunction)="tableSort($event)"
-                 [paginator]="true"
-                 [showJumpToPageInput]="true"
-                 [showCurrentPageReport]="true"
-                 [showPageLinks]="true"
-                 selectionMode="checkbox"
-                 dataKey="id.value">
+      <div
+        class="p-card w-full h-full"
+        style="border: 1px solid var(--surface-100)"
+      >
+        <p-table
+          #dataTable
+          *ngIf="ksTableShouldExist"
+          [(selection)]="ksSelected"
+          [value]="ksList"
+          [rowsPerPageOptions]="[10, 20, 30, 40, 50]"
+          [(rows)]="rows"
+          (rowsChange)="onRowChange($event)"
+          [(first)]="first"
+          [columns]="selectedColumns"
+          [scrollable]="true"
+          scrollHeight="calc(100vh - 350px)"
+          [(contextMenuSelection)]="ksTableContextMenuSelectedKs"
+          [selectionPageOnly]="true"
+          [contextMenu]="cm"
+          [resizableColumns]="false"
+          columnResizeMode="expand"
+          [globalFilterFields]="ksTableGlobalFilterFields"
+          [customSort]="true"
+          (sortFunction)="tableSort($event)"
+          [paginator]="true"
+          [showJumpToPageInput]="true"
+          [showCurrentPageReport]="true"
+          [showPageLinks]="true"
+          selectionMode="checkbox"
+          dataKey="id.value"
+        >
           <ng-template pTemplate="caption">
             <div class="flex-row-center-between">
-              <p-multiSelect [options]="KS_TABLE_SUPPORTED_COLUMNS"
-                             [(ngModel)]="selectedColumns"
-                             (onChange)="onSelectedColumnChange($event)"
-                             optionLabel="header"
-                             selectedItemsLabel="{0} columns selected"
-                             [style]="{minWidth: '200px'}"
-                             placeholder="Choose Columns">
+              <p-multiSelect
+                [options]="KS_TABLE_SUPPORTED_COLUMNS"
+                [(ngModel)]="selectedColumns"
+                (onChange)="onSelectedColumnChange($event)"
+                optionLabel="header"
+                selectedItemsLabel="{0} columns selected"
+                [style]="{ minWidth: '200px' }"
+                placeholder="Choose Columns"
+              >
               </p-multiSelect>
 
               <span>
-            <div class="p-inputgroup">
-              <span class="p-inputgroup-addon"><i class="pi pi-filter"></i></span>
-              <input #tableFilter pInputText type="text" (input)="dataTable.filterGlobal(tableFilter.value, 'contains')"
-                     placeholder="Filter by title, type, date, etc.">
-               <span class="p-inputgroup-addon" (click)="clearFilter(dataTable, tableFilter)"
-                     [style.cursor]="tableFilter.value.length ? 'pointer' : 'unset'">
+                <div class="p-inputgroup">
+                  <span class="p-inputgroup-addon"
+                    ><i class="pi pi-filter"></i
+                  ></span>
+                  <input
+                    #tableFilter
+                    pInputText
+                    type="text"
+                    (input)="
+                      dataTable.filterGlobal(tableFilter.value, 'contains')
+                    "
+                    placeholder="Filter by title, type, date, etc."
+                  />
+                  <span
+                    class="p-inputgroup-addon"
+                    (click)="clearFilter(dataTable, tableFilter)"
+                    [style.cursor]="
+                      tableFilter.value.length ? 'pointer' : 'unset'
+                    "
+                  >
                     <i class="pi pi-times"></i>
+                  </span>
+                </div>
               </span>
-            </div>
-          </span>
 
               <div class="p-d-flex">
-                <button type="button" pButton class="p-button-danger" icon="pi pi-trash"
-                        [disabled]="ksSelected.length === 0" style="margin-right: 10px"
-                        (click)="removeMultiple(ksSelected)">
-                </button>
+                <button
+                  type="button"
+                  pButton
+                  class="p-button-danger"
+                  icon="pi pi-trash"
+                  [disabled]="ksSelected.length === 0"
+                  style="margin-right: 10px"
+                  (click)="removeMultiple(ksSelected)"
+                ></button>
                 <app-ks-export [data]="ksList"></app-ks-export>
               </div>
             </div>
@@ -90,92 +124,140 @@ import {TopicService} from "@services/user-services/topic.service";
 
           <!--Declare Table Headers-->
           <ng-template pTemplate="header" let-columns>
-
             <!--        Checkbox Row-->
             <tr>
               <th style="max-width: 40px">
                 <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
               </th>
-              <th *ngFor="let col of columns"
-                  [pSortableColumn]="col.field === 'icon' ? '' : col.field"
-                  [style.max-width]="getColWidth(col)"
-                  style="width: auto"
-                  pResizableColumn>
-                {{col.header}}
+              <th
+                *ngFor="let col of columns"
+                [pSortableColumn]="col.field === 'icon' ? '' : col.field"
+                [style.max-width]="getColWidth(col)"
+                style="width: auto"
+                pResizableColumn
+              >
+                {{ col.header }}
               </th>
             </tr>
           </ng-template>
           <!--End Declare Table Headers-->
 
           <!--Declare Table Rows-->
-          <ng-template pTemplate="body" let-rowData let-columns="columns" let-expanded="expanded">
+          <ng-template
+            pTemplate="body"
+            let-rowData
+            let-columns="columns"
+            let-expanded="expanded"
+          >
             <tr [pContextMenuRow]="rowData" (dblclick)="detail(rowData)">
               <td style="max-width: 40px">
-                <p-tableCheckbox [value]="rowData" style="margin-right: 10px"></p-tableCheckbox>
+                <p-tableCheckbox
+                  [value]="rowData"
+                  style="margin-right: 10px"
+                ></p-tableCheckbox>
               </td>
 
-              <td *ngFor="let col of columns" [style.max-width]="getColWidth(col)" style="width: auto">
+              <td
+                *ngFor="let col of columns"
+                [style.max-width]="getColWidth(col)"
+                style="width: auto"
+              >
                 <div *ngIf="col.field === 'icon'">
                   <app-ks-icon [ks]="rowData"></app-ks-icon>
                 </div>
 
-                <div *ngIf="col.field === 'title'"
-                     class="overflow-hidden"
-                     pTooltip="{{rowData.title}}">
-                  {{rowData.title | truncate: [64]}}
+                <div
+                  *ngIf="col.field === 'title'"
+                  class="overflow-hidden"
+                  pTooltip="{{ rowData.title }}"
+                >
+                  {{ rowData.title | truncate : [64] }}
                 </div>
 
-                <div *ngIf="col.field === 'associatedProject'"
-                     pTooltip="{{rowData[col.field] | projectName}}">
-                  {{rowData[col.field] | projectName}}
+                <div
+                  *ngIf="col.field === 'associatedProject'"
+                  pTooltip="{{ rowData[col.field] | projectName }}"
+                >
+                  {{ rowData[col.field] | projectName }}
                 </div>
 
                 <div *ngIf="col.field === 'dateCreated'">
                   <div *ngIf="ksTableShowCountdownInsteadOfDates">
-                    {{rowData[col.field] | countdown}}
+                    {{ rowData[col.field] | countdown }}
                   </div>
                   <div *ngIf="!ksTableShowCountdownInsteadOfDates">
-                    {{rowData[col.field] | date:'mediumDate'}}
+                    {{ rowData[col.field] | date : 'mediumDate' }}
                   </div>
                 </div>
 
                 <div *ngIf="col.field === 'dateDue'">
-                  <div *ngIf="!rowData[col.field]">
-                    -
-                  </div>
+                  <div *ngIf="!rowData[col.field]">-</div>
                   <div *ngIf="rowData[col.field]">
-                    <div *ngIf="pastDue(rowData[col.field]) else dueDate" style="color: red">
-                      <div *ngIf="!ksTableShowCountdownInsteadOfDates">{{rowData[col.field] | date:'mediumDate'}}</div>
-                      <div *ngIf="ksTableShowCountdownInsteadOfDates">{{rowData[col.field] | countdown}}</div>
+                    <div
+                      *ngIf="pastDue(rowData[col.field]); else dueDate"
+                      style="color: red"
+                    >
+                      <div *ngIf="!ksTableShowCountdownInsteadOfDates">
+                        {{ rowData[col.field] | date : 'mediumDate' }}
+                      </div>
+                      <div *ngIf="ksTableShowCountdownInsteadOfDates">
+                        {{ rowData[col.field] | countdown }}
+                      </div>
                     </div>
                     <ng-template #dueDate>
-                      <div *ngIf="!ksTableShowCountdownInsteadOfDates">{{rowData[col.field] | date:'mediumDate'}}</div>
-                      <div *ngIf="ksTableShowCountdownInsteadOfDates">{{rowData[col.field] | countdown}}</div>
+                      <div *ngIf="!ksTableShowCountdownInsteadOfDates">
+                        {{ rowData[col.field] | date : 'mediumDate' }}
+                      </div>
+                      <div *ngIf="ksTableShowCountdownInsteadOfDates">
+                        {{ rowData[col.field] | countdown }}
+                      </div>
                     </ng-template>
                   </div>
-
                 </div>
 
-                <div *ngIf="col.field === 'dateModified' || col.field === 'dateAccessed'">
+                <div
+                  *ngIf="
+                    col.field === 'dateModified' || col.field === 'dateAccessed'
+                  "
+                >
                   <div *ngIf="rowData[col.field].length > 0">
                     <div *ngIf="ksTableShowCountdownInsteadOfDates">
-                      {{rowData[col.field][rowData[col.field].length - 1] | countdown}}
+                      {{
+                        rowData[col.field][rowData[col.field].length - 1]
+                          | countdown
+                      }}
                     </div>
                     <div *ngIf="!ksTableShowCountdownInsteadOfDates">
-                      {{rowData[col.field][rowData[col.field].length - 1] | date:'mediumDate'}}
+                      {{
+                        rowData[col.field][rowData[col.field].length - 1]
+                          | date : 'mediumDate'
+                      }}
                     </div>
                   </div>
                   <div *ngIf="rowData[col.field].length === 0">-</div>
                 </div>
 
-                <div *ngIf="col.field === 'ingestType'" class="flex-col-center-start" style="width: 100%">
-                  <i class="pi pi-{{rowData.ingestType | ksIngestTypeIcon}}"></i>
+                <div
+                  *ngIf="col.field === 'ingestType'"
+                  class="flex-col-center-start"
+                  style="width: 100%"
+                >
+                  <i
+                    class="pi pi-{{ rowData.ingestType | ksIngestTypeIcon }}"
+                  ></i>
                 </div>
 
-                <div *ngIf="col.field === 'flagged'" class="flex-col-center-start" style="width: 100%">
-                  <p-toggleButton [(ngModel)]="rowData.flagged"
-                                  onIcon="pi pi-flag" offIcon="pi pi-flag"
-                                  (onChange)="ksFlagUpdate($event, rowData)">
+                <div
+                  *ngIf="col.field === 'flagged'"
+                  class="flex-col-center-start"
+                  style="width: 100%"
+                >
+                  <p-toggleButton
+                    [(ngModel)]="rowData.flagged"
+                    onIcon="pi pi-flag"
+                    offIcon="pi pi-flag"
+                    (onChange)="ksFlagUpdate($event, rowData)"
+                  >
                   </p-toggleButton>
                 </div>
               </td>
@@ -187,12 +269,16 @@ import {TopicService} from "@services/user-services/topic.service";
           <ng-template pTemplate="summary">
             <div *ngIf="ksList.length && ksTopics.length">
               Topics
-              <div style="max-height: 5rem; overflow-x: hidden; overflow-y: auto">
-                <p-chip *ngFor="let topic of ksTopics"
-                        class="cursor-pointer"
-                        label="{{topic}}"
-                        styleClass="search-chip m-1"
-                        (click)="onChipClick(topic)">
+              <div
+                style="max-height: 5rem; overflow-x: hidden; overflow-y: auto"
+              >
+                <p-chip
+                  *ngFor="let topic of ksTopics"
+                  class="cursor-pointer"
+                  label="{{ topic }}"
+                  styleClass="search-chip m-1"
+                  (click)="onChipClick(topic)"
+                >
                 </p-chip>
               </div>
             </div>
@@ -202,14 +288,16 @@ import {TopicService} from "@services/user-services/topic.service";
       </div>
     </div>
 
-    <p-contextMenu #cm
-                   [model]="ksMenuItems"
-                   styleClass="shadow-7"
-                   (onShow)="onKsContextMenu()"
-                   appendTo="body">
+    <p-contextMenu
+      #cm
+      [model]="ksMenuItems"
+      styleClass="shadow-7"
+      (onShow)="onKsContextMenu()"
+      appendTo="body"
+    >
     </p-contextMenu>
   `,
-  styles: []
+  styles: [],
 })
 export class KsTableComponent implements OnInit, OnChanges {
   @Input() ksList: KnowledgeSource[] = [];
@@ -224,41 +312,56 @@ export class KsTableComponent implements OnInit, OnChanges {
 
   readonly KS_TABLE_SELECTED_COLUMNS_STATE_KEY = 'ks-table-selected-columns';
 
-  readonly KS_TABLE_SUPPORTED_COLUMNS: { field: string, header: string }[] = [
-    {field: 'icon', header: ''}, {field: 'title', header: 'Title'},
-    {field: 'associatedProject', header: 'Project'}, {field: 'dateDue', header: 'Due Date'},
-    {field: 'dateCreated', header: 'Created'}, {field: 'dateAccessed', header: 'Accessed'},
-    {field: 'dateModified', header: 'Modified'}, {field: 'ingestType', header: 'Type'},
-    {field: 'flagged', header: 'Important'}
+  readonly KS_TABLE_SUPPORTED_COLUMNS: { field: string; header: string }[] = [
+    { field: 'icon', header: '' },
+    { field: 'title', header: 'Title' },
+    { field: 'associatedProject', header: 'Project' },
+    { field: 'dateDue', header: 'Due Date' },
+    { field: 'dateCreated', header: 'Created' },
+    { field: 'dateAccessed', header: 'Accessed' },
+    { field: 'dateModified', header: 'Modified' },
+    { field: 'ingestType', header: 'Type' },
+    { field: 'flagged', header: 'Important' },
   ];
 
-  ksTableAllowSubprojectExpansion: boolean = true;
+  ksTableAllowSubprojectExpansion = true;
 
-  filter: string = '';
+  filter = '';
 
   ksSelected: KnowledgeSource[] = [];
 
-  ksTableShouldExist: boolean = true;
+  ksTableShouldExist = true;
 
   ksTableContextMenuSelectedKs?: KnowledgeSource;
 
   ksMenuItems: MenuItem[] = [];
 
-  ksTableShowCountdownInsteadOfDates: boolean = true;
+  ksTableShowCountdownInsteadOfDates = true;
 
-  ksTableGlobalFilterFields: string[] = ['title', 'ingestType', 'description', 'associatedProject', 'rawText', 'icon', 'accessLink', 'topics', 'authors'];
+  ksTableGlobalFilterFields: string[] = [
+    'title',
+    'ingestType',
+    'description',
+    'associatedProject',
+    'rawText',
+    'icon',
+    'accessLink',
+    'topics',
+    'authors',
+  ];
 
   ksTopics: string[] = [];
 
-  rows: number = 10;
+  rows = 10;
 
-  first: number = 0;
+  first = 0;
 
-  constructor(private command: KsCommandService,
-              private projects: ProjectService,
-              private topics: TopicService,
-              private context: KsContextMenuService) {
-  }
+  constructor(
+    private command: KsCommandService,
+    private projects: ProjectService,
+    private topics: TopicService,
+    private context: KsContextMenuService
+  ) {}
 
   private _selectedColumns: any[] = this.KS_TABLE_SUPPORTED_COLUMNS;
 
@@ -267,16 +370,18 @@ export class KsTableComponent implements OnInit, OnChanges {
   }
 
   set selectedColumns(val: any[]) {
-    this._selectedColumns = this.KS_TABLE_SUPPORTED_COLUMNS.filter(col => val.includes(col));
+    this._selectedColumns = this.KS_TABLE_SUPPORTED_COLUMNS.filter((col) =>
+      val.includes(col)
+    );
   }
 
   ngOnInit(): void {
-    let sel = localStorage.getItem(this.KS_TABLE_SELECTED_COLUMNS_STATE_KEY)
+    const sel = localStorage.getItem(this.KS_TABLE_SELECTED_COLUMNS_STATE_KEY);
     if (sel) {
       this._selectedColumns = JSON.parse(sel);
     }
 
-    let rows = localStorage.getItem(`${this.KS_TABLE_ROWS}`);
+    const rows = localStorage.getItem(`${this.KS_TABLE_ROWS}`);
     if (rows) {
       this.rows = parseInt(rows);
     } else {
@@ -296,11 +401,11 @@ export class KsTableComponent implements OnInit, OnChanges {
         });
 
         this.ksTopics.sort((a, b) => {
-          let nA = this.ksList.filter(k => k.topics?.includes(a)).length;
-          let nB = this.ksList.filter(k => k.topics?.includes(b)).length;
-          return (nA < nB) ? 1 : (nA > nB) ? -1 : 0;
-        })
-      })
+          const nA = this.ksList.filter((k) => k.topics?.includes(a)).length;
+          const nB = this.ksList.filter((k) => k.topics?.includes(b)).length;
+          return nA < nB ? 1 : nA > nB ? -1 : 0;
+        });
+      });
     }
   }
 
@@ -332,8 +437,8 @@ export class KsTableComponent implements OnInit, OnChanges {
           if (!event.field || !event.order) {
             return 0;
           }
-          let p1 = this.projects.getProject(d1[event.field].value)?.name;
-          let p2 = this.projects.getProject(d2[event.field].value)?.name;
+          const p1 = this.projects.getProject(d1[event.field].value)?.name;
+          const p2 = this.projects.getProject(d2[event.field].value)?.name;
           return this.ksSortText(p1 ?? '', p2 ?? '', event.order);
         });
         break;
@@ -356,7 +461,8 @@ export class KsTableComponent implements OnInit, OnChanges {
           return this.ksSortDate(
             d1[event.field][d1[event.field].length - 1],
             d2[event.field][d2[event.field].length - 1],
-            event.order);
+            event.order
+          );
         });
         break;
       default:
@@ -383,7 +489,7 @@ export class KsTableComponent implements OnInit, OnChanges {
     } else if (!d2) {
       result = -order;
     } else {
-      result = d1 > d2 ? 1 : d1 < d2 ? -1 : 0
+      result = d1 > d2 ? 1 : d1 < d2 ? -1 : 0;
     }
     return order * result;
   }
@@ -426,7 +532,10 @@ export class KsTableComponent implements OnInit, OnChanges {
 
   onKsContextMenu() {
     if (this.ksTableContextMenuSelectedKs) {
-      this.ksMenuItems = this.context.generate(this.ksTableContextMenuSelectedKs, this.ksSelected);
+      this.ksMenuItems = this.context.generate(
+        this.ksTableContextMenuSelectedKs,
+        this.ksSelected
+      );
     }
   }
 
@@ -447,11 +556,14 @@ export class KsTableComponent implements OnInit, OnChanges {
   }
 
   pastDue(date: Date) {
-    return new Date > date;
+    return new Date() > date;
   }
 
   onSelectedColumnChange($event: any) {
-    localStorage.setItem(this.KS_TABLE_SELECTED_COLUMNS_STATE_KEY, JSON.stringify($event.value));
+    localStorage.setItem(
+      this.KS_TABLE_SELECTED_COLUMNS_STATE_KEY,
+      JSON.stringify($event.value)
+    );
     this._selectedColumns = $event.value;
     this.dataTable.clearState();
   }
@@ -484,10 +596,6 @@ export class KsTableComponent implements OnInit, OnChanges {
 
   ksFlagUpdate(event: any, ks: KnowledgeSource) {
     this.command.update([ks]);
-  }
-
-  ksTableTopicCount(topic: string) {
-    return `${this.ksList.filter(k => k.topics?.includes(topic)).length}`;
   }
 
   onRowChange($event: number) {

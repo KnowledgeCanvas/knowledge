@@ -14,30 +14,30 @@
  *  limitations under the License.
  */
 
-import {Injectable, NgZone} from '@angular/core';
-import {BehaviorSubject, tap} from 'rxjs';
-import {ElectronIpcService} from "./electron-ipc.service";
+import { Injectable, NgZone } from '@angular/core';
+import { BehaviorSubject, tap } from 'rxjs';
+import { ElectronIpcService } from './electron-ipc.service';
 import {
   ApplicationSettingsModel,
   DisplaySettingsModel,
   GraphSettingsModel,
   IngestSettingsModel,
   SearchSettingsModel,
-  SettingsModel
-} from "@shared/models/settings.model";
-import {DialogService, DynamicDialogRef} from "primeng/dynamicdialog";
-import {Router} from "@angular/router";
-import {SettingsComponent} from "@components/settings/settings.component";
-import {take} from "rxjs/operators";
+  SettingsModel,
+} from '@shared/models/settings.model';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { Router } from '@angular/router';
+import { SettingsComponent } from '@components/settings/settings.component';
+import { take } from 'rxjs/operators';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SettingsService {
   private _settings = new BehaviorSubject<SettingsModel>({} as any);
   all = this._settings.asObservable();
 
-  private _search = new BehaviorSubject<SearchSettingsModel>({} as any)
+  private _search = new BehaviorSubject<SearchSettingsModel>({} as any);
   search = this._search.asObservable();
 
   private _app = new BehaviorSubject<ApplicationSettingsModel>({} as any);
@@ -63,68 +63,81 @@ export class SettingsService {
     getDefaults: 'A2E:Settings:Defaults',
     receiveAll: 'E2A:Settings:All',
     receiveDefaults: 'E2A:Settings:Defaults',
-    setSettings: 'A2E:Settings:Set'
-  }
+    setSettings: 'A2E:Settings:Set',
+  };
 
   private ref?: DynamicDialogRef;
 
-  constructor(private ipcService: ElectronIpcService,
-              private dialog: DialogService,
-              private router: Router,
-              private zone: NgZone) {
+  constructor(
+    private ipcService: ElectronIpcService,
+    private dialog: DialogService,
+    private router: Router,
+    private zone: NgZone
+  ) {
     /**
      * Keep a copy of default settings to allow other components and services to instantiate
      */
-    this.receiveOnce(this.settingsChannels.receiveDefaults, (settings: SettingsModel) => {
-      this.zone.run(() => {
-        this._defaults = settings;
-      })
-    });
+    this.receiveOnce(
+      this.settingsChannels.receiveDefaults,
+      (settings: SettingsModel) => {
+        this.zone.run(() => {
+          this._defaults = settings;
+        });
+      }
+    );
 
     this.send(this.settingsChannels.getDefaults);
 
     /**
      * Settings are stored in a JSON file via Electron and kept consistent through IPC messages
      */
-    this.receive(this.settingsChannels.receiveAll, (settings: SettingsModel) => {
-      this.zone.run(() => {
-        console.debug(`[Debug]-[${new Date().toLocaleString()}]-[SettingsService]: Settings Updated: `, settings);
-        this._settings.next(settings);
+    this.receive(
+      this.settingsChannels.receiveAll,
+      (settings: SettingsModel) => {
+        this.zone.run(() => {
+          console.debug(
+            `[Debug]-[${new Date().toLocaleString()}]-[SettingsService]: Settings Updated: `,
+            settings
+          );
+          this._settings.next(settings);
 
-        if (settings.search) {
-          this._search.next(settings.search);
-        } else {
-          console.error('SettingsService - Search Settings not found...');
-        }
+          if (settings.search) {
+            this._search.next(settings.search);
+          } else {
+            console.error('SettingsService - Search Settings not found...');
+          }
 
-        if (settings.app) {
-          this._app.next(settings.app);
-        } else {
-          console.error('SettingsService - Application Settings not found...');
-        }
+          if (settings.app) {
+            this._app.next(settings.app);
+          } else {
+            console.error(
+              'SettingsService - Application Settings not found...'
+            );
+          }
 
-        if (settings.ingest) {
-          this._ingest.next(settings.ingest);
-        } else {
-          console.error('SettingsService - Ingest Settings not found...');
-        }
+          if (settings.ingest) {
+            this._ingest.next(settings.ingest);
+          } else {
+            console.error('SettingsService - Ingest Settings not found...');
+          }
 
-        if (settings.display) {
-          this._display.next(settings.display);
-          setTimeout(() => {
-            this.send('A2E:Window:ZoomIn', settings.display.zoom);
-          })
-        } else {
-          console.error('SettingsService - Display Settings not found...');
-        }
+          if (settings.display) {
+            this._display.next(settings.display);
+            setTimeout(() => {
+              this.send('A2E:Window:ZoomIn', settings.display.zoom);
+            });
+          } else {
+            console.error('SettingsService - Display Settings not found...');
+          }
 
-        if (settings.app.graph) {
-          this._graph.next(settings.app.graph);
-        } else {
-          console.error('SettingsService - Graph Settings not found...');
-        }
-      })
-    })
+          if (settings.app.graph) {
+            this._graph.next(settings.app.graph);
+          } else {
+            console.error('SettingsService - Graph Settings not found...');
+          }
+        });
+      }
+    );
 
     this.send(this.settingsChannels.getSettings);
   }
@@ -148,7 +161,6 @@ export class SettingsService {
     this.send(this.settingsChannels.setSettings, settings);
   }
 
-
   show(category?: 'display' | 'search' | 'import' | 'graph') {
     if (this.ref) {
       return;
@@ -159,8 +171,8 @@ export class SettingsService {
       height: 'min(72rem, 95vh)',
       contentStyle: {
         'border-bottom-left-radius': '6px',
-        'border-bottom-right-radius': '6px'
-      }
+        'border-bottom-right-radius': '6px',
+      },
     });
 
     if (!category) {
@@ -170,23 +182,30 @@ export class SettingsService {
     const route = this.router.url;
 
     setTimeout(() => {
-      this.router.navigate(['app', {outlets: {settings: [category]}}]).then((success) => {
-        if (!success) {
-          console.warn('SettingsService - Unable to navigate to ', category);
-        }
-      })
-    });
-
-    this.ref.onClose.pipe(
-      take(1),
-      tap((_: any) => {
-        this.router.navigateByUrl(route).then((success) => {
+      this.router
+        .navigate(['app', { outlets: { settings: [category] } }])
+        .then((success) => {
           if (!success) {
             console.warn('SettingsService - Unable to navigate to ', category);
           }
-          this.ref = undefined;
+        });
+    });
+
+    this.ref.onClose
+      .pipe(
+        take(1),
+        tap(() => {
+          this.router.navigateByUrl(route).then((success) => {
+            if (!success) {
+              console.warn(
+                'SettingsService - Unable to navigate to ',
+                category
+              );
+            }
+            this.ref = undefined;
+          });
         })
-      })
-    ).subscribe()
+      )
+      .subscribe();
   }
 }

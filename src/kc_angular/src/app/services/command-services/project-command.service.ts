@@ -14,23 +14,24 @@
  *  limitations under the License.
  */
 
-import {BehaviorSubject} from "rxjs";
-import {Clipboard} from "@angular/cdk/clipboard";
-import {ConfirmationService} from "primeng/api";
-import {DialogService} from "primeng/dynamicdialog";
-import {Injectable} from '@angular/core';
-import {KcProject, ProjectUpdateRequest} from "@app/models/project.model";
-import {NotificationsService} from "@services/user-services/notifications.service";
-import {ProjectCreationDialogComponent} from "@components/project-components/project-creation-dialog.component";
-import {ProjectService} from "@services/factory-services/project.service";
-import {UUID} from "@shared/models/uuid.model";
+import { BehaviorSubject } from 'rxjs';
+import { Clipboard } from '@angular/cdk/clipboard';
+import { ConfirmationService } from 'primeng/api';
+import { DialogService } from 'primeng/dynamicdialog';
+import { Injectable } from '@angular/core';
+import { KcProject, ProjectUpdateRequest } from '@app/models/project.model';
+import { NotificationsService } from '@services/user-services/notifications.service';
+import { ProjectCreationDialogComponent } from '@components/project-components/project-creation-dialog.component';
+import { ProjectService } from '@services/factory-services/project.service';
+import { UUID } from '@shared/models/uuid.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ProjectCommandService {
-
-  private _projectDetailEvent = new BehaviorSubject<KcProject | undefined>(undefined);
+  private _projectDetailEvent = new BehaviorSubject<KcProject | undefined>(
+    undefined
+  );
   detailEvent = this._projectDetailEvent.asObservable();
 
   private _projectRemoveEvent = new BehaviorSubject<KcProject[]>([]);
@@ -45,19 +46,20 @@ export class ProjectCommandService {
   private _projectUpdateEvent = new BehaviorSubject<ProjectUpdateRequest[]>([]);
   updateEvent = this._projectUpdateEvent.asObservable();
 
-  constructor(private dialog: DialogService,
-              private confirmation: ConfirmationService,
-              private clipboard: Clipboard,
-              private notifications: NotificationsService,
-              private projects: ProjectService) {
-  }
+  constructor(
+    private dialog: DialogService,
+    private confirmation: ConfirmationService,
+    private clipboard: Clipboard,
+    private notifications: NotificationsService,
+    private projects: ProjectService
+  ) {}
 
   new(parentId?: UUID) {
     this.dialog.open(ProjectCreationDialogComponent, {
       width: `min(90vw, 92rem)`,
-      data: {parentId: parentId},
-      style: {'border-radius': '10px'}
-    })
+      data: { parentId: parentId },
+      style: { 'border-radius': '10px' },
+    });
   }
 
   update(projectList: ProjectUpdateRequest[]) {
@@ -79,16 +81,19 @@ export class ProjectCommandService {
         return 1;
       }
 
-      return 1 + project.subprojects
-        .map(s => count(s))
-        .reduce((prev, curr) => {
-          return prev + curr;
-        });
-    }
+      return (
+        1 +
+        project.subprojects
+          .map((s) => count(s))
+          .reduce((prev, curr) => {
+            return prev + curr;
+          })
+      );
+    };
 
-    let ids = projectList.map(p => p.id.value);
+    const ids = projectList.map((p) => p.id.value);
     let n = 0;
-    for (let id of ids) {
+    for (const id of ids) {
       n += count(id);
     }
 
@@ -102,11 +107,11 @@ export class ProjectCommandService {
       rejectButtonStyleClass: 'p-button-text',
       acceptIcon: 'pi pi-trash',
       accept: () => {
-        for (let project of projectList) {
+        for (const project of projectList) {
           this.projects.deleteProject(project.id);
         }
-      }
-    })
+      },
+    });
   }
 
   detail(project: KcProject) {
@@ -120,10 +125,10 @@ export class ProjectCommandService {
   copyJSON(projectList: KcProject[]) {
     try {
       const pStr = JSON.stringify(projectList);
-      this.clipboard.copy(pStr)
+      this.clipboard.copy(pStr);
       this.notifications.success('Project Command', 'Copied to Clipboard!', '');
-    } catch (_: any) {
-
+    } catch (error) {
+      this.notifications.error('Project Command', 'Copy Failed, ', '');
     }
 
     this._projectCopyJSONEvent.next(projectList);

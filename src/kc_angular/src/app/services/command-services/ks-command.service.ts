@@ -14,26 +14,27 @@
  *  limitations under the License.
  */
 
-import {BehaviorSubject} from "rxjs";
-import {BrowserViewDialogService} from "@services/ipc-services/browser-view-dialog.service";
-import {Clipboard} from "@angular/cdk/clipboard";
-import {ConfirmationService} from "primeng/api";
-import {DataService} from "../user-services/data.service";
-import {DialogService, DynamicDialogRef} from "primeng/dynamicdialog";
-import {ElectronIpcService} from "@services/ipc-services/electron-ipc.service";
-import {Injectable} from '@angular/core';
-import {KnowledgeSource} from "@app/models/knowledge.source.model";
-import {KsMoveComponent} from "@components/source-components/ks-move.component";
-import {NotificationsService} from "../user-services/notifications.service";
-import {ProjectService} from "@services/factory-services/project.service";
-import {ProjectUpdateRequest} from "@app/models/project.model";
+import { BehaviorSubject } from 'rxjs';
+import { BrowserViewDialogService } from '@services/ipc-services/browser-view-dialog.service';
+import { Clipboard } from '@angular/cdk/clipboard';
+import { ConfirmationService } from 'primeng/api';
+import { DataService } from '../user-services/data.service';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { ElectronIpcService } from '@services/ipc-services/electron-ipc.service';
+import { Injectable } from '@angular/core';
+import { KnowledgeSource } from '@app/models/knowledge.source.model';
+import { KsMoveComponent } from '@components/source-components/ks-move.component';
+import { NotificationsService } from '../user-services/notifications.service';
+import { ProjectService } from '@services/factory-services/project.service';
+import { ProjectUpdateRequest } from '@app/models/project.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class KsCommandService {
-
-  private _ksDetailEvent = new BehaviorSubject<KnowledgeSource & { force: boolean } | undefined>(undefined);
+  private _ksDetailEvent = new BehaviorSubject<
+    (KnowledgeSource & { force: boolean }) | undefined
+  >(undefined);
   ksDetailEvent = this._ksDetailEvent.asObservable();
 
   private _ksShareEvent = new BehaviorSubject<KnowledgeSource[]>([]);
@@ -44,20 +45,25 @@ export class KsCommandService {
 
   private moveDialogRef?: DynamicDialogRef;
 
-  constructor(private ipc: ElectronIpcService,
-              private data: DataService,
-              private browser: BrowserViewDialogService,
-              private dialog: DialogService,
-              private confirmation: ConfirmationService,
-              private clipboard: Clipboard,
-              private notifications: NotificationsService,
-              private projects: ProjectService) {
-  }
+  constructor(
+    private ipc: ElectronIpcService,
+    private data: DataService,
+    private browser: BrowserViewDialogService,
+    private dialog: DialogService,
+    private confirmation: ConfirmationService,
+    private clipboard: Clipboard,
+    private notifications: NotificationsService,
+    private projects: ProjectService
+  ) {}
 
-  update(ksList: KnowledgeSource[], notify: boolean = true) {
+  update(ksList: KnowledgeSource[], notify = true) {
     this.data.sources.update(ksList).then(() => {
       if (notify) {
-        this.notifications.success('Source Command', `Source${ksList.length > 1 ? 's' : ''} Updated`, ksList.map(k => k.title).join(', '));
+        this.notifications.success(
+          'Source Command',
+          `Source${ksList.length > 1 ? 's' : ''} Updated`,
+          ksList.map((k) => k.title).join(', ')
+        );
       }
     });
   }
@@ -68,7 +74,9 @@ export class KsCommandService {
     }
 
     this.confirmation.confirm({
-      message: `Permanently remove ${ksList.length === 1 ? ksList[0].title : `${ksList.length} Sources`}?`,
+      message: `Permanently remove ${
+        ksList.length === 1 ? ksList[0].title : `${ksList.length} Sources`
+      }?`,
       header: `Remove Source${ksList.length === 1 ? '' : 's'}`,
       icon: 'pi pi-exclamation-triangle',
       acceptLabel: 'Remove',
@@ -78,10 +86,12 @@ export class KsCommandService {
       acceptIcon: 'pi pi-trash',
       accept: () => {
         // TODO: if the KS points to a local file, ask the user what they want to be done with the file...
-        let updates: ProjectUpdateRequest[] = [];
+        const updates: ProjectUpdateRequest[] = [];
 
         ksList.forEach((ks) => {
-          let proj = updates.find(p => p.id.value === ks.associatedProject.value);
+          const proj = updates.find(
+            (p) => p.id.value === ks.associatedProject.value
+          );
           if (proj) {
             if (proj.removeKnowledgeSource) {
               proj.removeKnowledgeSource.push(ks);
@@ -89,12 +99,12 @@ export class KsCommandService {
           } else {
             updates.push({
               id: ks.associatedProject,
-              removeKnowledgeSource: [ks]
-            })
+              removeKnowledgeSource: [ks],
+            });
           }
         });
         this.projects.updateProjects(updates);
-      }
+      },
     });
   }
 
@@ -104,7 +114,7 @@ export class KsCommandService {
     }
 
     this.moveDialogRef = this.dialog.open(KsMoveComponent, {
-      data: {ksList: ksList},
+      data: { ksList: ksList },
       width: 'min(90vw, 92rem)',
       height: 'min(60vh, 72rem)',
       showHeader: true,
@@ -112,22 +122,22 @@ export class KsCommandService {
       modal: true,
       contentStyle: {
         'border-bottom-left-radius': '6px',
-        'border-bottom-right-radius': '6px'
+        'border-bottom-right-radius': '6px',
       },
-      closeOnEscape: true
-    })
+      closeOnEscape: true,
+    });
 
     this.moveDialogRef.onClose.subscribe(() => {
       this.moveDialogRef = undefined;
-    })
+    });
   }
 
   preview(ks: KnowledgeSource) {
     this.onKsPreview(ks);
   }
 
-  detail(ks: KnowledgeSource, force: boolean = false) {
-    this._ksDetailEvent.next({...ks, ...{force: force}});
+  detail(ks: KnowledgeSource, force = false) {
+    this._ksDetailEvent.next({ ...ks, ...{ force: force } });
   }
 
   share(ksList: KnowledgeSource[]) {
@@ -138,14 +148,28 @@ export class KsCommandService {
     if (ks.ingestType === 'file' && typeof ks.accessLink === 'string') {
       this.ipc.openLocalFile(ks.accessLink).then((result) => {
         if (result) {
-          this.notifications.success('Source Command', 'File Opened', ks.title ?? '');
+          this.notifications.success(
+            'Source Command',
+            'File Opened',
+            ks.title ?? ''
+          );
         } else {
-          this.notifications.error('Source Command', 'Failed to Open', ks.title ?? '');
+          this.notifications.error(
+            'Source Command',
+            'Failed to Open',
+            ks.title ?? ''
+          );
         }
       });
     } else if (ks && ks.accessLink) {
-      window.open(typeof ks.accessLink === 'string' ? ks.accessLink : ks.accessLink.href);
-      this.notifications.success('Source Command', 'Link Opened', ks.title ?? '');
+      window.open(
+        typeof ks.accessLink === 'string' ? ks.accessLink : ks.accessLink.href
+      );
+      this.notifications.success(
+        'Source Command',
+        'Link Opened',
+        ks.title ?? ''
+      );
     }
 
     if (!ks.events) {
@@ -154,17 +178,19 @@ export class KsCommandService {
 
     ks.events.push({
       date: new Date(),
-      label: "Accessed"
-    })
+      label: 'Accessed',
+    });
   }
 
   copyPath(ksList: KnowledgeSource[]) {
     if (ksList.length <= 0) {
       return;
     }
-    let paths = [];
-    for (let ks of ksList) {
-      paths.push(typeof ks.accessLink === 'string' ? ks.accessLink : ks.accessLink.href);
+    const paths = [];
+    for (const ks of ksList) {
+      paths.push(
+        typeof ks.accessLink === 'string' ? ks.accessLink : ks.accessLink.href
+      );
     }
     this.clipboard.copy(paths.join('\n'));
     this.notifications.success('Source Command', 'Copied to Clipboard!', '');
@@ -175,9 +201,9 @@ export class KsCommandService {
       return;
     }
 
-    let ksStr: string = '';
+    let ksStr = '';
     try {
-      ksStr = JSON.stringify(ksList)
+      ksStr = JSON.stringify(ksList);
       this.clipboard.copy(ksStr);
       this.notifications.success('Source Command', 'Copied to Clipboard!', '');
     } catch (e) {
@@ -189,27 +215,36 @@ export class KsCommandService {
     if (typeof ks.accessLink !== 'string') {
       return;
     }
-    this.ipc.showItemInFolder(ks.accessLink)
+    this.ipc.showItemInFolder(ks.accessLink);
     this._ksShowInFilesEvent.next(ks);
   }
 
   private async onKsPreview(ks: KnowledgeSource) {
-    const dialogRef = this.browser.open({ks: ks});
+    const dialogRef = this.browser.open({ ks: ks });
 
     if (dialogRef === undefined) {
-      this.notifications.warn('Source Command', 'Unsupported File Type', 'Opening with default application instead.');
+      this.notifications.warn(
+        'Source Command',
+        'Unsupported File Type',
+        'Opening with default application instead.'
+      );
       this.open(ks);
       return;
     }
 
     const textExtractor = this.ipc.extractedText.subscribe((data) => {
       const text = data.text.trim();
-      if (text !== '' && data.url.includes(typeof ks.accessLink === 'string' ? ks.accessLink : ks.accessLink.href)) {
+      if (
+        text !== '' &&
+        data.url.includes(
+          typeof ks.accessLink === 'string' ? ks.accessLink : ks.accessLink.href
+        )
+      ) {
         if (!ks.description.includes(data.text)) {
           ks.description += data.text + '\n\n';
         }
       }
-    })
+    });
 
     let closed = false;
     dialogRef?.onClose.subscribe((result) => {
@@ -221,14 +256,18 @@ export class KsCommandService {
         textExtractor.unsubscribe();
         try {
           if (ks.associatedProject) {
-            let update: ProjectUpdateRequest = {
+            const update: ProjectUpdateRequest = {
               id: ks.associatedProject,
-              updateKnowledgeSource: [ks]
-            }
+              updateKnowledgeSource: [ks],
+            };
             this.projects.updateProjects([update]);
           }
         } catch (e) {
-          this.notifications.warn('Source Command', 'Invalid Project', 'Unable to update project after closing the preview dialog...');
+          this.notifications.warn(
+            'Source Command',
+            'Invalid Project',
+            'Unable to update project after closing the preview dialog...'
+          );
         }
 
         closed = true;

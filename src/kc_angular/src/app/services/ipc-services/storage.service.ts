@@ -13,14 +13,14 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import {Injectable} from '@angular/core';
-import {KcProject} from "@app/models/project.model";
-import {KnowledgeSource} from "@app/models/knowledge.source.model";
-import {AutoscanService} from "@services/ingest-services/autoscan.service";
-import {NotificationsService} from "@services/user-services/notifications.service";
+import { Injectable } from '@angular/core';
+import { KcProject } from '@app/models/project.model';
+import { KnowledgeSource } from '@app/models/knowledge.source.model';
+import { AutoscanService } from '@services/ingest-services/autoscan.service';
+import { NotificationsService } from '@services/user-services/notifications.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class StorageService {
   readonly KC_CURRENT_PROJECT = 'current-project';
@@ -28,24 +28,33 @@ export class StorageService {
   private db = window.localStorage;
   private projectList: KcProject[] | null = null;
 
-  constructor(private autoscan: AutoscanService,
-              private notifications: NotificationsService) {
-  }
+  constructor(
+    private autoscan: AutoscanService,
+    private notifications: NotificationsService
+  ) {}
 
   get projects(): KcProject[] {
-    let projects: KcProject[] = [];
+    const projects: KcProject[] = [];
 
     // Get and parse Project list from local storage
-    let projectsStr: string | null = this.db.getItem(this.KC_ALL_PROJECT_IDS);
+    const projectsStr: string | null = this.db.getItem(this.KC_ALL_PROJECT_IDS);
     if (!projectsStr) {
-      this.notifications.warn('Storage Service', 'Project List Unavailable', 'Project list does not exist in storage system, creating...');
+      this.notifications.warn(
+        'Storage Service',
+        'Project List Unavailable',
+        'Project list does not exist in storage system, creating...'
+      );
       this.db.setItem(this.KC_ALL_PROJECT_IDS, JSON.stringify([]));
       return projects;
     }
 
-    let projectIds: string[] = JSON.parse(projectsStr);
+    const projectIds: string[] = JSON.parse(projectsStr);
     if (!projectIds) {
-      this.notifications.warn('Storage Service', 'Invalid Project List', 'Could not deserialize Project list JSON template... ');
+      this.notifications.warn(
+        'Storage Service',
+        'Invalid Project List',
+        'Could not deserialize Project list JSON template... '
+      );
       return projects;
     }
 
@@ -58,7 +67,7 @@ export class StorageService {
     let project: KcProject | null = null;
 
     // Deserialize projects from list of Project IDs
-    for (let pId of projectIds) {
+    for (const pId of projectIds) {
       pStr = this.db.getItem(pId);
       if (!pStr) {
         this.notifications.warn('Storage Service', 'Invalid Project Id', pId);
@@ -68,7 +77,11 @@ export class StorageService {
 
       project = JSON.parse(pStr);
       if (!project) {
-        this.notifications.warn('Storage Service', 'Invalid Project Object', 'Could not deserialize Project JSON template...');
+        this.notifications.warn(
+          'Storage Service',
+          'Invalid Project Object',
+          'Could not deserialize Project JSON template...'
+        );
         project = null;
         continue;
       }
@@ -77,8 +90,7 @@ export class StorageService {
 
       // Pre-populate list of Knowledge Sources for later consumption
       if (project.knowledgeSource && project.knowledgeSource.length > 0) {
-        for (let ks of project.knowledgeSource) {
-
+        for (const ks of project.knowledgeSource) {
           // TODO : this is a temporary fix after refactoring ks timelines, should be removed eventually...
           if (!ks.dateAccessed) {
             ks.dateAccessed = [];
@@ -92,14 +104,14 @@ export class StorageService {
 
           ks.dateCreated = new Date(ks.dateCreated);
 
-          let accessed = [];
-          for (let d of ks.dateAccessed) {
+          const accessed = [];
+          for (const d of ks.dateAccessed) {
             accessed.push(new Date(d));
           }
           ks.dateAccessed = accessed;
 
-          let modified = [];
-          for (let d of ks.dateModified) {
+          const modified = [];
+          for (const d of ks.dateModified) {
             modified.push(new Date(d));
           }
           ks.dateModified = modified;
@@ -122,8 +134,8 @@ export class StorageService {
 
   set projects(projectModels: KcProject[]) {
     let pStr: string;
-    let pids = [];
-    for (let project of projectModels) {
+    const pids = [];
+    for (const project of projectModels) {
       pStr = JSON.stringify(project);
       this.db.setItem(project.id.value, pStr);
       pids.push(project.id.value);
@@ -147,51 +159,58 @@ export class StorageService {
    * Returns a list of all Knowledge Sources stored in the application
    */
   async ksList() {
-    let projectIdsStr: string | null = this.db.getItem(this.KC_ALL_PROJECT_IDS);
+    const projectIdsStr: string | null = this.db.getItem(
+      this.KC_ALL_PROJECT_IDS
+    );
 
     if (projectIdsStr === null) {
-      this.notifications.warn('Storage Service', 'Project List Unavailable', 'Project list does not exist in storage system when retrieving source list...');
+      this.notifications.warn(
+        'Storage Service',
+        'Project List Unavailable',
+        'Project list does not exist in storage system when retrieving source list...'
+      );
       return [];
     }
 
-    let projectIds = JSON.parse(projectIdsStr);
+    const projectIds = JSON.parse(projectIdsStr);
     if (!projectIds) {
-      this.notifications.warn('Storage Service', 'Invalid Project List', 'Could not deserialize Project list JSON template when retrieving source list...');
+      this.notifications.warn(
+        'Storage Service',
+        'Invalid Project List',
+        'Could not deserialize Project list JSON template when retrieving source list...'
+      );
       return [];
     }
 
-    let ksList: KnowledgeSource[] = [];
-    for (let projectId of projectIds) {
-      let project: KcProject;
-      let projectStr = this.db.getItem(projectId);
-      if (!projectStr)
-        break;
-      project = JSON.parse(projectStr);
+    const ksList: KnowledgeSource[] = [];
+    for (const projectId of projectIds) {
+      const projectStr = this.db.getItem(projectId);
+      if (!projectStr) break;
+      const project: KcProject = JSON.parse(projectStr);
       if (project.knowledgeSource)
-        for (let ks of project.knowledgeSource)
-          ksList.push(ks);
+        for (const ks of project.knowledgeSource) ksList.push(ks);
     }
 
     return ksList;
   }
 
   async getProjects() {
-    if (this.projectList)
-      return this.projectList;
+    if (this.projectList) return this.projectList;
     return this.projects;
   }
 
   async saveProject(project: KcProject) {
     // Update project in local cache
-    let idx = this.projectList?.findIndex(p => p.id.value === project.id.value);
+    const idx = this.projectList?.findIndex(
+      (p) => p.id.value === project.id.value
+    );
 
-    if (idx === -1) { // If project does not exist in memory, add it
-      if (this.projectList)
-        this.projectList.push(project);
-      else
-        this.projectList = [project];
-
-    } else { // Otherwise update the project in-place
+    if (idx === -1) {
+      // If project does not exist in memory, add it
+      if (this.projectList) this.projectList.push(project);
+      else this.projectList = [project];
+    } else {
+      // Otherwise update the project in-place
       if (this.projectList && idx && idx) {
         this.projectList[idx] = project;
       }
@@ -208,7 +227,7 @@ export class StorageService {
     }
 
     if (projectList.length > 0) {
-      let id = projectList.find(item => item === project.id.value);
+      const id = projectList.find((item) => item === project.id.value);
       // Check if project ID is in the list. If it's not, add it, otherwise continue
       if (!id) {
         projectList.push(project.id.value);
@@ -224,46 +243,51 @@ export class StorageService {
   }
 
   async saveProjectList(projects: KcProject[]) {
-    for (let project of projects) {
+    for (const project of projects) {
       this.saveProject(project);
     }
   }
 
   async updateProject(project: KcProject) {
-    let projectString = JSON.stringify(project);
+    const projectString = JSON.stringify(project);
     this.db.setItem(project.id.value, projectString);
   }
 
   deleteProject(id: string) {
     if (!this.projectList) {
-      this.notifications.warn('Storage Service', 'Invalid Project', 'Attempting to delete a project that does not exist in memory...');
+      this.notifications.warn(
+        'Storage Service',
+        'Invalid Project',
+        'Attempting to delete a project that does not exist in memory...'
+      );
       return;
     }
 
     // Remove project from list
-    this.projectList = this.projectList.filter(p => p.id.value !== id);
+    this.projectList = this.projectList.filter((p) => p.id.value !== id);
 
     // Remove project saved under this string.
     this.db.removeItem(id);
+    this.db.removeItem(`chat-${id}`);
 
     // Persist changes
-    let projectIds: string[] = [];
-    for (let project of this.projectList) {
+    const projectIds: string[] = [];
+    for (const project of this.projectList) {
       projectIds.push(project.id.value);
     }
-    let projectListStr = JSON.stringify(projectIds);
+    const projectListStr = JSON.stringify(projectIds);
     this.db.setItem(this.KC_ALL_PROJECT_IDS, projectListStr);
   }
 
   createFile(encoding: string) {
-    let type: string = 'text/json';
-    let charset: string = 'utf-8';
+    const type = 'text/json';
+    const charset = 'utf-8';
 
-    let blob = new Blob([encoding], {
-      type: `${type};charset=${charset};`
+    const blob = new Blob([encoding], {
+      type: `${type};charset=${charset};`,
     });
 
-    let link = document.createElement("a");
+    const link = document.createElement('a');
     link.style.display = 'none';
     document.body.appendChild(link);
     if (link.download !== undefined) {
@@ -278,45 +302,49 @@ export class StorageService {
   }
 
   async export() {
-    let sources: KnowledgeSource[] = [];
-    let icons: any[] = [];
-    let projects: KcProject[] = [];
+    const sources: KnowledgeSource[] = [];
+    const icons: any[] = [];
+    const projects: KcProject[] = [];
 
     for (let i = 0; i < this.db.length; i++) {
-      let key = this.db.key(i);
+      const key = this.db.key(i);
       if (key?.startsWith('ks-')) {
-        let ksStr = this.db.getItem(key);
+        const ksStr = this.db.getItem(key);
         if (ksStr) {
-          let ks: KnowledgeSource = JSON.parse(ksStr)
+          const ks: KnowledgeSource = JSON.parse(ksStr);
           if (ks) {
             sources.push(ks);
           }
         }
       } else if (key?.startsWith('icon-')) {
-        let iconStr = this.db.getItem(key);
+        const iconStr = this.db.getItem(key);
         if (iconStr) {
           icons.push({
             ksId: key.replace('icon-', ''),
-            icon: iconStr
+            icon: iconStr,
           });
         }
       } else if (key?.length === 36) {
-        let projectStr = this.db.getItem(key);
+        const projectStr = this.db.getItem(key);
         if (projectStr) {
-          let kcProject: KcProject = JSON.parse(projectStr);
+          const kcProject: KcProject = JSON.parse(projectStr);
           if (kcProject) {
             projects.push(kcProject);
           }
         }
       } else {
-        this.notifications.error('Storage Service', 'Invalid Storage Key', key ?? '');
+        this.notifications.error(
+          'Storage Service',
+          'Invalid Storage Key',
+          key ?? ''
+        );
       }
     }
 
-    let encoding = {
+    const encoding = {
       projects: projects,
       sources: sources,
-      icons: icons
+      icons: icons,
     };
 
     this.createFile(JSON.stringify(encoding));
@@ -324,6 +352,7 @@ export class StorageService {
 
   deleteKnowledgeSource(ks: KnowledgeSource) {
     this.db.removeItem(`icon-${ks.id.value}`);
+    this.db.removeItem(`chat-${ks.id.value}`);
 
     if (!ks.importMethod) {
       return;

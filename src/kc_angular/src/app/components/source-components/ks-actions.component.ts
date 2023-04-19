@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Rob Royce
+ * Copyright (c) 2022-2023 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -13,71 +13,81 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'app-action-bar',
   template: `
     <div class="w-full flex flex-row align-items-center justify-content-center">
-      <button pButton *ngIf="showEdit"
-              class="m-1 p-button-text"
-              icon="pi pi-info"
-              pTooltip="Details"
-              [tooltipOptions]="actionButtonTooltipOptions"
-              (click)="onEdit.emit()">
-      </button>
-      <button pButton *ngIf="showPreview"
-              class="m-1 p-button-text "
-              icon="pi pi-eye"
-              pTooltip="Preview"
-              [tooltipOptions]="actionButtonTooltipOptions"
-              (click)="onPreview.emit()">
-      </button>
-      <button pButton *ngIf="showOpen"
-              class="m-1 p-button-text "
-              icon="pi pi-external-link"
-              pTooltip="Open In..."
-              [tooltipOptions]="actionButtonTooltipOptions"
-              (click)="onOpen.emit()">
-      </button>
-      <button pButton *ngIf="showRemove"
-              class="m-1 p-button-text"
-              icon="pi pi-trash"
-              pTooltip="Remove"
-              [tooltipOptions]="actionButtonTooltipOptions"
-              (click)="onRemove.emit()">
-      </button>
-      <p-toggleButton *ngIf="showFlag"
-                      [(ngModel)]="flagged"
-                      class="m-1"
-                      styleClass="p-button-text"
-                      onIcon="pi pi-flag" offIcon="pi pi-flag"
-                      pTooltip="Important"
-                      [tooltipOptions]="actionButtonTooltipOptions"
-                      (onChange)="onFlagged.emit($event)">
+      <button
+        pButton
+        *ngIf="showEdit"
+        class="m-1 p-button-text"
+        icon="pi pi-info"
+        pTooltip="Details"
+        [tooltipOptions]="actionButtonTooltipOptions"
+        (click)="onEdit.emit()"
+      ></button>
+      <button
+        pButton
+        *ngIf="showPreview"
+        class="m-1 p-button-text "
+        icon="pi pi-eye"
+        pTooltip="Preview"
+        [tooltipOptions]="actionButtonTooltipOptions"
+        (click)="onPreview.emit()"
+      ></button>
+      <button
+        pButton
+        *ngIf="showOpen"
+        class="m-1 p-button-text "
+        icon="pi pi-external-link"
+        pTooltip="Open In..."
+        [tooltipOptions]="actionButtonTooltipOptions"
+        (click)="onOpen.emit()"
+      ></button>
+      <button
+        pButton
+        *ngIf="showRemove"
+        class="m-1 p-button-text"
+        icon="pi pi-trash"
+        pTooltip="Remove"
+        [tooltipOptions]="actionButtonTooltipOptions"
+        (click)="onRemove.emit()"
+      ></button>
+      <p-toggleButton
+        *ngIf="showFlag"
+        [(ngModel)]="flagged"
+        class="m-1"
+        styleClass="p-button-text"
+        onIcon="pi pi-flag"
+        offIcon="pi pi-flag"
+        pTooltip="Important"
+        [tooltipOptions]="actionButtonTooltipOptions"
+        (onChange)="onFlagged.emit($event)"
+      >
       </p-toggleButton>
     </div>
   `,
-  styles: [``]
+  styles: [``],
 })
-export class KsActionsComponent implements OnInit {
-
+export class KsActionsComponent {
   @Input() actionButtonTooltipOptions = {
     showDelay: 750,
-    tooltipPosition: 'top'
+    tooltipPosition: 'top',
   };
 
   @Input() flagged?: boolean = false;
 
-  @Input() showFlag: boolean = true;
+  @Input() showFlag = true;
 
-  @Input() showEdit: boolean = true;
+  @Input() showEdit = true;
 
-  @Input() showPreview: boolean = true;
+  @Input() showPreview = true;
 
-  @Input() showOpen: boolean = true;
+  @Input() showOpen = true;
 
-  @Input() showRemove: boolean = true;
+  @Input() showRemove = true;
 
   @Output() onEdit = new EventEmitter<any>();
 
@@ -88,12 +98,4 @@ export class KsActionsComponent implements OnInit {
   @Output() onRemove = new EventEmitter<any>();
 
   @Output() onFlagged = new EventEmitter<any>();
-
-  constructor() {
-
-  }
-
-  ngOnInit(): void {
-  }
-
 }

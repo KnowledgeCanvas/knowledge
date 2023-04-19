@@ -14,10 +14,9 @@
  *  limitations under the License.
  */
 
-import {Injectable} from '@angular/core';
-import {ElectronIpcService} from "./electron-ipc.service";
-import {UUID} from "@shared/models/uuid.model";
-
+import { Injectable } from '@angular/core';
+import { ElectronIpcService } from './electron-ipc.service';
+import { UUID } from '@shared/models/uuid.model';
 
 declare global {
   interface Window {
@@ -26,7 +25,7 @@ declare global {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UuidService {
   private uuidBuffer: UUID[] = [];
@@ -41,7 +40,7 @@ export class UuidService {
       return [];
     }
 
-    let uuids: UUID[] = this.uuidBuffer.slice(0, quantity);
+    const uuids: UUID[] = this.uuidBuffer.slice(0, quantity);
     this.uuidBuffer = this.uuidBuffer.slice(quantity);
     if (this.uuidBuffer.length <= 32) {
       this.asyncGenerate();
@@ -51,8 +50,7 @@ export class UuidService {
 
   private asyncGenerate() {
     this.ipcService.generateUuid(128).then((ids: UUID[]) => {
-      if (ids)
-        this.uuidBuffer = ids;
+      if (ids) this.uuidBuffer = ids;
     });
   }
 }

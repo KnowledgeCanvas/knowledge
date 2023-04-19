@@ -13,33 +13,57 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import {Component, Input, OnInit} from '@angular/core';
-import {KnowledgeSource} from "@app/models/knowledge.source.model";
-import {DragAndDropService} from "@services/ingest-services/drag-and-drop.service";
-import {KsCommandService} from "@services/command-services/ks-command.service";
-import {SettingsService} from "@services/ipc-services/settings.service";
+import { Component, Input, OnInit } from '@angular/core';
+import { KnowledgeSource } from '@app/models/knowledge.source.model';
+import { DragAndDropService } from '@services/ingest-services/drag-and-drop.service';
+import { KsCommandService } from '@services/command-services/ks-command.service';
+import { SettingsService } from '@services/ipc-services/settings.service';
 
 @Component({
   selector: 'app-ks-icon',
   template: `
     <div class="w-full h-full relative">
-      <img [src]="ks && ks.icon ? ks.icon : iconUrl"
-           class="knowledge-source-icon bg-white"
-           width="24"
-           [style.cursor]="ks && ks.ingestType && ks.ingestType === 'file' ? 'grab' : 'pointer'"
-           [class.shadow-3]="showShadow"
-           [class.bg-auto]="autoBackgroundColor"
-           [class.icon-rotate-animation]="animate"
-           (click)="onClick()"
-           draggable="true"
-           (dragstart)="onDragStart($event, ks)"
-           pTooltip="{{allowClickThrough ? (ks && ks.ingestType === 'file' ? 'Click to open, drag to copy' : 'Click to open') : ''}}"
-           [tooltipOptions]="{showDelay: 750, tooltipStyleClass: ks && ks.ingestType === 'file' ? 'ks-file-icon-tooltip' : 'ks-icon-tooltip'}"
-           tooltipPosition="bottom"
-           alt="Knowledge Source Icon">
-      <div *ngIf="showDuedate && ks && ks.dateDue" class="due-indicator" [class.due-future]="!pastDue"
-           [class.due-past]="pastDue"
-           [pTooltip]="pastDue ? 'Past due by ' + (ks.dateDue | countdown) : 'Due in ' + (ks.dateDue | countdown)">
+      <img
+        [src]="ks && ks.icon ? ks.icon : iconUrl"
+        class="knowledge-source-icon bg-white"
+        width="24"
+        [style.cursor]="
+          ks && ks.ingestType && ks.ingestType === 'file' ? 'grab' : 'pointer'
+        "
+        [class.shadow-3]="showShadow"
+        [class.bg-auto]="autoBackgroundColor"
+        [class.icon-rotate-animation]="animate"
+        (click)="onClick()"
+        draggable="true"
+        (dragstart)="onDragStart($event, ks)"
+        pTooltip="{{
+          allowClickThrough
+            ? ks && ks.ingestType === 'file'
+              ? 'Click to open, drag to copy'
+              : 'Click to open'
+            : ''
+        }}"
+        [tooltipOptions]="{
+          showDelay: 750,
+          tooltipStyleClass:
+            ks && ks.ingestType === 'file'
+              ? 'ks-file-icon-tooltip'
+              : 'ks-icon-tooltip'
+        }"
+        tooltipPosition="bottom"
+        alt="Knowledge Source Icon"
+      />
+      <div
+        *ngIf="showDuedate && ks && ks.dateDue"
+        class="due-indicator"
+        [class.due-future]="!pastDue"
+        [class.due-past]="pastDue"
+        [pTooltip]="
+          pastDue
+            ? 'Past due by ' + (ks.dateDue | countdown)
+            : 'Due in ' + (ks.dateDue | countdown)
+        "
+      >
         <div class="pi pi-calendar"></div>
       </div>
     </div>
@@ -67,8 +91,8 @@ import {SettingsService} from "@services/ipc-services/settings.service";
       .due-future {
         color: var(--primary-color);
       }
-    `
-  ]
+    `,
+  ],
 })
 export class KsIconComponent implements OnInit {
   @Input() ks?: Partial<KnowledgeSource> | null;
@@ -78,30 +102,33 @@ export class KsIconComponent implements OnInit {
    *
    * Default: true
    */
-  @Input() allowClickThrough: boolean = true;
+  @Input() allowClickThrough = true;
 
   @Input() iconUrl?: string;
 
-  @Input() showEditor: boolean = true;
+  @Input() showEditor = true;
 
-  @Input() showShadow: boolean = true;
+  @Input() showShadow = true;
 
-  @Input() autoBackgroundColor: boolean = true;
+  @Input() autoBackgroundColor = true;
 
-  @Input() animate: boolean = true;
+  @Input() animate = true;
 
-  @Input() showDuedate: boolean = true;
+  @Input() showDuedate = true;
 
-  pastDue: boolean = false;
+  pastDue = false;
 
-  constructor(private dnd: DragAndDropService, private command: KsCommandService, private settings: SettingsService) {
-  }
+  constructor(
+    private dnd: DragAndDropService,
+    private command: KsCommandService,
+    private settings: SettingsService
+  ) {}
 
   ngOnInit(): void {
     this.animate = this.settings.get().display.animations;
 
     if (this.ks?.dateDue) {
-      this.pastDue = new Date > this.ks.dateDue;
+      this.pastDue = new Date() > this.ks.dateDue;
     }
   }
 

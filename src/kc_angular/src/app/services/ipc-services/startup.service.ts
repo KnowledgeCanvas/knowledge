@@ -13,17 +13,16 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import {Injectable} from '@angular/core';
-import {ElectronIpcService} from "./electron-ipc.service";
-import {Observable} from "rxjs";
-import {DialogService} from "primeng/dynamicdialog";
-import {TutorialComponent} from "@components/shared/tutorial.component";
+import { Injectable } from '@angular/core';
+import { ElectronIpcService } from './electron-ipc.service';
+import { Observable } from 'rxjs';
+import { DialogService } from 'primeng/dynamicdialog';
+import { TutorialComponent } from '@components/shared/tutorial.component';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class StartupService {
-
   constructor(private dialog: DialogService, private ipc: ElectronIpcService) {
     this.ipc.version.subscribe((version) => {
       if (!version || version === '') {
@@ -61,29 +60,27 @@ export class StartupService {
       //     this.storage.saveProject(project);
       //   }
       // })
-
     });
 
     this.ipc.getCurrentVersion();
   }
 
   tutorial(): Observable<boolean> {
-    return new Observable<boolean>(subscriber => {
-      let ref = this.dialog.open(TutorialComponent, {
+    return new Observable<boolean>((subscriber) => {
+      const ref = this.dialog.open(TutorialComponent, {
         width: 'min(90%, 64rem)',
         showHeader: false,
         closable: true,
         closeOnEscape: true,
         contentStyle: {
-          'border-radius': '6px'
-        }
-      })
+          'border-radius': '6px',
+        },
+      });
 
       ref.onClose.subscribe((result) => {
         subscriber.next(result);
         subscriber.complete();
       });
-    })
+    });
   }
-
 }

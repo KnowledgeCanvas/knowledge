@@ -34,7 +34,7 @@ export class GraphLayouts {
     simulate: true,
     maxSimulationTime: 5000,
   };
-  layouts: Partial<CytoscapeLayout | any>[] = [];
+  layouts: any[] = [];
 
   constructor(common?: Partial<LayoutOptions>) {
     this.commonOptions = common ?? this.commonOptions;

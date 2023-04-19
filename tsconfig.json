@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
-    "target": "ES2015",
+    "target": "es2020",
     "module": "commonjs",
     "strict": true,
     "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "strictTemplates": true,

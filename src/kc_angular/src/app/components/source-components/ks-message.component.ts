@@ -13,50 +13,72 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import {Component, Input, OnInit} from '@angular/core';
-import {KnowledgeSource} from "@app/models/knowledge.source.model";
+import { Component, Input } from '@angular/core';
+import { KnowledgeSource } from '@app/models/knowledge.source.model';
 
 @Component({
   selector: 'app-ks-message',
   template: `
-    <div *ngIf="ks else placeholder"
-         class="flex-col-center-between w-full h-full border-bottom-1 border-100 hover:surface-hover p-2 border-round-2xl"
-         [class.text-primary]="active"
-         [class.surface-card]="active">
+    <div
+      *ngIf="ks; else placeholder"
+      class="flex-col-center-between w-full h-full border-bottom-1 border-100 hover:surface-hover p-2 border-round-2xl"
+      [class.text-primary]="active"
+      [class.surface-card]="active"
+    >
       <div class="flex-row-center-between w-full pb-2">
-        <app-ks-icon [ks]="ks"
-                     [animate]="animate"
-                     [allowClickThrough]="false"
-                     style="height: 40px; width: 40px"
-                     class="pr-2 flex align-items-center">
+        <app-ks-icon
+          [ks]="ks"
+          [animate]="animate"
+          [allowClickThrough]="false"
+          style="height: 40px; width: 40px"
+          class="pr-2 flex align-items-center"
+        >
         </app-ks-icon>
 
         <div #titleContainer class="ks-message-title-and-flag">
-          <div class="ks-message-title font-bold">{{ks.title | truncate:[48]}}</div>
-          <div [class.pi-flag-fill]="ks.flagged"
-               [class.pi-flag]="!ks.flagged"
-               [class.text-400]="!ks.flagged"
-               (click)="onKsFlagged($event, ks)"
-               class="ks-message-flag pi px-2 hover:text-primary"></div>
+          <div class="ks-message-title font-bold">
+            {{ ks.title | truncate : [48] }}
+          </div>
+          <div
+            [class.pi-flag-fill]="ks.flagged"
+            [class.pi-flag]="!ks.flagged"
+            [class.text-400]="!ks.flagged"
+            (click)="onKsFlagged($event, ks)"
+            class="ks-message-flag pi px-2 hover:text-primary"
+          ></div>
         </div>
       </div>
       <div *ngIf="showFooter" class="flex-row-center-between w-full text-500">
-        <div *ngIf="!label else labelPlaceholder" class="text-left">{{ks.importMethod | importMethod}}</div>
-        <ng-template #labelPlaceholder>{{label}}</ng-template>
-        <div *ngIf="showDate" class="text-right">{{ks.dateCreated | date:'MM/dd/yy hh:mm a'}}</div>
+        <div *ngIf="!label; else labelPlaceholder" class="text-left">
+          {{ ks.importMethod | importMethod }}
+        </div>
+        <ng-template #labelPlaceholder>{{ label }}</ng-template>
+        <div *ngIf="showDate" class="text-right">
+          {{ ks.dateCreated | date : 'MM/dd/yy hh:mm a' }}
+        </div>
       </div>
     </div>
 
     <ng-template #placeholder>
-      <div class="flex-col-center-between w-full border-bottom-1 border-100 hover:surface-hover p-2"
-           [class.bg-primary-reverse]="active">
+      <div
+        class="flex-col-center-between w-full border-bottom-1 border-100 hover:surface-hover p-2"
+        [class.bg-primary-reverse]="active"
+      >
         <div *ngIf="!status" class="flex-row-center-between w-full pb-2">
           <p-skeleton size="40px" shape="circle" class="pr-2"></p-skeleton>
-          <p-skeleton class="w-full" height="32px" shape="rectangle"></p-skeleton>
+          <p-skeleton
+            class="w-full"
+            height="32px"
+            shape="rectangle"
+          ></p-skeleton>
         </div>
-        <div *ngIf="status" class="w-full flex-row-center-center" style="height: 4rem">
+        <div
+          *ngIf="status"
+          class="w-full flex-row-center-center"
+          style="height: 4rem"
+        >
           <div class="text-500 font-bold">
-            {{status}}
+            {{ status }}
           </div>
         </div>
       </div>
@@ -83,10 +105,10 @@ import {KnowledgeSource} from "@app/models/knowledge.source.model";
           font-weight: 600 !important;
         }
       }
-    `
-  ]
+    `,
+  ],
 })
-export class KsMessageComponent implements OnInit {
+export class KsMessageComponent {
   @Input() ks!: KnowledgeSource;
 
   @Input() status?: string;
@@ -95,17 +117,11 @@ export class KsMessageComponent implements OnInit {
 
   @Input() label?: string;
 
-  @Input() showFooter: boolean = true;
+  @Input() showFooter = true;
 
-  @Input() showDate: boolean = true;
+  @Input() showDate = true;
 
-  @Input() animate: boolean = true;
-
-  constructor() {
-  }
-
-  ngOnInit(): void {
-  }
+  @Input() animate = true;
 
   onKsFlagged($event: MouseEvent, ks: KnowledgeSource) {
     $event.preventDefault();

@@ -14,10 +14,10 @@
  *  limitations under the License.
  */
 
-import {Pipe, PipeTransform} from '@angular/core';
+import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'switchLabel'
+  name: 'switchLabel',
 })
 export class SwitchLabelPipe implements PipeTransform {
   transform(value: boolean): string {

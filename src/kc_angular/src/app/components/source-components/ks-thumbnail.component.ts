@@ -14,31 +14,42 @@
  *  limitations under the License.
  */
 
-import {Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
-import {KnowledgeSource} from "@app/models/knowledge.source.model";
-import {BehaviorSubject, Observable, Subject, tap} from "rxjs";
-import {ElectronIpcService} from "@services/ipc-services/electron-ipc.service";
-import {fadeIn} from "@app/animations";
-import {filter, takeUntil} from "rxjs/operators";
-import {SettingsService} from "@services/ipc-services/settings.service";
-import {NotificationsService} from "@services/user-services/notifications.service";
+import {
+  Component,
+  Input,
+  OnChanges,
+  OnDestroy,
+  SimpleChanges,
+} from '@angular/core';
+import { KnowledgeSource } from '@app/models/knowledge.source.model';
+import { BehaviorSubject, Observable, Subject, tap } from 'rxjs';
+import { ElectronIpcService } from '@services/ipc-services/electron-ipc.service';
+import { fadeIn } from '@app/animations';
+import { filter, takeUntil } from 'rxjs/operators';
+import { SettingsService } from '@services/ipc-services/settings.service';
+import { NotificationsService } from '@services/user-services/notifications.service';
 
 @Component({
   selector: 'app-ks-thumbnail',
   template: `
-    <div *ngIf="(thumbnail$ | async) else loading" class="h-full w-full">
-      <p-image [src]="thumbnail$ | async"
-               [@fadeIn]="animate"
-               (onImageError)="onImageError($event)"
-               class="flex-col-center-center h-full thumbnail-container overflow-hidden justify-content-start"
-               imageClass="ks-thumbnail"
-               [preview]="allowPreview">
+    <div *ngIf="thumbnail$ | async; else loading" class="h-full w-full">
+      <p-image
+        [src]="thumbnail$ | async"
+        [@fadeIn]="animate"
+        (onImageError)="onImageError()"
+        class="flex-col-center-center h-full thumbnail-container overflow-hidden justify-content-start"
+        imageClass="ks-thumbnail"
+        [preview]="allowPreview"
+      >
       </p-image>
     </div>
 
     <ng-template #loading>
-      <div [@fadeIn]="animate" class="h-full flex-col-center-center select-none surface-300"
-           style="min-height: 12rem">
+      <div
+        [@fadeIn]="animate"
+        class="h-full flex-col-center-center select-none surface-300"
+        style="min-height: 12rem"
+      >
         <app-ks-icon [ks]="ks"></app-ks-icon>
         <div class="text-sm mt-4">Thumbnail Unavailable</div>
       </div>
@@ -49,16 +60,16 @@ import {NotificationsService} from "@services/user-services/notifications.servic
       .thumbnail-container {
         min-height: 12rem;
       }
-    `
+    `,
   ],
-  animations: [fadeIn]
+  animations: [fadeIn],
 })
-export class KsThumbnailComponent implements OnInit, OnDestroy, OnChanges {
+export class KsThumbnailComponent implements OnDestroy, OnChanges {
   @Input() ks!: KnowledgeSource;
 
-  @Input() animate: boolean = true;
+  @Input() animate = true;
 
-  @Input() allowPreview: boolean = true;
+  @Input() allowPreview = true;
 
   _thumbnail$: BehaviorSubject<any> = new BehaviorSubject<any>(undefined);
 
@@ -66,12 +77,12 @@ export class KsThumbnailComponent implements OnInit, OnDestroy, OnChanges {
 
   private cleanUp: Subject<any> = new Subject<any>();
 
-  constructor(private ipcService: ElectronIpcService, private settings: SettingsService, private notifications: NotificationsService) {
+  constructor(
+    private ipcService: ElectronIpcService,
+    private settings: SettingsService,
+    private notifications: NotificationsService
+  ) {
     this.animate = settings.get().display.animations;
-  }
-
-  ngOnInit(): void {
-
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -89,14 +100,16 @@ export class KsThumbnailComponent implements OnInit, OnDestroy, OnChanges {
          * Otherwise, if the Source is of type 'file', request thumbnail from OS
          */
         if (this.ks.ingestType === 'file') {
-          this.ipcService.thumbnail.pipe(
-            takeUntil(this.cleanUp),
-            filter(t => t?.id === this.ks.id.value),
-            tap((thumbnail) => {
-              this.ks.thumbnail = thumbnail.thumbnail;
-              this._thumbnail$.next(this.ks.thumbnail);
-            })
-          ).subscribe();
+          this.ipcService.thumbnail
+            .pipe(
+              takeUntil(this.cleanUp),
+              filter((t) => t?.id === this.ks.id.value),
+              tap((thumbnail) => {
+                this.ks.thumbnail = thumbnail.thumbnail;
+                this._thumbnail$.next(this.ks.thumbnail);
+              })
+            )
+            .subscribe();
         }
 
         /**
@@ -105,7 +118,11 @@ export class KsThumbnailComponent implements OnInit, OnDestroy, OnChanges {
         this.getThumbnail();
       }
     } catch (e) {
-      this.notifications.warn('Source Thumbnail', 'Thumbnail Error', 'Unable to set thumbnail: ' + e);
+      this.notifications.warn(
+        'Source Thumbnail',
+        'Thumbnail Error',
+        'Unable to set thumbnail: ' + e
+      );
     }
   }
 
@@ -115,47 +132,54 @@ export class KsThumbnailComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   getThumbnail() {
-    let link: string = typeof this.ks.accessLink === 'string' ? this.ks.accessLink : this.ks.accessLink.href;
+    const link: string =
+      typeof this.ks.accessLink === 'string'
+        ? this.ks.accessLink
+        : this.ks.accessLink.href;
 
     if (this.ks.ingestType === 'file') {
-      this.ipcService.getFileThumbnail([{
-        path: link,
-        id: this.ks.id.value
-      }]);
+      this.ipcService.getFileThumbnail([
+        {
+          path: link,
+          id: this.ks.id.value,
+        },
+      ]);
       return;
     } else {
       if (this.ks.thumbnail) {
         this._thumbnail$.next(this.ks.thumbnail);
       }
 
-      let meta = this.ks.reference.source.website?.metadata?.meta;
+      const meta = this.ks.reference.source.website?.metadata?.meta;
       if (meta) {
-        let ogImage = meta.find(m => m.key === 'og:image');
+        const ogImage = meta.find((m) => m.key === 'og:image');
         if (ogImage && ogImage.value) {
           if (!ogImage.value.startsWith('http')) {
             this._thumbnail$.next(undefined);
             return;
           }
           const url = ogImage.value;
-          fetch(url).then((result) => {
-            result.text().then((text) => {
-              // Sometimes, requesting an image will return HTML, which is signs of failure
-              if (!text.startsWith('<')) {
-                // TODO: this should be sanitized... or completely removed
-                this.ks.thumbnail = url;
-                this._thumbnail$.next(this.ks.thumbnail);
-              }
+          fetch(url)
+            .then((result) => {
+              result.text().then((text) => {
+                // Sometimes, requesting an image will return HTML, which is signs of failure
+                if (!text.startsWith('<')) {
+                  // TODO: this should be sanitized... or completely removed
+                  this.ks.thumbnail = url;
+                  this._thumbnail$.next(this.ks.thumbnail);
+                }
+              });
             })
-          }).catch((_) => {
-            this.notifications.warn('Thumbnail', 'Invalid Thumbnail', url);
-            this._thumbnail$.next(undefined);
-          })
+            .catch(() => {
+              this.notifications.warn('Thumbnail', 'Invalid Thumbnail', url);
+              this._thumbnail$.next(undefined);
+            });
         }
       }
     }
   }
 
-  onImageError(_: any) {
+  onImageError() {
     this._thumbnail$.next(undefined);
   }
 }

@@ -14,20 +14,19 @@
  *  limitations under the License.
  */
 
-import {Pipe, PipeTransform} from '@angular/core';
-import {ProjectService} from "@services/factory-services/project.service";
-import {UUID} from "@shared/models/uuid.model";
+import { Pipe, PipeTransform } from '@angular/core';
+import { ProjectService } from '@services/factory-services/project.service';
+import { UUID } from '@shared/models/uuid.model';
 
 @Pipe({
-  name: 'projectBreadcrumb'
+  name: 'projectBreadcrumb',
 })
 export class ProjectBreadcrumbPipe implements PipeTransform {
-  constructor(private projectService: ProjectService) {
-  }
+  constructor(private projectService: ProjectService) {}
 
   transform(id: UUID | string, ...args: unknown[]): string {
     if (typeof id === 'string') {
-      id = {value: id};
+      id = { value: id };
     }
 
     const ancestors = this.projectService.getAncestors(id.value);
@@ -38,7 +37,7 @@ export class ProjectBreadcrumbPipe implements PipeTransform {
     let start, end, prefix;
 
     const SEP = '>';
-    const ELLIPSIS = '...'
+    const ELLIPSIS = '...';
 
     if (args && args.length > 0 && args[0] && args[0] == 'no-truncate') {
       start = 0;
@@ -51,11 +50,21 @@ export class ProjectBreadcrumbPipe implements PipeTransform {
       if (args && args.length > 0 && args[0] && args[0] == 'no-ellipse') {
         prefix = '';
       } else {
-        prefix = start > 0 ? `${ancestors[0].title} ${SEP} ${start > 1 ? ELLIPSIS : ''} ${start > 1 ? SEP : ''} ` : ''
+        prefix =
+          start > 0
+            ? `${ancestors[0].title} ${SEP} ${start > 1 ? ELLIPSIS : ''} ${
+                start > 1 ? SEP : ''
+              } `
+            : '';
       }
-
     }
 
-    return prefix + ancestors.slice(start, end).map(a => a.title).join(` ${SEP} `);
+    return (
+      prefix +
+      ancestors
+        .slice(start, end)
+        .map((a) => a.title)
+        .join(` ${SEP} `)
+    );
   }
 }
