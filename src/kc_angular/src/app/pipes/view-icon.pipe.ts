@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Rob Royce
+ * Copyright (c) 2022-2023 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ import {Pipe, PipeTransform} from '@angular/core';
   name: 'viewIcon'
 })
 export class ViewIconPipe implements PipeTransform {
-
   transform(viewLabel: string): string {
     switch (viewLabel) {
       case 'inbox':

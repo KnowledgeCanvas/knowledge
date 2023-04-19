@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 import {Component, Input, OnInit} from '@angular/core';
-import {EventModel} from "../../../../../kc_shared/models/event.model";
+import {EventModel} from "@shared/models/event.model";
 
 @Component({
   selector: 'app-timeline',

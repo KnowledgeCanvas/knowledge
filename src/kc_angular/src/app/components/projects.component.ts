@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Rob Royce
+ * Copyright (c) 2022-2023 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -15,15 +15,15 @@
  */
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
-import {ProjectService} from "../services/factory-services/project.service";
+import {ProjectService} from "@services/factory-services/project.service";
 import {KcProject} from "../models/project.model";
 import {BehaviorSubject, Subject, tap} from "rxjs";
 import {ContextMenu} from "primeng/contextmenu";
 import {MenuItem} from "primeng/api";
 import {takeUntil} from "rxjs/operators";
-import {DataService} from "../services/user-services/data.service";
+import {DataService} from "@services/user-services/data.service";
 import {KnowledgeSource} from "../models/knowledge.source.model";
-import {TopicService} from "../services/user-services/topic.service";
+import {TopicService} from "@services/user-services/topic.service";
 
 @Component({
   selector: 'app-projects',

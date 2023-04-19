@@ -24,8 +24,8 @@ import {
   SecurityContext,
   SimpleChanges
 } from '@angular/core';
-import {ElectronIpcService} from "../../../services/ipc-services/electron-ipc.service";
-import {BrowserViewRequest, IpcMessage} from "../../../../../../kc_shared/models/electron.ipc.model";
+import {ElectronIpcService} from "@services/ipc-services/electron-ipc.service";
+import {BrowserViewRequest, IpcMessage} from "@shared/models/electron.ipc.model";
 import {DomSanitizer} from "@angular/platform-browser";
 import {
   BrowserViewClickEvent,
@@ -33,7 +33,7 @@ import {
   BrowserViewHeaderConfig,
   BrowserViewHeaderEvent,
   BrowserViewNavEvent
-} from "../../../../../../kc_shared/models/browser.view.model";
+} from "@shared/models/browser.view.model";
 import {Subscription} from "rxjs";
 
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Rob Royce
+ * Copyright (c) 2022-2023 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -14,11 +14,11 @@
  *  limitations under the License.
  */
 import {Component, OnInit} from '@angular/core';
-import {ThemeService} from "../../services/user-services/theme.service";
-import {SettingsService} from "../../services/ipc-services/settings.service";
-import {NotificationsService} from "../../services/user-services/notifications.service";
-import {KcTheme} from "../../../../../kc_shared/models/style.model";
-import {DisplaySettingsModel} from "../../../../../kc_shared/models/settings.model";
+import {ThemeService} from "@services/user-services/theme.service";
+import {SettingsService} from "@services/ipc-services/settings.service";
+import {NotificationsService} from "@services/user-services/notifications.service";
+import {KcTheme} from "@shared/models/style.model";
+import {DisplaySettingsModel} from "@shared/models/settings.model";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {debounceTime, distinctUntilChanged, tap} from "rxjs/operators";
 

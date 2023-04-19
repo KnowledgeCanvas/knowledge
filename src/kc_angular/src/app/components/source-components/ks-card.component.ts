@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Rob Royce
+ * Copyright (c) 2022-2023 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -26,11 +26,11 @@ import {
   Output,
   SimpleChanges
 } from '@angular/core';
-import {KnowledgeSource} from "../../models/knowledge.source.model";
+import {KnowledgeSource} from "@app/models/knowledge.source.model";
 import {TreeNode} from "primeng/api";
 import {Subscription} from "rxjs";
-import {UUID} from "../../../../../kc_shared/models/uuid.model";
-import {KsCommandService} from "../../services/command-services/ks-command.service";
+import {UUID} from "@shared/models/uuid.model";
+import {KsCommandService} from "@services/command-services/ks-command.service";
 
 
 @Component({

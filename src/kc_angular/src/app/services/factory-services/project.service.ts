@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Rob Royce
+ * Copyright (c) 2022-2023 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -14,17 +14,17 @@
  *  limitations under the License.
  */
 
-import {Injectable} from '@angular/core';
-import {ProjectTree, ProjectTreeNode} from "src/app/models/project.tree.model";
 import {BehaviorSubject, Observable} from 'rxjs';
-import {KcProject, ProjectCreationRequest, ProjectUpdateRequest} from "src/app/models/project.model";
-import {KnowledgeSource} from "src/app/models/knowledge.source.model";
-import {UuidService} from "../ipc-services/uuid.service";
-import {StorageService} from "../ipc-services/storage.service";
-import {KcProjectType} from "../../../../../kc_shared/models/project.model";
-import {EventModel} from "../../../../../kc_shared/models/event.model";
-import {UUID} from "../../../../../kc_shared/models/uuid.model";
-import {NotificationsService} from "../user-services/notifications.service";
+import {EventModel} from "@shared/models/event.model";
+import {Injectable} from '@angular/core';
+import {KcProject, ProjectCreationRequest, ProjectUpdateRequest} from "@app/models/project.model";
+import {KcProjectType} from "@shared/models/project.model";
+import {KnowledgeSource} from "@app/models/knowledge.source.model";
+import {NotificationsService} from "@services/user-services/notifications.service";
+import {ProjectTree, ProjectTreeNode} from "@app/models/project.tree.model";
+import {StorageService} from "@services/ipc-services/storage.service";
+import {UUID} from "@shared/models/uuid.model";
+import {UuidService} from "@services/ipc-services/uuid.service";
 
 export interface ProjectIdentifiers {
   id: string;

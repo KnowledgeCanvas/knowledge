@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Rob Royce
+ * Copyright (c) 2022-2023 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -15,13 +15,13 @@
  */
 
 import {Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
-import {KnowledgeSource} from "../../models/knowledge.source.model";
+import {KnowledgeSource} from "@app/models/knowledge.source.model";
 import {BehaviorSubject, Observable, Subject, tap} from "rxjs";
-import {ElectronIpcService} from "../../services/ipc-services/electron-ipc.service";
-import {fadeIn} from "../../animations";
+import {ElectronIpcService} from "@services/ipc-services/electron-ipc.service";
+import {fadeIn} from "@app/animations";
 import {filter, takeUntil} from "rxjs/operators";
-import {SettingsService} from "../../services/ipc-services/settings.service";
-import {NotificationsService} from "../../services/user-services/notifications.service";
+import {SettingsService} from "@services/ipc-services/settings.service";
+import {NotificationsService} from "@services/user-services/notifications.service";
 
 @Component({
   selector: 'app-ks-thumbnail',

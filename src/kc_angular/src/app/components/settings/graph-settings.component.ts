@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Rob Royce
+ * Copyright (c) 2022-2023 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -14,8 +14,8 @@
  *  limitations under the License.
  */
 import {Component, OnInit} from '@angular/core';
-import {GraphActions, GraphSettingsModel} from "../../../../../kc_shared/models/settings.model";
-import {SettingsService} from "../../services/ipc-services/settings.service";
+import {GraphActions, GraphSettingsModel} from "@shared/models/settings.model";
+import {SettingsService} from "@services/ipc-services/settings.service";
 import {FormBuilder, FormGroup} from "@angular/forms";
 import {debounceTime, distinctUntilChanged, tap} from "rxjs/operators";
 

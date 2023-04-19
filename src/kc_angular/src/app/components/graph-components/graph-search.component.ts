@@ -16,11 +16,11 @@
 
 import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges} from '@angular/core';
 import {Subject} from "rxjs";
-import {KnowledgeSource} from "../../models/knowledge.source.model";
+import {KnowledgeSource} from "@app/models/knowledge.source.model";
 import {animate, style, transition, trigger} from "@angular/animations";
-import {KsCommandService} from "../../services/command-services/ks-command.service";
-import {TopicService} from "../../services/user-services/topic.service";
-import {SettingsService} from "../../services/ipc-services/settings.service";
+import {KsCommandService} from "@services/command-services/ks-command.service";
+import {TopicService} from "@services/user-services/topic.service";
+import {SettingsService} from "@services/ipc-services/settings.service";
 
 export interface SearchResult {
   index: number

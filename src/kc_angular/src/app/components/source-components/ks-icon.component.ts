@@ -14,10 +14,10 @@
  *  limitations under the License.
  */
 import {Component, Input, OnInit} from '@angular/core';
-import {KnowledgeSource} from "../../models/knowledge.source.model";
-import {DragAndDropService} from "../../services/ingest-services/drag-and-drop.service";
-import {KsCommandService} from "../../services/command-services/ks-command.service";
-import {SettingsService} from "../../services/ipc-services/settings.service";
+import {KnowledgeSource} from "@app/models/knowledge.source.model";
+import {DragAndDropService} from "@services/ingest-services/drag-and-drop.service";
+import {KsCommandService} from "@services/command-services/ks-command.service";
+import {SettingsService} from "@services/ipc-services/settings.service";
 
 @Component({
   selector: 'app-ks-icon',

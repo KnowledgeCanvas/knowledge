@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Rob Royce
+ * Copyright (c) 2022-2023 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -14,22 +14,22 @@
  *  limitations under the License.
  */
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {KnowledgeSource} from "../../models/knowledge.source.model";
-import {ElectronIpcService} from "../../services/ipc-services/electron-ipc.service";
+import {KnowledgeSource} from "@app/models/knowledge.source.model";
+import {ElectronIpcService} from "@services/ipc-services/electron-ipc.service";
 import {Clipboard} from "@angular/cdk/clipboard";
-import {ExtractorService} from "../../services/ingest-services/extractor.service";
+import {ExtractorService} from "@services/ingest-services/extractor.service";
 import {
   BrowserViewClickEvent,
   BrowserViewConfig,
   BrowserViewNavEvent,
   FileViewClickEvent,
   FileViewConfig
-} from "../../../../../kc_shared/models/browser.view.model";
-import {KsFactoryService} from "../../services/factory-services/ks-factory.service";
-import {IngestService} from "../../services/ingest-services/ingest.service";
+} from "@shared/models/browser.view.model";
+import {KsFactoryService} from "@services/factory-services/ks-factory.service";
+import {IngestService} from "@services/ingest-services/ingest.service";
 import {DynamicDialogConfig, DynamicDialogRef} from "primeng/dynamicdialog";
-import {NotificationsService} from "../../services/user-services/notifications.service";
-import {KsCommandService} from "../../services/command-services/ks-command.service";
+import {NotificationsService} from "@services/user-services/notifications.service";
+import {KsCommandService} from "@services/command-services/ks-command.service";
 
 export interface KsPreviewInput {
   ks: KnowledgeSource
