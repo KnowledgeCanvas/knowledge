@@ -53,24 +53,20 @@ export class IngestService implements OnDestroy {
   ) {
     this.autoscanSubscribe();
     this.extensionSubscribe();
+
+    this.loadInbox();
+
+    this.queue.subscribe((sources) => {
+      // Persist source list every time it is update. Restore it on app load.
+      const sourceString = JSON.stringify(sources);
+      localStorage.setItem('ingest-queue', sourceString);
+    });
   }
 
   ngOnDestroy() {
     for (const task of this.tasks) {
       task.callback('delay');
     }
-  }
-
-  clearResults() {
-    this.notifications.debug(
-      'IngestService',
-      `Clearing Results`,
-      `Removing ${this._queue.value.length} Knowledge Sources`
-    );
-    for (const ks of this._queue.value) {
-      this.finalize(ks, 'delay');
-    }
-    this._queue.next([]);
   }
 
   enqueue(ksList: KnowledgeSource[]) {
@@ -121,6 +117,21 @@ export class IngestService implements OnDestroy {
 
   show() {
     this.settings.show('import');
+  }
+
+  private loadInbox() {
+    const inbox = localStorage.getItem('ingest-queue');
+    if (inbox) {
+      const sources = JSON.parse(inbox);
+
+      for (const source of sources) {
+        source.icon = undefined;
+      }
+
+      this.favicon.extractFromKsList(sources).then((updated) => {
+        this.enqueue(updated);
+      });
+    }
   }
 
   /**
