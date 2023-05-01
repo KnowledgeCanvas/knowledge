@@ -19,7 +19,6 @@ import { DisplaySettingsComponent } from '@components/settings/display-settings.
 import { SearchSettingsComponent } from '@components/settings/search-settings.component';
 import { IngestSettingsComponent } from '@components/settings/ingest-settings.component';
 import { HomeComponent } from '@components/home.component';
-import { ProjectsComponent } from '@components/projects.component';
 import { TableComponent } from '@components/table.component';
 import { GridComponent } from '@components/grid.component';
 import { CalendarComponent } from '@components/calendar.component';
@@ -27,6 +26,8 @@ import { StorageSettingsComponent } from '@components/settings/storage-settings.
 import { GraphComponent } from '@components/graph.component';
 import { GraphSettingsComponent } from '@components/settings/graph-settings.component';
 import { ChatComponent } from '@components/chat.component';
+import { ChatSettingsComponent } from '@components/settings/chat-settings.component';
+import { ChatGuard } from '@services/chat-services/guard';
 
 const routes: Routes = [
   { path: '', redirectTo: '/app/inbox/undefined', pathMatch: 'full' },
@@ -37,11 +38,6 @@ const routes: Routes = [
         path: 'inbox/:projectId',
         component: HomeComponent,
         data: { animation: 'Inbox' }, // See routeAnimations trigger in animation.ts
-      },
-      {
-        path: 'projects/:projectId',
-        component: ProjectsComponent,
-        data: { animation: 'Projects' },
       },
       {
         path: 'graph/:projectId',
@@ -67,6 +63,7 @@ const routes: Routes = [
         path: 'chat/:projectId',
         component: ChatComponent,
         data: { animation: 'Chat' },
+        canActivate: [ChatGuard],
       },
       {
         path: 'display',
@@ -87,6 +84,11 @@ const routes: Routes = [
         path: 'graph',
         outlet: 'settings',
         component: GraphSettingsComponent,
+      },
+      {
+        path: 'chat',
+        outlet: 'settings',
+        component: ChatSettingsComponent,
       },
       {
         path: 'storage',

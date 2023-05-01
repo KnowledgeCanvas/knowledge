@@ -83,4 +83,23 @@ export class StartupService {
       });
     });
   }
+
+  apiKeyTutorial(): Observable<boolean> {
+    return new Observable<boolean>((subscriber) => {
+      const ref = this.dialog.open(TutorialComponent, {
+        width: 'min(90%, 64rem)',
+        showHeader: false,
+        closable: true,
+        closeOnEscape: true,
+        contentStyle: {
+          'border-radius': '6px',
+        },
+      });
+
+      ref.onClose.subscribe((result) => {
+        subscriber.next(result);
+        subscriber.complete();
+      });
+    });
+  }
 }

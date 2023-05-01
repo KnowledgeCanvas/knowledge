@@ -29,11 +29,12 @@ import { CalendarComponent } from '@components/calendar.component';
 import { CalendarModule } from 'primeng/calendar';
 import { CardModule } from 'primeng/card';
 import { ChartModule } from 'primeng/chart';
+import { ChatApiComponent } from '@components/chat-components/api.component';
 import { ChatActionsComponent } from '@components/chat-components/chat.actions.component';
 import { ChatComponent } from '@components/chat.component';
 import { ChatMessageComponent } from '@components/chat-components/chat.message.component';
 import { ChatToolbarComponent } from '@components/chat-components/chat.toolbar.component';
-import { ChatViewComponent } from '@components/chat-components/chat.component';
+import { ChatViewComponent } from '@components/chat-components/chat.view.component';
 import { CheckboxModule } from 'primeng/checkbox';
 import { ChipModule } from 'primeng/chip';
 import { ChipsModule } from 'primeng/chips';
@@ -83,7 +84,6 @@ import { KsDetailsComponent } from '@components/source-components/ks-details.com
 import { KsDropzoneComponent } from '@components/source-components/ks-dropzone.component';
 import { KsExportComponent } from '@components/source-components/ks-export.component';
 import { KsIconComponent } from '@components/source-components/ks-icon.component';
-import { KsInfoComponent } from '@components/source-components/ks-info.component';
 import { KsIngestTypeIconPipe } from '@pipes/ks-ingest-type-icon.pipe';
 import { KsMessageComponent } from '@components/source-components/ks-message.component';
 import { KsMoveComponent } from '@components/source-components/ks-move.component';
@@ -114,7 +114,6 @@ import { ProjectNamePipe } from '@pipes/project-name.pipe';
 import { ProjectSelectorComponent } from '@components/project-components/project-selector.component';
 import { ProjectService } from '@services/factory-services/project.service';
 import { ProjectTypePipe } from '@pipes/project-type.pipe';
-import { ProjectsComponent } from '@components/projects.component';
 import { ProjectsTreeComponent } from '@components/project-components/projects-tree.component';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { ScrollPanelModule } from 'primeng/scrollpanel';
@@ -150,6 +149,16 @@ import { TutorialComponent } from '@components/shared/tutorial.component';
 import { ViewIconPipe } from '@pipes/view-icon.pipe';
 import { ViewportHeaderComponent } from '@components/source-components/ks-viewport/viewport-header.component';
 import { YouTubePlayerModule } from '@angular/youtube-player';
+import { LoadingComponent } from '@components/shared/loading.component';
+import { ChatSettingsComponent } from '@components/settings/chat-settings.component';
+import { RecreateViewDirective } from './directives/recreate-view.directive';
+import { SourceComponent } from '@components/source-components/source.component';
+import { SourceDetailsComponent } from '@components/source-components/source.details.component';
+import { SourceChatComponent } from '@components/source-components/source.chat.component';
+import { SourceMetadataComponent } from '@components/source-components/source.metadata.component';
+import { SourceVideoComponent } from '@components/source-components/source.video.component';
+import { SourceDocumentComponent } from '@components/source-components/source.document.component';
+import { SourceTimelineComponent } from '@components/source-components/source.timeline.component';
 
 @NgModule({
   declarations: [
@@ -157,8 +166,10 @@ import { YouTubePlayerModule } from '@angular/youtube-player';
     BrowserViewComponent,
     CalendarComponent,
     ChatActionsComponent,
+    ChatApiComponent,
     ChatComponent,
     ChatMessageComponent,
+    ChatSettingsComponent,
     ChatViewComponent,
     CountdownPipe,
     CreateComponent,
@@ -182,13 +193,13 @@ import { YouTubePlayerModule } from '@angular/youtube-player';
     KsDropzoneComponent,
     KsExportComponent,
     KsIconComponent,
-    KsInfoComponent,
     KsIngestTypeIconPipe,
     KsMessageComponent,
     KsMoveComponent,
     KsPreviewComponent,
     KsTableComponent,
     KsThumbnailComponent,
+    LoadingComponent,
     ProjectAsTreeNodePipe,
     ProjectBreadcrumbComponent,
     ProjectBreadcrumbPipe,
@@ -200,7 +211,6 @@ import { YouTubePlayerModule } from '@angular/youtube-player';
     ProjectNamePipe,
     ProjectSelectorComponent,
     ProjectTypePipe,
-    ProjectsComponent,
     ProjectsTreeComponent,
     SearchComponent,
     SearchSettingsComponent,
@@ -216,6 +226,14 @@ import { YouTubePlayerModule } from '@angular/youtube-player';
     ViewportHeaderComponent,
     ChatToolbarComponent,
     MarkdownPipe,
+    RecreateViewDirective,
+    SourceComponent,
+    SourceDetailsComponent,
+    SourceChatComponent,
+    SourceMetadataComponent,
+    SourceVideoComponent,
+    SourceDocumentComponent,
+    SourceTimelineComponent,
   ],
   imports: [
     A11yModule,

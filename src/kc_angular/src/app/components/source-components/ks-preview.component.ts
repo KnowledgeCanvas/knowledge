@@ -75,6 +75,7 @@ export interface KsPreviewInput {
         </div>
         <p-progressBar
           *ngIf="!viewReady"
+          [style]="{ height: '4px' }"
           mode="indeterminate"
           id="progress-bar"
           class="p-fluid w-full"

@@ -22,31 +22,8 @@ import { KcProject } from '@app/models/project.model';
   selector: 'app-project-details',
   template: `
     <div class="w-full flex-row-center-between pb-3 pt-3 sticky">
-      <div class="flex-row-center-start">
-        <!--        <app-ks-icon [ks]="ks" class="pr-3"></app-ks-icon>-->
-        <app-project-breadcrumb
-          [disabled]="true"
-          [projectId]="project.id.value"
-        >
-        </app-project-breadcrumb>
-      </div>
-      <div class="flex flex-row align-items-center justify-content-center">
-        <button
-          pButton
-          icon="pi pi-arrow-down"
-          label="Expand"
-          (click)="expandAll()"
-          class="p-button-rounded p-button-text shadow-none"
-        ></button>
-        <button
-          pButton
-          icon="pi pi-arrow-up"
-          label="Collapse"
-          (click)="collapseAll()"
-          class="p-button-rounded p-button-text shadow-none"
-        ></button>
-      </div>
-      <div class="flex-row-center-end" style="width: 10rem">
+      <div class="flex-row-center-start w-full"></div>
+      <div class="flex-row-center-end">
         <div *ngIf="saved" class="flex-row-center-start text-primary">
           <div class="pi pi-check"></div>
           <div class="px-3">Saved</div>
@@ -67,6 +44,12 @@ import { KcProject } from '@app/models/project.model';
         [collapseAll]="collapsed"
       ></app-project-info>
     </div>
+    <app-project-breadcrumb
+      [disabled]="true"
+      [projectId]="project.id.value"
+      class="w-full p-fluid"
+    >
+    </app-project-breadcrumb>
   `,
   styles: [],
 })

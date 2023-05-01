@@ -51,7 +51,9 @@ import { NotificationsService } from '@services/user-services/notifications.serv
       appendTo="body"
     >
     </p-treeSelect>
-    <label *ngIf="label" for="projectSelector">{{ label }}</label>
+    <label *ngIf="label" for="projectSelector" style="left: 1rem;">{{
+      label
+    }}</label>
   `,
   styles: [],
 })

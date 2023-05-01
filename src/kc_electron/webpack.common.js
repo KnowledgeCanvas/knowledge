@@ -18,7 +18,7 @@ const path = require("path");
 
 let webpack_config = {
   entry: {
-    electron: path.join(__dirname, "src", "electron.ts"),
+    main: path.join(__dirname, "src", "main.ts"),
     preload: path.join(__dirname, "src", "preload.js"),
   },
   target: "electron-main", // Webpack knows about the electron main process specifically
@@ -38,6 +38,7 @@ let webpack_config = {
     // NOTE: this had to be added after manually installing Chokidar 3.5
     // NOTE: https://github.com/yan-foto/electron-reload/issues/71
     fsevents: "require('fsevents')",
+    express: "require('express')",
   },
   resolve: {
     extensions: [".ts", ".js", ".json"],

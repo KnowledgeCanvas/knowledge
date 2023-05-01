@@ -1,0 +1,217 @@
+<!--
+  ~ Copyright (c) 2023 Rob Royce
+  ~
+  ~  Licensed under the Apache License, Version 2.0 (the "License");
+  ~  you may not use this file except in compliance with the License.
+  ~  You may obtain a copy of the License at
+  ~
+  ~  http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing, software
+  ~  distributed under the License is distributed on an "AS IS" BASIS,
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~  See the License for the specific language governing permissions and
+  ~  limitations under the License.
+  -->
+
+<div class="w-full h-full flex-col-center-start">
+  <p-panel
+    class="w-full"
+    styleClass="h-full flex flex-column flex-grow-1"
+  >
+    <ng-template pTemplate="header">
+      <div class="flex-row-center-between w-full">
+        <div class="w-16rem">
+          <p-dropdown
+            (onChange)="sortSelected($event)"
+            [(ngModel)]="selectedSorter"
+            [autoDisplayFirst]="true"
+            [filter]="true"
+            [options]="sorters"
+            placeholder="Sort by..."
+          >
+            <ng-template let-sorter pTemplate="selectedItem">
+              <i class="pi pi-{{ sorter.icon }}"></i>
+              {{ sorter.label }}
+            </ng-template>
+            <ng-template let-sorter pTemplate="item">
+              <i class="pi pi-{{ sorter.icon }}"></i>
+              {{ sorter.label }}
+            </ng-template>
+          </p-dropdown>
+        </div>
+        <div
+          *ngIf="!allowMoveAll"
+          class="p-inputgroup p-fluid mr-3 ml-3 w-24rem"
+        >
+              <span class="p-inputgroup-addon">
+                <i class="pi pi-filter"></i>
+              </span>
+          <input
+            #tableFilter
+            (input)="filter()"
+            [(ngModel)]="filterTerm"
+            pInputText
+            placeholder="Filter by title, type, date, etc."
+            type="text"
+          />
+          <span
+            (click)="clear()"
+            [style.cursor]="tableFilter.value.length ? 'pointer' : 'unset'"
+            class="p-inputgroup-addon"
+          >
+                <i class="pi pi-times"></i>
+              </span>
+        </div>
+
+        <div class="p-fluid flex-row-center-between">
+          <app-ks-export
+            *ngIf="allowExport"
+            [data]="ksList"
+          ></app-ks-export>
+          <button
+            (click)="settingsOverlay.toggle($event)"
+            *ngIf="allowCustomization || allowResize"
+            icon="pi pi-cog"
+            pButton
+            style="margin-left: 10px"
+            type="button"
+          ></button>
+        </div>
+
+        <div
+          *ngIf="allowMoveAll"
+          class="p-fluid mr-3 ml-3 w-24rem flex-row-center-between"
+        >
+          <div class="p-fluid flex-grow-1">
+            <project-selector
+              (onSelect)="selectedProject = $event"
+              placeholder="Move to Project"
+            ></project-selector>
+          </div>
+          <div class="flex-shrink-1 ml-4">
+            <button
+              (click)="onMoveAll()"
+              [disabled]="!selectedProject?.key || treeNodes.length < 1"
+              label="Move All"
+              pButton
+            ></button>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+
+    <ng-template pTemplate="content">
+      <div class="h-full w-full p-4 overflow-y-auto">
+        <div #top style="height: 0; width: 0"></div>
+        <div
+          *ngIf="ksList.length > 0; else emptyList"
+          class="grid w-full h-full justify-content-center"
+          style="max-height: calc(100vh - 300px)"
+        >
+          <div
+            *ngFor="let ks of displayList"
+            [class]="selectedSizer.gridColClass"
+            style="min-width: 24rem"
+          >
+            <app-ks-card
+              (contextmenu)="setActiveKs(ks); cm.show($event)"
+              (onEdit)="_onKsDetail($event)"
+              (onOpen)="_onKsOpen($event)"
+              (onPreview)="_onKsPreview($event)"
+              (onProjectChange)="onProjectChange.emit($event)"
+              (onRemove)="_onKsRemove($event)"
+              (onTopicClick)="onTopicSearch.emit($event.topic)"
+              [ks]="ks"
+              [projectTreeNodes]="treeNodes"
+              [selectedProject]="
+                    ksCardOptions.showProjectSelection
+                      ? (ks.associatedProject | projectAsTreeNode : treeNodes)
+                      : undefined
+                  "
+              [showContentType]="ksCardOptions.showContentType"
+              [showDescription]="ksCardOptions.showDescription && !minimal"
+              [showEdit]="ksCardOptions.showEdit"
+              [showFlag]="true"
+              [showIcon]="ksCardOptions.showIcon"
+              [showOpen]="ksCardOptions.showOpen"
+              [showPreview]="ksCardOptions.showPreview"
+              [showProjectBreadcrumbs]="ksCardOptions.showProjectName"
+              [showProjectSelection]="ksCardOptions.showProjectSelection"
+              [showRemove]="ksCardOptions.showRemove"
+              [showSavePdf]="ksCardOptions.showSavePdf"
+              [showThumbnail]="ksCardOptions.showThumbnail && !minimal"
+              [showTopics]="ksCardOptions.showTopics && !minimal"
+            >
+            </app-ks-card>
+          </div>
+        </div>
+        <ng-template #emptyList>
+          <div class="h-full w-full">
+            <div
+              class="flex-row-center-center text-2xl text-500"
+              style="height: 12rem; width: 100% !important;"
+            >
+              {{ emptyMessage }}
+            </div>
+          </div>
+        </ng-template>
+      </div>
+    </ng-template>
+
+    <ng-template pStyleClass="surface-100" pTemplate="footer">
+      <p-paginator
+        #paginator
+        (onPageChange)="paginate($event)"
+        [first]="paginateConfig.first"
+        [rowsPerPageOptions]="[10, 20, 30, 40, 50]"
+        [rows]="paginateConfig.rows"
+        [showJumpToPageDropdown]="true"
+        [showJumpToPageInput]="true"
+        [showPageLinks]="true"
+        [totalRecords]="filteredList.length"
+      >
+      </p-paginator>
+    </ng-template>
+  </p-panel>
+</div>
+
+<p-contextMenu
+  #cm
+  (onShow)="onKsContextMenu()"
+  [model]="ksMenuItems"
+  appendTo="body"
+  styleClass="shadow-7"
+>
+</p-contextMenu>
+
+<p-overlayPanel #settingsOverlay styleClass="surface-100 shadow-7">
+  <ng-template pTemplate="content">
+    <div style="max-width: 48rem">
+      <div *ngIf="allowResize">
+        <h3>Card Size</h3>
+        <div class="flex-row-center-center pb-3">
+          <p-selectButton
+            (onChange)="sizeSelected($event)"
+            [(ngModel)]="selectedSizer"
+            [options]="sizers"
+            id="sizeSelect"
+          >
+          </p-selectButton>
+        </div>
+      </div>
+      <div *ngIf="allowCustomization">
+        <h3>Card Customization</h3>
+        <div *ngFor="let opt of ksCardListConfig" class="pb-3">
+          <p-checkbox
+            (onChange)="opt.onChange($event); saveConfig(opt)"
+            [(ngModel)]="opt.value"
+            [binary]="true"
+            [label]="opt.label"
+          >
+          </p-checkbox>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+</p-overlayPanel>

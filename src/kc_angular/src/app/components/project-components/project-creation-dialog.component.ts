@@ -25,103 +25,91 @@ import { TreeNode } from 'primeng/api';
 @Component({
   selector: 'app-project-creation-dialog',
   template: `
-    <p-panel header="New Project">
-      <ng-template pTemplate="content">
-        <br />
-        <div class="p-fluid grid">
-          <div class="field p-float-label sm:col-12 md:col-6 lg:col-6">
-            <input
-              id="title"
-              type="text"
-              pInputText
-              required
-              [autofocus]="true"
-              (keydown.enter)="create()"
-              [minlength]="3"
-              [maxLength]="64"
-              [(ngModel)]="projectCreationRequest.name"
-            />
-            <label for="title">Title</label>
-            <div *ngIf="projectCreationRequest.name.length < 3" class="p-error">
-              Must be between 3 and 64 characters
-            </div>
-          </div>
-
-          <div class="field p-float-label sm:col-12 md:col-6 lg:col-6">
-            <project-selector
-              label="Parent Project (Optional)"
-              [setDefault]="false"
-              [setById]="projectCreationRequest.parentId.value"
-              (onSelect)="onParentChange($event)"
-            >
-            </project-selector>
-          </div>
-
-          <div class="field p-float-label sm:col-6 md:col-6 lg:col-6 mt-3">
-            <p-calendar
-              [(ngModel)]="projectCreationRequest.calendar.start"
-              [showButtonBar]="true"
-              hourFormat="12"
-              [showTime]="true"
-              [showIcon]="true"
-              id="start"
-              appendTo="body"
-            ></p-calendar>
-            <label for="start">Start</label>
-          </div>
-
-          <div class="field p-float-label sm:col-6 md:col-6 lg:col-6 mt-3">
-            <p-calendar
-              [(ngModel)]="projectCreationRequest.calendar.end"
-              [showButtonBar]="true"
-              hourFormat="12"
-              [showTime]="true"
-              [showIcon]="true"
-              id="end"
-              appendTo="body"
-            ></p-calendar>
-            <label for="end">End</label>
-          </div>
-
-          <div class="field p-float-label sm:col-12 md:col-12 lg:col-12 mt-3">
-            <p-dropdown
-              [options]="projectTypes"
-              [(ngModel)]="projectType"
-              id="type"
-              inputId="type"
-              optionLabel="name"
-            ></p-dropdown>
-            <label for="type">Type</label>
-          </div>
-
-          <div class="field p-float-label sm:col-12 md:col-12 lg:col-12 mt-3">
-            <p-chips
-              [(ngModel)]="projectCreationRequest.topics"
-              inputId="topics"
-              [addOnBlur]="true"
-              [addOnTab]="true"
-              [allowDuplicate]="false"
-            ></p-chips>
-            <label for="topics">Topics</label>
-          </div>
-
-          <div class="field p-float-label col-12 mt-3">
-            <textarea
-              pInputTextarea
-              id="_ksDescription"
-              [(ngModel)]="projectCreationRequest.description"
-              [autoResize]="true"
-              [rows]="4"
-              [cols]="30"
-            ></textarea>
-            <label for="_ksDescription">Description</label>
-          </div>
+    <div class="p-fluid grid pt-3 mt-3">
+      <div class="field p-float-label sm:col-12 md:col-6 lg:col-6">
+        <input
+          id="title"
+          type="text"
+          pInputText
+          required
+          [autofocus]="true"
+          (keydown.enter)="create()"
+          [minlength]="3"
+          [maxLength]="64"
+          [(ngModel)]="projectCreationRequest.name"
+        />
+        <label for="title">Title</label>
+        <div *ngIf="projectCreationRequest.name.length < 3" class="p-error">
+          Must be between 3 and 64 characters
         </div>
-      </ng-template>
-      <ng-template pTemplate="footer">
-        <button pButton (click)="create()" label="Create"></button>
-      </ng-template>
-    </p-panel>
+      </div>
+
+      <div
+        class="field p-float-label p-dropdown-label sm:col-12 md:col-6 lg:col-6"
+      >
+        <project-selector
+          label="Parent Project"
+          [setDefault]="false"
+          [setById]="projectCreationRequest.parentId.value"
+          (onSelect)="onParentChange($event)"
+        >
+        </project-selector>
+      </div>
+
+      <div class="field p-float-label sm:col-6 md:col-6 lg:col-6 mt-3">
+        <p-calendar
+          [(ngModel)]="projectCreationRequest.calendar.start"
+          [showButtonBar]="true"
+          hourFormat="12"
+          [showTime]="true"
+          [showIcon]="true"
+          id="start"
+          appendTo="body"
+        ></p-calendar>
+        <label for="start">Start</label>
+      </div>
+
+      <div class="field p-float-label sm:col-6 md:col-6 lg:col-6 mt-3">
+        <p-calendar
+          [(ngModel)]="projectCreationRequest.calendar.end"
+          [showButtonBar]="true"
+          hourFormat="12"
+          [showTime]="true"
+          [showIcon]="true"
+          id="end"
+          appendTo="body"
+        ></p-calendar>
+        <label for="end">End</label>
+      </div>
+
+      <div class="field sm:col-12 md:col-12 lg:col-12 mt-3">
+        <label for="topics">Topics</label>
+        <p-chips
+          [(ngModel)]="projectCreationRequest.topics"
+          inputId="topics"
+          [addOnBlur]="true"
+          [addOnTab]="true"
+          [allowDuplicate]="false"
+          [placeholder]="'Add topics here, separated by commas'"
+          separator=","
+        ></p-chips>
+      </div>
+
+      <div class="field p-float-label col-12 mt-3">
+        <textarea
+          pInputTextarea
+          id="_ksDescription"
+          [(ngModel)]="projectCreationRequest.description"
+          [autoResize]="true"
+          [rows]="4"
+          [cols]="30"
+        ></textarea>
+        <label for="_ksDescription">Description</label>
+      </div>
+    </div>
+    <div class="w-full flex flex-row justify-content-end">
+      <button pButton (click)="create()" label="Create"></button>
+    </div>
   `,
   styles: [],
 })
@@ -149,10 +137,8 @@ export class ProjectCreationDialogComponent implements OnInit, OnDestroy {
 
     this.projectCreationRequest = {
       authors: [],
-      calendar: { events: [], start: null, end: null },
+      calendar: { events: [], start: new Date(), end: null },
       description: '',
-
-      // TODO: this should be removed
       knowledgeSource: [],
       sources: [],
       name: '',

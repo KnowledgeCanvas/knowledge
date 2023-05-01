@@ -18,7 +18,7 @@ import {
   LoggingSettingsModel,
 } from '@shared/models/settings.model';
 import { Injectable } from '@angular/core';
-import { Message, MessageService } from 'primeng/api';
+import { Message, MessageService, PrimeIcons } from 'primeng/api';
 import { SettingsService } from '@services/ipc-services/settings.service';
 
 export type KcNotificationPresentation = 'banner' | 'none' | 'toast';
@@ -125,6 +125,7 @@ export class NotificationsService {
     );
     const msg: KcNotification = {
       severity: 'success',
+      icon: PrimeIcons.CHECK,
       summary: summary,
       detail: detail,
       closable: true,
@@ -137,7 +138,8 @@ export class NotificationsService {
     component: string,
     summary: string,
     detail: string,
-    presentation: KcNotificationPresentation = 'none'
+    presentation: KcNotificationPresentation = 'none',
+    life = 5000
   ) {
     console.warn(
       `[Warn]-[${this.datetime()}]-[${component}]: ${summary} - ${detail}`
@@ -146,7 +148,7 @@ export class NotificationsService {
       severity: 'warn',
       summary: summary,
       detail: detail,
-      life: 5000,
+      life: life,
       closable: true,
       presentation: presentation,
     };

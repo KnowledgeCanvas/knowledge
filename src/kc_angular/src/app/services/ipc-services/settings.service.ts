@@ -161,7 +161,7 @@ export class SettingsService {
     this.send(this.settingsChannels.setSettings, settings);
   }
 
-  show(category?: 'display' | 'search' | 'import' | 'graph') {
+  show(category?: 'display' | 'search' | 'import' | 'graph' | 'chat') {
     if (this.ref) {
       return;
     }

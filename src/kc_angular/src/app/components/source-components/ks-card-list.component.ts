@@ -45,247 +45,20 @@ import { ProjectService } from '@services/factory-services/project.service';
 import { ProjectTreeFactoryService } from '@services/factory-services/project-tree-factory.service';
 import { ActivatedRoute } from '@angular/router';
 import { takeUntil } from 'rxjs/operators';
-
-interface PaginateConfig {
-  page: number;
-  first: number;
-  rows: number;
-  pageCount: number;
-  projectId?: string;
-}
-
-interface KsCardSorter {
-  label: string;
-  id: CardSortType;
-  icon: string;
-  sort: (ksList: KnowledgeSource[]) => KnowledgeSource[];
-}
-
-interface KsCardSizer {
-  label: string;
-  id: CardSizeType;
-  gridColClass?: string;
-  truncateLength?: number;
-}
-
-interface KsCardListConfig {
-  label: string;
-  id: string;
-  value: boolean;
-  onChange: ($event: any) => void;
-}
+import {
+  configureCards,
+  defaultSizers,
+  defaultSorters,
+  KsCardListConfig,
+  KsCardSizer,
+  KsCardSorter,
+  PaginateConfig,
+} from '@app/models/cards.model';
 
 @Component({
   selector: 'app-ks-card-list',
-  template: `
-    <div class="w-full h-full flex-col-center-start">
-      <p-panel
-        class="ks-grid-panel"
-        styleClass="h-full flex flex-column flex-grow-1"
-      >
-        <ng-template pTemplate="header">
-          <div class="flex-row-center-between w-full">
-            <div class="w-16rem">
-              <p-dropdown
-                placeholder="Sort by..."
-                [options]="sorters"
-                [autoDisplayFirst]="true"
-                [(ngModel)]="selectedSorter"
-                (onChange)="sortSelected($event)"
-                [filter]="true"
-              >
-                <ng-template let-sorter pTemplate="selectedItem">
-                  <i class="pi pi-{{ sorter.icon }}"></i>
-                  {{ sorter.label }}
-                </ng-template>
-                <ng-template pTemplate="item" let-sorter>
-                  <i class="pi pi-{{ sorter.icon }}"></i>
-                  {{ sorter.label }}
-                </ng-template>
-              </p-dropdown>
-            </div>
-            <div
-              *ngIf="!allowMoveAll"
-              class="p-inputgroup p-fluid mr-3 ml-3 w-24rem"
-            >
-              <span class="p-inputgroup-addon">
-                <i class="pi pi-filter"></i>
-              </span>
-              <input
-                #tableFilter
-                pInputText
-                [(ngModel)]="filterTerm"
-                type="text"
-                placeholder="Filter by title, type, date, etc."
-                (input)="filter()"
-              />
-              <span
-                class="p-inputgroup-addon"
-                [style.cursor]="tableFilter.value.length ? 'pointer' : 'unset'"
-                (click)="clear()"
-              >
-                <i class="pi pi-times"></i>
-              </span>
-            </div>
-
-            <div class="p-fluid flex-row-center-between">
-              <app-ks-export
-                *ngIf="allowExport"
-                [data]="ksList"
-              ></app-ks-export>
-              <button
-                type="button"
-                *ngIf="allowCustomization || allowResize"
-                pButton
-                icon="pi pi-cog"
-                style="margin-left: 10px"
-                (click)="settingsOverlay.toggle($event)"
-              ></button>
-            </div>
-
-            <div
-              *ngIf="allowMoveAll"
-              class="p-fluid mr-3 ml-3 w-24rem flex-row-center-between"
-            >
-              <div class="p-fluid flex-grow-1">
-                <project-selector
-                  placeholder="Move to Project"
-                  (onSelect)="selectedProject = $event"
-                ></project-selector>
-              </div>
-              <div class="flex-shrink-1 ml-4">
-                <button
-                  pButton
-                  label="Move All"
-                  [disabled]="!selectedProject?.key || treeNodes.length < 1"
-                  (click)="onMoveAll()"
-                ></button>
-              </div>
-            </div>
-          </div>
-        </ng-template>
-
-        <ng-template pTemplate="content">
-          <div class="h-full w-full p-4 overflow-y-auto">
-            <div #top style="height: 0; width: 0"></div>
-            <div
-              *ngIf="ksList.length > 0; else emptyList"
-              class="grid w-full h-full justify-content-center"
-              style="max-height: calc(100vh - 300px)"
-            >
-              <div
-                *ngFor="let ks of displayList"
-                [class]="selectedSizer.gridColClass"
-                style="min-width: 24rem"
-              >
-                <app-ks-card
-                  [ks]="ks"
-                  (contextmenu)="setActiveKs(ks); cm.show($event)"
-                  [showIcon]="ksCardOptions.showIcon"
-                  [showContentType]="ksCardOptions.showContentType"
-                  [showDescription]="ksCardOptions.showDescription && !minimal"
-                  [showEdit]="ksCardOptions.showEdit"
-                  [showOpen]="ksCardOptions.showOpen"
-                  [showPreview]="ksCardOptions.showPreview"
-                  [showProjectBreadcrumbs]="ksCardOptions.showProjectName"
-                  [showProjectSelection]="ksCardOptions.showProjectSelection"
-                  [showRemove]="ksCardOptions.showRemove"
-                  [showFlag]="true"
-                  [showThumbnail]="ksCardOptions.showThumbnail && !minimal"
-                  [showTopics]="ksCardOptions.showTopics && !minimal"
-                  [projectTreeNodes]="treeNodes"
-                  [selectedProject]="
-                    ksCardOptions.showProjectSelection
-                      ? (ks.associatedProject | projectAsTreeNode : treeNodes)
-                      : undefined
-                  "
-                  (onEdit)="_onKsDetail($event)"
-                  (onOpen)="_onKsOpen($event)"
-                  (onPreview)="_onKsPreview($event)"
-                  (onRemove)="_onKsRemove($event)"
-                  (onTopicClick)="onTopicSearch.emit($event.topic)"
-                  (onProjectChange)="onProjectChange.emit($event)"
-                >
-                </app-ks-card>
-              </div>
-            </div>
-            <ng-template #emptyList>
-              <div class="h-full w-full">
-                <div
-                  class="flex-row-center-center text-2xl text-500"
-                  style="height: 12rem; width: 100% !important;"
-                >
-                  {{ emptyMessage }}
-                </div>
-              </div>
-            </ng-template>
-          </div>
-        </ng-template>
-
-        <ng-template pTemplate="footer" pStyleClass="surface-100">
-          <p-paginator
-            #paginator
-            [rows]="paginateConfig.rows"
-            [first]="paginateConfig.first"
-            [totalRecords]="filteredList.length"
-            [rowsPerPageOptions]="[10, 20, 30, 40, 50]"
-            [showJumpToPageDropdown]="true"
-            [showPageLinks]="true"
-            [showJumpToPageInput]="true"
-            (onPageChange)="paginate($event)"
-          >
-          </p-paginator>
-        </ng-template>
-      </p-panel>
-    </div>
-
-    <p-contextMenu
-      #cm
-      styleClass="shadow-7"
-      [model]="ksMenuItems"
-      (onShow)="onKsContextMenu()"
-      appendTo="body"
-    >
-    </p-contextMenu>
-
-    <p-overlayPanel #settingsOverlay styleClass="surface-100 shadow-7">
-      <ng-template pTemplate="content">
-        <div style="max-width: 48rem">
-          <div *ngIf="allowResize">
-            <h3>Card Size</h3>
-            <div class="flex-row-center-center pb-3">
-              <p-selectButton
-                [options]="sizers"
-                [(ngModel)]="selectedSizer"
-                id="sizeSelect"
-                (onChange)="sizeSelected($event)"
-              >
-              </p-selectButton>
-            </div>
-          </div>
-          <div *ngIf="allowCustomization">
-            <h3>Card Customization</h3>
-            <div *ngFor="let opt of ksCardListConfig" class="pb-3">
-              <p-checkbox
-                [(ngModel)]="opt.value"
-                (onChange)="opt.onChange($event); saveConfig(opt)"
-                [binary]="true"
-                [label]="opt.label"
-              >
-              </p-checkbox>
-            </div>
-          </div>
-        </div>
-      </ng-template>
-    </p-overlayPanel>
-  `,
-  styles: [
-    `
-      .ks-grid-panel {
-        width: 100%;
-      }
-    `,
-  ],
+  templateUrl: './ks-card-list.component.html',
+  styleUrls: [],
 })
 export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
   @ViewChild('top') dataListTop!: ElementRef;
@@ -306,34 +79,19 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input() minimal = false;
 
-  /**
-   * Enable or disable the ability to resize cards.
-   * Default: true
-   */
+  /* Enable or disable the ability to resize cards. */
   @Input() allowResize = true;
 
-  /**
-   * Enable or disable the ability to export.
-   * Default: true
-   */
+  /* Enable or disable the ability to export. */
   @Input() allowExport = true;
 
-  /**
-   * Enable or disable the ability to customize card fields.
-   * Default: true
-   */
+  /* Enable or disable the ability to customize card fields. */
   @Input() allowCustomization = true;
 
-  /**
-   * Enable or disable the ability to move all sources at once.
-   * Automatically disables filtering
-   * Default: false
-   */
+  /* Enable or disable the ability to move all sources at once. Automatically disables filtering */
   @Input() allowMoveAll = false;
 
-  /**
-   * Emitted when a topic tag is clicked
-   */
+  /* Emitted when a topic tag is clicked */
   @Output() onTopicSearch = new EventEmitter<string>();
 
   @ViewChild('paginator') paginator!: Paginator;
@@ -362,6 +120,7 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
     showDescription: false,
     showEdit: true,
     showOpen: true,
+    showSavePdf: true,
     showPreview: true,
     showIcon: true,
     showProjectName: true,
@@ -372,114 +131,13 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
   };
 
   ksCardListConfig: KsCardListConfig[] = [];
-
-  sorters: KsCardSorter[] = [
-    {
-      label: 'Title (Ascending)',
-      icon: 'sort-alpha-up',
-      id: 'title-a',
-      sort: (ksList) =>
-        ksList.sort((a, b) => {
-          const tA = a.title.toLocaleLowerCase(),
-            tB = b.title.toLocaleLowerCase();
-          return tA > tB ? 1 : tA < tB ? -1 : 0;
-        }),
-    },
-    {
-      label: 'Title (Descending)',
-      icon: 'sort-alpha-down',
-      id: 'title-d',
-      sort: (ksList) =>
-        ksList.sort((a, b) => {
-          const tA = a.title.toLocaleLowerCase(),
-            tB = b.title.toLocaleLowerCase();
-          return tA > tB ? -1 : tA < tB ? 1 : 0;
-        }),
-    },
-    {
-      label: 'Most Recently Created',
-      icon: 'sort-up',
-      id: 'created-d',
-      sort: (ksList) =>
-        ksList.sort((a, b) => {
-          const tA = a.dateCreated.valueOf(),
-            tB = b.dateCreated.valueOf();
-          return tA > tB ? -1 : tA < tB ? 1 : 0;
-        }),
-    },
-    {
-      label: 'Least Recently Created',
-      icon: 'sort-down',
-      id: 'created-a',
-      sort: (ksList) =>
-        ksList.sort((a, b) => {
-          const tA = a.dateCreated.valueOf(),
-            tB = b.dateCreated.valueOf();
-          return tA > tB ? 1 : tA < tB ? -1 : 0;
-        }),
-    },
-    {
-      label: 'Type (Ascending)',
-      icon: 'sort-alpha-up',
-      id: 'type-a',
-      sort: (ksList) =>
-        ksList.sort((a, b) => {
-          const tA = a.ingestType,
-            tB = b.ingestType;
-          return tA > tB ? 1 : tA < tB ? -1 : 0;
-        }),
-    },
-    {
-      label: 'Type (Descending)',
-      icon: 'sort-alpha-down',
-      id: 'type-d',
-      sort: (ksList) =>
-        ksList.sort((a, b) => {
-          const tA = a.ingestType,
-            tB = b.ingestType;
-          return tA > tB ? -1 : tA < tB ? 1 : 0;
-        }),
-    },
-  ];
-  sizers: KsCardSizer[] = [
-    {
-      label: 'Auto',
-      id: 'auto',
-      gridColClass: 'sm:col-12 md:col-6 lg:col-4',
-      truncateLength: 64,
-    },
-    {
-      label: 'X-Small',
-      id: 'xs',
-      gridColClass: 'col-3',
-    },
-    {
-      label: 'Small',
-      id: 'sm',
-      gridColClass: 'col-4',
-    },
-    {
-      label: 'Medium',
-      id: 'md',
-      gridColClass: 'col-6',
-    },
-    {
-      label: 'Large',
-      id: 'lg',
-      gridColClass: 'col-12',
-    },
-  ];
-
+  sorters: KsCardSorter[] = defaultSorters;
+  sizers: KsCardSizer[] = defaultSizers;
   selectedSorter: KsCardSorter = this.sorters[0];
-
   selectedSizer: KsCardSizer = this.sizers[0];
-
   treeNodes: TreeNode[] = [];
-
   selectedProject?: TreeNode = undefined;
-
   private cleanUp = new Subject();
-
   private _windowResize = new BehaviorSubject({});
 
   constructor(
@@ -539,83 +197,7 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   configureCardList() {
-    this.ksCardListConfig = [
-      {
-        label: 'Show Type',
-        id: 'ks-card-show-content-type',
-        value: this.ksCardOptions.showContentType,
-        onChange: ($event) => {
-          const checked = $event.checked;
-          if (checked === undefined || checked === null) {
-            return;
-          }
-          this.ksCardOptions.showContentType = checked;
-        },
-      },
-      {
-        label: 'Show Projects',
-        id: 'ks-card-show-project',
-        value: this.ksCardOptions.showProjectName,
-        onChange: ($event) => {
-          const checked = $event.checked;
-          if (checked === undefined || checked === null) {
-            return;
-          }
-          this.ksCardOptions.showProjectName = checked;
-        },
-      },
-      {
-        label: 'Show Icons',
-        id: 'ks-card-show-icons',
-        value: this.ksCardOptions.showIcon,
-        onChange: ($event) => {
-          const checked = $event.checked;
-          if (checked === undefined || checked === null) {
-            return;
-          }
-          this.ksCardOptions.showIcon = checked;
-        },
-      },
-      {
-        label: 'Show Description',
-        id: 'ks-card-show-description',
-        value: this.ksCardOptions.showDescription,
-        onChange: ($event) => {
-          const checked = $event.checked;
-          if (checked === undefined || checked === null) {
-            return;
-          }
-          this.ksCardOptions.showDescription = $event.checked;
-        },
-      },
-      {
-        label: 'Show Topics',
-        value: this.ksCardOptions.showTopics,
-        id: 'ks-card-show-topics',
-        onChange: ($event) => {
-          const checked = $event.checked;
-          if (checked === undefined || checked === null) {
-            return;
-          }
-          this.ksCardOptions.showTopics = checked;
-        },
-      },
-      {
-        label: 'Show Actions',
-        value: true,
-        id: 'ks-card-show-actions',
-        onChange: ($event) => {
-          const checked = $event.checked;
-          if (checked === undefined || checked === null) {
-            return;
-          }
-          this.ksCardOptions.showEdit = checked;
-          this.ksCardOptions.showOpen = checked;
-          this.ksCardOptions.showRemove = checked;
-          this.ksCardOptions.showPreview = checked;
-        },
-      },
-    ];
+    this.ksCardListConfig = configureCards(this.ksCardOptions);
   }
 
   ngOnInit(): void {

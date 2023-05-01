@@ -14,9 +14,9 @@
  *  limitations under the License.
  */
 
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { DataService } from '@services/user-services/data.service';
-import { finalize, take, tap, timeout } from 'rxjs/operators';
+import { finalize, map, take, tap } from 'rxjs/operators';
 import { KsContextMenuService } from '@services/factory-services/ks-context-menu.service';
 import { ProjectContextMenuService } from '@services/factory-services/project-context-menu.service';
 import { KnowledgeSource } from '../models/knowledge.source.model';
@@ -25,26 +25,25 @@ import { ContextMenu } from 'primeng/contextmenu';
 import { MenuItem } from 'primeng/api';
 import { ProjectService } from '@services/factory-services/project.service';
 import { ChatService } from '@services/chat-services/chat.service';
-import { ProjectChatService } from '@services/chat-services/project-chat.service';
+import { ProjectChat } from '@services/chat-services/project';
 import { ChatCompletionResponseMessage } from 'openai';
-import { ChatViewComponent } from './chat-components/chat.component';
-import { SourceChatService } from '@services/chat-services/source-chat.service';
-import { ChatHistoryService } from '@services/chat-services/chat.history.service';
+import { ChatViewComponent } from './chat-components/chat.view.component';
+import { SourceChat } from '@services/chat-services/source';
 import { UuidService } from '@services/ipc-services/uuid.service';
-import { AgentType, ChatMessage } from '../models/chat.model';
+import { AgentType, ChatMessage } from '@app/models/chat.model';
 
 @Component({
   selector: 'app-chat',
   template: `
-    <div class="flex flex-column w-full h-full">
+    <div class="width-constrained flex flex-column w-full h-full">
       <app-chat-view
         #chatView
-        [history]="history"
-        [suggestions]="true"
+        *appRecreateView="chatHistory"
+        [history]="chatHistory"
         [loading]="loading"
-        (onSubmit)="onSubmit($event)"
-        (onDeleteMessage)="onDeleteMessage($event)"
-        (onRegenerateMessage)="regenerateMessage($event)"
+        (submit)="onSubmit($event)"
+        (delete)="onDeleteMessage($event)"
+        (regenerate)="regenerateMessage($event)"
         class="overflow-y-auto h-full"
       ></app-chat-view>
     </div>
@@ -60,7 +59,7 @@ import { AgentType, ChatMessage } from '../models/chat.model';
   `,
   styles: [``],
 })
-export class ChatComponent implements OnInit {
+export class ChatComponent {
   /**
    * The context menu for the chat view
    */
@@ -74,7 +73,7 @@ export class ChatComponent implements OnInit {
   /**
    * The chat history
    */
-  history: ChatMessage[] = [];
+  chatHistory: ChatMessage[] = [];
 
   /**
    * The loading state of the chat, used to show the loading bar
@@ -89,7 +88,7 @@ export class ChatComponent implements OnInit {
   /**
    * The current project
    */
-  project?: KcProject;
+  project!: KcProject;
 
   /**
    * The context menu items
@@ -99,26 +98,20 @@ export class ChatComponent implements OnInit {
   constructor(
     private data: DataService,
     private chat: ChatService,
-    private chatHistory: ChatHistoryService,
     private projects: ProjectService,
-    private projectChat: ProjectChatService,
-    private sourceChat: SourceChatService,
+    private projectChat: ProjectChat,
+    private sourceChat: SourceChat,
     private sourceMenu: KsContextMenuService,
     private projectMenu: ProjectContextMenuService,
     private uuid: UuidService
   ) {
     // Load project chat history if there is a current project
     this.projects.currentProject
+      .pipe(map((project) => project || new KcProject('', { value: '' })))
       .pipe(
         tap((project) => {
-          this.project = undefined;
-          this.history = [];
+          this.chatHistory = [];
           this.sources = [];
-
-          if (!project) {
-            return;
-          }
-
           this.project = project;
           let sources: KnowledgeSource[] = project.knowledgeSource;
 
@@ -148,21 +141,19 @@ export class ChatComponent implements OnInit {
       .subscribe();
   }
 
-  ngOnInit(): void {}
-
   /**
    * Save the chat history for the current project and all sources
    */
   saveHistory() {
     if (this.project) {
-      const projectHistory = this.history.filter(
+      const projectHistory = this.chatHistory.filter(
         (message) => message.project?.id.value === this.project?.id.value
       );
       this.chat.saveChat(projectHistory, this.project?.id);
     }
 
     // Save the individual history for all sources
-    let sources = this.history.map((message) => message.source);
+    let sources = this.chatHistory.map((message) => message.source);
 
     // Get unique sources
     sources = sources.filter((source, index) => {
@@ -171,7 +162,7 @@ export class ChatComponent implements OnInit {
 
     for (const source of sources) {
       if (source) {
-        const sourceHistory = this.history.filter(
+        const sourceHistory = this.chatHistory.filter(
           (message) => message.source?.id.value === source?.id.value
         );
         this.chat.saveChat(sourceHistory, source.id);
@@ -184,7 +175,7 @@ export class ChatComponent implements OnInit {
    */
   loadHistory() {
     this.loading = true;
-    this.history = [];
+    this.chatHistory = [];
 
     if (this.project?.id) {
       const projectChat = this.chat.loadChat(
@@ -193,7 +184,7 @@ export class ChatComponent implements OnInit {
         undefined
       );
       for (const message of projectChat) {
-        this.history.push(message);
+        this.chatHistory.push(message);
       }
     }
 
@@ -201,12 +192,12 @@ export class ChatComponent implements OnInit {
     for (const source of this.sources) {
       const sourceChat = this.chat.loadChat(source.id, undefined, source);
       for (const message of sourceChat) {
-        this.history.push(message);
+        this.chatHistory.push(message);
       }
     }
 
     // Sort history by timestamp
-    this.history = this.history.sort(
+    this.chatHistory = this.chatHistory.sort(
       (a, b) => a.timestamp.getTime() - b.timestamp.getTime()
     );
     this.loading = false;
@@ -217,53 +208,51 @@ export class ChatComponent implements OnInit {
    * @param $event The text of the message
    */
   onSubmit($event: string) {
-    if (this.project) {
-      this.loading = true;
+    this.loading = true;
 
-      const message: ChatMessage = {
-        id: this.uuid.generate(1)[0].value,
-        timestamp: new Date(),
-        text: $event,
-        sender: AgentType.User,
-        recipient: AgentType.Project,
-        project: this.project,
-      };
-      this.history.push(message);
-
-      this.projectChat
-        .send(this.project, this.history, $event)
-        .pipe(
-          timeout(20000),
-          take(1),
-          tap((response: ChatCompletionResponseMessage) => {
-            console.log('Got response: ', response);
-
-            this.history.push({
-              id: this.uuid.generate(1)[0].value,
-              timestamp: new Date(),
-              text: response.content,
-              sender: AgentType.Project,
-              recipient: AgentType.User,
-              project: this.project,
-            });
-
-            this.saveHistory();
-            this.chatView.scroll();
-          }),
-          finalize(() => {
-            // If the user message was not responded to, remove it from the history
-            if (
-              this.history[this.history.length - 1].sender !== AgentType.Project
-            ) {
-              this.history.pop();
-            }
-            this.loading = false;
-          })
-        )
-        .subscribe();
-    } else {
-      console.log('Could not find project for updating chat history...');
+    if (this.chatHistory.length === 0) {
+      this.chatHistory = [];
     }
+
+    this.chatHistory.push(
+      this.chat.createMessage(
+        AgentType.User,
+        AgentType.Project,
+        $event,
+        this.project
+      )
+    );
+    this.chatView.scroll();
+
+    this.projectChat
+      .send(this.project, this.chatHistory)
+      .pipe(
+        take(1),
+        tap((response: ChatCompletionResponseMessage) => {
+          this.chatHistory.push(
+            this.chat.createMessage(
+              AgentType.Project,
+              AgentType.User,
+              response.content,
+              this.project
+            )
+          );
+          this.saveHistory();
+          this.chatView.scroll();
+        }),
+        finalize(() => {
+          // If the user message was not responded to, remove it from the history
+          if (
+            this.chatHistory[this.chatHistory.length - 1].sender !==
+            AgentType.Project
+          ) {
+            // Remove first element
+            this.chatHistory.shift();
+          }
+          this.loading = false;
+        })
+      )
+      .subscribe();
   }
 
   /**
@@ -272,24 +261,28 @@ export class ChatComponent implements OnInit {
    */
   onDeleteMessage($event: ChatMessage) {
     if ($event.project) {
-      this.history = this.history.filter((message) => message.id !== $event.id);
-      this.history = this.history.sort(
+      this.chatHistory = this.chatHistory.filter(
+        (message) => message.id !== $event.id
+      );
+      this.chatHistory = this.chatHistory.sort(
         (a, b) => a.timestamp.getTime() - b.timestamp.getTime()
       );
       this.saveHistory();
     } else if ($event.source) {
       // Remove the message from the history
-      this.history = this.history.filter((message) => message.id !== $event.id);
+      this.chatHistory = this.chatHistory.filter(
+        (message) => message.id !== $event.id
+      );
 
       // Get history for the Source
-      const sourceHistory = this.history.filter(
+      const sourceHistory = this.chatHistory.filter(
         (message) => message.source?.id.value === $event.source?.id.value
       );
 
       // Save the source history
       this.chat.saveChat(sourceHistory, $event.source?.id);
 
-      this.history = this.history.sort(
+      this.chatHistory = this.chatHistory.sort(
         (a, b) => a.timestamp.getTime() - b.timestamp.getTime()
       );
     }
@@ -300,20 +293,20 @@ export class ChatComponent implements OnInit {
    * @param message The message to regenerate
    */
   regenerateMessage(message: ChatMessage) {
-    this.loading = true;
-
     if (!this.project) {
       return;
     }
+
+    this.loading = true;
 
     /**
      * Use the message index to get the history up to that point
      * Source history should only include messages to/from the same source
      * Project history should include messages from the project and any sources that are part of the project
      */
-    const historySlice = this.chatHistory.getHistory(
+    const historySlice = this.chat.getHistory(
       message,
-      this.history,
+      this.chatHistory,
       false,
       !message.project
     );
@@ -325,7 +318,6 @@ export class ChatComponent implements OnInit {
       this.projectChat
         .send(message.project, historySlice, promptMessage.text)
         .pipe(
-          timeout(20000),
           take(1),
           tap((response: ChatCompletionResponseMessage) => {
             message.text = response.content;
@@ -341,7 +333,6 @@ export class ChatComponent implements OnInit {
       this.sourceChat
         .send(message.source, historySlice, promptMessage.text)
         .pipe(
-          timeout(20000),
           take(1),
           tap((response: ChatCompletionResponseMessage) => {
             message.text = response.content;

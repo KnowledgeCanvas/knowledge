@@ -153,8 +153,6 @@ export class HistoryComponent {
   private __history: HistoryEvent[] = [];
   private __target = -1;
 
-  // TODO: Remove all the print statements after doing a bit more extensive testing...
-
   constructor(
     private activated: ActivatedRoute,
     private notifications: NotificationsService,

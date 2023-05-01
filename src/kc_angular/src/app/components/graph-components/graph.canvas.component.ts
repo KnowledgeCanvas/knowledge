@@ -51,12 +51,15 @@ import { SearchService } from '@services/user-services/search.service';
 import { SearchResult } from './graph-search.component';
 
 /* Cytoscape Plugin Imports */
-import fcose from 'cytoscape-fcose';
-import klay from 'cytoscape-klay';
-import dagre from 'cytoscape-dagre';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const cola = require('cytoscape-cola');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const fcose = require('cytoscape-fcose');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const klay = require('cytoscape-klay');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const dagre = require('cytoscape-dagre');
 
 /* Register Plugins */
 cytoscape.use(cola);
@@ -91,7 +94,7 @@ const defaultLayout = {
         [running]="running"
         (onLayout)="onLayout($event)"
         (onFit)="onFitToView()"
-        (onScreenshot)="onScreenshot()"
+        (onScreenshot)="saveGraph()"
         (onRun)="onRun()"
         (onStop)="onStop()"
         (onSettings)="onSettings()"
@@ -559,10 +562,7 @@ export class GraphCanvasComponent implements OnInit, OnChanges, OnDestroy {
       .promise();
   }
 
-  /**
-   * Used particularly when a source is __clicked__ in the search results.
-   * @param source
-   */
+  /* When a search result is clicked, set it to the active selection and center the view over it. */
   onResultClicked(source: KnowledgeSource & SearchResult) {
     this._selectedIndex.next(source.index);
   }
@@ -587,23 +587,19 @@ export class GraphCanvasComponent implements OnInit, OnChanges, OnDestroy {
       .subscribe();
   }
 
-  onIndexChange(reselect: boolean, zoomOutcenter: boolean) {
+  onIndexChange(reselect: boolean, zoomOutCenter: boolean) {
     if (this._searchSources.value.length === 0) {
       return;
     }
     const source = this._searchSources.value[this.selectedIndex];
     const selector = `[id="${source.id.value}"]`;
-
     if (reselect) {
       this.removeStyles();
     }
-
     this.cy?.nodes(selector).select();
-
     this.highlightPath();
-
     if (this.settings.get().app.graph.display.autoFit) {
-      if (zoomOutcenter) {
+      if (zoomOutCenter) {
         this.onFitToView();
       } else {
         this.onCenter(selector);
@@ -611,7 +607,7 @@ export class GraphCanvasComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  onScreenshot() {
+  saveGraph() {
     const options: ExportBlobOptions = {
       output: 'blob',
       bg: getComputedStyle(document.documentElement).getPropertyValue(

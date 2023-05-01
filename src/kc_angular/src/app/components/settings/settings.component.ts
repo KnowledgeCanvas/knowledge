@@ -74,6 +74,11 @@ export class SettingsComponent {
       icon: 'pi pi-fw pi-sitemap',
       routerLink: ['app', { outlets: { settings: ['graph'] } }],
     },
+    {
+      label: 'Chat',
+      icon: 'pi pi-fw pi-comments',
+      routerLink: ['app', { outlets: { settings: ['chat'] } }],
+    },
     // { TODO: reinstate once storage settings component is implemented
     //   label: 'Storage',
     //   icon: 'pi pi-fw pi-database',

@@ -251,9 +251,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     refIndex: number;
   }) {
     if ($event.item.id?.value === 'search') {
-      const ks = this.factory.searchKS(
-        this.query.item.query ?? this.query ?? ''
-      );
+      const ks = this.factory.search(this.query.item.query ?? this.query ?? '');
       this.browser.open({ ks: ks });
     } else {
       this.command.detail($event.item as KnowledgeSource, true);

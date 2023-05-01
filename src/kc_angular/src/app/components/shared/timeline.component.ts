@@ -15,6 +15,7 @@
  */
 import { Component, Input } from '@angular/core';
 import { EventModel } from '@shared/models/event.model';
+import { KnowledgeSourceEvent } from '@app/models/knowledge.source.model';
 
 @Component({
   selector: 'app-timeline',
@@ -60,5 +61,5 @@ import { EventModel } from '@shared/models/event.model';
   `,
 })
 export class TimelineComponent {
-  @Input() events?: EventModel[] = [];
+  @Input() events?: EventModel[] | KnowledgeSourceEvent[] = [];
 }

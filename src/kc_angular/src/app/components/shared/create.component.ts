@@ -199,13 +199,12 @@ export class CreateComponent {
             );
           });
       },
-      (error) => {
+      () => {
         this.notifications.error(
           'Source Import',
           `Invalid URL`,
           `HTTP Client: ${value}`
         );
-        console.log(error);
 
         // If the link cannot be reached, ask the user if they still want to import it anyway
         this.confirm.confirm({
@@ -264,14 +263,14 @@ export class CreateComponent {
         return;
       }
     );
-
-    // TODO: setup web workers to extract website info asynchronously
     // TODO: make it so these things can be enqueued in Inbox even while they are still loading
   }
 
   onNewProject() {
     this.dialog.open(ProjectCreationDialogComponent, {
-      width: `min(90vw, 92rem)`,
+      header: 'Create Project',
+      showHeader: true,
+      width: `min(90vw, 52rem)`,
       data: { parentId: undefined },
       contentStyle: {
         'border-bottom-left-radius': '6px',

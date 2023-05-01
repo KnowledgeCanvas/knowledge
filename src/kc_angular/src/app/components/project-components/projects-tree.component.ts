@@ -168,7 +168,6 @@ export class ProjectsTreeComponent implements OnInit, OnDestroy {
               tree.findTreeNode(this.projectId, this.projectTree) ?? undefined;
             if (this.currentProject) {
               this.expandPath(this.currentProject);
-              this.scrollToActive();
             }
           }
         })
@@ -184,14 +183,6 @@ export class ProjectsTreeComponent implements OnInit, OnDestroy {
     this.cleanUp.next({});
     this.cleanUp.complete();
   }
-
-  private expandPath = (node: TreeNode) => {
-    let curr = node.parent;
-    while (curr) {
-      curr.expanded = true;
-      curr = curr.parent;
-    }
-  };
 
   selectionChange($event: any) {
     this.projectChange.next($event.key);
@@ -264,4 +255,12 @@ export class ProjectsTreeComponent implements OnInit, OnDestroy {
       }
     }
   }
+
+  private expandPath = (node: TreeNode) => {
+    let curr = node.parent;
+    while (curr) {
+      curr.expanded = true;
+      curr = curr.parent;
+    }
+  };
 }

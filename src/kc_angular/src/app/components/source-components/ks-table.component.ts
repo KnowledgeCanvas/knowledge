@@ -252,13 +252,12 @@ import { TopicService } from '@services/user-services/topic.service';
                   class="flex-col-center-start"
                   style="width: 100%"
                 >
-                  <p-toggleButton
-                    [(ngModel)]="rowData.flagged"
-                    onIcon="pi pi-flag"
-                    offIcon="pi pi-flag"
-                    (onChange)="ksFlagUpdate($event, rowData)"
-                  >
-                  </p-toggleButton>
+                  <button
+                    pButton
+                    [icon]="rowData.flagged ? 'pi pi-flag-fill' : 'pi pi-flag'"
+                    class="m-1 p-button-text"
+                    (click)="ksFlagUpdate(rowData)"
+                  ></button>
                 </div>
               </td>
             </tr>
@@ -594,7 +593,8 @@ export class KsTableComponent implements OnInit, OnChanges {
     this.topics.search(searchValue);
   }
 
-  ksFlagUpdate(event: any, ks: KnowledgeSource) {
+  ksFlagUpdate(ks: KnowledgeSource) {
+    ks.flagged = !ks.flagged;
     this.command.update([ks]);
   }
 
