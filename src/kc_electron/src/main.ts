@@ -14,24 +14,32 @@
  *  limitations under the License.
  */
 
-import { UpdateCheckResult } from "electron-updater";
+import { autoUpdater, UpdateCheckResult } from "electron-updater";
 
-const {
+import {
   app,
-  BrowserWindow,
   BrowserView,
-  ipcMain,
+  BrowserWindow,
   dialog,
+  ipcMain,
+  nativeImage,
   shell,
-} = require("electron");
-const { autoUpdater } = require("electron-updater");
-const nativeImage = require("electron").nativeImage;
-const http = require("http");
-const url = require("url");
-const fs = require("fs");
-const path = require("path");
+} from "electron";
+
+import http from "http";
+
+import url from "url";
+
+import fs from "fs";
+
+import path from "path";
+
+import * as uuid from "uuid";
+import KnowledgeIpc from "./local/utils/ipc.utils";
+import ChatServer from "./local/chat.api";
+
 const settingsService = require("./app/services/settings.service");
-const uuid = require("uuid");
+
 const MAIN_ENTRY: string = path.join(
   app.getAppPath(),
   "src",
@@ -66,6 +74,9 @@ require("./app/services/auto.update.service");
 // Setup IPC
 require("./app/ipc");
 
+const chatServer = new ChatServer();
+chatServer.start(21003);
+
 // Setup knowledge source ingestion
 require("./app/services/index");
 
@@ -75,7 +86,9 @@ const browserIpc = require("./app/ipc").browserIpc;
 const appEnv = settingsService.getSettings();
 
 // Declare main window for later use
-let kcMainWindow: any;
+let kcMainWindow: BrowserWindow;
+
+require("./local/chat.api");
 
 /**
  * Main Window Functions
@@ -125,8 +138,7 @@ function setMainWindowListeners() {
       event: any,
       errorCode: number,
       errorDescription: string,
-      validatedURL: string,
-      ...other: any
+      validatedURL: string
     ) => {
       event.preventDefault();
 
@@ -152,7 +164,7 @@ function setMainWindowListeners() {
 
   // Destroy window on close
   kcMainWindow.on("closed", function () {
-    kcMainWindow = null;
+    kcMainWindow.destroy();
     app.quit();
   });
 
@@ -167,6 +179,8 @@ function setMainWindowListeners() {
   kcMainWindow.once("ready-to-show", () => {
     kcMainWindow.show();
   });
+
+  const ipcChannels = new KnowledgeIpc();
 }
 
 app.on("window-all-closed", function () {

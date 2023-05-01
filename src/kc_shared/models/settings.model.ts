@@ -47,8 +47,10 @@ export class UserSettingsModel {
   birthdate = "";
   tutorials: {
     showFirstRunTutorial: boolean;
+    apiKeyTutorial: boolean;
   } = {
     showFirstRunTutorial: true,
+    apiKeyTutorial: true,
   };
 }
 
@@ -85,6 +87,7 @@ export interface ApplicationSettingsModel {
   grid: GridSettingsModel;
   calendar: CalendarSettingsModel;
   graph: GraphSettingsModel;
+  chat: ChatSettingsModel;
 }
 
 export class ProjectSettingsModel {
@@ -121,6 +124,7 @@ export type CardOptions = {
   showPreview: boolean;
   showEdit: boolean;
   showOpen: boolean;
+  showSavePdf: boolean;
   showContentType: boolean;
   showProjectName: boolean;
 };
@@ -231,4 +235,36 @@ export class FileManagerSettingsModel {
       this.storageLocation = location;
     }
   }
+}
+
+export class ChatSettingsModel {
+  suggestions: {
+    enabled: boolean;
+    onInput: boolean;
+  } = {
+    enabled: true,
+    onInput: true,
+  };
+
+  display: {
+    introductions: boolean;
+  } = {
+    introductions: true,
+  };
+
+  model: {
+    name: "gpt-3.5-turbo" | "gpt-3.5-turbo-0301" | "gpt-4";
+    temperature: number;
+    top_p: number;
+    max_tokens: number;
+    presence_penalty: number;
+    frequency_penalty: number;
+  } = {
+    name: "gpt-3.5-turbo",
+    temperature: 0.5,
+    top_p: 1,
+    max_tokens: 256,
+    presence_penalty: 0,
+    frequency_penalty: 0,
+  };
 }

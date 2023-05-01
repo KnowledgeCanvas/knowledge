@@ -124,6 +124,7 @@ import { KsCommandService } from '@services/command-services/ks-command.service'
             showOpen ||
             showEdit ||
             showPreview ||
+            showSavePdf ||
             showFlag
           "
           class="flex-row-center-between"
@@ -133,21 +134,27 @@ import { KsCommandService } from '@services/command-services/ks-command.service'
           </div>
           <div
             *ngIf="
-              showRemove || showOpen || showEdit || showPreview || showFlag
+              showRemove ||
+              showOpen ||
+              showEdit ||
+              showPreview ||
+              showSavePdf ||
+              showFlag
             "
           >
             <app-action-bar
+              [ks]="ks"
               [showEdit]="showEdit"
               [showPreview]="showPreview"
               [showOpen]="showOpen"
               [showRemove]="showRemove"
               [showFlag]="showFlag"
-              [flagged]="ks.flagged"
-              (onEdit)="onEdit.emit(this.ks)"
-              (onPreview)="onPreview.emit(this.ks)"
-              (onOpen)="onOpen.emit(this.ks)"
-              (onRemove)="onRemove.emit(this.ks)"
-              (onFlagged)="onFlagged(this.ks, $event.checked)"
+              [showSavePdf]="showSavePdf"
+              (edit)="onEdit.emit(this.ks)"
+              (preview)="onPreview.emit(this.ks)"
+              (open)="onOpen.emit(this.ks)"
+              (remove)="onRemove.emit(this.ks)"
+              (flag)="onFlagged(this.ks, $event.checked)"
             >
             </app-action-bar>
           </div>
@@ -170,14 +177,10 @@ import { KsCommandService } from '@services/command-services/ks-command.service'
   ],
 })
 export class KsCardComponent implements OnDestroy, OnChanges {
-  /**
-   * The Knowledge Source to be displayed on this card
-   */
+  /* The Knowledge Source to be displayed on this card */
   @Input() ks!: KnowledgeSource;
 
-  /**
-   * The project tree to display in the Project selector (if enabled)
-   */
+  /* The project tree to display in the Project selector (if enabled) */
   @Input() projectTreeNodes: TreeNode[] = [];
 
   /**
@@ -186,118 +189,77 @@ export class KsCardComponent implements OnDestroy, OnChanges {
    */
   @Input() selectedProject?: TreeNode;
 
-  /**
-   * The ID of the current project
-   */
+  /* The ID of the current project */
   @Input() currentProject?: UUID | null;
 
-  /**
-   * Determines whether to display KS thumbnail in header (default: true)
-   */
+  /* Determines whether to display KS thumbnail in header (default: true) */
   @Input() showThumbnail = true;
 
-  /**
-   * Determines whether to display KS description (default: true)
-   */
+  /* Determines whether to display KS description (default: true) */
   @Input() showDescription = true;
 
-  /**
-   * Determines whether to display Project selector (default: false)
-   */
+  /* Determines whether to display Project selector (default: false) */
   @Input() showProjectSelection = false;
 
-  /**
-   * Determines whether to display list of KS Tags as a Tooltip (default: true)
-   */
+  /* Determines whether to display list of KS Tags as a Tooltip (default: true) */
   @Input() showTopics = true;
 
-  /**
-   * Determines whether to display the "Remove" button (default: true)
-   */
+  /* Determines whether to display the "Remove" button (default: true) */
   @Input() showRemove = true;
 
-  /**
-   * Determines whether to display the "Preview" button (default: true)
-   */
+  /* Determines whether to display the "Preview" button (default: true) */
   @Input() showPreview = true;
 
-  /**
-   * Determines whether to display the "Edit" button (default: true)
-   */
+  /* Determines whether to display the "Save PDF" button (default: true) */
+  @Input() showSavePdf = true;
+
+  /* Determines whether to display the "Edit" button (default: true) */
   @Input() showEdit = true;
 
-  /**
-   * Determines whether to display the "Open" button (default: true)
-   */
+  /* Determines whether to display the "Open" button (default: true) */
   @Input() showOpen = true;
 
-  /**
-   * Determines whether to display the "Important" button (default: true)
-   */
+  /* Determines whether to display the "Important" button (default: true) */
   @Input() showFlag = true;
 
-  /**
-   * Determines whether to show Content Type property (default: true)
-   */
+  /* Determines whether to show Content Type property (default: true) */
   @Input() showContentType = true;
 
-  /**
-   * Determines whether to show KS icon (default: true)
-   */
+  /* Determines whether to show KS icon (default: true) */
   @Input() showIcon = true;
 
-  /**
-   * Determines whether to truncate certain fields to avoid spilling text, etc (default: true)
-   */
+  /* Determines whether to truncate certain fields to avoid spilling text, etc (default: true) */
   @Input() truncate = true;
 
-  /**
-   * Determines whether to show name of the Associated Project (default: false)
-   */
+  /* Determines whether to show name of the Associated Project (default: false) */
   @Input() showProjectBreadcrumbs = false;
 
-  /**
-   * Set the description placeholder if description is blank.
-   */
+  /* Set the description placeholder if description is blank. */
   @Input() descriptionPlaceholder = 'Double-click to add a description';
 
-  /**
-   * Set an optional label
-   */
+  /* Set an optional label */
   @Input() label?: string;
 
-  /**
-   * EventEmitter that is triggered when the "Remove" button is pressed
-   */
+  /* EventEmitter that is triggered when the "Remove" button is pressed */
   @Output() onRemove = new EventEmitter<KnowledgeSource>();
 
-  /**
-   * EventEmitter that is triggered when the "Preview" button is pressed
-   */
+  /* EventEmitter that is triggered when the "Preview" button is pressed */
   @Output() onPreview = new EventEmitter<KnowledgeSource>();
 
-  /**
-   * EventEmitter that is triggered when the "Open" button is pressed
-   */
+  /* EventEmitter that is triggered when the "Open" button is pressed */
   @Output() onOpen = new EventEmitter<KnowledgeSource>();
 
-  /**
-   * EventEmitter that is triggered when the "Edit" button is pressed
-   */
+  /* EventEmitter that is triggered when the "Edit" button is pressed */
   @Output() onEdit = new EventEmitter<KnowledgeSource>();
 
-  /**
-   * EventEmitter that is triggered when the KS has been reassigned to a new Project
-   */
+  /* EventEmitter that is triggered when the KS has been reassigned to a new Project */
   @Output() onProjectChange = new EventEmitter<{
     ks: KnowledgeSource;
     old: string;
     new: string;
   }>();
 
-  /**
-   * EventEmitter that is triggered when a topic is clicked
-   */
+  /* EventEmitter that is triggered when a topic is clicked */
   @Output() onTopicClick = new EventEmitter<{
     ks: KnowledgeSource;
     topic: string;

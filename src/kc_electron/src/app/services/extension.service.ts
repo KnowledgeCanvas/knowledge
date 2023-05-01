@@ -15,15 +15,9 @@
  */
 import * as http from "http";
 import { IncomingMessage, ServerResponse } from "http";
-import {
-  IngestSettingsModel,
-  SettingsModel,
-} from "../../../../kc_shared/models/settings.model";
+import { SettingsModel } from "../../../../kc_shared/models/settings.model";
 import { IpcMessage } from "../../../../kc_shared/models/electron.ipc.model";
 import { Buffer } from "buffer";
-
-const share: any = (global as any).share;
-const url: any = share.url;
 
 const settings = require("./settings.service");
 
@@ -49,7 +43,7 @@ class ExtensionServer {
       }
 
       if (settings.ingest.extensions.enabled) {
-        this.start(settings.ingest);
+        this.start();
       } else {
         this.stop();
       }
@@ -80,7 +74,7 @@ class ExtensionServer {
     }
   }
 
-  start(ingest: IngestSettingsModel) {
+  start() {
     if (this.__server?.listening) {
       return;
     }

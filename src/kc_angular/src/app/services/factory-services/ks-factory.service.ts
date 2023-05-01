@@ -25,7 +25,7 @@ import {
   SourceModel,
 } from '@app/models/knowledge.source.model';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { concatMap, Observable, of } from 'rxjs';
 import { SettingsService } from '@services/ipc-services/settings.service';
 import { UUID } from '@shared/models/uuid.model';
 import { UuidService } from '@services/ipc-services/uuid.service';
@@ -35,7 +35,14 @@ export interface KnowledgeSourceFactoryRequest {
   ingestType: IngestType;
   links?: (URL | string)[];
   files?: File[];
+  originals?: KnowledgeSource[] | ExampleSource[];
 }
+
+export type ExampleSource = {
+  title: string;
+  accessLink: string;
+  topics: string[];
+};
 
 @Injectable({
   providedIn: 'root',
@@ -58,23 +65,38 @@ export class KsFactoryService {
     });
   }
 
-  examples(): Observable<
-    { title: string; accessLink: string; topics: string[] }[]
-  > {
+  examples(): Observable<KnowledgeSource[]> {
     return this.http
       .get(
-        'https://knowledge-app.s3.us-west-1.amazonaws.com/examples_v2.json',
-        { responseType: 'text' }
+        'https://knowledge-app.s3.us-west-1.amazonaws.com/examples_v3.json',
+        { responseType: 'json' }
       )
       .pipe(
-        map((ksString) => {
-          const examples: {
-            title: string;
-            accessLink: string;
-            topics: string[];
-          }[] = JSON.parse(ksString);
+        map((example: any) => {
+          let examples: ExampleSource[] = example;
           this.shuffleArray(examples);
-          return examples.slice(0, 4);
+          examples = examples.slice(0, 5);
+          const requests: KnowledgeSourceFactoryRequest = {
+            ingestType: 'website',
+            links: examples.map((example) => example.accessLink),
+            originals: examples,
+          };
+          return requests;
+        })
+      )
+      .pipe(
+        concatMap((examples: KnowledgeSourceFactoryRequest) => {
+          return of(this.many(examples));
+        })
+      )
+      .pipe(concatMap(async (sources) => await sources))
+      .pipe(
+        map((sources) => {
+          sources.map((source) => {
+            source.importMethod = 'example';
+            return source;
+          });
+          return sources;
         })
       );
   }
@@ -108,34 +130,50 @@ export class KsFactoryService {
     });
   }
 
-  many(requests: KnowledgeSourceFactoryRequest): Promise<KnowledgeSource[]> {
+  async many(
+    requests: KnowledgeSourceFactoryRequest
+  ): Promise<KnowledgeSource[]> {
     return new Promise<KnowledgeSource[]>((resolve) => {
       const actions: Promise<KnowledgeSource>[] = [];
+
       if (requests.ingestType === 'file' && requests.files?.length) {
-        for (const file of requests.files) {
+        for (const file of requests.files)
           actions.push(this.extractFileResource((file as any).path, file));
-        }
+
         Promise.all(actions).then((results) => {
-          this.getFileIcons(results).then((finalList) => {
+          this.getFileIcons(results).then((finalList: KnowledgeSource[]) => {
             if (this.settings.get().ingest.manager.target === 'all') {
               // TODO: move file to managed location...
+            }
+            if (requests.originals) {
+              for (let i = 0; i < requests.originals.length; i++) {
+                finalList[i].title = requests.originals[i].title;
+                finalList[i].topics = requests.originals[i].topics;
+              }
             }
             resolve(finalList);
           });
         });
       }
+
       if (requests.ingestType !== 'file' && requests.links?.length) {
         for (const link of requests.links) {
           actions.push(this.extractWebResource(new URL(link)));
         }
         Promise.all(actions).then((results) => {
+          if (requests.originals) {
+            for (let i = 0; i < requests.originals.length; i++) {
+              results[i].title = requests.originals[i].title;
+              results[i].topics = requests.originals[i].topics;
+            }
+          }
           resolve(results);
         });
       }
     });
   }
 
-  searchKS(searchTerm?: string): KnowledgeSource {
+  search(searchTerm?: string): KnowledgeSource {
     let accessLink: string;
     switch (this.provider) {
       case 'google':
@@ -341,10 +379,14 @@ export class KsFactoryService {
     });
   }
 
-  private shuffleArray(array: any[]) {
+  private shuffleArray(array: any[], slice?: number) {
     for (let i = array.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [array[i], array[j]] = [array[j], array[i]];
+    }
+
+    if (slice) {
+      array = array.slice(0, slice);
     }
   }
 }

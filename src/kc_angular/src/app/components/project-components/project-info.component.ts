@@ -38,155 +38,125 @@ import { Subject } from 'rxjs';
 @Component({
   selector: 'app-project-info',
   template: `
-    <div class="h-full w-full">
-      <p-scrollPanel class="h-full w-full" [style]="{ 'max-height': '100%' }">
-        <div>
-          <p-panel
-            *ngIf="project"
-            header="Details"
-            styleClass="w-full h-full"
-            [toggleable]="true"
-            [(collapsed)]="collapseAll"
-          >
-            <ng-template pTemplate="content">
-              <br />
-              <form [formGroup]="form">
-                <div class="p-fluid grid">
-                  <div
-                    class="field p-float-label sm:col-12 md:col-12 lg:col-12 mb-5"
-                  >
-                    <input
-                      id="title"
-                      type="text"
-                      pInputText
-                      required
-                      minlength="3"
-                      maxlength="64"
-                      formControlName="name"
-                    />
-                    <label for="title">Title</label>
-                    <div
-                      *ngIf="
-                        form.controls['name'].invalid &&
-                        (form.controls['name'].dirty ||
-                          form.controls['name'].touched)
-                      "
-                      class="p-error"
-                    >
-                      <div *ngIf="form.controls['name'].value.length < 3">
-                        Must be between 3 and 64 characters
-                      </div>
-                      <div *ngIf="form.controls['name'].value.length > 64">
-                        Must be 64 or fewer characters
-                      </div>
-                    </div>
-                  </div>
-
-                  <div
-                    class="field p-float-label sm:col-6 md:col-6 lg:col-6 mb-5"
-                  >
-                    <p-calendar
-                      formControlName="start"
-                      [showTime]="true"
-                      [showButtonBar]="true"
-                      hourFormat="12"
-                      [showIcon]="true"
-                      id="start"
-                      appendTo="body"
-                    >
-                    </p-calendar>
-                    <label for="start">Start</label>
-                  </div>
-
-                  <div
-                    class="field p-float-label sm:col-6 md:col-6 lg:col-6 mb-5"
-                  >
-                    <p-calendar
-                      formControlName="end"
-                      [showTime]="true"
-                      [showButtonBar]="true"
-                      hourFormat="12"
-                      [showIcon]="true"
-                      id="end"
-                      appendTo="body"
-                    >
-                    </p-calendar>
-                    <label for="end">End</label>
-                  </div>
-
-                  <div class="field p-float-label col-12 mb-5">
-                    <textarea
-                      pInputTextarea
-                      id="_ksDescription"
-                      formControlName="description"
-                      [autoResize]="true"
-                      [rows]="4"
-                      [cols]="30"
-                    >
-                    </textarea>
-                    <label for="_ksDescription">Description</label>
-                  </div>
-
-                  <div
-                    class="field p-float-label sm:col-12 md:col-12 lg:col-12 mb-5"
-                  >
-                    <p-chips
-                      id="topics"
-                      formControlName="topics"
-                      class="p-fluid w-full"
-                      [addOnBlur]="true"
-                      [addOnTab]="true"
-                      [allowDuplicate]="false"
-                      (onChipClick)="onTopicClick($event)"
-                    >
-                    </p-chips>
-                    <label for="topics">Topics</label>
-                  </div>
+    <div class="h-full w-full" *ngIf="project">
+      <p-scrollPanel
+        class="h-full w-full"
+        [style]="{ 'max-height': '100%', 'max-width': '52rem' }"
+      >
+        <div class="h-2rem"></div>
+        <form [formGroup]="form">
+          <div class="p-fluid grid">
+            <div class="field p-float-label col-12 mb-5">
+              <input
+                id="title"
+                type="text"
+                pInputText
+                required
+                minlength="3"
+                maxlength="64"
+                formControlName="name"
+              />
+              <label for="title">Title</label>
+              <div
+                *ngIf="
+                  form.controls['name'].invalid &&
+                  (form.controls['name'].dirty || form.controls['name'].touched)
+                "
+                class="p-error"
+              >
+                <div *ngIf="form.controls['name'].value.length < 3">
+                  Must be between 3 and 64 characters
                 </div>
-              </form>
-
-              <div class="p-fluid grid">
-                <div
-                  class="field p-float-label sm:col-6 md:col-6 lg:col-6 mb-5"
-                >
-                  <input
-                    id="projectId"
-                    type="text"
-                    pInputText
-                    disabled
-                    ngModel="{{ project.id.value }}"
-                  />
-                  <label for="parentId">Project ID</label>
-                </div>
-
-                <div
-                  class="field p-float-label sm:col-6 md:col-6 lg:col-6 mb-5"
-                >
-                  <input
-                    id="parentId"
-                    type="text"
-                    pInputText
-                    disabled
-                    ngModel="{{ project.parentId | projectName }}"
-                  />
-                  <label for="parentId">Parent Project</label>
-                </div>
-
-                <div
-                  class="field p-float-label sm:col-6 md:col-6 lg:col-6 mb-5"
-                >
-                  <input
-                    id="type"
-                    type="text"
-                    pInputText
-                    disabled
-                    ngModel="{{ project.type | projectType }}"
-                  />
-                  <label for="type">Project Type</label>
+                <div *ngIf="form.controls['name'].value.length > 64">
+                  Must be 64 or fewer characters
                 </div>
               </div>
-            </ng-template>
-          </p-panel>
+            </div>
+
+            <div class="field p-float-label sm:col-6 md:col-6 lg:col-6 mb-5">
+              <p-calendar
+                formControlName="start"
+                [showTime]="true"
+                [showButtonBar]="true"
+                hourFormat="12"
+                [showIcon]="true"
+                id="start"
+                appendTo="body"
+              >
+              </p-calendar>
+              <label for="start">Start</label>
+            </div>
+
+            <div class="field p-float-label sm:col-6 md:col-6 lg:col-6 mb-5">
+              <p-calendar
+                formControlName="end"
+                [showTime]="true"
+                [showButtonBar]="true"
+                hourFormat="12"
+                [showIcon]="true"
+                id="end"
+                appendTo="body"
+              >
+              </p-calendar>
+              <label for="end">End</label>
+            </div>
+
+            <div class="field p-float-label col-12 mb-3">
+              <textarea
+                pInputTextarea
+                id="_ksDescription"
+                formControlName="description"
+                [autoResize]="true"
+                [rows]="4"
+                [cols]="30"
+              >
+              </textarea>
+              <label for="_ksDescription">Description</label>
+            </div>
+
+            <div class="field sm:col-12 md:col-12 lg:col-12 mb-5">
+              <label for="topics">Topics</label>
+              <p-chips
+                id="topics"
+                formControlName="topics"
+                class="p-fluid w-full"
+                separator=","
+                [addOnBlur]="true"
+                [addOnTab]="true"
+                [allowDuplicate]="false"
+                (onChipClick)="onTopicClick($event)"
+                [placeholder]="'Add topics here, separated by commas'"
+              >
+              </p-chips>
+            </div>
+          </div>
+        </form>
+
+        <div class="p-fluid grid">
+          <div
+            *ngIf="project.id"
+            class="field p-float-label sm:col-6 md:col-6 lg:col-6 mb-5"
+          >
+            <input
+              id="projectId"
+              type="text"
+              pInputText
+              disabled
+              ngModel="{{ project.id.value }}"
+            />
+            <label for="projectId">Project ID</label>
+          </div>
+
+          <div class="field p-float-label sm:col-6 md:col-6 lg:col-6 mb-5">
+            <input
+              id="parentId"
+              type="text"
+              pInputText
+              disabled
+              ngModel="{{ project.parentId | projectName }}"
+            />
+            <label for="parentId">Parent Project</label>
+          </div>
         </div>
         <!--        TODO: Add project timeline-->
         <!--        TODO: Add list of sources-->
@@ -205,7 +175,7 @@ export class ProjectInfoComponent implements OnChanges, OnDestroy {
 
   form: FormGroup;
 
-  start: Date | null = null;
+  start: Date | null = new Date();
 
   end: Date | null = null;
 

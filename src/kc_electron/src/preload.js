@@ -14,7 +14,9 @@
  *  limitations under the License.
  */
 
-const { contextBridge, ipcRenderer } = require("electron");
+import { contextBridge, ipcRenderer } from "electron";
+
+import html2canvas from "html2canvas";
 
 /**
  * IPC Channels must be placed in one of the following lists before it
@@ -75,6 +77,7 @@ const ipcReceiveChannels = [
   "E2A:BrowserView:ExtractedText",
   "E2A:BrowserView:NavEvent",
   "E2A:Extension:Import",
+  "E2A:Extraction:Website",
   "E2A:FileSystem:FileThumbnail",
   "E2A:FileManager:ConfirmAdd",
   "E2A:FileManager:Error",
@@ -150,6 +153,13 @@ contextBridge.exposeInMainWorld("api", {
     );
     ipcRenderer.removeAllListeners(channel);
   },
+  html2canvas: (element, options) => {
+    console.debug(
+      `[Debug]-[${datetime()}]-[Electron IPC]: html2canvas - Invoked `
+    );
+    return html2canvas(element, options);
+  },
+  cola: require("cytoscape-cola"),
 });
 
 contextBridge.exposeInMainWorld("electron", {

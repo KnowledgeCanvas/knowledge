@@ -24,12 +24,11 @@ import { UUID } from '@shared/models/uuid.model';
 export class ProjectNamePipe implements PipeTransform {
   constructor(private projectService: ProjectService) {}
 
-  transform(id: UUID | string): string {
-    const pid: UUID = typeof id === 'string' ? { value: id } : id;
-
+  transform(id: UUID | string | null): string {
     if (!id) {
       return 'None';
     } else {
+      const pid: UUID = typeof id === 'string' ? { value: id } : id;
       return (
         this.projectService.ProjectIdentifiers.find((p) => p.id === pid.value)
           ?.title ?? 'None'

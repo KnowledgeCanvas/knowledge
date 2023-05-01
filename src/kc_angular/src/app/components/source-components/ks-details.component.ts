@@ -17,34 +17,15 @@ import { Component } from '@angular/core';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { KnowledgeSource } from '@app/models/knowledge.source.model';
 import { NotificationsService } from '@services/user-services/notifications.service';
+import { KsCommandService } from '@services/command-services/ks-command.service';
 
 @Component({
   selector: 'app-details',
   template: `
     <div class="w-full flex-row-center-between my-2 px-2 sticky">
       <div class="flex-row-center-start">
-        <app-ks-icon [ks]="ks" class="pr-3"></app-ks-icon>
-        <app-project-breadcrumb
-          [disabled]="true"
-          [projectId]="ks.associatedProject.value"
-        >
-        </app-project-breadcrumb>
-      </div>
-      <div class="flex flex-row align-items-center justify-content-center">
-        <button
-          pButton
-          icon="pi pi-arrow-down"
-          label="Expand"
-          (click)="expandAll()"
-          class="p-button-rounded p-button-text shadow-none"
-        ></button>
-        <button
-          pButton
-          icon="pi pi-arrow-up"
-          label="Collapse"
-          (click)="collapseAll()"
-          class="p-button-rounded p-button-text shadow-none"
-        ></button>
+        <app-ks-icon [ks]="ks" class="px-3"></app-ks-icon>
+        <div class="text-xl font-bold">{{ ks.title }}</div>
       </div>
       <div class="flex-row-center-end" style="width: 10rem">
         <div *ngIf="saved" class="flex-row-center-start text-primary">
@@ -61,15 +42,20 @@ import { NotificationsService } from '@services/user-services/notifications.serv
         </div>
       </div>
     </div>
-    <div style="height: calc(100% - 65px); overflow-y: auto">
-      <app-ks-info
-        [ks]="ks"
-        [isDialog]="true"
-        (onSaved)="onSaved()"
-        (shouldClose)="onClose()"
-        [collapseAll]="collapsed"
+    <div class="flex flex-row flex-grow-1 overflow-y-auto">
+      <app-source
+        [source]="ks"
+        [dialog]="true"
+        (update)="update($event)"
+      ></app-source>
+    </div>
+    <div class="flex flex-row flex-grow-0 mt-2 sticky">
+      <app-project-breadcrumb
+        class="w-full"
+        [disabled]="true"
+        [projectId]="ks.associatedProject.value"
       >
-      </app-ks-info>
+      </app-project-breadcrumb>
     </div>
   `,
   styles: [''],
@@ -84,7 +70,8 @@ export class KsDetailsComponent {
   constructor(
     private config: DynamicDialogConfig,
     private ref: DynamicDialogRef,
-    private notifications: NotificationsService
+    private notifications: NotificationsService,
+    private command: KsCommandService
   ) {
     if (config?.data?.ks) {
       this.ks = config.data.ks;
@@ -101,24 +88,18 @@ export class KsDetailsComponent {
     this.ref.close();
   }
 
-  expandAll() {
-    this.collapsed = true;
-    setTimeout(() => {
-      this.collapsed = false;
-    });
-  }
-
-  collapseAll() {
-    this.collapsed = false;
-    setTimeout(() => {
-      this.collapsed = true;
-    });
-  }
-
   onSaved() {
+    /* Show the "Saved" notice for 5 seconds */
     this.saved = true;
     setTimeout(() => {
       this.saved = false;
     }, 5000);
+  }
+
+  update($event: KnowledgeSource) {
+    if ($event) {
+      this.command.update([$event]);
+      this.onSaved();
+    }
   }
 }

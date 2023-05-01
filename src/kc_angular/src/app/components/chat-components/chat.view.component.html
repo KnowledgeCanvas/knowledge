@@ -1,0 +1,110 @@
+<!--
+  ~ Copyright (c) 2023 Rob Royce
+  ~
+  ~  Licensed under the Apache License, Version 2.0 (the "License");
+  ~  you may not use this file except in compliance with the License.
+  ~  You may obtain a copy of the License at
+  ~
+  ~  http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing, software
+  ~  distributed under the License is distributed on an "AS IS" BASIS,
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~  See the License for the specific language governing permissions and
+  ~  limitations under the License.
+  -->
+
+<div
+  [style.max-height]="heightRestricted ? '64rem' : 'unset'"
+  class="width-constrained flex flex-column h-full select-text w-full"
+  id="chat-container"
+>
+  <chat-toolbar
+    (onFilter)="onFilter($event)"
+    (print)="print()"
+  ></chat-toolbar>
+
+  <div
+    [id]="chatPrintConfig.divId"
+    class="flex flex-column overflow-y-auto flex-grow-1 gap-2 pt-2 w-full"
+  >
+    <div
+      *ngFor="let message of filtered$ | async; let idx = index"
+      class="w-full flex flex-column"
+    >
+
+      <!-- Display the message -->
+      <div
+        [style.justify-content]="
+              message.sender === 'user' ? 'right' : 'left'
+            "
+        class="w-full flex flex-row"
+      >
+        <chat-message
+          (contextmenu)="showContextMenu($event, message)"
+          (onDeleteMessage)="deleteMessage(message)"
+          (onEditMessage)="editMessage(message)"
+          (onExplainLikeIm5)="explainLikeIm5(message)"
+          (onMessageEdited)="editMessage(message, $event)"
+          (onRegenerateMessage)="regenerateMessage(message)"
+          (onToLongDidntRead)="tldr(message)"
+          (rating)="rating($event, message)"
+          [editing]="editedMessage == message"
+          [message]="message"
+          class="shadow-1 hover:shadow-3"
+        >
+        </chat-message>
+      </div>
+    </div>
+    <div class="chat-history-scroll-target"></div>
+  </div>
+
+  <div class="w-full flex flex-column flex-grow-0" id="chat-bar">
+    <div
+      class="next-question-suggestions flex flex-row gap-4 px-4 justify-content-between"
+    >
+      <div
+        (click)="sendSuggestion(suggestion)"
+        *ngFor="let suggestion of nextQuestionSuggestions"
+        class="next-question-suggestion cursor-pointer opacity-70 fadein text-center select-none surface-overlay border-round-top-2xl px-3 pt-2 shadow-1 mb-1 min-h-2rem"
+        disabled="loading"
+        style="min-height: 2rem;"
+      >
+        {{ suggestion | truncate : [84] }}
+      </div>
+    </div>
+
+    <p-progressBar
+      *ngIf="loading"
+      [style]="{ height: '2px' }"
+      class="w-full px-3"
+      mode="indeterminate"
+    ></p-progressBar>
+
+    <!-- TODO: add autocomplete for @-ing different agents -->
+    <div class="pb-1 px-2 max-h-12rem overflow-y-auto">
+          <textarea
+            #chatInput
+            (focus)="chatFocusTrap()"
+            (keydown.enter)="sendMessage($event)"
+            [autoResize]="true"
+            [disabled]="loading"
+            [rows]="2"
+            class="w-full flex-row border-round-2xl shadow-2"
+            id="chat-input"
+            pInputTextarea
+            placeholder="Type your questions here..."
+          ></textarea>
+    </div>
+  </div>
+</div>
+
+<p-contextMenu
+  #cm
+  [autoZIndex]="true"
+  [baseZIndex]="999999"
+  [model]="messageMenu"
+  appendTo="body"
+  styleClass="shadow-7"
+>
+</p-contextMenu>

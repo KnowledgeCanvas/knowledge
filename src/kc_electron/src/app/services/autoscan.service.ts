@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import { FSWatcher } from "chokidar";
+import chokidar, { FSWatcher } from "chokidar";
 import { IpcMessage } from "../../../../kc_shared/models/electron.ipc.model";
 import {
   IngestSettingsModel,
@@ -26,10 +26,10 @@ import {
 } from "../../../../kc_shared/models/file.source.model";
 import { Stats } from "fs";
 
-const fse = require("fs-extra");
+import fse from "fs-extra";
 
-const chokidar = require("chokidar");
-const mime = require("mime-types");
+import mime from "mime-types";
+
 const share: any = (global as any).share;
 const fs = share.fs;
 const path = share.path;
@@ -205,7 +205,7 @@ class FileManagerService {
           }
           resolve(pending);
         })
-        .catch((reason) => {
+        .catch(() => {
           // If it does not already exist, create it
           this.setLocalStorageItem("PENDING", this.pending);
           resolve([]);
@@ -292,18 +292,19 @@ class FileManagerService {
   private async finalize(id: string, method: "add" | "remove" | "delay") {
     const pending = this.pending.find((p) => p.id === id);
     if (!pending) {
-      console.log(
-        "AutoscanService unable to find pending file transfer... ignoring..."
-      );
       return;
     } else {
       switch (method) {
         case "add":
           // Add => Remove the `pending` prefix from the file
-          const filename = path.basename(pending.newPath);
-          const newPath = path.resolve(FILES_DIR(), filename);
-          FileManagerService.move(pending.newPath, newPath);
-          await this.confirmAdd(id, newPath);
+          FileManagerService.move(
+            pending.newPath,
+            path.resolve(FILES_DIR(), path.basename(pending.newPath))
+          );
+          await this.confirmAdd(
+            id,
+            path.resolve(FILES_DIR(), path.basename(pending.newPath))
+          );
           break;
         case "remove":
           // Remove => Remove new
@@ -311,12 +312,6 @@ class FileManagerService {
           break;
         case "delay":
         default:
-          // Delay => Revert new to old
-          // const newFilename = path.basename(pending.newPath);
-          // const revertPath = path.resolve(pending.oldPath.replace(newFilename, pending.filename))
-          // console.log(`Reverting ${pending.newPath} to ${revertPath}`);
-          // FileManagerService.move(pending.newPath, pending.oldPath);
-
           FileManagerService.revert(pending);
       }
       await this.removePending(id);
@@ -338,7 +333,7 @@ class FileManagerService {
     this.ingestWatcher = chokidar
       .watch(watchPath, {
         // intended behavior: ignore dotfiles
-        ignored: /(^|[\/\\])\../,
+        ignored: /(^|[/\\])\../,
 
         // intended behavior: keep the file watcher running as long as the user has 'Autoscan' enabled
         persistent: true,
@@ -359,16 +354,15 @@ class FileManagerService {
     const watchPath = path.resolve(settings.autoscan.path);
     const storagePath = path.resolve(settings.manager.storageLocation);
 
-    let fileStat: any;
     try {
-      fileStat = fs.statSync(watchPath);
+      fs.statSync(watchPath);
     } catch (e) {
       fs.mkdirSync(watchPath, { recursive: true });
       FileManagerService.warn("Directory Created", watchPath);
     }
 
     try {
-      fileStat = fs.statSync(storagePath);
+      fs.statSync(storagePath);
     } catch (e) {
       fs.mkdirSync(storagePath, { recursive: true });
       FileManagerService.warn("Directory Created", storagePath);
@@ -399,7 +393,7 @@ class FileManagerService {
 
         /* Determine file type (MIME type) */
         const contentType = mime.lookup(filePath);
-        let fileExtension = mime.extension(contentType);
+        let fileExtension = mime.extension(contentType || "");
         if (!fileExtension) {
           fileExtension = path.extname(filePath).split(".")[1];
           console.warn(
@@ -408,7 +402,6 @@ class FileManagerService {
         }
 
         /* Resolve the new file path, prepend PENDING_PREFIX to the newId to handle life cycle management */
-        const appEnv: SettingsModel = settingsService.getSettings();
         const newFilePath =
           path.resolve(PENDING_DIR(), `${newId}`) + `.${fileExtension}`;
 
@@ -421,7 +414,7 @@ class FileManagerService {
           id: { value: newId },
           path: newFilePath,
           size: fstat.size,
-          type: contentType,
+          type: contentType || "",
           accessTime: fstat.atime.toLocaleString() ?? "",
           creationTime: fstat.ctime.toLocaleString() ?? "",
           modificationTime: fstat.mtime.toLocaleString() ?? "",
@@ -495,13 +488,11 @@ class FileManagerService {
     }
 
     if (!next) {
-      console.error("Cannot create next settings...");
       return;
     }
 
     /* Previous settings do not exist */
     if (!prev) {
-      console.error("Cannot create previous settings...");
       this.clean(next);
 
       if (next.autoscan.enabled) {
@@ -556,7 +547,7 @@ class FileManagerService {
     // TODO: this is currently disabled in the main app until it is fixed
     if (prev.manager.storageLocation !== next.manager.storageLocation) {
       // TODO: should we move everything from the current location to the new location, or let the user worry about that?
-      // TODO: storageLocation currently includes the /files suffix, this should be appended manually and the storageLocation should be the base path, not the files path
+      //  storageLocation currently includes the /files suffix, this should be appended manually and the storageLocation should be the base path, not the files path
       //  itself
       console.debug(
         `Storage path changed, moving to new location: ${next.manager.storageLocation} from ${prev.manager.storageLocation}`

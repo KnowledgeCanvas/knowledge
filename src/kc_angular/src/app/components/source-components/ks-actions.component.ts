@@ -14,6 +14,8 @@
  *  limitations under the License.
  */
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { KnowledgeSource } from '@app/models/knowledge.source.model';
+import { ExtractorService } from '@services/ingest-services/extractor.service';
 
 @Component({
   selector: 'app-action-bar',
@@ -26,7 +28,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
         icon="pi pi-info"
         pTooltip="Details"
         [tooltipOptions]="actionButtonTooltipOptions"
-        (click)="onEdit.emit()"
+        (click)="edit.emit()"
       ></button>
       <button
         pButton
@@ -35,7 +37,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
         icon="pi pi-eye"
         pTooltip="Preview"
         [tooltipOptions]="actionButtonTooltipOptions"
-        (click)="onPreview.emit()"
+        (click)="preview.emit()"
       ></button>
       <button
         pButton
@@ -44,7 +46,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
         icon="pi pi-external-link"
         pTooltip="Open In..."
         [tooltipOptions]="actionButtonTooltipOptions"
-        (click)="onOpen.emit()"
+        (click)="open.emit()"
       ></button>
       <button
         pButton
@@ -53,20 +55,23 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
         icon="pi pi-trash"
         pTooltip="Remove"
         [tooltipOptions]="actionButtonTooltipOptions"
-        (click)="onRemove.emit()"
+        (click)="remove.emit()"
       ></button>
-      <p-toggleButton
-        *ngIf="showFlag"
-        [(ngModel)]="flagged"
-        class="m-1"
-        styleClass="p-button-text"
-        onIcon="pi pi-flag"
-        offIcon="pi pi-flag"
-        pTooltip="Important"
+      <button
+        *ngIf="showSavePdf && ks.ingestType !== 'file'"
+        pButton
+        class="m-1 p-button-text"
+        icon="pi pi-file-pdf"
+        pTooltip="Save as PDF"
         [tooltipOptions]="actionButtonTooltipOptions"
-        (onChange)="onFlagged.emit($event)"
-      >
-      </p-toggleButton>
+        (click)="saveAsPdf()"
+      ></button>
+      <button
+        pButton
+        [icon]="ks.flagged ? 'pi pi-flag-fill' : 'pi pi-flag'"
+        class="m-1 p-button-text"
+        (click)="flag.emit({ checked: !ks.flagged })"
+      ></button>
     </div>
   `,
   styles: [``],
@@ -77,7 +82,7 @@ export class KsActionsComponent {
     tooltipPosition: 'top',
   };
 
-  @Input() flagged?: boolean = false;
+  @Input() ks!: KnowledgeSource;
 
   @Input() showFlag = true;
 
@@ -89,13 +94,29 @@ export class KsActionsComponent {
 
   @Input() showRemove = true;
 
-  @Output() onEdit = new EventEmitter<any>();
+  @Input() showSavePdf = true;
 
-  @Output() onPreview = new EventEmitter<any>();
+  @Output() edit = new EventEmitter<any>();
 
-  @Output() onOpen = new EventEmitter<any>();
+  @Output() preview = new EventEmitter<any>();
 
-  @Output() onRemove = new EventEmitter<any>();
+  @Output() open = new EventEmitter<any>();
 
-  @Output() onFlagged = new EventEmitter<any>();
+  @Output() remove = new EventEmitter<any>();
+
+  @Output() flag = new EventEmitter<any>();
+
+  constructor(private extractor: ExtractorService) {}
+
+  saveAsPdf() {
+    this.extractor.websiteToPdf(
+      typeof this.ks.accessLink === 'string'
+        ? this.ks.accessLink
+        : this.ks.accessLink.href,
+      this.ks.title
+        .trim()
+        .replace(/[^a-zA-Z0-9 ]/g, '')
+        .replace(' ', '_')
+    );
+  }
 }

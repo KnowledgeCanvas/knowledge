@@ -88,6 +88,8 @@ export class KsThumbnailComponent implements OnDestroy, OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     try {
       if (changes.ks.currentValue) {
+        this._thumbnail$.next(undefined);
+
         /**
          * If the Source already has a thumbnail, try to display it immediately.
          */
@@ -164,7 +166,6 @@ export class KsThumbnailComponent implements OnDestroy, OnChanges {
               result.text().then((text) => {
                 // Sometimes, requesting an image will return HTML, which is signs of failure
                 if (!text.startsWith('<')) {
-                  // TODO: this should be sanitized... or completely removed
                   this.ks.thumbnail = url;
                   this._thumbnail$.next(this.ks.thumbnail);
                 }

@@ -20,8 +20,10 @@ import {
   WebsiteMetaTagsModel,
 } from '@shared/models/web.source.model';
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { NotificationsService } from '@services/user-services/notifications.service';
+import { DialogService } from 'primeng/dynamicdialog';
+import { LoadingComponent } from '@components/shared/loading.component';
 
 @Injectable({
   providedIn: 'root',
@@ -31,17 +33,53 @@ export class ExtractorService {
 
   constructor(
     private httpClient: HttpClient,
-    private notifications: NotificationsService
+    private notifications: NotificationsService,
+    private dialog: DialogService,
+    private zone: NgZone
   ) {}
 
   websiteToPdf(url: string, outFileName?: string) {
-    // TODO: move this to ipc service...
-    window.api.receive('E2A:Extraction:Website', () => {
-      this.notifications.debug(
-        'ExtractorService',
-        'E2A:Extraction:Website',
-        'Not implemented yet.'
+    const dialogRef = this.dialog.open(LoadingComponent, {
+      width: '300px',
+      height: '150px',
+      data: {
+        message: 'Creating PDF',
+        subMessage: 'Please wait...',
+        progressBar: true,
+      },
+      closable: false,
+      modal: true,
+      dismissableMask: false,
+    });
+
+    const timer = setTimeout(() => {
+      dialogRef.close();
+      this.notifications.error(
+        'Extractor Service',
+        'Failed',
+        'Failed to save PDF'
       );
+    }, 20000);
+
+    window.api.receive('E2A:Extraction:Website', (result: any) => {
+      this.zone.run(() => {
+        if (result) {
+          console.log('Saved to: ', result);
+          this.notifications.success(
+            'Extractor Service',
+            'PDF Saved Successfully',
+            result
+          );
+        } else {
+          this.notifications.error(
+            'Extractor Service',
+            'Failed',
+            'Failed to save PDF'
+          );
+        }
+        clearTimeout(timer);
+        dialogRef.close();
+      });
     });
 
     // Send message to Electron ipcMain
@@ -49,6 +87,7 @@ export class ExtractorService {
       url: url,
       filename: outFileName,
     };
+
     window.api.send('A2E:Extraction:Website', args);
   }
 

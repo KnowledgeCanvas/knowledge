@@ -28,12 +28,12 @@ import { KnowledgeSource } from '@app/models/knowledge.source.model';
 import { KsContextMenuService } from '@services/factory-services/ks-context-menu.service';
 import { KsFactoryService } from '@services/factory-services/ks-factory.service';
 import { NotificationsService } from '@services/user-services/notifications.service';
-import { Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { ProjectService } from '@services/factory-services/project.service';
 import { ProjectTreeFactoryService } from '@services/factory-services/project-tree-factory.service';
 import { SettingsService } from '@services/ipc-services/settings.service';
 import { Splitter } from 'primeng/splitter';
-import { map, take, takeUntil, tap } from 'rxjs/operators';
+import { finalize, map, take, takeUntil, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-home',
@@ -82,23 +82,8 @@ import { map, take, takeUntil, tap } from 'rxjs/operators';
             ></p-checkbox>
           </div>
 
-          <div class="flex flex-row">
-            <button
-              pButton
-              icon="pi pi-arrow-down"
-              label="Expand"
-              [disabled]="!active"
-              (click)="expandAll()"
-              class="p-button-rounded p-button-text shadow-none"
-            ></button>
-            <button
-              pButton
-              icon="pi pi-arrow-up"
-              label="Collapse"
-              [disabled]="!active"
-              (click)="collapseAll()"
-              class="p-button-rounded p-button-text shadow-none"
-            ></button>
+          <div *ngIf="active" class="flex flex-row text-2xl font-bold">
+            {{ active.title | truncate : [64] }}
           </div>
 
           <div class="flex flex-row">
@@ -163,7 +148,7 @@ import { map, take, takeUntil, tap } from 'rxjs/operators';
                 <app-ks-message
                   class="cursor-pointer hover:surface-hover"
                   (click)="loadExamples()"
-                  status="Load Examples"
+                  status="Surprise Me"
                 >
                 </app-ks-message>
               </div>
@@ -171,22 +156,19 @@ import { map, take, takeUntil, tap } from 'rxjs/operators';
             <div class="w-full" *ngIf="loading">
               <p-progressBar
                 mode="indeterminate"
-                [style]="{ height: '0.5rem' }"
+                [style]="{ height: '2px' }"
               ></p-progressBar>
             </div>
           </div>
 
           <div class="app-splitter-right">
             <div *ngIf="active" class="w-full h-full flex flex-column">
-              <div class="overflow-y-auto">
-                <app-ks-info
-                  *ngIf="active"
-                  [ks]="active"
-                  [collapseAll]="collapsed"
-                  (onRemove)="onKsRemove([$event])"
-                >
-                </app-ks-info>
-              </div>
+              <app-source
+                [source]="active"
+                [dialog]="false"
+                (remove)="onKsRemove([$event])"
+                (update)="update($event)"
+              ></app-source>
             </div>
 
             <div *ngIf="!active" class="w-full h-full flex flex-column">
@@ -246,39 +228,21 @@ export class HomeComponent implements OnDestroy {
   @ViewChild('splitter') splitter!: Splitter;
 
   upNext: KnowledgeSource[] = [];
-
-  /**
-   * The index of the active Source in the inbox
-   * @type {number}
-   * @memberof HomeComponent
-   *
-   * @todo: This should be a BehaviorSubject
-   */
-  activeIndex = 0;
-
   active?: KnowledgeSource;
-
   context?: KnowledgeSource;
-
   filtered?: KnowledgeSource[];
-
   kcProject: Observable<KcProject | null>;
-
   treeNodes: TreeNode[] = [];
-
   selectedProject: any;
-
   collapsed = false;
-
   ksMenuItems: MenuItem[] = [];
-
   loading = false;
-
   supportedTypes: string[] = ['Links', 'Files'];
-
   animate = true;
-
   importAll = false;
+
+  private _activeIndex = new BehaviorSubject<number>(0);
+  activeIndex$ = this._activeIndex.asObservable();
 
   private cleanUp: Subject<any> = new Subject<any>();
 
@@ -344,12 +308,15 @@ export class HomeComponent implements OnDestroy {
           const activeIndex = this.upNext.findIndex(
             (ks) => ks.id.value === this.active?.id.value
           );
-          this.activeIndex = activeIndex === -1 ? 0 : activeIndex;
-          this.active = this.upNext[this.activeIndex];
+          this._activeIndex.next(activeIndex === -1 ? 0 : activeIndex);
           this.loading = false;
         })
       )
       .subscribe();
+
+    this.activeIndex$.pipe().subscribe((index) => {
+      this.active = this.upNext[index];
+    });
   }
 
   ngOnDestroy() {
@@ -377,26 +344,23 @@ export class HomeComponent implements OnDestroy {
       accept: () => {
         const newIndex =
           sources.length === 1
-            ? this.activeIndex > 0
-              ? this.activeIndex - 1
+            ? this._activeIndex.value > 0
+              ? this._activeIndex.value - 1
               : 0
             : 0;
         for (const source of sources) {
+          // Remove any chat artifacts for this source
+          localStorage.removeItem(`chat-${source.id.value}`);
           this.ingest.remove(source);
         }
-        this.activeIndex = newIndex;
+        this._activeIndex.next(newIndex);
       },
     });
   }
 
   setActive(ks: KnowledgeSource) {
     const found = this.upNext.indexOf(ks);
-    if (found) {
-      this.activeIndex = found;
-    } else {
-      this.activeIndex = 0;
-    }
-    this.active = this.upNext[this.activeIndex];
+    this._activeIndex.next(found ? found : 0);
   }
 
   setContext(ks: KnowledgeSource) {
@@ -406,21 +370,21 @@ export class HomeComponent implements OnDestroy {
   }
 
   onPreviousSource() {
-    if (this.activeIndex === 0) {
-      this.activeIndex = this.upNext.length - 1;
+    if (this._activeIndex.value === 0) {
+      this._activeIndex.next(this.upNext.length - 1);
     } else {
-      this.activeIndex = Math.max(0, this.activeIndex - 1);
+      this._activeIndex.next(Math.max(0, this._activeIndex.value - 1));
     }
-    this.active = this.upNext[this.activeIndex];
   }
 
   onNextSource() {
-    if (this.activeIndex == this.upNext.length - 1) {
-      this.activeIndex = 0;
+    if (this._activeIndex.value === this.upNext.length - 1) {
+      this._activeIndex.next(0);
     } else {
-      this.activeIndex = Math.min(this.activeIndex + 1, this.upNext.length - 1);
+      this._activeIndex.next(
+        Math.min(this._activeIndex.value + 1, this.upNext.length - 1)
+      );
     }
-    this.active = this.upNext[this.activeIndex];
   }
 
   onProjectImport() {
@@ -474,13 +438,6 @@ export class HomeComponent implements OnDestroy {
     }
   }
 
-  expandAll() {
-    this.collapsed = true;
-    setTimeout(() => {
-      this.collapsed = false;
-    });
-  }
-
   collapseAll() {
     this.collapsed = false;
     setTimeout(() => {
@@ -530,39 +487,13 @@ export class HomeComponent implements OnDestroy {
       .examples()
       .pipe(
         take(1),
-        tap((ks: { title: string; accessLink: string; topics: string[] }[]) => {
-          this.factory
-            .many({
-              ingestType: 'website',
-              links: ks.map((k) => k.accessLink),
-            })
-            .then((ksList) => {
-              ksList.map((k) => {
-                k.importMethod = 'example';
-                return k;
-              });
-
-              if (ksList.length == ks.length) {
-                for (let i = 0; i < ksList.length; i++) {
-                  ksList[i].title = ks[i].title;
-                  ksList[i].topics = ks[i].topics;
-                }
-              }
-
-              this.ingest.enqueue(ksList);
-              this.loading = false;
-            })
-            .catch((error) => {
-              setTimeout(() => {
-                this.loading = false;
-                this.notifications.error(
-                  'Inbox',
-                  'Unable to Load Examples',
-                  error,
-                  'toast'
-                );
-              }, 1000);
-            });
+        tap((sources: KnowledgeSource[]) => {
+          this.ingest.enqueue(sources);
+        })
+      )
+      .pipe(
+        finalize(() => {
+          this.loading = false;
         })
       )
       .subscribe({
@@ -592,5 +523,18 @@ export class HomeComponent implements OnDestroy {
   @HostListener('document:keydown.meta.ArrowDown')
   keyPressNext() {
     this.onNextSource();
+  }
+
+  update($event: KnowledgeSource) {
+    // Find the source and update it in place
+    const found = this.upNext.find((ks) => ks.id.value === $event.id.value);
+    if (found) {
+      found.title = $event.title;
+      found.description = $event.description;
+      found.icon = $event.icon;
+      found.dateDue = $event.dateDue;
+      found.flagged = $event.flagged;
+      found.topics = $event.topics;
+    }
   }
 }

@@ -70,15 +70,6 @@ export class IngestService implements OnDestroy {
   }
 
   enqueue(ksList: KnowledgeSource[]) {
-    for (const ks of ksList) {
-      if (
-        ks.ingestType === 'file' &&
-        this.settings.get().ingest.manager.target === 'all'
-      ) {
-        // TODO: if ingest manager target is "all", move all files to managed directory
-      }
-    }
-
     let ksQueue = this._queue.value;
     ksQueue = ksQueue.concat(ksList);
     this._queue.next(ksQueue);

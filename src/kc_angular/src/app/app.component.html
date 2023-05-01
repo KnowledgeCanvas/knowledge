@@ -1,0 +1,218 @@
+<!--
+  ~ Copyright (c) 2023-2023 Rob Royce
+  ~
+  ~  Licensed under the Apache License, Version 2.0 (the "License");
+  ~  you may not use this file except in compliance with the License.
+  ~  You may obtain a copy of the License at
+  ~
+  ~  http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing, software
+  ~  distributed under the License is distributed on an "AS IS" BASIS,
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~  See the License for the specific language governing permissions and
+  ~  limitations under the License.
+  -->
+
+<div
+  @fadeIn
+  class="w-full p-fluid title-bar flex-row-center-between pl-2 surface-ground border-bottom-1 surface-border"
+  id="app-header"
+  style="height: 32px; max-width: 100vw"
+>
+  <div
+    *ngIf="os && os === 'darwin'"
+    class="select-none title-bar-interactive flex-row-center-start"
+  >
+    <div
+      (click)="close()"
+      class="macos-window-button window-button-close"
+    ></div>
+    <div
+      (click)="minimize()"
+      class="macos-window-button window-button-minimize"
+    ></div>
+    <div
+      (click)="maximize()"
+      class="macos-window-button window-button-maximize"
+    ></div>
+  </div>
+  <div *ngIf="!os || (os && os !== 'darwin')"></div>
+
+  <div class="flex-row-center-between">
+    <app-create class="title-bar-interactive"></app-create>
+    <app-search class="title-bar-interactive mx-8"></app-search>
+    <app-history class="title-bar-interactive"></app-history>
+  </div>
+
+  <div *ngIf="!os || (os && os === 'darwin')"></div>
+  <div
+    *ngIf="os && os !== 'darwin'"
+    class="select-none title-bar-interactive flex flex-row align-items-start h-full"
+  >
+    <div
+      (click)="minimize()"
+      class="window-button hover:surface-300 flex-col-center-center"
+    >
+      <div class="pi">—</div>
+    </div>
+    <div
+      (click)="maximize()"
+      class="window-button hover:surface-300 flex-col-center-center"
+    >
+      <div class="pi pi-stop"></div>
+    </div>
+    <div
+      (click)="close()"
+      class="window-button hover:surface-300 flex-col-center-center"
+    >
+      <div class="pi pi-times"></div>
+    </div>
+  </div>
+</div>
+
+<div
+  *ngIf="!readyToShow"
+  @fadeIn
+  class="w-full h-full surface-a flex-col-center-center gap-4"
+  style="max-height: calc(100vh - 32px)"
+>
+  <div>
+    <img
+      alt="Knowledge Logo"
+      class="pulsate-fwd knowledge-logo"
+      src="assets/img/kc-icon-greyscale.png"
+    />
+  </div>
+  <div style="width: 100%; max-width: 12rem">
+    <p-progressBar
+      [style]="{ height: '2px' }"
+      class="w-full"
+      mode="indeterminate"
+    ></p-progressBar>
+    Getting things ready...
+  </div>
+</div>
+
+<div
+  *ngIf="readyToShow"
+  class="flex relative lg:static"
+  style="height: calc(100vh - 32px); max-width: 100vw"
+>
+  <div
+    class="h-full md:h-auto md:block flex-shrink-0 absolute md:static left-0 top-0 z-1 border-right-1 surface-0 border-primary w-auto"
+    id="app-sidebar"
+  >
+    <div class="flex h-full">
+      <div class="flex flex-column h-full flex-shrink-0">
+        <div
+          (dragstart)="$event.preventDefault()"
+          class="flex align-items-center justify-content-center select-none flex-shrink-0"
+          style="height: 60px; width: 60px"
+        >
+          <img
+            alt="Icon for the Knowledge application."
+            height="30"
+            src="assets/img/kc-icon-transparent.png"
+          />
+        </div>
+        <div class="overflow-y-auto mt-3">
+          <ul class="list-none py-3 pl-2 pr-0 m-0">
+            <li
+              (click)="onSidebarClick(item)"
+              (dragstart)="$event.preventDefault()"
+              *ngFor="let item of sidebarItems"
+              [pTooltip]="item.label"
+              [routerLink]="item.routerLink"
+              class="mb-2"
+            >
+              <a
+                [class.bg-primary]="item.label === selectedView"
+                [class.hover:bg-primary]="item.label === selectedView"
+                class="p-element flex align-items-center cursor-pointer py-3 pl-0 pr-2 justify-content-center hover:surface-200 text-700 hover:text-900 transition-duration-150 transition-colors no-underline"
+                style="
+                  border-top-left-radius: 30px;
+                  border-bottom-left-radius: 30px;
+                "
+              >
+                <i
+                  *ngIf="item.label === 'Inbox' && inboxBadge > 0"
+                  class="{{ item.icon }} text-xl no-underline"
+                  pBadge
+                  severity="danger"
+                  value="{{ inboxBadge }}"
+                ></i>
+                <i
+                  *ngIf="item.label === 'Inbox' && inboxBadge === 0"
+                  class="{{ item.icon }} text-xl no-underline"
+                ></i>
+                <i
+                  *ngIf="item.label !== 'Inbox'"
+                  class="{{ item.icon }} text-xl no-underline"
+                ></i>
+                <span
+                  class="p-ink"
+                  style="height: 64px; width: 64px; top: 5px; left: 5px"
+                ></span>
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div class="mt-auto">
+          <a
+            (click)="showSettings()"
+            class="p-element m-3 flex align-items-center cursor-pointer p-2 justify-content-center border-round bg-primary text-0 transition-duration-150 transition-colors"
+          >
+            <i class="pi pi-cog text-xl"></i>
+            <span
+              class="p-ink"
+              style="height: 64px; width: 64px; top: 4px; left: -1px"
+            ></span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="w-full flex flex-column relative flex-auto select-none"
+    id="app-body"
+    style="max-height: calc(100vh - 32px)"
+  >
+    <div
+      class="h-full flex flex-row overflow-y-auto"
+      id="app-router-outlet"
+      style="max-height: calc(100vh - 80px); max-width: calc(100vw - 61px)"
+    >
+      <div class="flex flex-column flex-grow-0 h-full">
+        <app-projects-tree
+          *ngIf="projectTreeVisible"
+          [@flyInOut]="animate"
+          class="border-right-1 border-primary-500"
+        ></app-projects-tree>
+      </div>
+      <div
+        [@routeAnimations]="routeAnimationData"
+        class="flex-column flex-grow-1 h-full"
+      >
+        <router-outlet></router-outlet>
+      </div>
+    </div>
+    <div @fadeIn id="app-footer">
+      <app-project-breadcrumb
+        (dragstart)="$event.preventDefault()"
+        (onShowProjectTree)="projectTreeVisible = !projectTreeVisible"
+        [projectId]="projectId"
+        class="w-full h-full select-none"
+      >
+      </app-project-breadcrumb>
+    </div>
+  </div>
+</div>
+
+<p-confirmDialog appendTo="body"></p-confirmDialog>
+<p-messages key="app-banner"></p-messages>
+<p-toast
+  [preventOpenDuplicates]="true"
+  key="app-toast"
+  position="bottom-right"
+></p-toast>

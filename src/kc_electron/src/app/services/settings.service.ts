@@ -19,6 +19,7 @@ import { BehaviorSubject, Observable } from "rxjs";
 import {
   AutoscanSettingsModel,
   CalendarSettingsModel,
+  ChatSettingsModel,
   DockerSettingsModel,
   EnvironmentSettingsModel,
   ExtensionServerSettingsModel,
@@ -36,11 +37,9 @@ import {
 import * as dotenv from "dotenv";
 import path from "path";
 import os from "os";
-
 import * as lodash from "lodash";
 import { KcTheme } from "../../../../kc_shared/models/style.model";
-
-const { app, BrowserWindow, ipcMain } = require("electron");
+import { app, BrowserWindow, ipcMain } from "electron";
 
 const RET_OK = 0;
 const RET_FAIL = -1;
@@ -212,6 +211,7 @@ class SettingsService {
         calendar: new CalendarSettingsModel(),
         projects: new ProjectSettingsModel(),
         graph: new GraphSettingsModel(),
+        chat: new ChatSettingsModel(),
       },
       display: {
         theme: new KcTheme(),
@@ -302,7 +302,7 @@ class SettingsService {
         });
       }
     } catch (e) {
-      console.log("SettingsService - Error - ", e);
+      console.error("SettingsService - Error - ", e);
       this.warn("Settings File Does Not Exist", "Creating new settings file.");
       if (makeDirectory(this._all.value.system.settingsPath) !== RET_OK) {
         console.error("Exiting with code ", -1);
@@ -351,5 +351,5 @@ function makeDirectory(dir: string) {
   }
 }
 
-const settingsService = new SettingsService();
+export const settingsService = new SettingsService();
 module.exports = settingsService;

@@ -56,7 +56,9 @@ export class ProjectCommandService {
 
   new(parentId?: UUID) {
     this.dialog.open(ProjectCreationDialogComponent, {
-      width: `min(90vw, 92rem)`,
+      header: parentId ? 'Create Subproject' : 'Create Project',
+      showHeader: true,
+      width: `min(90vw, 52rem)`,
       data: { parentId: parentId },
       style: { 'border-radius': '10px' },
     });
