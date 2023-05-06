@@ -54,7 +54,6 @@ import { DialogModule } from 'primeng/dialog';
 import { DialogService } from 'primeng/dynamicdialog';
 import { DisplaySettingsComponent } from '@components/settings/display-settings.component';
 import { DividerModule } from 'primeng/divider';
-import { DragDropModule } from '@angular/cdk/drag-drop';
 import { DropdownModule } from 'primeng/dropdown';
 import { FileUploadModule } from 'primeng/fileupload';
 import { FileViewComponent } from '@components/source-components/ks-viewport/file-view.component';
@@ -109,11 +108,9 @@ import { ProjectCalendarComponent } from '@components/project-components/project
 import { ProjectCardComponent } from '@components/project-components/project-card.component';
 import { ProjectCreationDialogComponent } from '@components/project-components/project-creation-dialog.component';
 import { ProjectDetailsComponent } from '@components/project-components/project-details.component';
-import { ProjectInfoComponent } from '@components/project-components/project-info.component';
 import { ProjectNamePipe } from '@pipes/project-name.pipe';
 import { ProjectSelectorComponent } from '@components/project-components/project-selector.component';
 import { ProjectService } from '@services/factory-services/project.service';
-import { ProjectTypePipe } from '@pipes/project-type.pipe';
 import { ProjectsTreeComponent } from '@components/project-components/projects-tree.component';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { ScrollPanelModule } from 'primeng/scrollpanel';
@@ -159,6 +156,8 @@ import { SourceMetadataComponent } from '@components/source-components/source.me
 import { SourceVideoComponent } from '@components/source-components/source.video.component';
 import { SourceDocumentComponent } from '@components/source-components/source.document.component';
 import { SourceTimelineComponent } from '@components/source-components/source.timeline.component';
+import { IconComponent } from './components/shared/icon/icon.component';
+import { DragDropModule } from 'primeng/dragdrop';
 
 @NgModule({
   declarations: [
@@ -207,10 +206,8 @@ import { SourceTimelineComponent } from '@components/source-components/source.ti
     ProjectCardComponent,
     ProjectCreationDialogComponent,
     ProjectDetailsComponent,
-    ProjectInfoComponent,
     ProjectNamePipe,
     ProjectSelectorComponent,
-    ProjectTypePipe,
     ProjectsTreeComponent,
     SearchComponent,
     SearchSettingsComponent,
@@ -234,6 +231,7 @@ import { SourceTimelineComponent } from '@components/source-components/source.ti
     SourceVideoComponent,
     SourceDocumentComponent,
     SourceTimelineComponent,
+    IconComponent,
   ],
   imports: [
     A11yModule,
@@ -301,6 +299,7 @@ import { SourceTimelineComponent } from '@components/source-components/source.ti
     TreeModule,
     TreeSelectModule,
     YouTubePlayerModule,
+    DragDropModule,
   ],
   providers: [
     ConfirmationService,

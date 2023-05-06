@@ -27,7 +27,6 @@ export function constructTreeNodes(
   for (const node of nodes) {
     const treeNode: TreeNode = {
       label: node.name,
-      // data: JSON.stringify(proj?.knowledgeSource),
       expanded: collapsed ? false : node.expanded,
       leaf: node.subprojects.length === 0,
       selectable: true,
@@ -35,6 +34,7 @@ export function constructTreeNodes(
       parent: parent,
       droppable: true,
       key: node.id,
+      icon: node.icon,
     };
     treeNode.children =
       node.subprojects.length > 0

@@ -117,7 +117,8 @@ export class ProjectCommandService {
   }
 
   detail(project: KcProject) {
-    this._projectDetailEvent.next(project);
+    const p = this.projects.getProject(project.id);
+    this._projectDetailEvent.next(p);
   }
 
   share(projectList: KcProject[]) {

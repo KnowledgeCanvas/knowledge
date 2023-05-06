@@ -289,7 +289,10 @@ export class SourceDetailsComponent implements OnInit {
     this.form.valueChanges
       .pipe(skip(1), debounceTime(500), distinctUntilChanged(this.checkChanges))
       .subscribe((formValue) => {
-        this.source = { ...this.source, ...formValue };
+        this.source.title = formValue.title;
+        this.source.description = formValue.description;
+        this.source.topics = formValue.topics;
+        this.source.dateDue = formValue.dateDue;
         this.update.emit(this.source);
       });
   }

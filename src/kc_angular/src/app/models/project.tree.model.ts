@@ -22,19 +22,23 @@ export class ProjectTreeNode implements ProjectGraphNode {
   type: string;
   expanded = false;
   subprojects: ProjectTreeNode[];
+  icon?: string;
+  parentId?: string;
 
   constructor(
     name: string,
     id: string,
     type: string,
     subprojects: ProjectTreeNode[],
-    expanded: boolean
+    expanded: boolean,
+    icon?: string
   ) {
     this.name = name ? name : '';
     this.id = id ? id : '';
     this.type = type ? type : '';
     this.subprojects = subprojects ? subprojects : [];
     this.expanded = expanded;
+    this.icon = icon;
   }
 }
 

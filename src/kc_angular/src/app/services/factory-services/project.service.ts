@@ -22,7 +22,6 @@ import {
   ProjectCreationRequest,
   ProjectUpdateRequest,
 } from '@app/models/project.model';
-import { KcProjectType } from '@shared/models/project.model';
 import { KnowledgeSource } from '@app/models/knowledge.source.model';
 import { NotificationsService } from '@services/user-services/notifications.service';
 import { ProjectTree, ProjectTreeNode } from '@app/models/project.tree.model';
@@ -57,7 +56,6 @@ export class ProjectService {
 
   private tree: ProjectTree;
   private projectSource: KcProject[] = [];
-  private lookup: Map<string, KcProject>;
 
   constructor(
     private storageService: StorageService,
@@ -67,22 +65,8 @@ export class ProjectService {
     this.allProjects = new BehaviorSubject<ProjectTreeNode[]>([]);
     this.projectTree = this.allProjects.asObservable();
     this.tree = new ProjectTree();
-    this.lookup = new Map();
     this.projectSource = [];
     this.refreshTree();
-  }
-
-  /**
-   * Returns a list of Project types. The first element is guaranteed to be the default type
-   * @constructor
-   */
-  get ProjectTypes(): { code: KcProjectType; name: string }[] {
-    return [
-      { code: 'default', name: 'Default' },
-      { code: 'school', name: 'School' },
-      { code: 'hobby', name: 'Hobby' },
-      { code: 'work', name: 'Work' },
-    ];
   }
 
   get ProjectIdentifiers(): ProjectIdentifiers[] {
@@ -98,14 +82,12 @@ export class ProjectService {
   }
 
   async refreshTree() {
-    this.lookup = new Map();
     this.tree = new ProjectTree();
 
     this.getAllProjects().then(
       (projects: KcProject[]) => {
         this.projectSource = [];
         for (const project of projects) {
-          this.lookup.set(project.id.value, project);
           if (!project.parentId?.value) {
             this.projectSource.unshift(project);
           } else {
@@ -127,8 +109,6 @@ export class ProjectService {
     if (typeof id !== 'string') {
       id = id.value;
     }
-    console.debug('ProjectService.deleteProject(id) [recursive] | id === ', id);
-
     this.recursiveDelete(id);
 
     // If we are deleting the active project
@@ -186,6 +166,7 @@ export class ProjectService {
       subprojects: [],
       topics: project.topics,
       type: project.type,
+      icon: project.icon,
     };
 
     const subProjects: KcProject[] = [];
@@ -292,8 +273,8 @@ export class ProjectService {
         target.name = update.name;
       }
 
-      // TODO: why is this here?
-      target.expanded = update.expanded ?? false;
+      // If the update changes the expanded status, update it.
+      target.expanded = update.expanded ?? target.expanded;
 
       // Handle parentId update
       if (update.parentId) {
@@ -587,35 +568,48 @@ export class ProjectService {
     return tree;
   }
 
+  /**
+   * This function takes a flat list of Projects and builds a tree structure
+   * using the subprojects field.
+   */
   private buildTree(input: KcProject[]): void {
-    const visited = new Map<string, boolean>();
+    const tree = new ProjectTree();
+    const roots = input.filter((p) => !p.parentId.value);
+    let nodes = input.map((p) => this.modelToNode(p));
 
-    for (const model of input) {
-      if (model?.id && !visited.get(model.id.value)) {
-        const node = this.modelToNode(model);
+    // Remove any nodes that are not in the root list
+    nodes = nodes.filter((n) => roots.find((r) => r.id.value === n.id));
 
-        if (model.subprojects)
-          for (const subId of model.subprojects) {
-            const sub: KcProject | undefined = this.lookup.get(subId);
-            if (sub) {
-              node.subprojects.push(this.modelToNode(sub));
-              visited.set(subId, true);
-            }
-          }
-        this.tree.add(node, model.parentId?.value);
-        visited.set(node.id, true);
-      }
+    for (const node of nodes) {
+      tree.add(node, node.parentId);
     }
+    this.tree = tree;
   }
 
   private modelToNode(model: KcProject): ProjectTreeNode {
-    return new ProjectTreeNode(
+    const node = new ProjectTreeNode(
       model.name,
       model.id.value,
       'project',
       [],
-      model.expanded
+      model.expanded,
+      model.icon || 'pi pi-folder'
     );
+
+    if (model.subprojects && model.subprojects.length > 0) {
+      const subprojectModels: ProjectTreeNode[] = [];
+      for (const s of model.subprojects) {
+        const sub = this.getProject(s);
+        if (sub) {
+          const subprojectModel = this.modelToNode(sub);
+          subprojectModel.parentId = model.id.value;
+          subprojectModels.push(subprojectModel);
+        }
+      }
+      node.subprojects = subprojectModels;
+    }
+
+    return node;
   }
 
   private addKnowledgeSource(

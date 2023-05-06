@@ -17,6 +17,7 @@ import { EventModel, ProjectCalendar } from '@shared/models/event.model';
 import { KcProjectModel, KcProjectType } from '@shared/models/project.model';
 import { KnowledgeSource } from './knowledge.source.model';
 import { UUID } from '@shared/models/uuid.model';
+import { PrimeIcons } from 'primeng/api';
 
 export class KcProject implements KcProjectModel {
   readonly id: UUID;
@@ -28,6 +29,7 @@ export class KcProject implements KcProjectModel {
   topics: string[] = [];
   type: KcProjectType;
   expanded = false;
+  icon?: string;
 
   // TODO: this needs to be changed to an array of UUID instead of KS. The KS should be looked up
   sources: UUID[];
@@ -52,6 +54,7 @@ export class KcProject implements KcProjectModel {
     this.dateAccessed = new Date();
     this.calendar = { events: [], start: null, end: null };
     this.sources = [];
+    this.icon = PrimeIcons.FOLDER;
   }
 }
 
@@ -68,6 +71,7 @@ export interface ProjectCreationRequest {
   type: KcProjectType;
   subProjects: ProjectCreationRequest[];
   calendar: ProjectCalendar;
+  icon?: string;
 }
 
 export type ProjectMoveRequest = { ks: KnowledgeSource; new: UUID };

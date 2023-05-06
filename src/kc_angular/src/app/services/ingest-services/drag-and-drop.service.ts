@@ -17,6 +17,9 @@ import { Injectable } from '@angular/core';
 import { KnowledgeSourceFactoryRequest } from '@services/factory-services/ks-factory.service';
 import { KnowledgeSource } from '@app/models/knowledge.source.model';
 import { NotificationsService } from '@services/user-services/notifications.service';
+import { ProjectUpdateRequest } from '@app/models/project.model';
+import { ProjectService } from '@services/factory-services/project.service';
+import { BehaviorSubject, skip, throttleTime } from 'rxjs';
 
 export type DragAndDropPacket = {
   text?: string;
@@ -53,6 +56,14 @@ type TransferHandler = {
   providedIn: 'root',
 })
 export class DragAndDropService {
+  _sourceDrop = new BehaviorSubject<string>('');
+  sourceDrop = this._sourceDrop.asObservable().pipe(skip(1));
+
+  _dropHighlight = new BehaviorSubject<boolean>(false);
+  dropHighlight = this._dropHighlight
+    .asObservable()
+    .pipe(skip(1), throttleTime(250));
+
   private pending?: string;
   private __data_transfer_handlers: TransferHandler[] = [
     {
@@ -164,7 +175,10 @@ export class DragAndDropService {
     // }
   ];
 
-  constructor(private notifications: NotificationsService) {}
+  constructor(
+    private notifications: NotificationsService,
+    private projects: ProjectService
+  ) {}
 
   get supportedTypes() {
     return this.__data_transfer_handlers.map((dth) => dth.HANDLER_TYPE);
@@ -251,5 +265,113 @@ export class DragAndDropService {
       this.pending = this.pending?.split('\\').pop()?.split('/').pop();
       window.electron.startDrag(ks);
     }
+  }
+
+  dragSource(event: DragEvent, source: KnowledgeSource) {
+    this._dropHighlight.next(true);
+
+    event.dataTransfer?.setData('source', JSON.stringify(source));
+    if (event.dataTransfer) {
+      event.dataTransfer.effectAllowed = 'move';
+    }
+
+    const dragImage = new Image();
+    dragImage.src =
+      source.icon['changingThisBreaksApplicationSecurity'] || source.icon || '';
+    dragImage.classList.add('knowledge-source-icon');
+    event.dataTransfer?.setDragImage(dragImage, -10, -10);
+    return this.sourceDrop;
+  }
+
+  dragSources(event: DragEvent, sources: KnowledgeSource[]) {
+    this._dropHighlight.next(true);
+    event.dataTransfer?.setData('sources', JSON.stringify(sources));
+    if (event.dataTransfer) {
+      event.dataTransfer.effectAllowed = 'move';
+    }
+
+    const dragImage = new Image();
+    dragImage.src =
+      sources[0].icon['changingThisBreaksApplicationSecurity'] ||
+      sources[0].icon ||
+      '';
+    dragImage.classList.add('knowledge-source-icon');
+    event.dataTransfer?.setDragImage(dragImage, -10, -10);
+
+    return this.sourceDrop;
+  }
+
+  dropSource($event: any, projectId: string) {
+    this._dropHighlight.next(false);
+
+    const source: KnowledgeSource = JSON.parse(
+      $event.dataTransfer?.getData('source')
+    );
+
+    if (!source || !projectId) {
+      return;
+    }
+
+    // Create a list of updates to be applied
+    const updates = this.moveSourceRequests([source], projectId);
+    this.projects.updateProjects(updates).then(() => {
+      this._sourceDrop.next(source.id.value);
+    });
+  }
+
+  dropSources($event: any, projectId: string) {
+    this._dropHighlight.next(false);
+
+    const sources: KnowledgeSource[] = JSON.parse(
+      $event.dataTransfer?.getData('sources')
+    );
+
+    if (!sources || !projectId) {
+      return;
+    }
+
+    // Create a list of updates to be applied
+    const updates = this.moveSourceRequests(sources, projectId);
+
+    this.projects.updateProjects(updates).then(() => {
+      for (const source of sources) {
+        this._sourceDrop.next(source.id.value);
+      }
+    });
+  }
+
+  dragSourceEnd($event: any, _: any) {
+    this._dropHighlight.next(false);
+  }
+
+  private moveSourceRequests(sources: KnowledgeSource[], projectId: string) {
+    const updates: ProjectUpdateRequest[] = [];
+    for (const source of sources) {
+      const prevId = source.associatedProject.value;
+      const newId = projectId;
+
+      if (prevId === newId) {
+        continue;
+      }
+
+      const newProject = this.projects.getProject(newId);
+      const prevProject = this.projects.getProject(prevId);
+
+      if (newProject && prevProject) {
+        updates.push({
+          id: prevProject.id,
+          moveKnowledgeSource: {
+            ks: source,
+            new: newProject.id,
+          },
+        });
+      } else if (newProject) {
+        updates.push({
+          id: newProject.id,
+          addKnowledgeSource: [source],
+        });
+      }
+    }
+    return updates;
   }
 }
