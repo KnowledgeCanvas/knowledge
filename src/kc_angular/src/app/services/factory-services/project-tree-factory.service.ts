@@ -165,13 +165,7 @@ export class ProjectTreeFactoryService implements OnDestroy {
       );
 
       for (const node of projectNodes) {
-        let proj = this.projectService.getProject(node.id);
-
-        // The collapsed flag means we do not want to use the ACTUAL project nodes, so make a deep copy
-        if (collapsed) {
-          proj = JSON.parse(JSON.stringify(proj));
-        }
-
+        const proj = this.projectService.getProject(node.id);
         const treeNode: TreeNode = {
           label: node.name,
           data: JSON.stringify(proj?.knowledgeSource),
@@ -182,12 +176,14 @@ export class ProjectTreeFactoryService implements OnDestroy {
           parent: parent,
           droppable: true,
           key: node.id,
+          icon: node.icon,
         };
 
-        treeNode.children =
-          node.subprojects.length > 0
-            ? constructTreeNodes(node.subprojects, collapsed, treeNode)
-            : [];
+        treeNode.children = constructTreeNodes(
+          node.subprojects,
+          collapsed,
+          treeNode
+        );
         treeNodes.push(treeNode);
       }
 

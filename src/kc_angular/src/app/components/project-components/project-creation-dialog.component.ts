@@ -15,7 +15,6 @@
  */
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
-import { KcProjectType } from '@shared/models/project.model';
 import { NotificationsService } from '@services/user-services/notifications.service';
 import { ProjectCreationRequest } from '@app/models/project.model';
 import { ProjectService } from '@services/factory-services/project.service';
@@ -26,27 +25,32 @@ import { TreeNode } from 'primeng/api';
   selector: 'app-project-creation-dialog',
   template: `
     <div class="p-fluid grid pt-3 mt-3">
-      <div class="field p-float-label sm:col-12 md:col-6 lg:col-6">
-        <input
-          id="title"
-          type="text"
-          pInputText
-          required
-          [autofocus]="true"
-          (keydown.enter)="create()"
-          [minlength]="3"
-          [maxLength]="64"
-          [(ngModel)]="projectCreationRequest.name"
-        />
-        <label for="title">Title</label>
-        <div *ngIf="projectCreationRequest.name.length < 3" class="p-error">
-          Must be between 3 and 64 characters
+      <div class="col-12 flex flex-row">
+        <app-icon
+          [icon]="projectCreationRequest.icon"
+          (changed)="iconChange($event)"
+        ></app-icon>
+
+        <div class="field p-float-label w-full p-fluid ml-4">
+          <input
+            id="title"
+            type="text"
+            pInputText
+            required
+            [autofocus]="true"
+            (keydown.enter)="create()"
+            [minlength]="3"
+            [maxLength]="64"
+            [(ngModel)]="projectCreationRequest.name"
+          />
+          <label for="title">Title</label>
+          <div *ngIf="projectCreationRequest.name.length < 3" class="p-error">
+            Must be between 3 and 64 characters
+          </div>
         </div>
       </div>
 
-      <div
-        class="field p-float-label p-dropdown-label sm:col-12 md:col-6 lg:col-6"
-      >
+      <div class="field p-float-label col-12 mt-4">
         <project-selector
           label="Parent Project"
           [setDefault]="false"
@@ -117,12 +121,6 @@ export class ProjectCreationDialogComponent implements OnInit, OnDestroy {
   // A request, to be returned on form completion
   projectCreationRequest: ProjectCreationRequest;
 
-  // A list of potential project types
-  projectTypes: { code: KcProjectType; name: string }[];
-
-  // Instance used during the creation process
-  projectType: { code: KcProjectType; name: string };
-
   private cleanUp: Subject<any> = new Subject<any>();
 
   constructor(
@@ -131,10 +129,6 @@ export class ProjectCreationDialogComponent implements OnInit, OnDestroy {
     private notifications: NotificationsService,
     private projects: ProjectService
   ) {
-    this.projectTypes = projects.ProjectTypes;
-
-    this.projectType = this.projectTypes[0];
-
     this.projectCreationRequest = {
       authors: [],
       calendar: { events: [], start: new Date(), end: null },
@@ -146,6 +140,7 @@ export class ProjectCreationDialogComponent implements OnInit, OnDestroy {
       subProjects: [],
       topics: [],
       type: 'default',
+      icon: 'pi pi-folder',
     };
   }
 
@@ -166,7 +161,6 @@ export class ProjectCreationDialogComponent implements OnInit, OnDestroy {
     if (this.projectCreationRequest.name.trim().length < 3) {
       return;
     }
-    this.projectCreationRequest.type = this.projectType.code;
     this.projects.newProject(this.projectCreationRequest).then(() => {
       this.ref.close();
     });
@@ -176,5 +170,9 @@ export class ProjectCreationDialogComponent implements OnInit, OnDestroy {
     if ($event?.key) {
       this.projectCreationRequest.parentId = { value: $event.key };
     }
+  }
+
+  iconChange($event: any) {
+    this.projectCreationRequest.icon = $event;
   }
 }

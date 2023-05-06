@@ -37,7 +37,7 @@ import { SettingsService } from '@services/ipc-services/settings.service';
             #tableFilter
             pInputText
             type="text"
-            placeholder="Filter by title, type, date, etc."
+            placeholder="Filter by keyword"
             (input)="filter(tableFilter.value)"
           />
           <span
@@ -52,9 +52,9 @@ import { SettingsService } from '@services/ipc-services/settings.service';
       <div class="chat-toolbar-actions">
         <div
           pButton
-          icon="pi pi-print"
+          icon="pi pi-save"
           class="p-button-rounded p-button-text"
-          (click)="print.emit($event)"
+          (click)="save.emit($event)"
         ></div>
         <div
           pButton
@@ -71,7 +71,7 @@ export class ChatToolbarComponent {
   /**
    * Event emitted when the user clicks the print button
    */
-  @Output() print = new EventEmitter<MouseEvent>();
+  @Output() save = new EventEmitter<MouseEvent>();
 
   @Output() onFilter = new EventEmitter<string>();
 

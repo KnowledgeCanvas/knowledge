@@ -13,30 +13,53 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { ProjectService } from '@services/factory-services/project.service';
 import { MenuItem, TreeNode } from 'primeng/api';
 import { ProjectCommandService } from '@services/command-services/project-command.service';
 import { ProjectTreeFactoryService } from '@services/factory-services/project-tree-factory.service';
-import { BehaviorSubject, merge, skip, Subject, tap } from 'rxjs';
+import {
+  BehaviorSubject,
+  merge,
+  Observable,
+  skip,
+  Subject,
+  tap,
+  throttleTime,
+} from 'rxjs';
 import { ProjectContextMenuService } from '@services/factory-services/project-context-menu.service';
-import { debounceTime, takeUntil } from 'rxjs/operators';
+import { debounceTime, map, takeUntil } from 'rxjs/operators';
 import { NotificationsService } from '@services/user-services/notifications.service';
+import { DragAndDropService } from '@services/ingest-services/drag-and-drop.service';
 
 @Component({
   selector: 'app-projects-tree',
   template: `
     <p-tree
+      #projectTreeElement
+      cdkDropList
       class="h-full"
       emptyMessage=" "
       selectionMode="single"
+      styleClass="border-1"
       scrollHeight="flex"
+      [draggableNodes]="true"
+      [droppableNodes]="true"
+      [validateDrop]="true"
+      (onNodeDrop)="drop($event)"
+      (drop)="drop($event)"
       [style]="{ 'max-height': '100%' }"
       [contextMenu]="cm"
       [filter]="true"
       [value]="projectTree"
       [selection]="currentProject"
-      (selectionChange)="selectionChange($event)"
+      (onNodeSelect)="selectionChange($event)"
       (onNodeContextMenuSelect)="onContextMenu($event)"
       (onNodeCollapse)="onNodeCollapse($event, true)"
       (onNodeExpand)="onNodeCollapse($event, false)"
@@ -58,6 +81,20 @@ import { NotificationsService } from '@services/user-services/notifications.serv
             (click)="onRemoveProject(currentProject)"
             class="p-button-text p-button-plain p-button-danger"
           ></button>
+        </div>
+      </ng-template>
+
+      <ng-template pTemplate="default" let-node>
+        <div
+          #nodeLabel
+          class="drop-target"
+          pDroppable="sources"
+          [ngClass]="highlight$ | async"
+          (onDrop)="drop($event, node.key)"
+          (onDragEnter)="nodeLabel.classList.add('surface-a')"
+          (onDragLeave)="nodeLabel.classList.remove('surface-a')"
+        >
+          {{ node.label }}
         </div>
       </ng-template>
 
@@ -100,11 +137,32 @@ import { NotificationsService } from '@services/user-services/notifications.serv
           height: 100%;
           border: none;
         }
+
+        .p-treenode-droppoint {
+          display: none !important;
+          height: 0 !important;
+          width: 0 !important;
+        }
+
+        .drop-target {
+          border: 1px dashed transparent;
+          transition: border-color 0.2s;
+
+          &.p-draggable-enter {
+            border-color: var(--primary-color);
+            background: #eef2ff;
+            color: #4338ca;
+          }
+        }
       }
     `,
   ],
 })
 export class ProjectsTreeComponent implements OnInit, OnDestroy {
+  @ViewChild('projectTreeElement', { static: true }) projectTreeElement: any;
+
+  @ViewChild('nodeLabel', { static: true }) nodeLabel!: ElementRef;
+
   projectId = '';
 
   currentProject?: TreeNode;
@@ -113,12 +171,15 @@ export class ProjectsTreeComponent implements OnInit, OnDestroy {
 
   menu: MenuItem[] = [];
 
+  highlight$: Observable<string>;
+
   private projectChange = new BehaviorSubject<string>('');
 
   private cleanUp: Subject<any> = new Subject<any>();
 
   constructor(
-    private notifications: NotificationsService,
+    private dnd: DragAndDropService,
+    private notify: NotificationsService,
     private projects: ProjectService,
     private pCommand: ProjectCommandService,
     private pContext: ProjectContextMenuService,
@@ -159,7 +220,7 @@ export class ProjectsTreeComponent implements OnInit, OnDestroy {
         debounceTime(500),
         tap(() => {
           if (this.projectTree.length > 0) {
-            this.notifications.debug(
+            this.notify.debug(
               'Project Tree',
               'Setting Active Project',
               `${this.projectId}`
@@ -173,6 +234,13 @@ export class ProjectsTreeComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe();
+
+    this.highlight$ = dnd.dropHighlight.pipe(
+      throttleTime(100),
+      map((highlight) =>
+        highlight ? 'project-receptor-in' : 'project-receptor-out'
+      )
+    );
   }
 
   ngOnInit(): void {
@@ -185,7 +253,7 @@ export class ProjectsTreeComponent implements OnInit, OnDestroy {
   }
 
   selectionChange($event: any) {
-    this.projectChange.next($event.key);
+    this.projectChange.next($event.node.key);
   }
 
   onNewProject(currentProject?: TreeNode) {
@@ -254,6 +322,75 @@ export class ProjectsTreeComponent implements OnInit, OnDestroy {
         ]);
       }
     }
+  }
+
+  drop($event: any, projectId?: string) {
+    if ($event.dataTransfer?.getData('source') && projectId) {
+      // This is a drag and drop event of a source onto a project, move source to project
+      this.dnd.dropSource($event, projectId);
+      return;
+    } else if ($event.dataTransfer?.getData('sources') && projectId) {
+      this.dnd.dropSources($event, projectId);
+      return;
+    }
+
+    if (!$event.dropNode || !$event.dragNode) {
+      $event.preventDefault();
+      $event.stopPropagation();
+      return;
+    }
+
+    // Three projects need to be updated when a project is moved
+    // 1. The project that is moved
+    // 2. The project that is the new parent
+    // 3. The project that is now the old parent (if any)
+    const dragProject = this.projects.getProject($event.dragNode.key);
+    const dropProject = this.projects.getProject($event.dropNode.key);
+    const oldParentProject = this.projects.getProject(
+      dragProject?.parentId?.value ?? ''
+    );
+
+    if (!dragProject || !dropProject) {
+      this.notify.error(
+        'Project Tree',
+        'Error moving project',
+        'Could not resolve Project tree.'
+      );
+      return;
+    }
+
+    if (
+      oldParentProject &&
+      oldParentProject.id.value === dropProject.id.value
+    ) {
+      // Dropping on the same parent project, do nothing
+      return;
+    }
+
+    dragProject.parentId.value = dropProject.id.value;
+    dropProject.subprojects.push(dragProject.id.value);
+    const updates = [
+      {
+        id: dropProject.id,
+        expanded: true,
+      },
+      {
+        id: dragProject.id,
+        expanded: dragProject.expanded,
+      },
+    ];
+
+    if (oldParentProject) {
+      oldParentProject.subprojects = oldParentProject.subprojects.filter(
+        (id) => id !== dragProject.id.value
+      );
+      updates.push({
+        id: oldParentProject.id,
+        expanded: oldParentProject.expanded,
+      });
+    }
+
+    this.projects.updateProjects(updates);
   }
 
   private expandPath = (node: TreeNode) => {

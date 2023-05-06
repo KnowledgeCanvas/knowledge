@@ -25,6 +25,7 @@ import {
   BrowserViewHeaderConfig,
   BrowserViewHeaderEvent,
 } from '@shared/models/browser.view.model';
+import { PrimeIcons } from 'primeng/api';
 
 @Component({
   selector: 'ks-lib-viewport-header',
@@ -35,6 +36,7 @@ import {
           <button
             pButton
             [disabled]="!config.canGoBack"
+            [class.text-400]="!config.canGoBack"
             icon="pi pi-arrow-left"
             class="p-button-text"
             (click)="back()"
@@ -44,6 +46,7 @@ import {
           <button
             pButton
             [disabled]="!config.canGoForward"
+            [class.text-400]="!config.canGoForward"
             (click)="forward()"
             icon="pi pi-arrow-right"
             class="p-button-text"
@@ -53,6 +56,7 @@ import {
           <button
             pButton
             [disabled]="!config.canRefresh"
+            [class.text-400]="!config.canRefresh"
             (click)="refresh()"
             icon="pi pi-refresh"
             class="p-button-text"
@@ -84,6 +88,7 @@ import {
           <button
             pButton
             [disabled]="!config.canCopy"
+            [class.text-400]="!config.canCopy"
             (click)="copy()"
             [icon]="copyIcon"
             class="p-button-text"
@@ -105,6 +110,7 @@ import {
             pButton
             *ngIf="config.showSaveButton"
             [disabled]="!config.canSave"
+            [class.text-400]="!config.canSave"
             (click)="save()"
             [icon]="saveIcon"
             class="p-button-text"
@@ -116,6 +122,7 @@ import {
             pButton
             *ngIf="config.showCloseButton"
             [disabled]="!config.canClose"
+            [class.text-400]="!config.canClose"
             (click)="close()"
             icon="pi pi-times"
             class="p-button-text"
@@ -185,8 +192,8 @@ export class ViewportHeaderComponent implements OnChanges {
   saveTooltip = 'Send to Inbox';
   openTooltip = 'Open in...';
 
-  copyIcon = 'pi pi-copy';
-  saveIcon = 'pi pi-save';
+  copyIcon = PrimeIcons.COPY;
+  saveIcon = PrimeIcons.FILE_IMPORT;
 
   // Putting this here for extensibility, but currently we are not supported letting the user type in a random URL (i.e. this is for display only)
   displayTextDisabled = true;

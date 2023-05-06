@@ -15,7 +15,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { KcProject } from '@app/models/project.model';
+import { KcProject, ProjectUpdateRequest } from '@app/models/project.model';
 import { MenuItem, PrimeIcons } from 'primeng/api';
 import { ProjectCommandService } from '@services/command-services/project-command.service';
 import { ProjectService } from './project.service';
@@ -54,6 +54,33 @@ export class ProjectContextMenuService {
         icon: PrimeIcons.PLUS,
         command: () => {
           this.pCommand.new(project.id);
+        },
+      },
+      {
+        label: 'Convert to Root',
+        icon: PrimeIcons.ARROW_CIRCLE_UP,
+        command: () => {
+          // Remove parent project from this project
+          const realProject = this.projects.getProject(project.id);
+          if (!realProject) return;
+
+          const parent = this.projects.getProject(project.parentId.value);
+
+          project.parentId = { value: '' };
+          realProject.parentId = { value: '' };
+
+          const updates: ProjectUpdateRequest[] = [{ id: realProject.id }];
+
+          // Update parent project by removing this project from its children
+          if (parent) {
+            parent.subprojects = parent.subprojects.filter(
+              (p) => p !== project.id.value
+            );
+            updates.push({ id: parent.id });
+          }
+
+          // Update projects
+          this.projects.updateProjects(updates);
         },
       },
       {

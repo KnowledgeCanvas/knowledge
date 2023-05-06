@@ -122,16 +122,21 @@ import { finalize, map, take, takeUntil, tap } from 'rxjs/operators';
                 </div>
               </div>
               <div>
-                <app-ks-message
-                  *ngFor="let ks of filtered"
-                  [ks]="ks"
-                  (click)="setActive(ks)"
-                  (contextmenu)="
-                    setContext(ks); onKsContextMenu(context); cm.show($event)
-                  "
-                  [active]="active && ks.id.value === active.id.value"
-                >
-                </app-ks-message>
+                <div *ngFor="let ks of filtered">
+                  <app-ks-message
+                    class="source-drag-handle"
+                    [ks]="ks"
+                    (click)="setActive(ks)"
+                    pDraggable="sources"
+                    (onDragStart)="dragStart($event, ks)"
+                    (onDragEnd)="dragEnd($event, ks)"
+                    (contextmenu)="
+                      setContext(ks); onKsContextMenu(context); cm.show($event)
+                    "
+                    [active]="active && ks.id.value === active.id.value"
+                  >
+                  </app-ks-message>
+                </div>
               </div>
             </div>
 
@@ -536,5 +541,23 @@ export class HomeComponent implements OnDestroy {
       found.flagged = $event.flagged;
       found.topics = $event.topics;
     }
+  }
+
+  dragStart($event: any, ks: KnowledgeSource) {
+    this.dnd
+      .dragSource($event, ks)
+      .pipe(
+        take(1),
+        tap((dragged) => {
+          if (dragged === ks.id.value) {
+            this.ingest.add(ks);
+          }
+        })
+      )
+      .subscribe();
+  }
+
+  dragEnd($event: any, rowData: any) {
+    this.dnd.dragSourceEnd($event, rowData);
   }
 }

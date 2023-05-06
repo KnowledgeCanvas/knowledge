@@ -32,6 +32,7 @@ import { ProjectService } from '@services/factory-services/project.service';
 import { OverlayPanel } from 'primeng/overlaypanel';
 import { KsContextMenuService } from '@services/factory-services/ks-context-menu.service';
 import { TopicService } from '@services/user-services/topic.service';
+import { DragAndDropService } from '@services/ingest-services/drag-and-drop.service';
 
 @Component({
   selector: 'ks-table',
@@ -149,7 +150,14 @@ import { TopicService } from '@services/user-services/topic.service';
             let-columns="columns"
             let-expanded="expanded"
           >
-            <tr [pContextMenuRow]="rowData" (dblclick)="detail(rowData)">
+            <tr
+              [pContextMenuRow]="rowData"
+              (dblclick)="detail(rowData)"
+              class="source-drag-handle"
+              pDraggable="sources"
+              (onDragStart)="dragStart($event, rowData)"
+              (onDragEnd)="dragEnd($event, rowData)"
+            >
               <td style="max-width: 40px">
                 <p-tableCheckbox
                   [value]="rowData"
@@ -357,6 +365,7 @@ export class KsTableComponent implements OnInit, OnChanges {
 
   constructor(
     private command: KsCommandService,
+    private dnd: DragAndDropService,
     private projects: ProjectService,
     private topics: TopicService,
     private context: KsContextMenuService
@@ -600,5 +609,20 @@ export class KsTableComponent implements OnInit, OnChanges {
 
   onRowChange($event: number) {
     localStorage.setItem(this.KS_TABLE_ROWS, `${$event}`);
+  }
+
+  dragStart($event: DragEvent, source: KnowledgeSource) {
+    // If source is in the selected list, drag all selected
+    const found = this.ksSelected.find((ks) => ks.id === source.id);
+    if (found) {
+      this.dnd.dragSources($event, this.ksSelected);
+      return;
+    } else {
+      this.dnd.dragSource($event, source);
+    }
+  }
+
+  dragEnd($event: any, rowData: any) {
+    this.dnd.dragSourceEnd($event, rowData);
   }
 }

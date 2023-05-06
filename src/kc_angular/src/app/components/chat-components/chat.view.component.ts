@@ -217,7 +217,7 @@ export class ChatViewComponent implements OnInit, OnChanges {
   }
 
   /* Print the chat history using the chat service */
-  async print() {
+  async saveChat() {
     this.chat.chatToPng(
       this.history,
       this.chatPrintConfig.filename,

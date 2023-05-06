@@ -29,14 +29,18 @@ import { TreeNode } from 'primeng/api';
 import { Subscription } from 'rxjs';
 import { UUID } from '@shared/models/uuid.model';
 import { KsCommandService } from '@services/command-services/ks-command.service';
+import { DragAndDropService } from '@services/ingest-services/drag-and-drop.service';
 
 @Component({
   selector: 'app-ks-card',
   template: `
     <div
+      pDraggable="sources"
+      (onDragStart)="dragStart($event, ks)"
+      (onDragEnd)="dragEnd($event, ks)"
       *ngIf="ks"
       (dblclick)="onEdit.emit(ks)"
-      class="hover:shadow-1 border-round-2xl border-1 border-dotted border-400 h-full flex flex-column overflow-hidden justify-content-between surface-card"
+      class="hover:shadow-1 border-round-2xl border-1 border-dotted border-400 h-full flex flex-column overflow-hidden justify-content-between surface-card source-drag-handle"
     >
       <div class="flex flex-grow-1">
         <app-ks-thumbnail
@@ -280,7 +284,10 @@ export class KsCardComponent implements OnDestroy, OnChanges {
 
   private _subProjectTree?: Subscription;
 
-  constructor(private command: KsCommandService) {}
+  constructor(
+    private command: KsCommandService,
+    private dnd: DragAndDropService
+  ) {}
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes.ks?.currentValue) {
@@ -402,5 +409,13 @@ export class KsCardComponent implements OnDestroy, OnChanges {
   onFlagged(ks: KnowledgeSource, flagged: boolean) {
     this.ks.flagged = flagged;
     this.command.update([ks]);
+  }
+
+  dragStart($event: DragEvent, ks: KnowledgeSource) {
+    this.dnd.dragSource($event, ks);
+  }
+
+  dragEnd($event: any, rowData: any) {
+    this.dnd.dragSourceEnd($event, rowData);
   }
 }
