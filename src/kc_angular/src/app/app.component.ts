@@ -151,32 +151,6 @@ export class AppComponent {
       )
       .subscribe();
 
-    /* Show tutorial as long as showFirstRunTutorial is true */
-    settings.all
-      .pipe(
-        take(2),
-        map((s) => s.user),
-        tap((userSettings) => {
-          if (!userSettings) {
-            return;
-          }
-          if (userSettings.tutorials === undefined) {
-            settings.set({
-              user: { tutorials: { showFirstRunTutorial: true } },
-            });
-          } else if (userSettings.tutorials.showFirstRunTutorial) {
-            setTimeout(() => {
-              this.startup.tutorial().subscribe((showAgain) => {
-                settings.set({
-                  user: { tutorials: { showFirstRunTutorial: showAgain } },
-                });
-              });
-            }, 1000);
-          }
-        })
-      )
-      .subscribe();
-
     /* enable/disable animations */
     settings.display
       .pipe(

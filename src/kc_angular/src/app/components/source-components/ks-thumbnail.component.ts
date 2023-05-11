@@ -38,7 +38,7 @@ import { NotificationsService } from '@services/user-services/notifications.serv
         [@fadeIn]="animate"
         (onImageError)="onImageError()"
         class="flex-col-center-center h-full thumbnail-container overflow-hidden justify-content-start"
-        imageClass="ks-thumbnail"
+        imageClass="ks-thumbnail {{ animate ? 'kenburns-top' : '' }}"
         [preview]="allowPreview"
       >
       </p-image>
@@ -47,7 +47,8 @@ import { NotificationsService } from '@services/user-services/notifications.serv
     <ng-template #loading>
       <div
         [@fadeIn]="animate"
-        class="h-full flex-col-center-center select-none surface-300"
+        [class.bg-pan-left]="animate"
+        class="h-full flex-col-center-center select-none"
         style="min-height: 12rem"
       >
         <app-ks-icon [ks]="ks"></app-ks-icon>

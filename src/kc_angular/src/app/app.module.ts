@@ -142,7 +142,6 @@ import { TooltipModule } from 'primeng/tooltip';
 import { TreeModule } from 'primeng/tree';
 import { TreeSelectModule } from 'primeng/treeselect';
 import { TruncatePipe } from '@pipes/truncate.pipe';
-import { TutorialComponent } from '@components/shared/tutorial.component';
 import { ViewIconPipe } from '@pipes/view-icon.pipe';
 import { ViewportHeaderComponent } from '@components/source-components/ks-viewport/viewport-header.component';
 import { YouTubePlayerModule } from '@angular/youtube-player';
@@ -156,8 +155,11 @@ import { SourceMetadataComponent } from '@components/source-components/source.me
 import { SourceVideoComponent } from '@components/source-components/source.video.component';
 import { SourceDocumentComponent } from '@components/source-components/source.document.component';
 import { SourceTimelineComponent } from '@components/source-components/source.timeline.component';
-import { IconComponent } from './components/shared/icon/icon.component';
+import { IconComponent } from '@components/shared/icon/icon.component';
 import { DragDropModule } from 'primeng/dragdrop';
+import { SanitizeHtmlPipe } from '@pipes/sanitize-html.pipe';
+import { SourceBrowserComponent } from '@components/source-components/source.browser.component';
+import { SourceNotesComponent } from '@components/source-components/source.notes.component';
 
 @NgModule({
   declarations: [
@@ -218,7 +220,6 @@ import { DragDropModule } from 'primeng/dragdrop';
     TableComponent,
     TimelineComponent,
     TruncatePipe,
-    TutorialComponent,
     ViewIconPipe,
     ViewportHeaderComponent,
     ChatToolbarComponent,
@@ -229,9 +230,12 @@ import { DragDropModule } from 'primeng/dragdrop';
     SourceChatComponent,
     SourceMetadataComponent,
     SourceVideoComponent,
+    SourceBrowserComponent,
+    SourceNotesComponent,
     SourceDocumentComponent,
     SourceTimelineComponent,
     IconComponent,
+    SanitizeHtmlPipe,
   ],
   imports: [
     A11yModule,

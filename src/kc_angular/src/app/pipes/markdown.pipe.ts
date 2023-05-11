@@ -24,20 +24,6 @@ export class MarkdownPipe implements PipeTransform {
   constructor(private markdownService: MarkdownService) {}
 
   transform(markdown: string, topics?: string[]): string {
-    if (topics) {
-      let md = this.markdownService.parseMarkdown(markdown) ?? markdown;
-      // For all topics, scan the markdown for the topic and wrap it in a PrimeNG tag with the topic as the label. Make sure to ignore case.
-      topics.forEach((topic) => {
-        // Replace each occurance of the topic with a tag. This should account for
-        // word breaks, white space, and punctuation.
-        md = md.replace(
-          new RegExp(`\\b${topic}\\b`, 'gi'),
-          `<span class="topic-markdown">${topic}</span>`
-        );
-      });
-      return md;
-    } else {
-      return this.markdownService.parseMarkdown(markdown) ?? markdown;
-    }
+    return this.markdownService.parseMarkdown(markdown, topics) ?? markdown;
   }
 }

@@ -21,12 +21,11 @@
 >
   <chat-toolbar
     (onFilter)="onFilter($event)"
-    (save)="saveChat()"
   ></chat-toolbar>
 
   <div
-    [id]="chatPrintConfig.divId"
     class="flex flex-column overflow-y-auto flex-grow-1 gap-2 pt-2 w-full"
+    id="chat-history"
   >
     <div
       *ngFor="let message of filtered$ | async; let idx = index"

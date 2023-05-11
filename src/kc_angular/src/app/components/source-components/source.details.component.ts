@@ -117,11 +117,12 @@ import { skip } from 'rxjs';
                   *ngIf="showMarkdownPreview"
                   [innerHTML]="
                     source.description
-                      ? (source.description | markdown : source.topics)
+                      ? (source.description | markdown | sanitizeHtml)
                       : ('Add a description, notes, or other information here using [Markdown](https://www.markdownguide.org/basic-syntax/) formatting.'
-                        | markdown)
+                        | markdown
+                        | sanitizeHtml)
                   "
-                  class="w-full h-full max-h-fit ks-description select-text"
+                  class="w-full h-full max-h-fit ks-description select-text overflow-y-auto"
                   [class.text-500]="!source.description"
                   [class.align-items-center]="!source.description"
                   [class.justify-content-center]="!source.description"
@@ -132,12 +133,10 @@ import { skip } from 'rxjs';
                     <textarea
                       *ngIf="!showMarkdownPreview"
                       class="w-full h-full max-h-fit ks-description"
+                      [rows]="24"
                       formControlName="description"
                       id="_ksDescription"
-                      [rows]="30"
-                      [maxlength]="8192"
                       pInputTextarea
-                      [autoResize]="true"
                       placeholder="Description"
                     >
                     </textarea>

@@ -22,12 +22,12 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
   selector: 'source-document',
   template: `
     <div class="source-pdf-viewer fadein">
-      <div #document class="flex-col-center-start h-full surface-section">
+      <div #document class="flex-col-center-center h-full surface-section">
         <embed
           #document
           *ngIf="safeUrl"
           [src]="safeUrl"
-          [style]="{ width: '100%', height: '100%' }"
+          [style]="style"
           class="p-fluid"
         />
       </div>
@@ -55,7 +55,17 @@ export class SourceDocumentComponent implements OnInit {
 
   safeUrl: SafeUrl | undefined;
 
-  viewReady = false;
+  style = {
+    width: '100%',
+    height: '100%',
+    'max-width': '100%',
+    'max-height': '100%',
+  };
+
+  styles = {
+    unset: ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff', 'tif'],
+    full: ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'],
+  };
 
   @ViewChild('document', { static: true }) document!: ElementRef;
 
@@ -70,6 +80,18 @@ export class SourceDocumentComponent implements OnInit {
         this.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
           'file://' + encodeURI(this.source.accessLink)
         );
+
+        for (const type of this.styles.unset) {
+          if (this.source.accessLink?.endsWith(type)) {
+            this.style = {
+              'max-height': '100%',
+              'max-width': '100%',
+              width: 'unset',
+              height: 'unset',
+            };
+            break;
+          }
+        }
       }
     }, 500);
   }

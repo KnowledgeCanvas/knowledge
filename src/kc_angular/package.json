@@ -45,7 +45,6 @@
     "cytoscape-klay": "^3.1.4",
     "eslint": "^8.38.0",
     "fuse.js": "^6.6.2",
-    "html2canvas": "^1.4.1",
     "marked": "^4.3.0",
     "primeflex": "^3.2.1",
     "primeicons": "^6.0.1",

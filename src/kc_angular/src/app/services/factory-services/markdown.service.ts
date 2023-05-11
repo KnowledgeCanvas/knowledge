@@ -27,9 +27,29 @@ export class MarkdownService {
   constructor(private notify: NotificationsService) {
     this.renderer = new marked.Renderer();
     this.configureLinks();
+    this.configureParagraphs();
   }
 
-  public parseMarkdown(markdown: string): string {
+  public parseMarkdown(markdown: string, topics?: string[]): string {
+    if (topics) {
+      // First, make sure that the topics are unique.
+      // If a topic is a substring of another topic, use the longer one
+      // e.g. ['foo', 'foobar'] => ['foobar']
+      topics = topics?.map((t) => t.trim());
+      const subset = topics
+        ?.map((t) => t.trim())
+        .filter((t) => !topics?.some((t2) => t2 !== t && t2.includes(t)));
+
+      // For all topics, scan the markdown for the topic and wrap it in a PrimeNG tag with the topic as the label. Make sure to ignore case.
+      subset.forEach((topic) => {
+        // Replace each occurance of the topic with a tag. This should account for word breaks, white space, and punctuation.
+        markdown = markdown.replace(
+          new RegExp(`${topic.trim()}`, 'gi'),
+          `**${topic}**`
+        );
+      });
+    }
+
     let html;
     try {
       html = marked(markdown, { renderer: this.renderer });
@@ -53,8 +73,19 @@ export class MarkdownService {
         ? html
         : html.replace(
             /^<a /,
-            `<a target="_blank" class="text-primary" rel="noreferrer noopener nofollow" `
+            `<a target="_blank" class="font-bold text-color-secondary" rel="noreferrer noopener nofollow" `
           );
+    };
+  }
+
+  private configureParagraphs() {
+    /**
+     * Add 0.5rem of padding to the top and bottom of paragraphs.
+     */
+    const paragraphRenderer = this.renderer.paragraph;
+    this.renderer.paragraph = (text) => {
+      const html = paragraphRenderer.call(this.renderer, text);
+      return html.replace(/^<p>/, `<p class="p-1">`);
     };
   }
 }

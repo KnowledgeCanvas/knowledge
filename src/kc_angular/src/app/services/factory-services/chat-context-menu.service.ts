@@ -55,10 +55,7 @@ export class ChatContextMenuService {
         {
           label: 'Text',
           command: () => {
-            this.clipboard.copy(`${message.timestamp.toLocaleString()}
-${message.source?.title ?? message.project?.name ?? ''}
-
-${message.text}`);
+            this.clipboard.copy(`${message.text}`);
             this.notifications.success(
               'Chat',
               'Copied',
@@ -69,10 +66,7 @@ ${message.text}`);
         {
           label: 'HTML',
           command: () => {
-            this.clipboard.copy(`${message.timestamp.toLocaleString()}
-${message.source?.title ?? message.project?.name ?? ''}
-
-${this.markdown.parseMarkdown(message.text)}`);
+            this.clipboard.copy(`${this.markdown.parseMarkdown(message.text)}`);
             this.notifications.success(
               'Chat',
               'Copied',
@@ -118,8 +112,8 @@ ${this.markdown.parseMarkdown(message.text)}`);
       for (let segment of textSegments) {
         if (segment.trim().length > 0) {
           // Replace the TLDR and ELI5 tags with bold text. Required because the highlighted text does not include the ** characters.
-          segment = segment.replace('TLDR:', '**TLDR:**');
-          segment = segment.replace('ELI5:', '**ELI5:**');
+          segment = segment.replace('TLDR:', '<u>**TLDR:**</u>');
+          segment = segment.replace('ELI5:', '<u>**ELI5:**</u>');
           target.text = target.text.replace(
             segment,
             `<mark class="${className} ${colorClass}">${segment}</mark>`
@@ -136,7 +130,7 @@ ${this.markdown.parseMarkdown(message.text)}`);
           label:
             '<span class="highlight-selector-yellow">HIGHLIGHTHIGHLIGHT</span>',
           command: () => {
-            const className = this.uuid.generate(1)[0].value;
+            const className = new Date().toISOString();
             highlightCommand('highlight-yellow', className);
             afterAction();
           },
@@ -146,7 +140,7 @@ ${this.markdown.parseMarkdown(message.text)}`);
           label:
             '<span class="highlight-selector-green">HIGHLIGHTHIGHLIGHT</span>',
           command: () => {
-            const className = this.uuid.generate(1)[0].value;
+            const className = new Date().toISOString();
             highlightCommand('highlight-green', className);
             afterAction();
           },
@@ -156,7 +150,7 @@ ${this.markdown.parseMarkdown(message.text)}`);
           label:
             '<span class="highlight-selector-red">HIGHLIGHTHIGHLIGHT</span>',
           command: () => {
-            const className = this.uuid.generate(1)[0].value;
+            const className = new Date().toISOString();
             highlightCommand('highlight-red', className);
             afterAction();
           },
@@ -166,7 +160,7 @@ ${this.markdown.parseMarkdown(message.text)}`);
           label:
             '<span class="highlight-selector-lightblue">HIGHLIGHTHIGHLIGHT</span>',
           command: () => {
-            const className = this.uuid.generate(1)[0].value;
+            const className = new Date().toISOString();
             highlightCommand('highlight-lightblue', className);
             afterAction();
           },
@@ -174,7 +168,7 @@ ${this.markdown.parseMarkdown(message.text)}`);
         },
       ],
       command: () => {
-        const className = this.uuid.generate(1)[0].value;
+        const className = new Date().toISOString();
         const text = selection.toString();
         target.text = target.text.replace(
           text,

@@ -52,12 +52,6 @@ import { SettingsService } from '@services/ipc-services/settings.service';
       <div class="chat-toolbar-actions">
         <div
           pButton
-          icon="pi pi-save"
-          class="p-button-rounded p-button-text"
-          (click)="save.emit($event)"
-        ></div>
-        <div
-          pButton
           icon="pi pi-cog"
           class="p-button-rounded p-button-text"
           (click)="chatSettings()"
@@ -68,11 +62,6 @@ import { SettingsService } from '@services/ipc-services/settings.service';
   styles: [],
 })
 export class ChatToolbarComponent {
-  /**
-   * Event emitted when the user clicks the print button
-   */
-  @Output() save = new EventEmitter<MouseEvent>();
-
   @Output() onFilter = new EventEmitter<string>();
 
   private _filter$ = new BehaviorSubject<string>('');
