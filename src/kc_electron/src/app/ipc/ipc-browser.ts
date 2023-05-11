@@ -272,6 +272,7 @@ openBrowserView = ipcMain.on(
   "A2E:BrowserView:Open",
   (event: any, args: BrowserViewRequest) => {
     const kcMainWindow: any = share.BrowserWindow.getAllWindows()[0];
+    let inverted = false;
     const response: IpcMessage = {
       error: undefined,
       success: undefined,
@@ -380,22 +381,46 @@ openBrowserView = ipcMain.on(
     let selectedText = "";
     const menu = new Menu();
     const extractOption = new MenuItem({
-      label: "Extract Text",
-      click: (menuItem, browserWindow, event) => {
-        console.log("MenuItem: ", menuItem);
-        console.log("Browser Window: ", browserWindow);
-        console.log("Event: ", event);
-        console.log("Extracting text: ", selectedText);
-
+      label: "Extract as Note",
+      click: () => {
         const data = {
           text: selectedText,
           url: args.url,
+          method: "extract",
         };
 
         kcMainWindow.webContents.send("E2A:BrowserView:ExtractedText", data);
       },
     });
     menu.append(extractOption);
+
+    const summarizeOption = new MenuItem({
+      label: "Summarize in Chat",
+      click: () => {
+        const data = {
+          text: selectedText,
+          url: args.url,
+          method: "summarize",
+        };
+
+        kcMainWindow.webContents.send("E2A:BrowserView:ExtractedText", data);
+      },
+    });
+    menu.append(summarizeOption);
+
+    const topicsOption = new MenuItem({
+      label: "Detect Topics/Concepts",
+      click: () => {
+        const data = {
+          text: selectedText,
+          url: args.url,
+          method: "topics",
+        };
+
+        kcMainWindow.webContents.send("E2A:BrowserView:ExtractedText", data);
+      },
+    });
+    menu.append(topicsOption);
 
     kcBrowserView.webContents.on("context-menu", (e: any, params: any) => {
       e.preventDefault();
@@ -446,6 +471,19 @@ openBrowserView = ipcMain.on(
       if (!kcBrowserView.webContents) return;
       if (kcBrowserView.webContents) {
         kcBrowserView.webContents.goForward();
+      }
+    });
+
+    ipcMain.on("A2E:BrowserView:Invert", () => {
+      // Add CSS to the BrowserView to invert the colors
+      if (!kcBrowserView.webContents) return;
+      if (kcBrowserView.webContents) {
+        // This should eventually be made more robust (e.g. do not invert images)
+        const css = inverted
+          ? "html {-webkit-filter: invert(0);}"
+          : "html {-webkit-filter: invert(100%);}";
+        kcBrowserView.webContents.insertCSS(css);
+        inverted = !inverted;
       }
     });
 

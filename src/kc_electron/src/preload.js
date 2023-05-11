@@ -16,8 +16,6 @@
 
 import { contextBridge, ipcRenderer } from "electron";
 
-import html2canvas from "html2canvas";
-
 /**
  * IPC Channels must be placed in one of the following lists before it
  * can be invoked.
@@ -35,6 +33,7 @@ const ipcSendChannels = [
   "A2E:BrowserView:CurrentUrl",
   "A2E:BrowserView:GoBack",
   "A2E:BrowserView:GoForward",
+  "A2E:BrowserView:Invert",
   "A2E:BrowserView:Open",
   "A2E:BrowserView:Refresh",
   "A2E:Extraction:Website",
@@ -153,13 +152,6 @@ contextBridge.exposeInMainWorld("api", {
     );
     ipcRenderer.removeAllListeners(channel);
   },
-  html2canvas: (element, options) => {
-    console.debug(
-      `[Debug]-[${datetime()}]-[Electron IPC]: html2canvas - Invoked `
-    );
-    return html2canvas(element, options);
-  },
-  cola: require("cytoscape-cola"),
 });
 
 contextBridge.exposeInMainWorld("electron", {

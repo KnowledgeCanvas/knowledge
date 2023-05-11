@@ -22,7 +22,7 @@ import {
   ChatSettingsModel,
   SettingsModel,
 } from "../../../../kc_shared/models/settings.model";
-import ChatUtils from "../utils/chat.utils";
+import TokenizerUtils from "../utils/tokenizer.utils";
 
 const settings = require("../../app/services/settings.service");
 
@@ -31,7 +31,7 @@ export default class ChatController {
 
   private settings: ChatSettingsModel = new ChatSettingsModel();
 
-  private utils = new ChatUtils();
+  private tokenizer = new TokenizerUtils();
 
   constructor() {
     this.init();
@@ -40,55 +40,27 @@ export default class ChatController {
       .pipe(map((s: SettingsModel) => s.app.chat))
       .subscribe((chatSettings: ChatSettingsModel) => {
         if (chatSettings.model.name !== this.settings.model.name) {
-          this.utils.setModel(chatSettings.model.name);
+          this.tokenizer.setModel(chatSettings.model.name);
         }
         this.settings = chatSettings;
       });
   }
 
-  async init() {
-    this.openai = undefined;
-    const apiKeyPath = this.getApiKeyPath();
-    const apiKey = await chatEncrypt.readAndDecryptApiKey(
-      apiKeyPath,
-      "unsecured"
-    );
-
-    if (!apiKey) {
-      console.error("API key not found");
-      return;
-    }
-
-    const apiKeyWorks = await this.testApiKey(apiKey);
-    if (!apiKeyWorks) {
-      console.error("API key is invalid");
-    } else {
-      this.openai = new OpenAIApi(
-        new Configuration({
-          apiKey: apiKey,
-        })
-      );
-    }
-  }
-
   async chat(req: Request, res: Response): Promise<Response> {
-    if (!this.openai) {
-      await this.init();
-      if (!this.openai) {
-        return res.status(500).json({
-          error: "OpenAI API not initialized",
-        });
-      }
+    if (!this.veryifyApi() || !this.openai) {
+      return res.status(500).json({
+        error: "OpenAI API not initialized",
+      });
     }
 
     // Remove any duplicate messages
     // console.log("Chat request: ", req.body.messages);
-    let messages = this.utils.deduplicate(req.body.messages);
+    let messages = this.tokenizer.deduplicate(req.body.messages);
     // console.log("After deduplication: ", messages);
 
     try {
       // TODO: This should be specified depending on the model
-      messages = this.utils.limitTokens(
+      messages = this.tokenizer.limitTokens(
         messages,
         4096 - this.settings.model.max_tokens
       );
@@ -121,9 +93,41 @@ export default class ChatController {
     }
   }
 
-  getApiKeyPath(): string {
+  private async veryifyApi() {
+    if (!this.openai) {
+      await this.init();
+    }
+    return true;
+  }
+
+  private getApiKeyPath(): string {
     const userDataPath = settings.getSettings().system.appPath;
     return `${userDataPath}/openai.encrypted`;
+  }
+
+  private async init() {
+    this.openai = undefined;
+    const apiKeyPath = this.getApiKeyPath();
+    const apiKey = await chatEncrypt.readAndDecryptApiKey(
+      apiKeyPath,
+      "unsecured"
+    );
+
+    if (!apiKey) {
+      console.error("API key not found");
+      return;
+    }
+
+    const apiKeyWorks = await this.testApiKey(apiKey);
+    if (!apiKeyWorks) {
+      console.error("API key is invalid");
+    } else {
+      this.openai = new OpenAIApi(
+        new Configuration({
+          apiKey: apiKey,
+        })
+      );
+    }
   }
 
   private async testApiKey(apiKey: string) {

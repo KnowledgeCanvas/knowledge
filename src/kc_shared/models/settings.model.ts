@@ -248,8 +248,10 @@ export class ChatSettingsModel {
 
   display: {
     introductions: boolean;
+    sourceMessages: boolean;
   } = {
     introductions: true,
+    sourceMessages: true,
   };
 
   model: {

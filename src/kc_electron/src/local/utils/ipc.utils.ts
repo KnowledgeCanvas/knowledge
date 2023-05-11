@@ -16,7 +16,7 @@
 
 import { ipcMain, IpcMainEvent } from "electron";
 import { IpcRequest } from "../../../../kc_shared/models/electron.ipc.model";
-import { ChatPrinter } from "./chat.utils";
+import { ChatPrinterIpc } from "../../ipc/chat.ipc";
 
 export interface IpcChannelInterface {
   getName(): string;
@@ -25,12 +25,16 @@ export interface IpcChannelInterface {
 }
 
 export default class KnowledgeIpc {
-  ipcChannels: IpcChannelInterface[] = [new ChatPrinter()];
+  ipcChannels: IpcChannelInterface[] = [new ChatPrinterIpc()];
 
   constructor() {
     this.registerIpcChannels(this.ipcChannels);
   }
 
+  /**
+   * Registers all IPC channels with the main process
+   * @param ipcChannels
+   */
   private registerIpcChannels(ipcChannels: IpcChannelInterface[]) {
     ipcChannels.forEach((channel) => {
       console.log("Registering IPC Channel: " + channel.getName());
