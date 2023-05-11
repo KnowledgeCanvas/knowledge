@@ -1,6 +1,6 @@
 {
   "name": "kc_electron",
-  "version": "0.6.1",
+  "version": "0.8.1",
   "description": "This package contains the Electron portion of the Knowledge desktop application.",
   "main": "dist/main.js",
   "author": "Rob Royce <robertris2@gmail.com> (https://robroyce.dev)",
@@ -23,8 +23,6 @@
     "dotenv": "^16.0.3",
     "electron": "^21.2.1",
     "electron-updater": "^5.3.0",
-    "fix-path": "^4.0.0",
-    "html2canvas": "^1.4.1",
     "lodash": "^4.17.21",
     "mime-types": "^2.1.35",
     "openai": "^3.2.1",

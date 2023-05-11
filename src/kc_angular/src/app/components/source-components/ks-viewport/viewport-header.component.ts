@@ -37,7 +37,7 @@ import { BehaviorSubject, tap } from 'rxjs';
       [closable]="true"
       (valueChange)="messageChange($event)"
     ></p-messages>
-    <div class="ks-viewport-header title-bar" *ngIf="!alerting">
+    <div class="ks-viewport-header" *ngIf="!alerting">
       <div class="ks-viewport-header-left">
         <div *ngIf="config.showNavButtons">
           <button

@@ -20,7 +20,6 @@ import {
   Tiktoken,
   TiktokenModel,
 } from "@dqbd/tiktoken/init";
-import fixPath from "fix-path";
 import fs from "fs";
 import { ChatCompletionRequestMessage } from "openai/api";
 import path from "path";
@@ -29,13 +28,11 @@ import { app } from "electron";
 const settingsService = require("../../app/services/settings.service");
 
 export default class TokenizerUtils {
-  // private tiktoken: Tiktoken = encoding_for_model("gpt-3.5-turbo-0301");
   private tiktoken!: Tiktoken;
 
   private model: TiktokenModel = "gpt-3.5-turbo-0301";
 
   constructor() {
-    fixPath();
     this.initialize();
   }
 
