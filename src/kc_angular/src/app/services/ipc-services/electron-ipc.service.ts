@@ -50,6 +50,7 @@ export class ElectronIpcService {
     browserViewCurrentUrlResults: 'E2A:BrowserView:CurrentUrl',
     browserViewGoBack: 'A2E:BrowserView:GoBack',
     browserViewGoForward: 'A2E:BrowserView:GoForward',
+    browserViewInvert: 'A2E:BrowserView:Invert',
     browserViewNavEvents: 'E2A:BrowserView:NavEvent',
     browserViewRefresh: 'A2E:BrowserView:Refresh',
     browserViewResults: 'E2A:BrowserView:Open',
@@ -97,9 +98,14 @@ export class ElectronIpcService {
   });
   thumbnail = this._thumbnails.asObservable();
 
-  private _extractedText = new BehaviorSubject<{ url: string; text: string }>({
+  private _extractedText = new BehaviorSubject<{
+    url: string;
+    text: string;
+    method: string;
+  }>({
     url: '',
     text: '',
+    method: '',
   });
   extractedText = this._extractedText.asObservable();
 
@@ -210,6 +216,12 @@ export class ElectronIpcService {
   browserViewGoForward() {
     if (this.canSubmitBrowserViewAction()) {
       this.send(this.channels.browserViewGoForward);
+    }
+  }
+
+  browserViewInvert() {
+    if (this.canSubmitBrowserViewAction()) {
+      this.send(this.channels.browserViewInvert);
     }
   }
 

@@ -187,7 +187,6 @@ import { PrimeIcons } from 'primeng/api';
       </div>
     </div>
     <app-project-breadcrumb
-      [disabled]="true"
       [projectId]="project.id.value"
       class="w-full p-fluid"
     >

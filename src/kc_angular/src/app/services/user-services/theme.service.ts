@@ -241,10 +241,10 @@ export class ThemeService {
 
   get defaultTheme(): KcTheme {
     return {
-      name: 'Lara Light Indigo',
-      code: 'lara-light-indigo',
-      isDark: false,
-      isDual: true,
+      name: 'Vela Blue',
+      code: 'vela-blue',
+      isDark: true,
+      isDual: false,
     };
   }
 

@@ -37,6 +37,7 @@ import { SourceVideoComponent } from '@components/source-components/source.video
 import { SourceTimelineComponent } from './source.timeline.component';
 import { ChatService } from '@services/chat-services/chat.service';
 import { NotificationsService } from '@services/user-services/notifications.service';
+import { SourceBrowserComponent } from '@components/source-components/source.browser.component';
 
 interface TabDescriptor {
   label: string;
@@ -148,6 +149,15 @@ export class SourceComponent implements OnInit, OnChanges {
     component: SourceTimelineComponent,
   };
 
+  browserTab: TabDescriptor = {
+    label: 'Browser',
+    icon: PrimeIcons.GLOBE,
+    hidden: false,
+    disabled: false,
+    loading: false,
+    component: SourceBrowserComponent,
+  };
+
   documentTab: TabDescriptor = {
     label: 'Document',
     icon: PrimeIcons.FILE,
@@ -179,6 +189,7 @@ export class SourceComponent implements OnInit, OnChanges {
     this.detailsTab,
     this.chatTab,
     this.timelineTab,
+    this.browserTab,
     this.documentTab,
     this.videoTab,
     this.metadataTab,
@@ -190,9 +201,13 @@ export class SourceComponent implements OnInit, OnChanges {
 
   @Input() dialog = false;
 
+  @Input() reset = false;
+
   @Output() remove = new EventEmitter<KnowledgeSource>();
 
   @Output() update = new EventEmitter<KnowledgeSource>();
+
+  private componentRef?: ComponentRef<any>;
 
   constructor(
     private chat: ChatService,
@@ -208,6 +223,12 @@ export class SourceComponent implements OnInit, OnChanges {
       this.views(changes.source.currentValue);
       this.loadSelectedTab();
     }
+
+    if (changes.reset && changes.reset.currentValue) {
+      if (this.selectedTabIndex !== 0) {
+        this.setSelectedTab(0);
+      }
+    }
   }
 
   views(source: KnowledgeSource) {
@@ -215,46 +236,38 @@ export class SourceComponent implements OnInit, OnChanges {
     this.metadataTab.disabled =
       !this.source.reference.source.website?.metadata?.meta;
 
-    // If document, enable document table and disable video tab
-    if (source.reference.source.file?.type.includes('pdf')) {
-      this.enablePreviewTab('Document');
-      return;
-    }
-
     // If video, enable video tab and disable document tab
     if (source.ingestType === 'website') {
       source.accessLink = new URL(source.accessLink);
+      this.documentTab.disabled = this.documentTab.hidden = true;
+
       if (
         source.accessLink.hostname === 'www.youtube.com' &&
         source.accessLink.searchParams.get('v')
       ) {
-        this.enablePreviewTab('Video');
+        this.browserTab.disabled = this.browserTab.hidden = false;
+        this.videoTab.disabled = this.videoTab.hidden = false;
+        return;
+      } else {
+        this.browserTab.disabled = this.browserTab.hidden = false;
+        this.videoTab.disabled = this.videoTab.hidden = true;
         return;
       }
-    }
+    } else if (source.ingestType === 'file') {
+      this.browserTab.disabled = this.browserTab.hidden = true;
+      this.videoTab.disabled = this.videoTab.hidden = true;
+      this.documentTab.disabled = this.documentTab.hidden = true;
 
-    // Otherwise disable both document and video tabs
-    this.enablePreviewTab('Neither');
-  }
-
-  enablePreviewTab(type: 'Document' | 'Video' | 'Neither') {
-    if (type === 'Neither') {
-      const previewTabs = [this.documentTab, this.videoTab];
-      previewTabs.forEach((tab) => {
-        tab.disabled = true;
-      });
-      return;
-    }
-
-    const previewTab = this.tabs.find((tab) => tab.label === type);
-    if (previewTab) {
-      previewTab.disabled = false;
-    }
-    const otherTab = this.tabs.find(
-      (tab) => tab.label === (type === 'Document' ? 'Video' : 'Document')
-    );
-    if (otherTab) {
-      otherTab.disabled = true;
+      // If document, enable document table and disable video tab
+      const fileType = source.reference.source.file?.type;
+      if (
+        `${source.accessLink}`.endsWith('pdf') ||
+        `${source.accessLink}`.endsWith('gif') ||
+        `${source.accessLink}`.endsWith('jpg')
+      ) {
+        this.documentTab.disabled = this.documentTab.hidden = false;
+        return;
+      }
     }
   }
 
@@ -293,16 +306,19 @@ export class SourceComponent implements OnInit, OnChanges {
   }
 
   private loadComponent(component: Type<any>) {
-    const componentRef = this.tabContainer.createComponent(component);
-    componentRef.instance.source = this.source;
+    this.componentRef = this.tabContainer.createComponent(component);
+    this.componentRef.instance.source = this.source;
 
     // Special handling for components with outputs and other special cases
     switch (component) {
       case SourceChatComponent:
-        this.loadChat(componentRef);
+        this.loadChat(this.componentRef);
         break;
       case SourceDetailsComponent:
-        this.loadDetails(componentRef);
+        this.loadDetails(this.componentRef);
+        break;
+      case SourceBrowserComponent:
+        this.loadBrowser(this.componentRef);
         break;
     }
   }
@@ -322,6 +338,24 @@ export class SourceComponent implements OnInit, OnChanges {
       setTimeout(() => {
         this.chatTab.loading = loading;
       });
+    });
+  }
+
+  private loadBrowser(componentRef: ComponentRef<SourceBrowserComponent>) {
+    componentRef.instance.update.subscribe((source: KnowledgeSource) => {
+      this.source = source;
+      this.update.emit(source);
+    });
+
+    componentRef.instance.chat.subscribe((message: string) => {
+      const chatTabIndex = this.tabs.findIndex(
+        (tab: TabDescriptor) => tab.label === 'Chat'
+      );
+      this.setSelectedTab(chatTabIndex);
+
+      setTimeout(() => {
+        this.componentRef?.instance.submit(message);
+      }, 1500);
     });
   }
 }

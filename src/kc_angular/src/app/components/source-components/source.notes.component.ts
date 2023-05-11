@@ -13,18 +13,14 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import { Pipe, PipeTransform } from '@angular/core';
-import { ProjectTreeFactoryService } from '@services/factory-services/project-tree-factory.service';
-import { TreeNode } from 'primeng/api';
-import { UUID } from '@shared/models/uuid.model';
 
-@Pipe({
-  name: 'projectAsTreeNode',
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'source-notes',
+  template: ``,
+  styles: [``],
 })
-export class ProjectAsTreeNodePipe implements PipeTransform {
-  constructor(private tree: ProjectTreeFactoryService) {}
-
-  transform(id: UUID, treeNodes: TreeNode[]): TreeNode {
-    return this.tree.findTreeNode(id.value, treeNodes) ?? {};
-  }
+export class SourceNotesComponent {
+  constructor() {}
 }

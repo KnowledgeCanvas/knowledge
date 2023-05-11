@@ -81,7 +81,7 @@ export class SourceChat {
     if (source.description) {
       prompts.push({
         role: 'system',
-        content: `Source Description: "${source.description}"`,
+        content: `User Notes about this Source: "${source.description}"`,
       });
     }
 

@@ -89,10 +89,12 @@ import { DragAndDropService } from '@services/ingest-services/drag-and-drop.serv
           #nodeLabel
           class="drop-target"
           pDroppable="sources"
+          [class.drop-target]="!(highlight$ | async)"
           [ngClass]="highlight$ | async"
           (onDrop)="drop($event, node.key)"
-          (onDragEnter)="nodeLabel.classList.add('surface-a')"
-          (onDragLeave)="nodeLabel.classList.remove('surface-a')"
+          (onDragEnter)="nodeLabel.classList.add('p-draggable-enter')"
+          (onDragLeave)="nodeLabel.classList.remove('p-draggable-enter')"
+          (mouseleave)="nodeLabel.classList.remove('p-draggable-enter')"
         >
           {{ node.label }}
         </div>
@@ -150,8 +152,8 @@ import { DragAndDropService } from '@services/ingest-services/drag-and-drop.serv
 
           &.p-draggable-enter {
             border-color: var(--primary-color);
-            background: #eef2ff;
-            color: #4338ca;
+            background: var(--primary-color) !important;
+            color: var(--text-color) !important;
           }
         }
       }
@@ -236,7 +238,7 @@ export class ProjectsTreeComponent implements OnInit, OnDestroy {
       .subscribe();
 
     this.highlight$ = dnd.dropHighlight.pipe(
-      throttleTime(100),
+      throttleTime(50),
       map((highlight) =>
         highlight ? 'project-receptor-in' : 'project-receptor-out'
       )
@@ -356,6 +358,7 @@ export class ProjectsTreeComponent implements OnInit, OnDestroy {
         'Error moving project',
         'Could not resolve Project tree.'
       );
+
       return;
     }
 
@@ -364,6 +367,7 @@ export class ProjectsTreeComponent implements OnInit, OnDestroy {
       oldParentProject.id.value === dropProject.id.value
     ) {
       // Dropping on the same parent project, do nothing
+
       return;
     }
 

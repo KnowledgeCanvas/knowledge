@@ -22,7 +22,7 @@ import { KsCommandService } from '@services/command-services/ks-command.service'
 @Component({
   selector: 'app-details',
   template: `
-    <div class="w-full flex-row-center-between my-2 px-2 sticky">
+    <div class="w-full flex-row-center-between my-2 px-2 sticky title-bar">
       <div class="flex-row-center-start">
         <app-ks-icon [ks]="ks" class="px-3"></app-ks-icon>
         <div class="text-xl font-bold">{{ ks.title }}</div>
@@ -52,7 +52,6 @@ import { KsCommandService } from '@services/command-services/ks-command.service'
     <div class="flex flex-row flex-grow-0 mt-2 sticky">
       <app-project-breadcrumb
         class="w-full"
-        [disabled]="true"
         [projectId]="ks.associatedProject.value"
       >
       </app-project-breadcrumb>

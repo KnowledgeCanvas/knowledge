@@ -69,16 +69,6 @@ export class ChatViewComponent implements OnInit, OnChanges {
    */
   @Input() heightRestricted = false;
 
-  /**
-   * The configuration to use for the print button
-   * @default {filename: 'chat-history.png', divId: 'chat-history'}
-   * @description The filename is the name of the file to save the image as and the divId is the id of the div to print
-   */
-  @Input() chatPrintConfig: { filename: string; divId: string } = {
-    filename: 'chat-history.png',
-    divId: 'chat-history',
-  };
-
   /* The event emitted when the user submits a message */
   @Output() submit: EventEmitter<string> = new EventEmitter<string>();
 
@@ -188,9 +178,7 @@ export class ChatViewComponent implements OnInit, OnChanges {
 
   /* Scroll to the end of the #chat-history element */
   scroll() {
-    const elementId = this.chatPrintConfig.divId
-      ? this.chatPrintConfig.divId
-      : 'chat-history';
+    const elementId = 'chat-history';
     const element = document.getElementById(elementId);
     if (element) {
       setTimeout(() => {
@@ -214,15 +202,6 @@ export class ChatViewComponent implements OnInit, OnChanges {
       this.scroll();
       input.value = '';
     }, 500);
-  }
-
-  /* Print the chat history using the chat service */
-  async saveChat() {
-    this.chat.chatToPng(
-      this.history,
-      this.chatPrintConfig.filename,
-      this.chatPrintConfig.divId
-    );
   }
 
   /**
@@ -325,7 +304,22 @@ export class ChatViewComponent implements OnInit, OnChanges {
         const index = this.history.indexOf(message);
         if (index + 1 <= this.history.length) {
           const response = this.history[index + 1];
-          this.regenerateMessage(response, false);
+
+          if (response.sender === message.recipient) {
+            // If the next message is from the same agent, regenerate the message
+            this.regenerateMessage(response, false);
+          } else {
+            // Otherwise, we need to insert a new response into the history immediately after the edited message
+            const newResponse = this.chat.createMessage(
+              message.recipient,
+              AgentType.User,
+              '',
+              message.project,
+              message.source
+            );
+            this.history.splice(index + 1, 0, newResponse);
+            this.regenerateMessage(newResponse, false);
+          }
         }
       }
     }

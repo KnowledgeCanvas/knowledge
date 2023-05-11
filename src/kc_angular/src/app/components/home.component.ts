@@ -171,6 +171,7 @@ import { finalize, map, take, takeUntil, tap } from 'rxjs/operators';
               <app-source
                 [source]="active"
                 [dialog]="false"
+                [reset]="reset"
                 (remove)="onKsRemove([$event])"
                 (update)="update($event)"
               ></app-source>
@@ -188,10 +189,10 @@ import { finalize, map, take, takeUntil, tap } from 'rxjs/operators';
               >
                 <div (dragstart)="$event.preventDefault()">
                   <img
-                    src="assets/img/kc-icon-greyscale.png"
+                    src="https://knowledge-app.s3.us-west-1.amazonaws.com/kc-icon-transparent.png"
                     alt="Knowledge Logo"
+                    class="knowledge-logo"
                     [class.pulsate-fwd]="animate"
-                    style="filter: drop-shadow(0 0 1px var(--primary-color)); height: 8rem"
                   />
                 </div>
                 <div class="text-600 text-2xl">You're all caught up.</div>
@@ -245,10 +246,11 @@ export class HomeComponent implements OnDestroy {
   supportedTypes: string[] = ['Links', 'Files'];
   animate = true;
   importAll = false;
+  reset = false;
 
   private _activeIndex = new BehaviorSubject<number>(0);
-  activeIndex$ = this._activeIndex.asObservable();
 
+  activeIndex$ = this._activeIndex.asObservable();
   private cleanUp: Subject<any> = new Subject<any>();
 
   constructor(
@@ -329,7 +331,15 @@ export class HomeComponent implements OnDestroy {
     this.cleanUp.complete();
   }
 
+  goToFirstTab() {
+    this.reset = true;
+    setTimeout(() => {
+      this.reset = false;
+    }, 500);
+  }
+
   onKsRemove(sources: KnowledgeSource[]) {
+    this.goToFirstTab();
     const message =
       sources.length === 1
         ? `Permanently remove ${sources[0].title}?`
@@ -393,6 +403,7 @@ export class HomeComponent implements OnDestroy {
   }
 
   onProjectImport() {
+    this.goToFirstTab();
     if (!this.selectedProject) {
       this.notifications.warn(
         'Inbox',

@@ -17,6 +17,7 @@ import {
   Component,
   EventEmitter,
   Input,
+  NgZone,
   OnChanges,
   OnDestroy,
   OnInit,
@@ -37,7 +38,8 @@ import {
   BrowserViewHeaderEvent,
   BrowserViewNavEvent,
 } from '@shared/models/browser.view.model';
-import { Subscription } from 'rxjs';
+import { skip, Subscription } from 'rxjs';
+import { Message } from 'primeng/api';
 
 @Component({
   selector: 'ks-lib-browser-view',
@@ -45,6 +47,7 @@ import { Subscription } from 'rxjs';
     <ks-lib-viewport-header
       *ngIf="headerConfig"
       [config]="headerConfig"
+      [message]="message"
       (headerEvents)="headerEvents($event)"
     >
     </ks-lib-viewport-header>
@@ -55,9 +58,20 @@ import { Subscription } from 'rxjs';
   `,
   styles: [
     `
+      :host {
+        overflow: hidden !important;
+      }
+
+      ks-lib-viewport-header {
+        overflow: hidden !important;
+        max-height: 48px !important;
+      }
+
       .browser-view {
-        height: 100%;
-        width: 100%;
+        height: 100% !important;
+        width: 100% !important;
+        max-height: 100% !important;
+        max-width: 100% !important;
         background-color: var(--surface-a);
       }
     `,
@@ -65,21 +79,35 @@ import { Subscription } from 'rxjs';
 })
 export class BrowserViewComponent implements OnInit, OnChanges, OnDestroy {
   @Input() kcBrowserViewConfig!: BrowserViewConfig;
+
   @Output() viewReady = new EventEmitter<boolean>();
-  @Output() onIpcResponse = new EventEmitter<IpcMessage>();
+
   @Output() navEvent = new EventEmitter<BrowserViewNavEvent>();
+
   @Output() clickEvent = new EventEmitter<BrowserViewClickEvent>();
+
   @Output() selectEvent = new EventEmitter();
+
+  @Output() textExtraction = new EventEmitter<{
+    url: string;
+    text: string;
+    method: string;
+  }>();
+
   headerConfig: BrowserViewHeaderConfig | undefined;
+
+  @Input() message?: Message;
+
   private stateCheckInterval: any;
+
   private navEventSubscription: Subscription = new Subscription();
-  private goBackSubscription: Subscription = new Subscription();
-  private goForwardSubscription: Subscription = new Subscription();
-  private urlSubscription: Subscription = new Subscription();
+
+  private subscriptions: Subscription[] = [];
 
   constructor(
-    private ipcService: ElectronIpcService,
-    private sanitizer: DomSanitizer
+    private ipc: ElectronIpcService,
+    private sanitizer: DomSanitizer,
+    private zone: NgZone
   ) {
     this.headerConfig = {
       canClose: true,
@@ -95,26 +123,72 @@ export class BrowserViewComponent implements OnInit, OnChanges, OnDestroy {
       showDisplayText: true,
       showCloseButton: true,
       showOpenButton: true,
+      showInvertButton: true,
     };
   }
 
   ngOnInit(): void {
-    this.goBackSubscription =
-      this.ipcService.browserViewCanGoBackResult.subscribe((canGoBack) => {
+    this.subscriptions.push(
+      this.ipc.browserViewCanGoBackResult.subscribe((canGoBack) => {
         if (this.headerConfig) this.headerConfig.canGoBack = canGoBack;
-      });
+      })
+    );
 
-    this.goForwardSubscription =
-      this.ipcService.browserViewCanGoForwardResult.subscribe(
-        (canGoForward) => {
-          if (this.headerConfig) this.headerConfig.canGoForward = canGoForward;
-        }
-      );
+    this.subscriptions.push(
+      this.ipc.browserViewCanGoForwardResult.subscribe((canGoForward) => {
+        if (this.headerConfig) this.headerConfig.canGoForward = canGoForward;
+      })
+    );
 
-    this.urlSubscription =
-      this.ipcService.browserViewCurrentUrlResult.subscribe((url) => {
+    this.subscriptions.push(
+      this.ipc.browserViewCurrentUrlResult.subscribe((url) => {
         if (this.headerConfig) this.headerConfig.displayText = url;
-      });
+      })
+    );
+
+    this.subscriptions.push(
+      this.ipc.extractedText.pipe(skip(1)).subscribe((data) => {
+        if (data.text.trim() === '') {
+          return;
+        }
+
+        this.zone.run(() => {
+          this.handleBrowserMenuEvent(data);
+        });
+      })
+    );
+  }
+
+  handleBrowserMenuEvent(data: { url: string; text: string; method: string }) {
+    this.textExtraction.emit(data);
+    switch (data.method) {
+      case 'extract':
+        this.message = {
+          severity: 'success',
+          summary: 'Extracted',
+          detail:
+            'The selected text has been extracted and saved in the Source notes.',
+          sticky: true,
+        };
+        break;
+      case 'summarize':
+        this.message = {
+          severity: 'success',
+          summary: 'Summarizing',
+          detail: 'Check the Chat tab for a summary of the selected text.',
+          sticky: true,
+        };
+        break;
+      case 'topics':
+        this.message = {
+          severity: 'success',
+          summary: 'Looking for Topics',
+          detail:
+            'Check the Chat tab for a list of topics related to the selected text.',
+          sticky: true,
+        };
+        break;
+    }
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -133,17 +207,15 @@ export class BrowserViewComponent implements OnInit, OnChanges, OnDestroy {
 
     if (kcBrowserViewConfig && this.headerConfig) {
       this.headerConfig.displayText = kcBrowserViewConfig.url.href;
-      this.headerConfig.canClose = kcBrowserViewConfig.isDialog;
+      this.headerConfig.canClose = this.headerConfig.showCloseButton =
+        kcBrowserViewConfig.isDialog;
       this.headerConfig.canSave = kcBrowserViewConfig.canSave;
     }
   }
 
   ngOnDestroy() {
     if (this.stateCheckInterval) clearInterval(this.stateCheckInterval);
-    this.navEventSubscription.unsubscribe();
-    this.goBackSubscription.unsubscribe();
-    this.goForwardSubscription.unsubscribe();
-    this.urlSubscription.unsubscribe();
+    this.subscriptions.forEach((subscription) => subscription.unsubscribe());
   }
 
   loadBrowserView() {
@@ -160,30 +232,31 @@ export class BrowserViewComponent implements OnInit, OnChanges, OnDestroy {
     const position = this.getBrowserViewDimensions('browser-view');
     const request: BrowserViewRequest = {
       url: sanitizedUrl,
-      x: Math.floor(position.x * zoomFactor),
-      y: Math.floor((position.y + 48) * zoomFactor),
-      width: Math.ceil(position.width * zoomFactor),
-      height: Math.ceil(position.height * zoomFactor),
+      x: Math.ceil(position.x * zoomFactor),
+      y: Math.ceil((position.y + 48) * zoomFactor),
+      width: Math.floor(position.width * zoomFactor) - 1,
+      height: Math.floor(position.height * zoomFactor),
     };
 
-    this.ipcService.openBrowserView(request).then((response: IpcMessage) => {
+    this.ipc.openBrowserView(request).then((response: IpcMessage) => {
       if (response.success) {
         this.viewReady.emit(true);
       }
-      this.onIpcResponse.emit(response);
     });
 
-    this.navEventSubscription = this.ipcService.navEvent.subscribe((url) => {
-      if (!url || url.trim() === '') {
-        return;
-      }
+    this.subscriptions.push(
+      this.ipc.navEvent.subscribe((url) => {
+        if (!url || url.trim() === '') {
+          return;
+        }
 
-      const navEvent: BrowserViewNavEvent = {
-        urlChanged: true,
-        url: new URL(url),
-      };
-      this.navEvent.emit(navEvent);
-    });
+        const navEvent: BrowserViewNavEvent = {
+          urlChanged: true,
+          url: new URL(url),
+        };
+        this.navEvent.emit(navEvent);
+      })
+    );
   }
 
   getBrowserViewDimensions(elementName: string): any {
@@ -194,26 +267,30 @@ export class BrowserViewComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   getBrowserViewState() {
-    if (!this.ipcService) {
+    if (!this.ipc) {
       console.warn(
         'Unable to get browser view state because IPC service does not exist...'
       );
       return;
     }
-    this.ipcService.triggerBrowserViewStateUpdate();
+    this.ipc.triggerBrowserViewStateUpdate();
   }
 
   headerEvents(headerEvent: BrowserViewHeaderEvent) {
     if (headerEvent.refreshClicked) {
-      this.ipcService.browserViewRefresh();
+      this.ipc.browserViewRefresh();
     }
 
     if (headerEvent.backClicked) {
-      this.ipcService.browserViewGoBack();
+      this.ipc.browserViewGoBack();
     }
 
     if (headerEvent.forwardClicked) {
-      this.ipcService.browserViewGoForward();
+      this.ipc.browserViewGoForward();
+    }
+
+    if (headerEvent.invertClicked) {
+      this.ipc.browserViewInvert();
     }
 
     this.getBrowserViewState();

@@ -27,7 +27,6 @@ import { UUID } from '@shared/models/uuid.model';
 import { UuidService } from '@services/ipc-services/uuid.service';
 import { ElectronIpcService } from '@services/ipc-services/electron-ipc.service';
 import { DialogService } from 'primeng/dynamicdialog';
-import { LoadingComponent } from '@components/shared/loading.component';
 import { map } from 'rxjs/operators';
 import { SettingsService } from '@services/ipc-services/settings.service';
 import { ChatSettingsModel } from '@shared/models/settings.model';
@@ -200,90 +199,6 @@ export class ChatService {
         return response.choices[0].message;
       })
     );
-  }
-
-  /**
-   * Create a PNG image of the chat history
-   * TODO add this to Electron main process to avoid Angular optimization bailouts
-   */
-  async chatToPng(
-    history: ChatMessage[],
-    filename = 'chat-history.png',
-    divId = 'chat-history'
-  ) {
-    // Limit the chat history to 50 messages to avoid performance issues, alert the user
-    if (history.length > 50) {
-      this.notify.warn(
-        'Chat Service',
-        'Too many messages!',
-        'The chat history is too large to save as an image. Please try again with a smaller chat history (max 50 messages).',
-        'toast'
-      );
-      return;
-    }
-
-    const chatHistory = document.getElementById(divId);
-    if (!chatHistory) {
-      // TODO: Show an error message
-      return;
-    }
-
-    // Remove the overflow-y-auto class so that the chat history renders all the way to the bottom (annoying but necessary)
-    chatHistory.classList.remove('overflow-y-auto');
-
-    // Open loading dialog
-    const dialogRef = this.dialog.open(LoadingComponent, {
-      data: {
-        message: 'Saving Chat',
-        subMessage:
-          history.length > 25
-            ? `Large chat history, this might take a minute...`
-            : 'Please wait...',
-        progressBar: false,
-      },
-      height: '150px',
-      width: '300px',
-      dismissableMask: false,
-      closable: false,
-      modal: true,
-    });
-
-    // Use async and setTimeout to wait for the chat history to render
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
-    // Create a PNG image of the chat history using html2canvas
-    window.api
-      .html2canvas(chatHistory, {
-        backgroundColor: getComputedStyle(
-          document.documentElement
-        ).getPropertyValue('--surface-a'),
-        windowHeight: chatHistory.scrollHeight,
-        width: chatHistory.offsetWidth,
-        height: chatHistory.scrollHeight,
-        y: -chatHistory.scrollTop,
-        scrollY: 0,
-      })
-      .then((canvas: any) => {
-        // Create a link to download the PNG and click it
-        const link = document.createElement('a');
-        link.download = filename;
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-      })
-      .catch((error: any) => {
-        console.log('Error creating PNG image: ', error);
-        this.notify.error('Chat Service', 'Error', 'Failed to generate image.');
-      })
-      .finally(() => {
-        setTimeout(() => {
-          dialogRef.close();
-        });
-      });
-
-    // Add the overflow class back to chat history
-    setTimeout(() => {
-      chatHistory.classList.add('overflow-y-auto');
-    }, 1000);
   }
 
   /* Load chat history from local storage */

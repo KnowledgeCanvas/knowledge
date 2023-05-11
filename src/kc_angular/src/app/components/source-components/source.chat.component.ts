@@ -32,7 +32,6 @@ import { BehaviorSubject } from 'rxjs';
         #chatView
         [history]="history"
         [loading]="(loading$ | async)!"
-        [chatPrintConfig]="printConfig"
         (submit)="submit($event)"
         (regenerate)="regenerate($event)"
         (delete)="delete($event)"
@@ -49,10 +48,6 @@ export class SourceChatComponent implements OnInit {
 
   history: ChatMessage[] = [];
 
-  printConfig: { filename: string; divId: string } = {
-    filename: 'chat.png',
-    divId: 'chat',
-  };
   private _loading = new BehaviorSubject<boolean>(false);
   loading$ = this._loading.asObservable();
 
@@ -63,11 +58,6 @@ export class SourceChatComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.printConfig = {
-      filename: `chat-${this.source.id.value}.png`,
-      divId: `chat-${this.source.id.value}`,
-    };
-
     if (this.source.ingestType === 'file') {
       // Alert the user that chat doesn't work well on local files (it has no text)
       this.notify.warn(
@@ -132,17 +122,24 @@ export class SourceChatComponent implements OnInit {
   }
 
   regenerate(message: ChatMessage) {
+    this._loading.next(true);
     this.sourceChat
       .regenerate(this.source, message, this.history)
-      .subscribe((response) => {
-        this.history = this.history.map((m) => {
-          if (m.id === message.id) {
-            m.text = response.content;
-          }
-          return m;
-        });
-        this.chat.saveChat(this.history, this.source.id);
-      });
+      .pipe(
+        tap((response) => {
+          this.history = this.history.map((m) => {
+            if (m.id === message.id) {
+              m.text = response.content;
+            }
+            return m;
+          });
+          this.chat.saveChat(this.history, this.source.id);
+        }),
+        finalize(() => {
+          this._loading.next(false);
+        })
+      )
+      .subscribe();
   }
 
   delete(message: ChatMessage) {

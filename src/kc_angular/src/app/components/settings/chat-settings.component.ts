@@ -80,6 +80,22 @@ import { NotificationsService } from '@services/user-services/notifications.serv
                     formControlName="suggestionsOnInput"
                   ></p-inputSwitch>
                 </app-setting-template>
+
+                <p-divider layout="horizontal"></p-divider>
+
+                <app-setting-template
+                  class="w-full"
+                  label="Show Source messages in Project chat"
+                  labelHelp="Enable or disable showing messages from Sources in the Project chat."
+                  labelSubtext="{{
+                    form.controls.sourceMessages.value | switchLabel
+                  }}"
+                >
+                  <p-inputSwitch
+                    class="settings-input"
+                    formControlName="sourceMessages"
+                  ></p-inputSwitch>
+                </app-setting-template>
               </div>
             </ng-template>
           </p-panel>
@@ -205,6 +221,15 @@ import { NotificationsService } from '@services/user-services/notifications.serv
                     formControlName="frequency_penalty"
                   ></p-slider>
                 </app-setting-template>
+
+                <p-divider layout="horizontal"></p-divider>
+
+                <app-setting-template
+                  label="Delete API Key"
+                  labelHelp="Delete your API key from the database. You will need to re-enter it to use the chat."
+                >
+                  <button pButton type="button" label="Delete"></button>
+                </app-setting-template>
               </div>
             </ng-template>
           </p-panel>
@@ -239,6 +264,7 @@ export class ChatSettingsComponent {
       suggestionsEnabled: [this.chatSettings.suggestions.enabled],
       suggestionsOnInput: [this.chatSettings.suggestions.onInput],
       introductions: [this.chatSettings.display.introductions],
+      sourceMessages: [this.chatSettings.display.sourceMessages],
       modelName: [this.chatSettings.model.name],
       temperature: [this.chatSettings.model.temperature],
       top_p: [this.chatSettings.model.top_p],
@@ -256,6 +282,7 @@ export class ChatSettingsComponent {
           const chatSettings: ChatSettingsModel = {
             display: {
               introductions: formValue.introductions,
+              sourceMessages: formValue.sourceMessages,
             },
             suggestions: {
               enabled: formValue.suggestionsEnabled,

@@ -28,8 +28,10 @@ export class FaviconService {
   private googleFaviconSize = '32';
   private googleFaviconServicePrefix = `https://s2.googleusercontent.com/s2/favicons?domain_url=`;
   private googleFaviconServiceSuffix = `&sz=${this.googleFaviconSize}`;
-  private defaultIcon = 'assets/img/kc-icon-greyscale.png';
-  private loadingIcon = 'assets/img/kc-icon-greyscale.png';
+  private defaultIcon =
+    'https://knowledge-app.s3.us-west-1.amazonaws.com/kc-icon-transparent.png';
+  private loadingIcon =
+    'https://knowledge-app.s3.us-west-1.amazonaws.com/kc-icon-transparent.png';
 
   constructor(
     private httpClient: HttpClient,
@@ -194,7 +196,7 @@ export class FaviconService {
   iconFromDatabase(ks: KnowledgeSource): SafeUrl | undefined {
     const iconStr = localStorage.getItem(`icon-${ks.id.value}`);
 
-    if (iconStr === 'undefined') {
+    if (iconStr == 'undefined') {
       console.error('knowledge source icon "undefined" with id ', ks.id.value);
       localStorage.removeItem(`icon-${ks.id.value}`);
       return undefined;
@@ -206,6 +208,10 @@ export class FaviconService {
     }
 
     const blob = this.dataURItoBlob(iconStr);
+    if (!blob) {
+      return undefined;
+    }
+
     const objectURL = URL.createObjectURL(blob);
     return this.sanitizer.bypassSecurityTrustUrl(objectURL);
   }

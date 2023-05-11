@@ -24,6 +24,7 @@ import {
 import { ProjectService } from '@services/factory-services/project.service';
 import { MenuItem } from 'primeng/api';
 import { UUID } from '@shared/models/uuid.model';
+import { NotificationsService } from '@services/user-services/notifications.service';
 
 @Component({
   selector: 'app-project-breadcrumb',
@@ -56,7 +57,10 @@ export class ProjectBreadcrumbComponent implements OnChanges {
     },
   };
 
-  constructor(private projects: ProjectService) {}
+  constructor(
+    private projects: ProjectService,
+    private notify: NotificationsService
+  ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.projectId?.currentValue) {
@@ -77,7 +81,13 @@ export class ProjectBreadcrumbComponent implements OnChanges {
 
   onBreadcrumbClick($event: any) {
     if ($event.item.id && $event.item.id) {
+      const p = this.projects.getProject($event.item.id);
       this.projects.setCurrentProject($event.item.id);
+      this.notify.success(
+        'Project Breadcrumb',
+        'Active Project Set',
+        p?.name || ''
+      );
     }
   }
 
