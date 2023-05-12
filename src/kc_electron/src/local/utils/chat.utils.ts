@@ -15,7 +15,7 @@
  */
 
 import { ChatCompletionRequestMessage } from "openai/api";
-import TokenizerUtils from "./tokenizer.utils";
+import tokenizerUtils from "./tokenizer.utils";
 
 const settings = require("../../app/services/settings.service");
 
@@ -41,9 +41,8 @@ export default class ChatUtils {
   }
 
   private getTokenizer() {
-    const tokenizer = new TokenizerUtils();
     const model = settings.getSettings().app.chat.model.name;
-    tokenizer.setModel(model);
-    return tokenizer;
+    tokenizerUtils.setModel(model);
+    return tokenizerUtils;
   }
 }

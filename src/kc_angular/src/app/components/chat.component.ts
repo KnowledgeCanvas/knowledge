@@ -17,8 +17,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { DataService } from '@services/user-services/data.service';
 import { finalize, map, take, tap } from 'rxjs/operators';
-import { KsContextMenuService } from '@services/factory-services/ks-context-menu.service';
-import { ProjectContextMenuService } from '@services/factory-services/project-context-menu.service';
 import { KnowledgeSource } from '../models/knowledge.source.model';
 import { KcProject } from '../models/project.model';
 import { ContextMenu } from 'primeng/contextmenu';
@@ -29,8 +27,9 @@ import { ProjectChat } from '@services/chat-services/project';
 import { ChatCompletionResponseMessage } from 'openai';
 import { ChatViewComponent } from './chat-components/chat.view.component';
 import { SourceChat } from '@services/chat-services/source';
-import { UuidService } from '@services/ipc-services/uuid.service';
 import { AgentType, ChatMessage } from '@app/models/chat.model';
+import { SettingsService } from '@services/ipc-services/settings.service';
+import { combineLatest } from 'rxjs';
 
 @Component({
   selector: 'app-chat',
@@ -60,56 +59,46 @@ import { AgentType, ChatMessage } from '@app/models/chat.model';
   styles: [``],
 })
 export class ChatComponent {
-  /**
-   * The context menu for the chat view
-   */
+  /* The context menu for the chat view */
   @ViewChild('cm') cm!: ContextMenu;
 
-  /**
-   * The chat view component
-   */
+  /* The chat view component */
   @ViewChild('chatView') chatView!: ChatViewComponent;
 
-  /**
-   * The chat history
-   */
+  /* The chat history */
   chatHistory: ChatMessage[] = [];
 
-  /**
-   * The loading state of the chat, used to show the loading bar
-   */
+  /* The loading state of the chat, used to show the loading bar */
   loading = false;
 
-  /**
-   * The knowledge sources for the current project
-   */
+  /* The knowledge sources for the current project */
   sources: KnowledgeSource[] = [];
 
-  /**
-   * The current project
-   */
+  /* The current project */
   project!: KcProject;
 
-  /**
-   * The context menu items
-   */
+  /* The context menu items */
   menuItems: MenuItem[] = [];
+
+  showSources = true;
 
   constructor(
     private data: DataService,
     private chat: ChatService,
     private projects: ProjectService,
     private projectChat: ProjectChat,
-    private sourceChat: SourceChat,
-    private sourceMenu: KsContextMenuService,
-    private projectMenu: ProjectContextMenuService,
-    private uuid: UuidService
+    private settings: SettingsService,
+    private sourceChat: SourceChat
   ) {
-    // Load project chat history if there is a current project
-    this.projects.currentProject
-      .pipe(map((project) => project || new KcProject('', { value: '' })))
+    combineLatest([
+      settings.app.pipe(map((app) => app.chat.display.sourceMessages)),
+      projects.currentProject.pipe(
+        map((project) => project || new KcProject('', { value: '' }))
+      ),
+    ])
       .pipe(
-        tap((project) => {
+        map(([show, project]) => {
+          this.showSources = show;
           this.chatHistory = [];
           this.sources = [];
           this.project = project;
@@ -189,10 +178,12 @@ export class ChatComponent {
     }
 
     // Load the source history
-    for (const source of this.sources) {
-      const sourceChat = this.chat.loadChat(source.id, undefined, source);
-      for (const message of sourceChat) {
-        this.chatHistory.push(message);
+    if (this.showSources) {
+      for (const source of this.sources) {
+        const sourceChat = this.chat.loadChat(source.id, undefined, source);
+        for (const message of sourceChat) {
+          this.chatHistory.push(message);
+        }
       }
     }
 

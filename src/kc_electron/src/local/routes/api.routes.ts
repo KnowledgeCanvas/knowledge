@@ -23,5 +23,6 @@ const router = express.Router();
 
 router.post("/key", apiKeyController.setApiKey.bind(apiKeyController));
 router.get("/key", apiKeyController.hasApiKey.bind(apiKeyController));
+router.delete("/key", apiKeyController.deleteApiKey.bind(apiKeyController));
 
 export default router;
