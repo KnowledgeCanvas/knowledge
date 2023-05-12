@@ -1,10 +1,6 @@
-# Note about Chat
-
-The **Chat feature has *not* been released yet**, it will be included in version `0.8.0`. Follow [@RobRoyce_](https://twitter.com/RobRoyce_) on Twitter to stay up to date on release progress. [Sign up for the 0.8.0 Chat Beta here](https://forms.gle/XQydMFneLfoSma4N8)
-
 # Description
 
-Knowledge is a tool for saving, searching, accessing, and exploring all of your favorite websites, documents and files.
+Knowledge is a tool for saving, searching, accessing, exploring and chatting with all of your favorite websites, documents and files.
 
 ![KnowledgeGraph](https://user-images.githubusercontent.com/19367848/206884085-f73affb8-b94e-4039-beb3-b47f76762d8b.gif)
 
