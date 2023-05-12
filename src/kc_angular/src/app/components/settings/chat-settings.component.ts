@@ -18,8 +18,10 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ChatSettingsModel } from '@shared/models/settings.model';
 import { SettingsService } from '@services/ipc-services/settings.service';
-import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, map, tap } from 'rxjs/operators';
 import { NotificationsService } from '@services/user-services/notifications.service';
+import { ChatService } from '@services/chat-services/chat.service';
+import { ConfirmationService, PrimeIcons } from 'primeng/api';
 
 @Component({
   selector: 'app-chat-settings',
@@ -226,9 +228,16 @@ import { NotificationsService } from '@services/user-services/notifications.serv
 
                 <app-setting-template
                   label="Delete API Key"
-                  labelHelp="Delete your API key from the database. You will need to re-enter it to use the chat."
+                  labelHelp="Delete your API key. You will need to re-enter it to use the chat."
                 >
-                  <button pButton type="button" label="Delete"></button>
+                  <button
+                    pButton
+                    [disabled]="!canChat"
+                    (click)="deleteApiKey()"
+                    type="button"
+                    class="settings-input p-button-danger"
+                    icon="pi pi-trash"
+                  ></button>
                 </app-setting-template>
               </div>
             </ng-template>
@@ -242,12 +251,15 @@ import { NotificationsService } from '@services/user-services/notifications.serv
 export class ChatSettingsComponent {
   chatSettings: ChatSettingsModel = new ChatSettingsModel();
   form: FormGroup;
+  canChat = false;
   openAiModels: { name: string; label: string }[] = [
     { name: 'gpt-3.5-turbo-0301', label: 'GPT-3.5 Turbo' },
   ];
 
   constructor(
     private notify: NotificationsService,
+    private chat: ChatService,
+    private confirm: ConfirmationService,
     private settings: SettingsService,
     private formBuilder: FormBuilder
   ) {
@@ -259,6 +271,8 @@ export class ChatSettingsComponent {
         ...settings.get().app.chat,
       };
     }
+
+    this.canChat = this.chat.canChat();
 
     this.form = this.formBuilder.group({
       suggestionsEnabled: [this.chatSettings.suggestions.enabled],
@@ -312,6 +326,21 @@ export class ChatSettingsComponent {
     this.notify.debug('Chat Settings', 'Initialized', this.chatSettings);
   }
 
+  deleteApiKey() {
+    this.confirm.confirm({
+      message: 'Are you sure you want to delete your API key?',
+      header: 'Delete API Key',
+      icon: PrimeIcons.EXCLAMATION_CIRCLE,
+      acceptIcon: PrimeIcons.TRASH,
+      accept: () => {
+        this.chat.deleteApiKey().subscribe(() => {
+          this.canChat = false;
+          this.notify.success('Chat Settings', 'API Key Deleted', '');
+        });
+      },
+    });
+  }
+
   private explain() {
     this.notify.warn(
       'Chat Settings',
@@ -323,14 +352,7 @@ export class ChatSettingsComponent {
   }
 
   private checkChanges(prev: any, curr: any) {
-    return (
-      curr.suggestionsEnabled === prev.suggestionsEnabled &&
-      curr.suggestionsOnInput === prev.suggestionsOnInput &&
-      curr.introductions === prev.introductions &&
-      curr.modelName === prev.modelName &&
-      curr.temperature === prev.temperature &&
-      curr.top_p === prev.top_p
-    );
+    return JSON.stringify(prev) === JSON.stringify(curr);
   }
 
   private disable() {

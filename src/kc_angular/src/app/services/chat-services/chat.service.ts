@@ -95,6 +95,16 @@ export class ChatService {
     );
   }
 
+  deleteApiKey() {
+    return this.http.delete(this.backendUrl + '/api/key').pipe(
+      tap((result: any) => {
+        if (result) {
+          this.canConnect.next(false);
+        }
+      })
+    );
+  }
+
   setApiKey(apiKey: string) {
     return this.http
       .post(this.backendUrl + '/api/key', { apiKey: apiKey })

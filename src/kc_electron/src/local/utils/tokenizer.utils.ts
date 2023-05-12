@@ -15,6 +15,7 @@
  */
 
 import {
+  encoding_for_model,
   get_encoding,
   init,
   Tiktoken,
@@ -27,7 +28,7 @@ import { app } from "electron";
 
 const settingsService = require("../../app/services/settings.service");
 
-export default class TokenizerUtils {
+class TokenizerUtils {
   private tiktoken!: Tiktoken;
 
   private model: TiktokenModel = "gpt-3.5-turbo-0301";
@@ -51,7 +52,7 @@ export default class TokenizerUtils {
     }
 
     this.model = model;
-    // this.tiktoken = encoding_for_model(model);
+    this.tiktoken = encoding_for_model(model);
   }
 
   /**
@@ -66,7 +67,7 @@ export default class TokenizerUtils {
 
     // If the messages are already within the token limit, return them.
     let tokenCount = this.countMessageTokens(messages);
-    if (tokenCount <= max_tokens) {
+    if (tokenCount < max_tokens) {
       return messages;
     }
 
@@ -103,11 +104,7 @@ export default class TokenizerUtils {
         tokenCount -= this.countMessageTokens([removed]);
       }
     }
-
-    console.log("Token Limit", max_tokens);
     messages.push(lastMessage);
-    console.log("Final token count: ", this.countMessageTokens(messages));
-
     return messages;
   }
 
@@ -131,12 +128,10 @@ export default class TokenizerUtils {
 
   countMessageTokens(messages: ChatCompletionRequestMessage[]): number {
     let tokenCount = 0;
-
     messages.forEach((message: ChatCompletionRequestMessage) => {
       tokenCount += this.tiktoken.encode(message.content).length + 5;
     });
-
-    return tokenCount + messages.length > 1 ? 3 : 0;
+    return tokenCount + (messages.length > 1 ? 3 : 0);
   }
 
   private getWasmPath() {
@@ -163,3 +158,6 @@ export default class TokenizerUtils {
     throw new Error("Could not find tiktoken wasm file.");
   }
 }
+
+const tokenizerUtils = new TokenizerUtils();
+export default tokenizerUtils;

@@ -44,6 +44,16 @@ export class ApiKeyController {
     }
   }
 
+  async deleteApiKey(req: Request, res: Response): Promise<Response> {
+    const apiKeyPath = this.getApiKeyPath();
+    if (fs.existsSync(apiKeyPath)) {
+      console.debug("Deleting API key at path: ", apiKeyPath);
+      fs.unlinkSync(apiKeyPath);
+      return res.json({ success: true });
+    }
+    return res.json({ success: false });
+  }
+
   async setApiKey(req: Request, res: Response): Promise<Response> {
     const apiKeyWorks = await this.testApiKey(req.body.apiKey);
     if (!apiKeyWorks) {

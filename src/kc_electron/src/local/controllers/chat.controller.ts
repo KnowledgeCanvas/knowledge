@@ -22,7 +22,7 @@ import {
   ChatSettingsModel,
   SettingsModel,
 } from "../../../../kc_shared/models/settings.model";
-import TokenizerUtils from "../utils/tokenizer.utils";
+import tokenizerUtils from "../utils/tokenizer.utils";
 
 const settings = require("../../app/services/settings.service");
 
@@ -31,8 +31,6 @@ export default class ChatController {
 
   private settings: ChatSettingsModel = new ChatSettingsModel();
 
-  private tokenizer = new TokenizerUtils();
-
   constructor() {
     this.init();
 
@@ -40,7 +38,7 @@ export default class ChatController {
       .pipe(map((s: SettingsModel) => s.app.chat))
       .subscribe((chatSettings: ChatSettingsModel) => {
         if (chatSettings.model.name !== this.settings.model.name) {
-          this.tokenizer.setModel(chatSettings.model.name);
+          tokenizerUtils.setModel(chatSettings.model.name);
         }
         this.settings = chatSettings;
       });
@@ -54,17 +52,16 @@ export default class ChatController {
     }
 
     // Remove any duplicate messages
-    // console.log("Chat request: ", req.body.messages);
-    let messages = this.tokenizer.deduplicate(req.body.messages);
-    // console.log("After deduplication: ", messages);
+    let messages = tokenizerUtils.deduplicate(req.body.messages);
 
     try {
       // TODO: This should be specified depending on the model
-      messages = this.tokenizer.limitTokens(
+      messages = tokenizerUtils.limitTokens(
         messages,
         4096 - this.settings.model.max_tokens
       );
     } catch (error) {
+      console.error("Error limiting chat history due to token count.");
       console.error(error);
       return res.status(500).json({
         error: "Error limiting chat history due to token count.",
