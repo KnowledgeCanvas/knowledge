@@ -142,8 +142,11 @@ export class SourceChatComponent implements OnInit {
       .subscribe();
   }
 
-  delete(message: ChatMessage) {
-    this.history = this.history.filter((m) => m.id !== message.id);
+  delete(messages: ChatMessage[]) {
+    for (const message of messages) {
+      this.history = this.history.filter((m) => m.id !== message.id);
+    }
+
     this.chat.saveChat(this.history, this.source.id);
   }
 }

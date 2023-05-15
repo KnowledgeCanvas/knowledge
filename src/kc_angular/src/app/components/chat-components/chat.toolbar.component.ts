@@ -35,6 +35,11 @@ import { SettingsService } from '@services/ipc-services/settings.service';
           </span>
           <input
             #tableFilter
+            proTip
+            tipHeader="Find the Needle in the Chat Haystack!"
+            tipMessage="Looking for a specific chat message? Use our filter input to sift through the chatter. Just type in what you're looking for, and voila! Your chat haystack just got a whole lot smaller."
+            [tipGroups]="['chat']"
+            tipIcon="pi pi-filter"
             pInputText
             type="text"
             placeholder="Filter by keyword"
@@ -52,7 +57,25 @@ import { SettingsService } from '@services/ipc-services/settings.service';
       <div class="chat-toolbar-actions">
         <div
           pButton
+          proTip
+          tipHeader="Too Much Chit-Chat?"
+          tipMessage="Click here to erase all chat messages in the chat history. One click, and poof! It's like the chat history never happened. A fresh start awaits!"
+          [tipGroups]="['chat']"
+          tipIcon="pi pi-trash"
+          icon="pi pi-trash"
+          class="p-button-rounded p-button-text p-button-danger"
+          tooltip="Clear Chat"
+          (click)="clearChat()"
+        ></div>
+        <div
+          pButton
           icon="pi pi-cog"
+          proTip
+          tipHeader="Fancy a Chat Makeover?"
+          tipMessage="Click the chat settings button to spice up your chat experience! Customize away and make the chat truly yours. Your chat room, your rules!"
+          [tipGroups]="['chat']"
+          tipIcon="pi pi-cog"
+          tooltip="Chat Settings"
           class="p-button-rounded p-button-text"
           (click)="chatSettings()"
         ></div>
@@ -63,6 +86,8 @@ import { SettingsService } from '@services/ipc-services/settings.service';
 })
 export class ChatToolbarComponent {
   @Output() onFilter = new EventEmitter<string>();
+
+  @Output() onClear = new EventEmitter<void>();
 
   private _filter$ = new BehaviorSubject<string>('');
   filter$ = this._filter$.asObservable();
@@ -86,5 +111,9 @@ export class ChatToolbarComponent {
 
   chatSettings() {
     this.settings.show('chat');
+  }
+
+  clearChat() {
+    this.onClear.emit();
   }
 }

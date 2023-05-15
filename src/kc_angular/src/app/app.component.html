@@ -41,7 +41,7 @@
 
   <div class="flex-row-center-between">
     <app-create class="title-bar-interactive"></app-create>
-    <app-search class="title-bar-interactive mx-8"></app-search>
+    <app-search class="title-bar-interactive mx-4"></app-search>
     <app-history class="title-bar-interactive"></app-history>
   </div>
 
@@ -118,13 +118,17 @@
         </div>
         <div class="overflow-y-auto mt-3">
           <ul class="list-none py-3 pl-2 pr-0 m-0">
-            <li
-              (click)="onSidebarClick(item)"
-              (dragstart)="$event.preventDefault()"
-              *ngFor="let item of sidebarItems"
-              [pTooltip]="item.label"
-              [routerLink]="item.routerLink"
-              class="mb-2"
+            <li *ngFor="let item of (sidebarItems$ | async)"
+                class="mb-2"
+                proTip
+                [tipHeader]="item.tipHeader"
+                [tipMessage]="item.tipMessage"
+                [tipGroups]="['navigation']"
+                [tipIcon]="item.icon"
+                [tipShowOnHover]="true"
+                (click)="onSidebarClick(item)"
+                (dragstart)="$event.preventDefault()"
+                [routerLink]="item.routerLink"
             >
               <a
                 [class.bg-primary]="item.label === selectedView"
@@ -159,9 +163,31 @@
           </ul>
         </div>
         <div class="mt-auto">
+          <p-speedDial direction="up"
+                       proTip
+                       tipHeader="Curious for some Pro Tips?"
+                       tipMessage="Tap the question mark to unleash a shower of Pro Tips! We add new tips tailored to your active view. So, keep coming back for more as you navigate the app. Ready to become a Pro?"
+                       tipOffsetY="14rem"
+                       [tipShowOnHover]="true"
+                       [tipGroups]="['navigation', 'intro']"
+                       tipIcon="pi pi-question-circle"
+                       [model]="proTips"
+                       showIcon="pi pi-question-circle"
+                       hideIcon="pi pi-question"
+                       className="relative"
+                       buttonClassName="p-button-text text-2xl"
+          ></p-speedDial>
           <a
+            proTip
+            tipHeader="Ready to Tweak and Twiddle? (⌘/Ctrl + ,)"
+            tipMessage="Tap here to swing open the doors to our settings menu! From choosing among 20 light/dark themes, to disabling animations, to enabling the Chrome extension, there's so much to play with. Let's make this app truly yours!"
+            tipOffsetY="-1rem"
+            [tipGroups]="['navigation', 'intro']"
+            tipIcon="pi pi-cog"
+            [tipShowOnHover]="true"
             (click)="showSettings()"
             class="p-element m-3 flex align-items-center cursor-pointer p-2 justify-content-center border-round bg-primary text-0 transition-duration-150 transition-colors"
+            aria-label="Open the Settings menu"
           >
             <i class="pi pi-cog text-xl"></i>
             <span
@@ -197,7 +223,15 @@
         <router-outlet></router-outlet>
       </div>
     </div>
-    <div @fadeIn id="app-footer">
+    <div @fadeIn
+         id="app-footer"
+         proTip
+         tipHeader="Lost? Follow the Breadcrumbs! (⌘/Ctrl + P)"
+         tipMessage="Meet the project breadcrumb! It's like your personal GPS, showing you where your active project sits in the project tree. Click on a project name to bring it center-stage. Plus, the 'Projects' button is your magic key to the project tree sidebar. Ready to explore?"
+         [tipGroups]="['navigation']"
+         tipIcon="pi pi-list"
+         [tipShowOnHover]="true"
+    >
       <app-project-breadcrumb
         (dragstart)="$event.preventDefault()"
         (onShowProjectTree)="projectTreeVisible = !projectTreeVisible"
@@ -216,3 +250,6 @@
   key="app-toast"
   position="bottom-right"
 ></p-toast>
+<p-overlayPanel #proTipOverlay styleClass="shadow-6" [dismissable]="true">
+  <app-pro-tips #proTipComponent></app-pro-tips>
+</p-overlayPanel>

@@ -155,11 +155,13 @@ import { SourceMetadataComponent } from '@components/source-components/source.me
 import { SourceVideoComponent } from '@components/source-components/source.video.component';
 import { SourceDocumentComponent } from '@components/source-components/source.document.component';
 import { SourceTimelineComponent } from '@components/source-components/source.timeline.component';
-import { IconComponent } from '@components/shared/icon/icon.component';
+import { IconComponent } from '@components/shared/icon.component';
 import { DragDropModule } from 'primeng/dragdrop';
 import { SanitizeHtmlPipe } from '@pipes/sanitize-html.pipe';
 import { SourceBrowserComponent } from '@components/source-components/source.browser.component';
 import { SourceNotesComponent } from '@components/source-components/source.notes.component';
+import { ProTipDirective } from './directives/pro-tip.directive';
+import { ProTipsComponent } from '@components/shared/pro-tips.component';
 
 @NgModule({
   declarations: [
@@ -236,6 +238,8 @@ import { SourceNotesComponent } from '@components/source-components/source.notes
     SourceTimelineComponent,
     IconComponent,
     SanitizeHtmlPipe,
+    ProTipDirective,
+    ProTipsComponent,
   ],
   imports: [
     A11yModule,

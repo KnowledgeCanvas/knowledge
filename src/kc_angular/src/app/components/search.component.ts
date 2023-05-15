@@ -38,6 +38,11 @@ import { Subject } from 'rxjs';
     <div class="p-inputgroup">
       <p-autoComplete
         #searchBar
+        proTip
+        tipHeader="Feeling like a Search Sleuth? (⌘/Ctrl + F)"
+        tipMessage="Go on a search spree for Sources in your Projects! Or fancy a quick web hunt? Use our built-in Chromium browser to scour Google, Bing, or DuckDuckGo. Let the search games begin!"
+        [tipGroups]="['topbar', 'intro', 'navigation']"
+        tipIcon="pi pi-search"
         [(ngModel)]="query"
         [suggestions]="suggestions"
         [showClear]="true"
@@ -115,6 +120,10 @@ import { Subject } from 'rxjs';
         </ng-template>
       </p-autoComplete>
       <div
+        proTip
+        tipHeader="Search Settings"
+        tipMessage="Click here to change your search settings. You can choose your default search engine and fine tune your Source search results."
+        [tipGroups]="['topbar', 'settings']"
         class="p-inputgroup-addon pi pi-sliders-h cursor-pointer"
         style="height: 28px"
         (click)="onSearchSettings()"

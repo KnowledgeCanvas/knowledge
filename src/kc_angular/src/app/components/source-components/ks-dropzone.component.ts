@@ -28,6 +28,11 @@ import {
     <div
       [@dropzone-shorten]="shouldShorten ? 'dropzone-sm' : 'dropzone-lg'"
       class="dropzone select-none border-round-top-2xl"
+      proTip
+      tipHeader="Ready to Drop 'n' Roll?"
+      tipMessage="Welcome to the Dropzone! Drag and drop links and files anywhere in the app window, and watch as they transform into Sources. It's like magic, but better!"
+      tipIcon="pi pi-arrows-alt"
+      [tipGroups]="['intro', 'source']"
     >
       <div class="flex-col-center-center">
         <b class="text-xl text-600">{{ emptyMessage }}</b>

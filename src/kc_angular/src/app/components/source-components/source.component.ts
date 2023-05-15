@@ -41,11 +41,13 @@ import { SourceBrowserComponent } from '@components/source-components/source.bro
 
 interface TabDescriptor {
   label: string;
-  icon: PrimeIcons;
+  icon: string;
   hidden: boolean;
   disabled: boolean;
   loading: boolean;
   component: Type<any>;
+  tipHeader: string;
+  tipMessage: string;
 }
 
 @Component({
@@ -53,6 +55,13 @@ interface TabDescriptor {
   template: `
     <div class="tabs">
       <div
+        proTip
+        [tipHeader]="tab.tipHeader"
+        [tipMessage]="tab.tipMessage"
+        [tipGroups]="['source', 'intro']"
+        [tipHidden]="tab.hidden"
+        [tipIcon]="tab.icon"
+        [tipShowOnHover]="true"
         class="tab text-center flex-row-center-center border-round-top-2xl font-bold"
         *ngFor="let tab of tabs; index as i"
         [ngClass]="{
@@ -63,7 +72,7 @@ interface TabDescriptor {
         (click)="setSelectedTab(i)"
       >
         <i class="{{ tab.icon }} pr-2"></i>
-        <span>{{ tab.label }}</span>
+        <span *ngIf="!tab.hidden">{{ tab.label }}</span>
         <p-progressSpinner
           *ngIf="tab.loading"
           class="pl-2"
@@ -129,6 +138,8 @@ export class SourceComponent implements OnInit, OnChanges {
     disabled: false,
     loading: false,
     component: SourceDetailsComponent,
+    tipHeader: 'Craving the Deets?',
+    tipMessage: `Head over to the details tab! It's got all the juicy details about the Source, including title, description, and topics. Information galore, right at your fingertips!`,
   };
 
   chatTab: TabDescriptor = {
@@ -138,6 +149,8 @@ export class SourceComponent implements OnInit, OnChanges {
     disabled: false,
     loading: false,
     component: SourceChatComponent,
+    tipHeader: 'Ready for a Chat with Your Source?',
+    tipMessage: `Get chatty with the chat tab! Throw in any questions about the Source, and watch as the Source agent turns the extracted Source text into answers. It's like your personal knowledge buddy!`,
   };
 
   timelineTab: TabDescriptor = {
@@ -147,6 +160,8 @@ export class SourceComponent implements OnInit, OnChanges {
     disabled: true,
     loading: false,
     component: SourceTimelineComponent,
+    tipHeader: 'Step into the Source Time Machine!',
+    tipMessage: `The timeline tab is your gateway to the history of the Source. Generated from the source metadata and events, it's like your own personal 'Back to the Future' ride. Buckle up!`,
   };
 
   browserTab: TabDescriptor = {
@@ -156,6 +171,8 @@ export class SourceComponent implements OnInit, OnChanges {
     disabled: false,
     loading: false,
     component: SourceBrowserComponent,
+    tipHeader: 'Web Browsing, Right Here, Right Now!',
+    tipMessage: `Say hello to the browser tab! With our built-in Chromium browser (yes, the same one used by Google Chrome and Microsoft Edge), you can view your Sources without leaving the comfort of the app. Surf's up!`,
   };
 
   documentTab: TabDescriptor = {
@@ -165,6 +182,8 @@ export class SourceComponent implements OnInit, OnChanges {
     disabled: true,
     loading: false,
     component: SourceDocumentComponent,
+    tipHeader: 'Ready for a Doc Dive?',
+    tipMessage: `Check out the document tab! It's your window to the Source document, straight from the specified local file path. Let's explore the document universe!`,
   };
 
   videoTab: TabDescriptor = {
@@ -174,6 +193,8 @@ export class SourceComponent implements OnInit, OnChanges {
     disabled: true,
     loading: false,
     component: SourceVideoComponent,
+    tipHeader: `Grab your popcorn, it's showtime!`,
+    tipMessage: `Meet the video tab! Your personal movie theater, playing Source videos straight from YouTube using the video ID in the Source link. Sit back, relax, and enjoy the show!`,
   };
 
   metadataTab: TabDescriptor = {
@@ -183,6 +204,8 @@ export class SourceComponent implements OnInit, OnChanges {
     disabled: false,
     loading: false,
     component: SourceMetadataComponent,
+    tipHeader: 'Ready to go Meta?',
+    tipMessage: `Step into the metadata tab! It's your personal viewing deck for all things metadata about the Source. And guess what? You can even copy it. Let's get meta!`,
   };
 
   tabs: TabDescriptor[] = [

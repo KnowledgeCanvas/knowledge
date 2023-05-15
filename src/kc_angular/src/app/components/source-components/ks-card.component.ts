@@ -40,6 +40,11 @@ import { DragAndDropService } from '@services/ingest-services/drag-and-drop.serv
       (onDragEnd)="dragEnd($event, ks)"
       *ngIf="ks"
       (dblclick)="onEdit.emit(ks)"
+      proTip
+      tipHeader="Say Hello to Source Cards!"
+      tipMessage="A perfect blend of style and substance, Source Cards are all about visual appeal! With thumbnails, icons, action buttons, and topics all in one place, you can see the type of Source and its Project at a glance. Your data never looked so good!"
+      [tipGroups]="['source']"
+      tipIcon="pi pi-id-card"
       class="hover:shadow-1 border-round-2xl border-1 border-dotted border-400 h-full flex flex-column overflow-hidden justify-content-between surface-card source-drag-handle"
     >
       <div class="flex flex-grow-1">

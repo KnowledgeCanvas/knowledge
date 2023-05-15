@@ -43,6 +43,13 @@ type HistoryEvent = {
     >
       <button
         pButton
+        proTip
+        tipHeader="Oops, wrong turn?"
+        tipMessage="No worries! The 'Back' button is your personal time machine. One click and you're zapped back to your previous view. Easy peasy!"
+        [tipGroups]="['topbar', 'navigation']"
+        tipIcon="pi pi-arrow-left"
+        [tipHidden]="backDisabled"
+        [tipShowOnHover]="true"
         [disabled]="backDisabled"
         icon="pi pi-arrow-left"
         class="p-button-text outline-none shadow-none non-header"
@@ -50,6 +57,13 @@ type HistoryEvent = {
       ></button>
       <button
         pButton
+        proTip
+        tipHeader="Ready to leap forward?"
+        tipMessage="The 'Forward' button is your springboard to the future. Click to jump right back to where you left off. Onward and upward!"
+        [tipGroups]="['topbar', 'navigation']"
+        tipIcon="pi pi-arrow-right"
+        [tipHidden]="forwardDisabled"
+        [tipShowOnHover]="true"
         [disabled]="forwardDisabled"
         icon="pi pi-arrow-right"
         class="p-button-text outline-none shadow-none non-header"
@@ -58,6 +72,13 @@ type HistoryEvent = {
       <button
         id="historyButton"
         pButton
+        proTip
+        tipHeader="Care to take a stroll down memory lane? (⌘/Ctrl + G)"
+        tipMessage="Hit the history button and unveil a timeline of your active projects and past views. Fancy revisiting a view? Just click, and you're back in time!"
+        [tipGroups]="['topbar', 'navigation']"
+        tipIcon="pi pi-clock"
+        [tipHidden]="historyDisabled"
+        [tipShowOnHover]="true"
         [disabled]="historyDisabled"
         icon="pi pi-clock"
         class="p-button-text outline-none shadow-none non-header"
