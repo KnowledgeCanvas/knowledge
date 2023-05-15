@@ -14,12 +14,10 @@
  *  limitations under the License.
  */
 
-import dotenv from "dotenv";
-import { notarize } from "electron-notarize";
+require("dotenv").config();
+const { notarize } = require("electron-notarize");
 
 exports.default = async function notarizing(context) {
-  dotenv.config();
-
   const { electronPlatformName, appOutDir } = context;
   if (electronPlatformName !== "darwin") {
     return;
