@@ -66,6 +66,12 @@ import { finalize, map, take, takeUntil, tap } from 'rxjs/operators';
               (click)="onProjectImport()"
             ></button>
             <project-selector
+              proTip
+              tipHeader="Import Sources to a Project"
+              tipMessage="Select a Project from the dropdown, then click Import. You can also import all sources to the selected Project by checking the Import All checkbox. You can also drag and drop Sources to a Project in the sidebar."
+              [tipGroups]="['inbox', 'intro']"
+              [tipHidden]="!upNext || upNext.length === 0"
+              [tipShowOnHover]="true"
               [disabled]="!upNext || upNext.length === 0"
               class="w-16rem px-2"
               [showClear]="false"
@@ -149,6 +155,11 @@ import { finalize, map, take, takeUntil, tap } from 'rxjs/operators';
               <div
                 style="width: 100%;"
                 class="hover:surface-hover text-primary"
+                proTip
+                tipHeader="Feeling a bit lost? No worries!"
+                tipMessage="Tap here to explore a medley of handpicked web Sources. They're prime examples of how we magically extract and showcase metadata. Let's set sail on the web!"
+                [tipGroups]="['inbox', 'source', 'intro']"
+                [tipShowOnHover]="true"
               >
                 <app-ks-message
                   class="cursor-pointer hover:surface-hover"

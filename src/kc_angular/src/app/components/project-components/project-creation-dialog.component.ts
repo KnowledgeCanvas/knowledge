@@ -60,45 +60,6 @@ import { TreeNode } from 'primeng/api';
         </project-selector>
       </div>
 
-      <div class="field p-float-label sm:col-6 md:col-6 lg:col-6 mt-3">
-        <p-calendar
-          [(ngModel)]="projectCreationRequest.calendar.start"
-          [showButtonBar]="true"
-          hourFormat="12"
-          [showTime]="true"
-          [showIcon]="true"
-          id="start"
-          appendTo="body"
-        ></p-calendar>
-        <label for="start">Start</label>
-      </div>
-
-      <div class="field p-float-label sm:col-6 md:col-6 lg:col-6 mt-3">
-        <p-calendar
-          [(ngModel)]="projectCreationRequest.calendar.end"
-          [showButtonBar]="true"
-          hourFormat="12"
-          [showTime]="true"
-          [showIcon]="true"
-          id="end"
-          appendTo="body"
-        ></p-calendar>
-        <label for="end">End</label>
-      </div>
-
-      <div class="field sm:col-12 md:col-12 lg:col-12 mt-3">
-        <label for="topics">Topics</label>
-        <p-chips
-          [(ngModel)]="projectCreationRequest.topics"
-          inputId="topics"
-          [addOnBlur]="true"
-          [addOnTab]="true"
-          [allowDuplicate]="false"
-          [placeholder]="'Add topics here, separated by commas'"
-          separator=","
-        ></p-chips>
-      </div>
-
       <div class="field p-float-label col-12 mt-3">
         <textarea
           pInputTextarea

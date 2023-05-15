@@ -42,6 +42,10 @@
         </div>
         <div
           *ngIf="!allowMoveAll"
+          proTip
+          tipHeader="Filter your Sources"
+          tipMessage="Use the filter to find sources by title, type, date, etc."
+          [tipGroups]="['source']"
           class="p-inputgroup p-fluid mr-3 ml-3 w-24rem"
         >
               <span class="p-inputgroup-addon">

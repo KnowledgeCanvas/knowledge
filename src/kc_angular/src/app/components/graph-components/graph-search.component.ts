@@ -128,12 +128,12 @@ export interface SearchResult {
           <div
             class="pi pi-arrow-left cursor-pointer"
             (click)="onNext.emit(true)"
-            pTooltip="Previous: ⌘/Ctrl+["
+            pTooltip="Previous: ⌘/Ctrl + ["
           ></div>
           <div
             class="pi pi-arrow-right cursor-pointer"
             (click)="onNext.emit()"
-            pTooltip="Next: ⌘/Ctrl+]"
+            pTooltip="Next: ⌘/Ctrl + ]"
           ></div>
         </div>
         <ng-template #footer>

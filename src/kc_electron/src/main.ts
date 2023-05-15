@@ -94,8 +94,6 @@ require("./local/chat.api");
  * Main Window Functions
  */
 function createMainWindow() {
-  const WIDTH: number = parseInt(appEnv.env.DEFAULT_WINDOW_WIDTH);
-  const HEIGHT: number = parseInt(appEnv.env.DEFAULT_WINDOW_HEIGHT);
   const darkMode = appEnv.display.theme.isDark;
   const backgroundColor = darkMode ? "#1E1E1E" : "#F9F9F9";
   console.log("Theme: ", appEnv.display.theme);
@@ -108,10 +106,10 @@ function createMainWindow() {
   kcMainWindow = new BrowserWindow({
     title: "Knowledge",
     backgroundColor: backgroundColor,
-    width: WIDTH ? WIDTH : 1280,
-    height: HEIGHT ? HEIGHT : 1600,
-    minWidth: 800,
-    minHeight: 800,
+    width: 1920,
+    height: 1080,
+    minWidth: 1000,
+    minHeight: 850,
     frame: false,
     icon: path.resolve(app.getAppPath(), "..", "icon.png"),
     show: false,

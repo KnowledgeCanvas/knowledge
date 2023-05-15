@@ -77,7 +77,9 @@ export class ChatViewComponent implements OnInit, OnChanges {
     new EventEmitter<ChatMessage>();
 
   /* The event emitted when the user clicks on the Delete button */
-  @Output() delete: EventEmitter<ChatMessage> = new EventEmitter<ChatMessage>();
+  @Output() delete: EventEmitter<ChatMessage[]> = new EventEmitter<
+    ChatMessage[]
+  >();
 
   /* An array of suggestions for the next question */
   nextQuestionSuggestions: string[] = [];
@@ -260,7 +262,7 @@ export class ChatViewComponent implements OnInit, OnChanges {
   regenerateMessage(message: ChatMessage, warn = true) {
     if (warn) {
       this.warnUser(
-        message,
+        [message],
         `Regenerate`,
         `Are you sure you want to regenerate this message? This will replace the message in the chat history.`,
         `Regenerate Message`,
@@ -278,7 +280,7 @@ export class ChatViewComponent implements OnInit, OnChanges {
    */
   deleteMessage(message: ChatMessage) {
     this.warnUser(
-      message,
+      [message],
       `Delete`,
       `Are you sure you want to permanently delete this message?`,
       `Delete Message`,
@@ -539,7 +541,7 @@ export class ChatViewComponent implements OnInit, OnChanges {
    * @param emitter The emitter to emit the message to when the user confirms the action
    */
   private warnUser(
-    message: ChatMessage,
+    messages: ChatMessage[],
     acceptLabel: string,
     confirmation: string,
     header: string,
@@ -550,9 +552,25 @@ export class ChatViewComponent implements OnInit, OnChanges {
       icon: `pi pi-exclamation-triangle`,
       header: header,
       accept: () => {
-        emitter.emit(message);
+        emitter.emit(messages);
       },
       acceptLabel: acceptLabel,
+      acceptIcon: `pi pi-check`,
+      rejectIcon: `pi pi-times`,
+      acceptButtonStyleClass: `p-button-danger`,
+      rejectButtonStyleClass: `p-button-secondary`,
+    });
+  }
+
+  onClear() {
+    this.confirm.confirm({
+      message: 'Are you sure you want to clear the chat history?',
+      icon: `pi pi-exclamation-triangle`,
+      header: 'Clear Chat History',
+      accept: () => {
+        this.delete.emit(this.history);
+      },
+      acceptLabel: 'Clear',
       acceptIcon: `pi pi-check`,
       rejectIcon: `pi pi-times`,
       acceptButtonStyleClass: `p-button-danger`,

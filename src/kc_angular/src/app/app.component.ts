@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { ChildrenOutletContexts, NavigationEnd, Router } from '@angular/router';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { environment } from '@environments/environment';
@@ -28,20 +28,21 @@ import { DragAndDropService } from '@services/ingest-services/drag-and-drop.serv
 import { KsCommandService } from '@services/command-services/ks-command.service';
 import { ProjectTreeFactoryService } from '@services/factory-services/project-tree-factory.service';
 import { KsDetailsComponent } from '@components/source-components/ks-details.component';
-import { map, take, tap } from 'rxjs/operators';
-import { BehaviorSubject, throttleTime } from 'rxjs';
+import { debounceTime, map, take, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, throttleTime } from 'rxjs';
 import { StartupService } from '@services/ipc-services/startup.service';
 import { ProjectCommandService } from '@services/command-services/project-command.service';
 import { ProjectDetailsComponent } from '@components/project-components/project-details.component';
 import { fadeIn, fadeInAndOut, flyInOut } from './animations';
 import { ChatService } from '@services/chat-services/chat.service';
-
-type SidebarItem = {
-  label: string;
-  routerLink?: any;
-  command?: any;
-  icon: string;
-};
+import { OverlayPanel } from 'primeng/overlaypanel';
+import { ProTipService } from '@services/command-services/pro-tip.service';
+import { ProTipsComponent } from '@components/shared/pro-tips.component';
+import {
+  SidebarItem,
+  SidebarService,
+} from '@services/factory-services/sidebar.service';
+import { MenuItem, PrimeIcons } from 'primeng/api';
 
 @Component({
   selector: 'app-root',
@@ -49,77 +50,84 @@ type SidebarItem = {
   styleUrls: ['./app.component.scss'],
   animations: [fadeInAndOut, flyInOut, fadeIn],
 })
-export class AppComponent {
-  /**
-   * The current project id
-   */
+export class AppComponent implements OnInit {
+  @ViewChild('proTipOverlay', { static: true })
+  proTipsOverlay!: OverlayPanel;
+
+  @ViewChild('proTipComponent', { static: true })
+  proTipsComponent!: ProTipsComponent;
+
+  /* The current project id */
   projectId = '';
 
-  /**
-   * Whether the project tree is visible
-   */
+  /* Whether the project tree is visible */
   projectTreeVisible = true;
 
-  /**
-   * Whether the app is ready to show the main view
-   */
+  /* Whether the app is ready to show the main view */
   readyToShow = false;
 
-  /**
-   * The number of items in the inbox (used for the badge)
-   */
+  /* The number of items in the inbox (used for the badge) */
   inboxBadge = 0;
 
-  /**
-   * The reference to the source info dialog
-   */
+  /* The reference to the source info dialog */
   sourceInfoDialog?: DynamicDialogRef;
 
-  /**
-   * The reference to the project info dialog
-   */
+  /* The reference to the project info dialog */
   projectInfoDialog?: DynamicDialogRef;
 
-  /**
-   * A list of sidebar items to display, and their associated router links
-   */
-  sidebarItems: SidebarItem[] = [
+  sidebarItems$: Observable<SidebarItem[]>;
+
+  /* The currently selected view */
+  selectedView = 'Inbox';
+
+  /* The host OS (windows, macos, linux) */
+  os = '';
+
+  /* The route animation data, used to determine which animation to use when navigating between views */
+  routeAnimationData = 'Inbox';
+
+  /* Whether to use animations in the app or not */
+  animate = true;
+
+  proTips: MenuItem[] = [
     {
-      label: 'Inbox',
-      routerLink: ['app', 'inbox', 'undefined'],
-      icon: 'pi pi-inbox',
+      icon: PrimeIcons.QUESTION_CIRCLE,
+      command: () => this.tips.showByGroup('intro'),
+      tooltipOptions: {
+        tooltipLabel: 'Getting Started',
+        tooltipPosition: 'right',
+      },
+    },
+    {
+      icon: PrimeIcons.DATABASE,
+      command: () => this.tips.showByGroup('source'),
+      tooltipOptions: {
+        tooltipLabel: 'Sources',
+        tooltipPosition: 'right',
+      },
+    },
+    {
+      icon: PrimeIcons.MAP,
+      command: () => this.tips.showByGroup('navigation'),
+      tooltipOptions: {
+        tooltipLabel: 'Navigation',
+        tooltipPosition: 'right',
+      },
+    },
+    {
+      icon: PrimeIcons.COMMENTS,
+      command: () => this.tips.showByGroup('chat'),
+      tooltipOptions: {
+        tooltipLabel: 'Chat',
+        tooltipPosition: 'right',
+      },
     },
   ];
 
-  /**
-   * The currently selected view
-   */
-  selectedView: string = this.sidebarItems[0].label;
-
-  /**
-   * The host OS (windows, macos, linux)
-   */
-  os = '';
-
-  /**
-   * The route animation data, used to determine which animation to use when navigating between views
-   */
-  routeAnimationData = 'Inbox';
-
-  /**
-   * Whether to use animations in the app or not
-   */
-  animate = true;
-
-  /**
-   * The subject used to emit window resize events
-   * @private
-   */
+  /* The subject used to emit window resize events */
   private _windowResize = new BehaviorSubject({});
 
-  /**
-   * The application component constructor - injects all the services and sets up the subscriptions
-   */
+  /* The application component constructor - injects all the services and sets up the subscriptions */
   constructor(
     private settings: SettingsService,
     private notifications: NotificationsService,
@@ -136,8 +144,12 @@ export class AppComponent {
     private tree: ProjectTreeFactoryService,
     private router: Router,
     private contexts: ChildrenOutletContexts,
-    private themes: ThemeService
+    private sidebar: SidebarService,
+    private themes: ThemeService,
+    private tips: ProTipService
   ) {
+    this.sidebarItems$ = sidebar.items$;
+
     /* Set window icons based on OS */
     settings.all
       .pipe(
@@ -168,37 +180,18 @@ export class AppComponent {
           if (events instanceof NavigationEnd) {
             const segments = events.url.split('/').filter((f) => f.length);
             const visibleRoute = segments[1];
-            switch (visibleRoute) {
-              case 'inbox':
-              case '(inbox':
-                this.selectedView = 'Inbox';
+            for (const view of [
+              'Inbox',
+              'Projects',
+              'Table',
+              'Grid',
+              'Graph',
+              'Calendar',
+            ]) {
+              if (visibleRoute?.includes(view.toLowerCase())) {
+                this.selectedView = view;
                 break;
-              case 'projects':
-              case '(projects':
-                this.selectedView = 'Projects';
-                break;
-              case 'table':
-              case '(table':
-                this.selectedView = 'Table';
-                break;
-              case 'grid':
-              case '(grid':
-                this.selectedView = 'Grid';
-                break;
-              case 'graph':
-              case '(graph':
-                this.selectedView = 'Graph';
-                break;
-              case 'calendar':
-              case '(calendar':
-                this.selectedView = 'Calendar';
-                break;
-              case 'chat':
-              case '(chat':
-                this.selectedView = 'Chat';
-                break;
-              default:
-                break;
+              }
             }
             if (this.animate) {
               this.routeAnimationData = this.selectedView;
@@ -285,9 +278,23 @@ export class AppComponent {
     /* When the project changes, update the sidebar and the project id */
     projects.currentProject
       .pipe(
+        debounceTime(250),
         tap((project) => {
           this.projectId = project?.id.value ?? '';
-          this.setSidebar();
+          if (this.projectId && this.projectId.trim().length === 36) {
+            this.sidebar.all({ value: this.projectId });
+          } else {
+            this.sidebar.byLabel('Inbox', { value: this.projectId });
+          }
+          if (
+            !project ||
+            !project.id.value ||
+            project.id?.value === 'undefined'
+          ) {
+            setTimeout(() => {
+              this.tips.showByGroup('intro');
+            }, 1000);
+          }
         })
       )
       .subscribe();
@@ -296,7 +303,7 @@ export class AppComponent {
     themes.setLocal().then(() => {
       setTimeout(() => {
         this.readyToShow = true;
-      }, Math.floor(Math.random() * 3000));
+      }, Math.floor(Math.random() * 1000));
     });
 
     /* Listen for window resize events and update the sidebar visibility accordingly */
@@ -311,49 +318,8 @@ export class AppComponent {
       .subscribe();
   }
 
-  /* Sets the sidebar icons and router links. If there are no projects, only display inbox. */
-  setSidebar() {
-    this.sidebarItems =
-      this.projectId && this.projectId.trim().length === 36
-        ? [
-            {
-              label: 'Inbox',
-              routerLink: ['app', 'inbox', this.projectId],
-              icon: 'pi pi-inbox',
-            },
-            {
-              label: 'Graph',
-              routerLink: ['app', 'graph', this.projectId],
-              icon: 'pi pi-sitemap',
-            },
-            {
-              label: 'Table',
-              routerLink: ['app', 'table', this.projectId],
-              icon: 'pi pi-table',
-            },
-            {
-              label: 'Grid',
-              routerLink: ['app', 'grid', this.projectId],
-              icon: 'pi pi-th-large',
-            },
-            {
-              label: 'Calendar',
-              routerLink: ['app', 'calendar', this.projectId],
-              icon: 'pi pi-calendar',
-            },
-            {
-              label: 'Chat',
-              routerLink: ['app', 'chat', this.projectId],
-              icon: 'pi pi-comments',
-            },
-          ]
-        : [
-            {
-              label: 'Inbox',
-              routerLink: ['app', 'inbox', 'undefined'],
-              icon: 'pi pi-inbox',
-            },
-          ];
+  ngOnInit() {
+    this.tips.setTarget(this.proTipsOverlay, this.proTipsComponent);
   }
 
   /* A convenience method to open the settings dialog */

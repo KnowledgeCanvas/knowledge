@@ -15,11 +15,11 @@
  */
 
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { IconService } from '@services/user-services/icon.service';
 import { PrimeIcons } from 'primeng/api';
 import { OverlayPanel } from 'primeng/overlaypanel';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
+import { IconService } from '@services/user-services/icon.service';
 
 @Component({
   selector: 'app-icon',
