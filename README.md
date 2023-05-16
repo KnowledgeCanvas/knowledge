@@ -1,3 +1,11 @@
+# Introducing Knowledge + Chat
+
+Dive into a more interactive learning experience with Knowledge's new Chat feature! Engage in dynamic conversations with your Projects and Sources, leveraging the power of Large Language Models. Ask questions, explore concepts, and deepen your understanding, all within an intuitive chat interface.
+
+The Chat feature is designed to transform the way you interact with your data, offering a more engaging and exploratory approach to learning. Whether you're looking to better comprehend a complex topic or simply exploring new ideas, the Chat feature is your personal knowledge companion.
+
+![Chat GIF 2](https://github.com/KnowledgeCanvas/knowledge/assets/19367848/869b00c7-4d7e-4ef9-83e4-62410b9bfbb3)
+
 # Description
 
 Knowledge is a tool for saving, searching, accessing, exploring and chatting with all of your favorite websites, documents and files.
