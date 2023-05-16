@@ -4,7 +4,15 @@ Dive into a more interactive learning experience with Knowledge's new Chat featu
 
 The Chat feature is designed to transform the way you interact with your data, offering a more engaging and exploratory approach to learning. Whether you're looking to better comprehend a complex topic or simply exploring new ideas, the Chat feature is your personal knowledge companion.
 
-![Chat GIF 2](https://github.com/KnowledgeCanvas/knowledge/assets/19367848/869b00c7-4d7e-4ef9-83e4-62410b9bfbb3)
+<img width="1112" alt="Screenshot 2023-05-16 at 12 41 35 AM" src="https://github.com/KnowledgeCanvas/knowledge/assets/19367848/40ce5d4e-b539-4f78-adee-470ff1659522">
+
+## Built-in Chromium
+
+Unleash the power of context with the built-in Chromium browser (just like Google Chrome and Microsoft Edge)! Right-click to summarize, extract topics, or turn web content into Notes. Transform your browsing into knowledge gathering, effortlessly. 🌐💡
+
+![Browser View](https://github.com/KnowledgeCanvas/knowledge/assets/19367848/d525917e-38e7-4759-aadc-aa9a52ef88a1)
+
+
 
 # Description
 
