@@ -1,10 +1,22 @@
-# Note about Chat
+# Introducing Knowledge + Chat
 
-The **Chat feature has *not* been released yet**, it will be included in version `0.8.0`. Follow [@RobRoyce_](https://twitter.com/RobRoyce_) on Twitter to stay up to date on release progress. [Sign up for the 0.8.0 Chat Beta here](https://forms.gle/XQydMFneLfoSma4N8)
+Dive into a more interactive learning experience with Knowledge's new Chat feature! Engage in dynamic conversations with your Projects and Sources, leveraging the power of Large Language Models. Ask questions, explore concepts, and deepen your understanding, all within an intuitive chat interface.
+
+The Chat feature is designed to transform the way you interact with your data, offering a more engaging and exploratory approach to learning. Whether you're looking to better comprehend a complex topic or simply exploring new ideas, the Chat feature is your personal knowledge companion.
+
+<img width="1112" alt="Screenshot 2023-05-16 at 12 41 35 AM" src="https://github.com/KnowledgeCanvas/knowledge/assets/19367848/40ce5d4e-b539-4f78-adee-470ff1659522">
+
+## Built-in Chromium
+
+Unleash the power of context with the built-in Chromium browser (just like Google Chrome and Microsoft Edge)! Right-click to summarize, extract topics, or turn web content into Notes. Transform your browsing into knowledge gathering, effortlessly. 🌐💡
+
+![Browser View](https://github.com/KnowledgeCanvas/knowledge/assets/19367848/d525917e-38e7-4759-aadc-aa9a52ef88a1)
+
+
 
 # Description
 
-Knowledge is a tool for saving, searching, accessing, and exploring all of your favorite websites, documents and files.
+Knowledge is a tool for saving, searching, accessing, exploring and chatting with all of your favorite websites, documents and files.
 
 ![KnowledgeGraph](https://user-images.githubusercontent.com/19367848/206884085-f73affb8-b94e-4039-beb3-b47f76762d8b.gif)
 
