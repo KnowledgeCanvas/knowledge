@@ -37,6 +37,11 @@ import { SettingsService } from '@services/ipc-services/settings.service';
         <div>
           <button
             pButton
+            proTip
+            tipHeader="Picture Perfect View 🌍"
+            tipMessage="Feeling lost in your knowledge graph? Click 'Fit' to adjust and center your graph perfectly within your current view. It's like having a GPS for your data universe!"
+            tipIcon="pi pi-arrows-alt"
+            [tipGroups]="['graph']"
             icon="pi pi-arrows-alt"
             (click)="onFit.emit()"
           ></button>
@@ -51,6 +56,11 @@ import { SettingsService } from '@services/ipc-services/settings.service';
               type="search"
               (keydown.enter)="onNext(graphSearch.value)"
               placeholder="Search"
+              proTip
+              tipHeader="Graph Search: Your Data Compass 🧭"
+              tipMessage="Navigate your Knowledge universe with ease! Our graph search bar helps you find and highlight paths in your project hierarchy, while simultaneously showcasing matching sources as handy cards. Never lose track of a data point again!"
+              tipIcon="pi pi-search"
+              [tipGroups]="['graph']"
             />
           </form>
         </div>
@@ -74,6 +84,11 @@ import { SettingsService } from '@services/ipc-services/settings.service';
             optionLabel="name"
             class="w-full p-fluid flex"
             (onChange)="onLayout.emit(selectedLayout)"
+            proTip
+            tipHeader="Layouts: A Fresh Perspective 🔄"
+            tipMessage="Bored of the same old view? Switch things up with our layout selector! Watch your knowledge graph morph instantly into your chosen layout. Feeling adventurous? Activate the physics simulator for a dynamic, animated experience!"
+            tipIcon="pi pi-refresh"
+            [tipGroups]="['graph']"
           >
           </p-dropdown>
           <span

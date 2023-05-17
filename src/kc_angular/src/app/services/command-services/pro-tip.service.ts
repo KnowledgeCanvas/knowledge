@@ -20,6 +20,7 @@ import { OverlayPanel } from 'primeng/overlaypanel';
 import { ProTipsComponent } from '@components/shared/pro-tips.component';
 import { ProTip } from '@app/directives/pro-tip.directive';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { NotificationsService } from '@services/user-services/notifications.service';
 
 @Injectable({
   providedIn: 'root',
@@ -43,7 +44,7 @@ export class ProTipService {
 
   index$ = this.index.asObservable();
 
-  constructor() {
+  constructor(private notify: NotificationsService) {
     this.proTip$.subscribe((t: ProTip | null) => {
       if (t) {
         this.createOverlay(t);
@@ -151,7 +152,16 @@ export class ProTipService {
 
   showByGroup(group: string) {
     // Filter the tips by group and display them in order
-    this.selection.next(this.proTips.filter((t) => t.groups.includes(group)));
+    const nextTips = this.proTips.filter((t) => t.groups.includes(group));
+    if (!nextTips.length) {
+      this.notify.success(
+        'Pro Tips',
+        `No ${group} tips found.`,
+        `Try again after visiting a ${group} view.`
+      );
+    } else {
+      this.selection.next(nextTips);
+    }
   }
 
   unregister(name: string) {
