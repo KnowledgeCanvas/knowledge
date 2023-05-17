@@ -95,6 +95,11 @@ import { finalize, map, take, takeUntil, tap } from 'rxjs/operators';
           <div class="flex flex-row">
             <button
               pButton
+              proTip
+              tipHeader="Out with the Old! 🗑️"
+              tipMessage="Need a clean slate? Click 'Remove All' to sweep away all sources from your Inbox."
+              tipIcon="pi pi-trash"
+              [tipGroups]="['inbox']"
               icon="pi pi-trash"
               label="Remove All"
               class="p-button-danger p-button-text"
@@ -131,6 +136,11 @@ import { finalize, map, take, takeUntil, tap } from 'rxjs/operators';
                 <div *ngFor="let ks of filtered">
                   <app-ks-message
                     class="source-drag-handle"
+                    proTip
+                    tipHeader="Drag, Drop, Organize! 📁"
+                    tipMessage="Get groovy with your sources! Just drag and drop them into any project in your project tree (sidebar). It's like arranging books on your favorite shelf!"
+                    tipIcon="pi pi-arrows-alt"
+                    [tipGroups]="['inbox', 'source']"
                     [ks]="ks"
                     (click)="setActive(ks)"
                     pDraggable="sources"

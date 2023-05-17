@@ -95,6 +95,11 @@ import { DragAndDropService } from '@services/ingest-services/drag-and-drop.serv
                       dataTable.filterGlobal(tableFilter.value, 'contains')
                     "
                     placeholder="Filter by title, type, date, etc."
+                    proTip
+                    tipHeader="Filtering 101"
+                    tipMessage="Want to find something specific? Type in the search box to filter your table. You can filter by title, type, date, etc."
+                    tipIcon="pi pi-search"
+                    [tipGroups]="['table']"
                   />
                   <span
                     class="p-inputgroup-addon"
@@ -118,7 +123,14 @@ import { DragAndDropService } from '@services/ingest-services/drag-and-drop.serv
                   style="margin-right: 10px"
                   (click)="removeMultiple(ksSelected)"
                 ></button>
-                <app-ks-export [data]="ksList"></app-ks-export>
+                <app-ks-export
+                  proTip
+                  tipHeader="Data on the Go! 💼"
+                  tipMessage="Want your data handy? Hit the 'Export' button to save your table to a CSV file. It's like packing your data suitcase for a journey outside the app!"
+                  tipIcon="pi pi-download"
+                  [tipGroups]="['table']"
+                  [data]="ksList"
+                ></app-ks-export>
               </div>
             </div>
           </ng-template>
@@ -128,7 +140,13 @@ import { DragAndDropService } from '@services/ingest-services/drag-and-drop.serv
             <!--        Checkbox Row-->
             <tr>
               <th style="max-width: 40px">
-                <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                <p-tableHeaderCheckbox
+                  proTip
+                  tipHeader="Chechmate!"
+                  tipMessage="Want to select all your table entries at once? Click the checkbox in the table header. It's your one-click wonder for bulk actions!"
+                  tipIcon="pi pi-check-square"
+                  [tipGroups]="['table']"
+                ></p-tableHeaderCheckbox>
               </th>
               <th
                 *ngFor="let col of columns"
@@ -274,7 +292,14 @@ import { DragAndDropService } from '@services/ingest-services/drag-and-drop.serv
 
           <!--Declare Table Summary Row-->
           <ng-template pTemplate="summary">
-            <div *ngIf="ksList.length && ksTopics.length">
+            <div
+              *ngIf="ksList.length && ksTopics.length"
+              proTip
+              tipHeader="Topic Treasure Trove 🏷️"
+              tipMessage="Underneath your Source table, you'll find a sorted list of all topics from your Sources. It's like a popularity contest for your data, with the most frequent topics taking the top spots!"
+              tipIcon="pi pi-tags"
+              [tipGroups]="['table']"
+            >
               Topics
               <div
                 style="max-height: 5rem; overflow-x: hidden; overflow-y: auto"

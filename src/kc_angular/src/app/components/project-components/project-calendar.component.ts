@@ -65,6 +65,11 @@ export interface KcCardRequest {
   template: `
     <div *ngIf="viewReady; else loading" class="h-full w-full">
       <full-calendar
+        proTip
+        tipHeader="Timelines, Deadlines, and Milestones, Oh My!"
+        tipMessage="Use the calendar to visualize your project's activity. Click on an event to view the Source details."
+        tipIcon="pi pi-calendar"
+        [tipGroups]="['calendar']"
         #calendar
         [deepChangeDetection]="deepChangeDetection"
         class="h-full w-full"
@@ -73,7 +78,13 @@ export interface KcCardRequest {
       >
       </full-calendar>
       <br />
-      <div class="text-right">
+      <div
+        class="text-right"
+        proTip
+        tipHeader="Legendary Calendar"
+        tipMessage="Decode your calendar events with the handy legend! Each color represents a different event type, making it a breeze to spot and understand your activities."
+        [tipGroups]="['calendar']"
+      >
         <span class="calendar-legend-dot green"></span> Created
         <span class="calendar-legend-dot orange"></span> Modified
         <span class="calendar-legend-dot blue"></span> Accessed
