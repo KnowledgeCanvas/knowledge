@@ -67,8 +67,8 @@ import { finalize, map, take, takeUntil, tap } from 'rxjs/operators';
             ></button>
             <project-selector
               proTip
-              tipHeader="Import Sources to a Project"
-              tipMessage="Select a Project from the dropdown, then click Import. You can also import all sources to the selected Project by checking the Import All checkbox. You can also drag and drop Sources to a Project in the sidebar."
+              tipHeader="Time to Gather Your Sources!"
+              tipMessage="Choose a Project from the dropdown, hit Import, and watch your Sources flow in. Want them all in the same Project? Just check the 'Import All' box. Or, have some fun dragging and dropping Sources into the Project tree on the sidebar."
               [tipGroups]="['inbox', 'intro']"
               [tipHidden]="!upNext || upNext.length === 0"
               [tipShowOnHover]="true"
@@ -156,8 +156,8 @@ import { finalize, map, take, takeUntil, tap } from 'rxjs/operators';
                 style="width: 100%;"
                 class="hover:surface-hover text-primary"
                 proTip
-                tipHeader="Feeling a bit lost? No worries!"
-                tipMessage="Tap here to explore a medley of handpicked web Sources. They're prime examples of how we magically extract and showcase metadata. Let's set sail on the web!"
+                tipHeader="Ready for a Web Adventure?"
+                tipMessage="Click here to dive into a selection of curated web Sources. These are perfect examples of how we neatly gather and display metadata. Time to surf the interwebs!"
                 [tipGroups]="['inbox', 'source', 'intro']"
                 [tipShowOnHover]="true"
               >

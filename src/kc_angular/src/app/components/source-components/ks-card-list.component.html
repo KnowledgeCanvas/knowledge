@@ -23,6 +23,12 @@
       <div class="flex-row-center-between w-full">
         <div class="w-16rem">
           <p-dropdown
+            proTip
+            tipHeader="Arrange Your Knowledge Trove"
+            tipMessage="Sort your sources just the way you like - by title, date, type, or the order you've added them. Ascending or descending? You're in control. Organize for easy browsing!"
+            tipIcon="pi pi-sort-alt"
+            [tipGroups]="['grid']"
+            [tipShowOnHover]="true"
             (onChange)="sortSelected($event)"
             [(ngModel)]="selectedSorter"
             [autoDisplayFirst]="true"
@@ -40,14 +46,7 @@
             </ng-template>
           </p-dropdown>
         </div>
-        <div
-          *ngIf="!allowMoveAll"
-          proTip
-          tipHeader="Filter your Sources"
-          tipMessage="Use the filter to find sources by title, type, date, etc."
-          [tipGroups]="['source']"
-          class="p-inputgroup p-fluid mr-3 ml-3 w-24rem"
-        >
+        <div class="p-inputgroup p-fluid mr-3 ml-3 w-24rem">
               <span class="p-inputgroup-addon">
                 <i class="pi pi-filter"></i>
               </span>
@@ -57,6 +56,11 @@
             [(ngModel)]="filterTerm"
             pInputText
             placeholder="Filter by title, type, date, etc."
+            proTip
+            tipHeader="Filter Fun!"
+            tipMessage="Can't find a source? Use the filter! It's your personal search wizard, finding sources by title, type, date, and more. Dive in and find what you need in a jiffy!"
+            [tipGroups]="['grid']"
+            [tipShowOnHover]="true"
             type="text"
           />
           <span
@@ -72,35 +76,25 @@
           <app-ks-export
             *ngIf="allowExport"
             [data]="ksList"
+            proTip
+            tipHeader="Share your Knowledge with the World!"
+            tipMessage="Ready to take your sources beyond the app? Export them to a CSV or JSON file and spread your knowledge far and wide!"
+            [tipGroups]="['grid']"
+            [tipShowOnHover]="true"
           ></app-ks-export>
           <button
             (click)="settingsOverlay.toggle($event)"
             *ngIf="allowCustomization || allowResize"
+            proTip
+            tipHeader="Your View, Your Rules!"
+            tipMessage="Tailor your view to your needs! Choose and resize columns, adjust the size of your grid cards, and pick which fields to display. Personalize it and make it just right!"
+            [tipGroups]="['grid']"
+            [tipShowOnHover]="true"
             icon="pi pi-cog"
             pButton
             style="margin-left: 10px"
             type="button"
           ></button>
-        </div>
-
-        <div
-          *ngIf="allowMoveAll"
-          class="p-fluid mr-3 ml-3 w-24rem flex-row-center-between"
-        >
-          <div class="p-fluid flex-grow-1">
-            <project-selector
-              (onSelect)="selectedProject = $event"
-              placeholder="Move to Project"
-            ></project-selector>
-          </div>
-          <div class="flex-shrink-1 ml-4">
-            <button
-              (click)="onMoveAll()"
-              [disabled]="!selectedProject?.key || treeNodes.length < 1"
-              label="Move All"
-              pButton
-            ></button>
-          </div>
         </div>
       </div>
     </ng-template>
@@ -119,6 +113,10 @@
             style="min-width: 24rem"
           >
             <app-ks-card
+              proTip
+              tipHeader="Embrace Your Knowledge Journey!"
+              tipMessage="Your sources are the gems in your knowledge treasure chest. Feel free to add, edit, or remove them as you see fit. They're yours to keep and yours to share!"
+              [tipGroups]="['grid']"
               (contextmenu)="setActiveKs(ks); cm.show($event)"
               (onEdit)="_onKsDetail($event)"
               (onOpen)="_onKsOpen($event)"
@@ -166,6 +164,10 @@
     <ng-template pStyleClass="surface-100" pTemplate="footer">
       <p-paginator
         #paginator
+        proTip
+        tipHeader="Flip Through Your Knowledge Pages!"
+        tipMessage="Got a hefty collection of sources? No worries! Our handy pagination tool at the bottom lets you breeze through your sources page by page. It's like flipping through a book of wisdom!"
+        [tipGroups]="['grid']"
         (onPageChange)="paginate($event)"
         [first]="paginateConfig.first"
         [rowsPerPageOptions]="[10, 20, 30, 40, 50]"

@@ -113,7 +113,7 @@ export class KsMessageComponent {
 
   @Input() status?: string;
 
-  @Input() active?: boolean = false;
+  @Input() active: boolean | undefined = false;
 
   @Input() label?: string;
 

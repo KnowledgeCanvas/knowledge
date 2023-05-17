@@ -101,7 +101,6 @@ export class KsContextMenuService {
 
     menu = this.setRemove(menu, target, ksLabel, ksList);
     menu = this.setOpen(menu, target, ksLabel, ksList);
-    menu = this.setMove(menu, target, ksLabel, ksList);
     menu = this.setCopy(menu, target, ksLabel, ksList);
     menu = this.setShowIn(menu, target);
     return menu;
@@ -178,43 +177,6 @@ export class KsContextMenuService {
         });
       }
     }
-    return menu;
-  }
-
-  private setMove(
-    menu: MenuItem[],
-    target: KnowledgeSource,
-    label: string,
-    ksList?: KnowledgeSource[]
-  ): MenuItem[] {
-    const move = menu.find((m) => m.label === 'Move');
-
-    if (move && (!ksList || ksList.length === 0)) {
-      move.label = 'Move';
-      move.command = () => {
-        this.ksCommandService.move([target]);
-      };
-    } else if (move) {
-      move.items = [
-        {
-          label: label,
-          styleClass: this.styleClass,
-          command: () => {
-            this.ksCommandService.move([target]);
-          },
-        },
-      ];
-      if (ksList && ksList.length) {
-        move.items.push({
-          label: `Selected (${ksList.length})`,
-          styleClass: this.styleClass,
-          command: () => {
-            this.ksCommandService.move(ksList);
-          },
-        });
-      }
-    }
-
     return menu;
   }
 

@@ -85,7 +85,6 @@ import { KsExportComponent } from '@components/source-components/ks-export.compo
 import { KsIconComponent } from '@components/source-components/ks-icon.component';
 import { KsIngestTypeIconPipe } from '@pipes/ks-ingest-type-icon.pipe';
 import { KsMessageComponent } from '@components/source-components/ks-message.component';
-import { KsMoveComponent } from '@components/source-components/ks-move.component';
 import { KsPreviewComponent } from '@components/source-components/ks-preview.component';
 import { KsTableComponent } from '@components/source-components/ks-table.component';
 import { KsThumbnailComponent } from '@components/source-components/ks-thumbnail.component';
@@ -198,7 +197,6 @@ import { ProTipsComponent } from '@components/shared/pro-tips.component';
     KsIconComponent,
     KsIngestTypeIconPipe,
     KsMessageComponent,
-    KsMoveComponent,
     KsPreviewComponent,
     KsTableComponent,
     KsThumbnailComponent,

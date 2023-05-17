@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-export class TextUtils {
+export default class TextUtils {
   constructor() {
     throw new Error("TextUtils is a static class and cannot be instantiated");
   }

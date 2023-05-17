@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2023 Rob Royce
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { UUID } from '@shared/models/uuid.model';
@@ -16,8 +32,8 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
     label: 'Inbox',
     routerLink: ['app', 'inbox', 'undefined'],
     icon: 'pi pi-inbox',
-    tipHeader: 'Dive In! (⌘/Ctrl + 1)',
-    tipMessage: `New to Knowledge? The Inbox is your best pal! Manage your newly added sources here and, when you're ready, drag-and-drop them into a project in your project tree.`,
+    tipHeader: 'Your Control Center! (⌘/Ctrl + 1)',
+    tipMessage: `Consider the Inbox a staging area for new sources. It allows you to view and chat with sources before assigning them to a project. When ready, simply drag-and-drop them into your chosen project in the project tree. It's your sources, your way!`,
   },
   {
     label: 'Graph',

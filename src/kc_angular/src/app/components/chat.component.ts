@@ -248,35 +248,13 @@ export class ChatComponent {
 
   /**
    * Delete a message from the history
-   * @param $event The message to delete
+   * @param messages The message(s) to delete
    */
-  onDeleteMessage($event: ChatMessage) {
-    if ($event.project) {
-      this.chatHistory = this.chatHistory.filter(
-        (message) => message.id !== $event.id
-      );
-      this.chatHistory = this.chatHistory.sort(
-        (a, b) => a.timestamp.getTime() - b.timestamp.getTime()
-      );
-      this.saveHistory();
-    } else if ($event.source) {
-      // Remove the message from the history
-      this.chatHistory = this.chatHistory.filter(
-        (message) => message.id !== $event.id
-      );
-
-      // Get history for the Source
-      const sourceHistory = this.chatHistory.filter(
-        (message) => message.source?.id.value === $event.source?.id.value
-      );
-
-      // Save the source history
-      this.chat.saveChat(sourceHistory, $event.source?.id);
-
-      this.chatHistory = this.chatHistory.sort(
-        (a, b) => a.timestamp.getTime() - b.timestamp.getTime()
-      );
-    }
+  onDeleteMessage(messages: ChatMessage[]) {
+    // Remove messages from the history and save
+    this.chatHistory = this.chatHistory.filter(
+      (message) => !messages.includes(message)
+    );
   }
 
   /**

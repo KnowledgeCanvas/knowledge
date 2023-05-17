@@ -1,9 +1,25 @@
+/*
+ * Copyright (c) 2023 Rob Royce
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, combineLatest } from 'rxjs';
 import { OverlayPanel } from 'primeng/overlaypanel';
 import { ProTipsComponent } from '@components/shared/pro-tips.component';
 import { ProTip } from '@app/directives/pro-tip.directive';
-import { distinctUntilChanged } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -34,16 +50,13 @@ export class ProTipService {
       }
     });
 
+    /* Wait for either the selection or index to change, then update the active pro tip accordingly. */
     combineLatest([
-      this.selection$.pipe(
-        distinctUntilChanged((a, b) => {
-          if (a.length !== b.length) return false;
-          for (let i = 0; i < a.length; i++)
-            if (a[i].name !== b[i].name) return false;
-          return true;
-        })
+      this.selection$,
+      this.index$.pipe(
+        distinctUntilChanged((a, b) => a === b),
+        debounceTime(400)
       ),
-      this.index$.pipe(distinctUntilChanged((a, b) => a === b)),
     ]).subscribe(([s, i]) => {
       if (s.length > 0 && i >= 0 && i < s.length && s[i].element && s[i].view) {
         this.proTip.next(s[i]);
@@ -121,10 +134,6 @@ export class ProTipService {
         (this.index.value - 1 + this.selection.value.length) %
           this.selection.value.length
       );
-    });
-
-    this.component.close.subscribe(() => {
-      console.log('close');
     });
   }
 

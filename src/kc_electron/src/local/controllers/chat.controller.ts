@@ -97,6 +97,11 @@ export default class ChatController {
     return true;
   }
 
+  private async getApiKey() {
+    const apiKeyPath = this.getApiKeyPath();
+    return await chatEncrypt.readAndDecryptApiKey(apiKeyPath, "unsecured");
+  }
+
   private getApiKeyPath(): string {
     const userDataPath = settings.getSettings().system.appPath;
     return `${userDataPath}/openai.encrypted`;

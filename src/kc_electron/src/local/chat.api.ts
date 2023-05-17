@@ -38,7 +38,7 @@ export default class ChatServer {
   }
 
   private setupMiddleware() {
-    this.app.use(express.json({ limit: "1mb" })); // Parse JSON request bodies
+    this.app.use(express.json({ limit: "50mb" })); // Parse JSON request bodies
     this.app.use(cors()); // Enable CORS
   }
 

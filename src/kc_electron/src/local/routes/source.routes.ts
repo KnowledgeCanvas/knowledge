@@ -23,5 +23,6 @@ const router = express.Router();
 
 router.post("/", sourceController.chat.bind(sourceController));
 router.post("/intro", sourceController.intro.bind(sourceController));
+// router.post("/pdf", sourceController.pdf.bind(sourceController));
 
 export default router;
