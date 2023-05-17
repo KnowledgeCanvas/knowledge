@@ -88,9 +88,6 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
   /* Enable or disable the ability to customize card fields. */
   @Input() allowCustomization = true;
 
-  /* Enable or disable the ability to move all sources at once. Automatically disables filtering */
-  @Input() allowMoveAll = false;
-
   /* Emitted when a topic tag is clicked */
   @Output() onTopicSearch = new EventEmitter<string>();
 

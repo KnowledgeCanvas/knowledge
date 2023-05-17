@@ -29,7 +29,6 @@ import { EventModel } from '@shared/models/event.model';
 import { EventService } from '@services/user-services/event.service';
 import { NotificationsService } from '@services/user-services/notifications.service';
 import { ProjectService } from '@services/factory-services/project.service';
-import { TopicService } from '@services/user-services/topic.service';
 import { PrimeIcons } from 'primeng/api';
 
 @Component({
@@ -95,34 +94,6 @@ import { PrimeIcons } from 'primeng/api';
                 </div>
               </div>
 
-              <div class="field p-float-label sm:col-6 md:col-6 lg:col-6 mb-5">
-                <p-calendar
-                  formControlName="start"
-                  [showTime]="true"
-                  [showButtonBar]="true"
-                  hourFormat="12"
-                  [showIcon]="true"
-                  id="start"
-                  appendTo="body"
-                >
-                </p-calendar>
-                <label for="start">Start</label>
-              </div>
-
-              <div class="field p-float-label sm:col-6 md:col-6 lg:col-6 mb-5">
-                <p-calendar
-                  formControlName="end"
-                  [showTime]="true"
-                  [showButtonBar]="true"
-                  hourFormat="12"
-                  [showIcon]="true"
-                  id="end"
-                  appendTo="body"
-                >
-                </p-calendar>
-                <label for="end">End</label>
-              </div>
-
               <div class="field p-float-label col-12 mb-3">
                 <textarea
                   pInputTextarea
@@ -134,22 +105,6 @@ import { PrimeIcons } from 'primeng/api';
                 >
                 </textarea>
                 <label for="_ksDescription">Description</label>
-              </div>
-
-              <div class="field sm:col-12 md:col-12 lg:col-12 mb-5">
-                <label for="topics">Topics</label>
-                <p-chips
-                  id="topics"
-                  formControlName="topics"
-                  class="p-fluid w-full"
-                  separator=","
-                  [addOnBlur]="true"
-                  [addOnTab]="true"
-                  [allowDuplicate]="false"
-                  (onChipClick)="onTopicClick($event)"
-                  [placeholder]="'Add topics here, separated by commas'"
-                >
-                </p-chips>
               </div>
             </div>
           </form>
@@ -201,10 +156,6 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
 
   form: FormGroup;
 
-  start: Date | null = new Date();
-
-  end: Date | null = null;
-
   projectEvents: any[] = [];
 
   private cleanUp: Subject<any> = new Subject<any>();
@@ -215,16 +166,12 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
     private formBuilder: FormBuilder,
     private notifications: NotificationsService,
     private projects: ProjectService,
-    private topics: TopicService,
     private ref: DynamicDialogRef
   ) {
     this.form = formBuilder.group({
       id: '',
       name: [''],
       description: [''],
-      start: [],
-      end: [],
-      topics: [],
     });
 
     this.form.valueChanges
@@ -238,11 +185,7 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
           }
 
           return (
-            prev.name === curr.name &&
-            prev.description === curr.description &&
-            JSON.stringify(prev.topics) === JSON.stringify(curr.topics) &&
-            prev.end === curr.end &&
-            prev.start === curr.start
+            prev.name === curr.name && prev.description === curr.description
           );
         }),
         tap((formValue) => {
@@ -253,9 +196,6 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
 
             this.project.name = formValue.name;
             this.project.description = formValue.description;
-            this.project.topics = formValue.topics;
-            this.project.calendar.start = formValue.start;
-            this.project.calendar.end = formValue.end;
 
             const event: EventModel = {
               description: '',
@@ -307,31 +247,10 @@ export class ProjectDetailsComponent implements OnInit, OnDestroy {
     this.form.patchValue({
       id: project.id.value,
       name: project.name,
-      start: project.calendar.start ? new Date(project.calendar.start) : '',
-      end: project.calendar.end ? new Date(project.calendar.end) : '',
       description: project.description,
-      topics: project.topics,
     });
 
     this.projectEvents = this.events.fromProject(project);
-
-    if (typeof project.calendar.start === 'string') {
-      this.start = new Date(project.calendar.start);
-    } else {
-      this.start = project.calendar.start;
-    }
-
-    if (typeof project.calendar.end === 'string') {
-      this.end = new Date(project.calendar.end);
-    } else {
-      this.end = project.calendar.end;
-    }
-  }
-
-  onTopicClick($event: any) {
-    if ($event.value) {
-      this.topics.search($event.value);
-    }
   }
 
   iconChange($event: any) {

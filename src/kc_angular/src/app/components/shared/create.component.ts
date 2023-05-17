@@ -42,9 +42,9 @@ import { ConfirmationService } from 'primeng/api';
     >
       <button
         proTip
-        tipHeader="Step Right Up! Start a New Project"
-        tipMessage="Think of projects as your personal brain-organizers. Be it class notes, a research project, or your secret cookie recipes, each deserves a Project of its own. Take the first step - start a new Project!"
-        [tipGroups]="['topbar', 'project', 'intro']"
+        tipHeader="Kickstart your Knowledge journey by creating a Project!"
+        tipMessage="Think of creating a Project like setting up a new folder on your computer. You can add subprojects and Sources, just like adding files to a folder. But Projects are not just for organizing, they also help you map out your thoughts, making complex ideas easier to grasp. Ready to dive in? Click here to create a new Project!"
+        [tipGroups]="['project', 'intro']"
         tipIcon="pi pi-folder"
         [tipShowOnHover]="true"
         pButton
@@ -59,7 +59,7 @@ import { ConfirmationService } from 'primeng/api';
         proTip
         tipHeader="Voila! Transform local files into Sources"
         tipMessage="Your local files (PDFs, Word docs, PowerPoints, etc.) are waiting to jump into Knowledge. Import them using this button (or by dragging them into this window) and they'll be ready to spring open in their default apps with a single click. Go ahead, add some local spice!"
-        [tipGroups]="['topbar', 'source', 'intro']"
+        [tipGroups]="['source', 'intro']"
         tipIcon="pi pi-file"
         [tipShowOnHover]="true"
         icon="pi pi-file"
@@ -83,7 +83,7 @@ import { ConfirmationService } from 'primeng/api';
         id="newFileButton"
         tipHeader="Web Surfer? Turn URLs into Sources"
         tipMessage="Got a cool web link? Turn it into a Source! Not only will Knowledge store the link for you to access anytime, but it'll also try to gather some handy metadata. Ready for some surfing?"
-        [tipGroups]="['topbar', 'source', 'intro']"
+        [tipGroups]="['source', 'intro']"
         tipIcon="pi pi-link"
         [tipShowOnHover]="true"
         icon="pi pi-link"

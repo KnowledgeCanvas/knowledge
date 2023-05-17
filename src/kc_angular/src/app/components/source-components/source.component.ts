@@ -205,7 +205,7 @@ export class SourceComponent implements OnInit, OnChanges {
     loading: false,
     component: SourceMetadataComponent,
     tipHeader: 'Ready to go Meta?',
-    tipMessage: `Step into the metadata tab! It's your personal viewing deck for all things metadata about the Source. And guess what? You can even copy it. Let's get meta!`,
+    tipMessage: `Step into the metadata tab! It's your personal viewing deck for all things meta about the Source. And guess what? You can easily copy any of the metadata to your clipboard with a single click!`,
   };
 
   tabs: TabDescriptor[] = [

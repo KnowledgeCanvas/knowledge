@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2023-2023 Rob Royce
+  ~ Copyright (c) 2021-2023 Rob Royce
   ~
   ~  Licensed under the Apache License, Version 2.0 (the "License");
   ~  you may not use this file except in compliance with the License.
@@ -165,11 +165,10 @@
         <div class="mt-auto">
           <p-speedDial direction="up"
                        proTip
-                       tipHeader="Curious for some Pro Tips?"
+                       tipHeader="Looking for some Pro Tips? (⌘/Ctrl + /)"
                        tipMessage="Tap the question mark to unleash a shower of Pro Tips! We add new tips tailored to your active view. So, keep coming back for more as you navigate the app. Ready to become a Pro?"
                        tipOffsetY="14rem"
-                       [tipShowOnHover]="true"
-                       [tipGroups]="['navigation', 'intro']"
+                       [tipGroups]="['navigation', 'intro', 'pro-tips']"
                        tipIcon="pi pi-question-circle"
                        [model]="proTips"
                        showIcon="pi pi-question-circle"
@@ -179,8 +178,8 @@
           ></p-speedDial>
           <a
             proTip
-            tipHeader="Ready to Tweak and Twiddle? (⌘/Ctrl + ,)"
-            tipMessage="Tap here to swing open the doors to our settings menu! From choosing among 20 light/dark themes, to disabling animations, to enabling the Chrome extension, there's so much to play with. Let's make this app truly yours!"
+            tipHeader="Ready to Tweak and Configure? (⌘/Ctrl + ,)"
+            tipMessage="Click here to access settings. Choose from 20 light and dark themes, toggle animations on or off, enable the Chrome extension, and so much more. Tailor the app to fit your needs!"
             tipOffsetY="-1rem"
             [tipGroups]="['navigation', 'intro']"
             tipIcon="pi pi-cog"
@@ -227,7 +226,7 @@
          id="app-footer"
          proTip
          tipHeader="Lost? Follow the Breadcrumbs! (⌘/Ctrl + P)"
-         tipMessage="Meet the project breadcrumb! It's like your personal GPS, showing you where your active project sits in the project tree. Click on a project name to bring it center-stage. Plus, the 'Projects' button is your magic key to the project tree sidebar. Ready to explore?"
+         tipMessage="Meet the project breadcrumb! It's like your personal GPS, showing you where your active project sits in the project tree. Click on a project name to bring it center-stage. Plus, you can click on the 'Projects' button to hide or show the project tree sidebar. Ready to explore?"
          [tipGroups]="['navigation']"
          tipIcon="pi pi-list"
          [tipShowOnHover]="true"

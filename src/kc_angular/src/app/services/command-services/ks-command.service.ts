@@ -19,11 +19,10 @@ import { BrowserViewDialogService } from '@services/ipc-services/browser-view-di
 import { Clipboard } from '@angular/cdk/clipboard';
 import { ConfirmationService } from 'primeng/api';
 import { DataService } from '../user-services/data.service';
-import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { DialogService } from 'primeng/dynamicdialog';
 import { ElectronIpcService } from '@services/ipc-services/electron-ipc.service';
 import { Injectable } from '@angular/core';
 import { KnowledgeSource } from '@app/models/knowledge.source.model';
-import { KsMoveComponent } from '@components/source-components/ks-move.component';
 import { NotificationsService } from '../user-services/notifications.service';
 import { ProjectService } from '@services/factory-services/project.service';
 import { ProjectUpdateRequest } from '@app/models/project.model';
@@ -42,8 +41,6 @@ export class KsCommandService {
 
   private _ksShowInFilesEvent = new BehaviorSubject<KnowledgeSource>({} as any);
   ksShowInFilesEvent = this._ksShowInFilesEvent.asObservable();
-
-  private moveDialogRef?: DynamicDialogRef;
 
   constructor(
     private ipc: ElectronIpcService,
@@ -105,30 +102,6 @@ export class KsCommandService {
         });
         this.projects.updateProjects(updates);
       },
-    });
-  }
-
-  move(ksList: KnowledgeSource[]) {
-    if (this.moveDialogRef) {
-      return;
-    }
-
-    this.moveDialogRef = this.dialog.open(KsMoveComponent, {
-      data: { ksList: ksList },
-      width: 'min(90vw, 92rem)',
-      height: 'min(60vh, 72rem)',
-      showHeader: true,
-      header: 'Move',
-      modal: true,
-      contentStyle: {
-        'border-bottom-left-radius': '6px',
-        'border-bottom-right-radius': '6px',
-      },
-      closeOnEscape: true,
-    });
-
-    this.moveDialogRef.onClose.subscribe(() => {
-      this.moveDialogRef = undefined;
     });
   }
 

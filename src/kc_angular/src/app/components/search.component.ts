@@ -39,9 +39,9 @@ import { Subject } from 'rxjs';
       <p-autoComplete
         #searchBar
         proTip
-        tipHeader="Feeling like a Search Sleuth? (⌘/Ctrl + F)"
-        tipMessage="Go on a search spree for Sources in your Projects! Or fancy a quick web hunt? Use our built-in Chromium browser to scour Google, Bing, or DuckDuckGo. Let the search games begin!"
-        [tipGroups]="['topbar', 'intro', 'navigation']"
+        tipHeader="Ready to Search? (⌘/Ctrl + F)"
+        tipMessage="Start your search adventure right here! Find Sources within your Projects, or take a quick online detour with our built-in Chromium browser to search Google, Bing, or DuckDuckGo. Happy hunting!"
+        [tipGroups]="['intro', 'navigation']"
         tipIcon="pi pi-search"
         [(ngModel)]="query"
         [suggestions]="suggestions"
@@ -123,7 +123,7 @@ import { Subject } from 'rxjs';
         proTip
         tipHeader="Search Settings"
         tipMessage="Click here to change your search settings. You can choose your default search engine and fine tune your Source search results."
-        [tipGroups]="['topbar', 'settings']"
+        [tipGroups]="['settings']"
         class="p-inputgroup-addon pi pi-sliders-h cursor-pointer"
         style="height: 28px"
         (click)="onSearchSettings()"

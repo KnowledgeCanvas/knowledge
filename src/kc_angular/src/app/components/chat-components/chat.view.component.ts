@@ -534,7 +534,7 @@ export class ChatViewComponent implements OnInit, OnChanges {
 
   /**
    * Warn the user that the given action will replace the message in the chat history
-   * @param message The message to regenerate or delete
+   * @param messages The message(s) to regenerate or delete
    * @param acceptLabel The label for the accept button
    * @param confirmation The confirmation message to display to the user
    * @param header The header to display to the user

@@ -450,6 +450,18 @@ export class AppComponent implements OnInit {
     this.showSettings();
   }
 
+  @HostListener('document:keydown.Control./')
+  @HostListener('document:keydown.meta./')
+  goProTips() {
+    // Get current view from router and show tips for that view
+    const currentView = this.router.url.split('/')[2];
+    console.log('Attempting to show tips for ' + currentView);
+
+    if (!currentView.startsWith('(')) {
+      this.tips.showByGroup(currentView);
+    }
+  }
+
   /* Use prevent default to allow drag and drop to work properly */
   @HostListener('dragover', ['$event']) onDragOver(evt: any) {
     evt.preventDefault();
