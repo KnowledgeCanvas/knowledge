@@ -20,9 +20,50 @@ import axios from "axios";
 import { htmlToText, HtmlToTextOptions } from "html-to-text";
 import { ChatCompletionRequestMessage } from "openai/api";
 import { introPrompts } from "../constants/source.prompts";
+import TextUtils from "../utils/text.utils";
+import { PDFLoader } from "langchain/document_loaders";
 
 export default class SourceChatController {
   chatController = new ChatController();
+  async pdf(req: Request, res: Response): Promise<Response> {
+    console.log("Got PDF request: ", req.body);
+    const source = req.body.source;
+    const accessLink = source.accessLink;
+    let messages = req.body.messages || [];
+    const noPrompts = messages.length === 0;
+
+    // Get Source prompts based on this specific source, prepend them to messages
+    if (noPrompts) {
+      const sourceIntroPrompts = introPrompts(source, "source");
+      sourceIntroPrompts.forEach((message: any) => {
+        messages.push(message);
+      });
+    }
+
+    // Extract text from PDF to feed into the API
+    const loader = new PDFLoader(accessLink);
+    const docs = await loader.load();
+    console.log("PDFLoader docs: ", docs);
+
+    // const text = await this.extractText(accessLink);
+    let text = "";
+    for (let i = 0; i < Math.min(3, docs.length); i++) {
+      text += docs[i].pageContent;
+    }
+    TextUtils.chunk(text, 2000);
+
+    messages = this.appendText(messages, text);
+
+    if (noPrompts) {
+      messages.push({
+        role: "user",
+        content: `Can you introduce me to "${source.title}"?`,
+      });
+    }
+
+    console.log("messages: ", messages);
+    return this.chatController.chat(req, res);
+  }
 
   async chat(req: Request, res: Response): Promise<Response> {
     console.warn("/sources/chat is acting as a pass through to /chat.");
@@ -34,7 +75,6 @@ export default class SourceChatController {
     const accessLink = new URL(source.accessLink);
     let messages = req.body.messages || [];
     const noPrompts = messages.length === 0;
-    console.log("Messages before extracting text: ", req.body.messages);
 
     // Get Source prompts based on this specific source, prepend them to messages
     if (noPrompts) {
@@ -54,7 +94,6 @@ export default class SourceChatController {
         content: `Can you introduce me to "${source.title}"?`,
       });
     }
-    console.log("Messages after extracting text: ", messages);
     return this.chatController.chat(req, res);
   }
 

@@ -166,7 +166,21 @@ export class ChatService {
       messages: messages,
       source: source,
     };
-    const url = this.backendUrl + '/sources/intro';
+
+    let url = '';
+    if (source.ingestType === 'file' && typeof source.accessLink === 'string') {
+      if (source.accessLink.endsWith('.pdf')) {
+        url = this.backendUrl + '/sources/pdf';
+        console.log('Setting URL to PDF: ', url);
+      }
+    } else {
+      url = this.backendUrl + '/sources/intro';
+    }
+
+    if (url === '') {
+      return new Observable<ChatCompletionResponseMessage>();
+    }
+
     return this.http.post(url, body).pipe(
       map((response: any) => {
         return response.choices[0].message;

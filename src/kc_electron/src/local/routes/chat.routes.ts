@@ -22,5 +22,6 @@ const chatController = new ChatController();
 const router = express.Router();
 
 router.post("/", chatController.chat.bind(chatController));
+router.post("/langchain", chatController.langchainChat.bind(chatController));
 
 export default router;

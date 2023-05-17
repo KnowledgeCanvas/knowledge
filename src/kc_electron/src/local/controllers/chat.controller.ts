@@ -90,6 +90,17 @@ export default class ChatController {
     }
   }
 
+  async langchainChat(req: Request, res: Response): Promise<Response> {
+    const apiKey = await this.getApiKey();
+    if (!apiKey) {
+      return res.status(500).json({
+        error: "API key not found",
+      });
+    }
+
+    return res.json({});
+  }
+
   private async veryifyApi() {
     if (!this.openai) {
       await this.init();
