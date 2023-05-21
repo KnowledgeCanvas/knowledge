@@ -86,7 +86,7 @@ export class ProTipDirective implements OnChanges, OnDestroy {
     private proTips: ProTipService
   ) {
     this.subscriber = this.hover$
-      .pipe(debounceTime(500), distinctUntilChanged())
+      .pipe(debounceTime(1000), distinctUntilChanged())
       .subscribe((h) => {
         if (h === true && this.tipShowOnHover) {
           this.proTips.showByName(this.tipHeader);

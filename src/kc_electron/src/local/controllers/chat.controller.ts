@@ -90,6 +90,20 @@ export default class ChatController {
     }
   }
 
+  async tokens(req: Request, res: Response): Promise<Response> {
+    const text = req.body.text;
+    if (!text) {
+      return res.status(400).json({
+        error: "Missing text",
+      });
+    }
+
+    const n = tokenizerUtils.countTokens(text) - 5;
+    return res.json({
+      tokens: n,
+    });
+  }
+
   private async veryifyApi() {
     if (!this.openai) {
       await this.init();

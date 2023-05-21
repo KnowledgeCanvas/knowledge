@@ -220,8 +220,8 @@ export class ChatContextMenuService {
 
   save(message: ChatMessage) {
     return {
-      label: 'Save',
-      icon: PrimeIcons.SAVE,
+      label: 'Save as Note',
+      icon: PrimeIcons.CODE,
       command: () => {
         if (message.source) {
           message.source.description += `
@@ -234,8 +234,8 @@ ${message.text}`;
         }
         this.notifications.success(
           'Chat',
-          'Message Saved',
-          `Added to ${message.source ? 'Source' : 'Project'} description`
+          'Saved!',
+          `Added to ${message.source ? 'Source Notes' : 'Project Description'}`
         );
       },
     };

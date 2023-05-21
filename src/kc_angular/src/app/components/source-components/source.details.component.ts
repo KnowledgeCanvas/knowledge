@@ -89,7 +89,6 @@ import { skip } from 'rxjs';
               tipHeader="Express Yourself with Notes"
               tipMessage="Embrace your creativity using the Notes feature! It supports Markdown rendering, allowing you to craft visually engaging notes. Find something valuable in a source? Extract and save it directly to Notes by highlighting and right-clicking in the Browser tab. Make it your personal knowledge playground!"
               [tipGroups]="['source', 'intro']"
-              [tipShowOnHover]="true"
             >
               <h3 class="font-bold text-2xl">Notes</h3>
               <div class="flex justify-content-end align-items-center w-full">

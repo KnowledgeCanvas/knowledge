@@ -44,6 +44,14 @@ export class ChatService {
 
   private _settings: ChatSettingsModel = new ChatSettingsModel();
 
+  private tokenCount = new BehaviorSubject<number>(0);
+
+  tokenCount$ = this.tokenCount.asObservable();
+
+  private tokenLimit = new BehaviorSubject<number>(4096);
+
+  tokenLimit$ = this.tokenLimit.asObservable();
+
   constructor(
     private dialog: DialogService,
     private http: HttpClient,
@@ -59,6 +67,9 @@ export class ChatService {
       .pipe(map((settings) => settings?.app?.chat ?? new ChatSettingsModel()))
       .subscribe((settings) => {
         this._settings = settings;
+        this.tokenLimit.next(
+          settings.model.token_limit - settings.model.max_tokens ?? 4096
+        );
       });
   }
 
@@ -376,5 +387,19 @@ export class ChatService {
     return history.filter((msg: ChatMessage) => {
       return msg.source && msg.source.id === source.id;
     });
+  }
+
+  countTokens(message: string) {
+    if (!message) {
+      this.tokenCount.next(0);
+      return;
+    }
+
+    this.http
+      .post(this.backendUrl + '/chat/tokens', { text: message })
+      .pipe(map((response: any) => response.tokens))
+      .subscribe((count: number) => {
+        this.tokenCount.next(count);
+      });
   }
 }

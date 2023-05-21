@@ -161,6 +161,7 @@ import { SourceBrowserComponent } from '@components/source-components/source.bro
 import { SourceNotesComponent } from '@components/source-components/source.notes.component';
 import { ProTipDirective } from './directives/pro-tip.directive';
 import { ProTipsComponent } from '@components/shared/pro-tips.component';
+import { ChatInputComponent } from '@components/chat-components/chat.input.component';
 
 @NgModule({
   declarations: [
@@ -170,6 +171,7 @@ import { ProTipsComponent } from '@components/shared/pro-tips.component';
     ChatActionsComponent,
     ChatApiComponent,
     ChatComponent,
+    ChatInputComponent,
     ChatMessageComponent,
     ChatSettingsComponent,
     ChatViewComponent,
