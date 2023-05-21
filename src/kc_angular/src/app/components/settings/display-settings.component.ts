@@ -189,6 +189,7 @@ export class DisplaySettingsComponent {
 
     this.form = formBuilder.group({
       theme: [this.displaySettings.theme],
+      syncTheme: [this.displaySettings.syncTheme],
       zoom: [this.displaySettings.zoom],
       autoplay: [this.displaySettings.autoplay],
       logs: [
@@ -207,6 +208,7 @@ export class DisplaySettingsComponent {
         distinctUntilChanged((prev, curr) => {
           return (
             curr.theme.code === prev.theme.code &&
+            curr.syncTheme === prev.syncTheme &&
             curr.zoom === prev.zoom &&
             curr.logs === prev.logs &&
             curr.autoplay === prev.autoplay &&
@@ -260,6 +262,7 @@ export class DisplaySettingsComponent {
               debug: debug ?? this.displaySettings.logging.debug,
               warn: warn ?? this.displaySettings.logging.warn,
             },
+            syncTheme: formValue.syncTheme,
             theme: formValue.theme,
             zoom: formValue.zoom,
             animations: formValue.animations,

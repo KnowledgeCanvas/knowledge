@@ -215,6 +215,7 @@ class SettingsService {
       },
       display: {
         theme: new KcTheme(),
+        syncTheme: true,
         logging: new LoggingSettingsModel(),
         zoom: 100,
         autoplay: true,

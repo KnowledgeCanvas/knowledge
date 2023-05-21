@@ -183,6 +183,7 @@ export class SearchSettingsModel {
 
 export class DisplaySettingsModel {
   theme: KcTheme = new KcTheme();
+  syncTheme = true;
   logging: LoggingSettingsModel = new LoggingSettingsModel();
   zoom = 100;
   autoplay = true;
@@ -259,6 +260,7 @@ export class ChatSettingsModel {
     temperature: number;
     top_p: number;
     max_tokens: number;
+    token_limit: number;
     presence_penalty: number;
     frequency_penalty: number;
   } = {
@@ -266,6 +268,7 @@ export class ChatSettingsModel {
     temperature: 0.5,
     top_p: 1,
     max_tokens: 256,
+    token_limit: 4096,
     presence_penalty: 0,
     frequency_penalty: 0,
   };
