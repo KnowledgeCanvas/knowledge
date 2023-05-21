@@ -16,7 +16,19 @@
 
 import { Injectable } from '@angular/core';
 import { marked, Renderer } from 'marked';
+import hljs from 'highlight.js';
 import { NotificationsService } from '@services/user-services/notifications.service';
+
+marked.use({
+  mangle: false,
+  smartLists: true,
+  smartypants: true,
+});
+marked.setOptions({
+  highlight: (code) => {
+    return hljs.highlightAuto(code).value;
+  },
+});
 
 @Injectable({
   providedIn: 'root',
