@@ -57,16 +57,10 @@ export class ChatViewComponent implements OnInit, OnChanges {
   /* The chat history to display */
   @Input() history: ChatMessage[] = [];
 
-  /**
-   * Whether the chat is loading (e.g. waiting for a response from the server)
-   * @default false
-   */
+  /* Whether the chat is loading (e.g. waiting for a response from the server) */
   @Input() loading = false;
 
-  /**
-   * Whether to apply a height restriction to the chat history
-   * @default false
-   */
+  /* Whether to apply a height restriction to the chat history */
   @Input() heightRestricted = false;
 
   /* The event emitted when the user submits a message */
@@ -86,16 +80,24 @@ export class ChatViewComponent implements OnInit, OnChanges {
 
   /* The context menu used to display the options for a message */
   messageMenu: MenuItem[] = [];
+
   suggestions = true;
+
   focusTrap = true;
+
   editedMessage?: ChatMessage;
+
   filtered$: Observable<ChatMessage[]>;
 
   private _history$ = new BehaviorSubject<ChatMessage[]>([]);
+
   history$ = this._history$.asObservable();
 
   private filter = new BehaviorSubject<string>('');
+
   filter$ = this.filter.asObservable();
+
+  private messageInput = new BehaviorSubject<string>('');
 
   constructor(
     private clipboard: Clipboard,
@@ -120,11 +122,7 @@ export class ChatViewComponent implements OnInit, OnChanges {
       .subscribe();
 
     this.history$.pipe(debounceTime(100)).subscribe((history) => {
-      if (history.length > 0 && this.suggestions) {
-        // Use the most recent message to generate suggestions
-        const mostRecent = history[history.length - 1];
-        this.generateNextQuestion(mostRecent);
-      } else if (history.length === 0) {
+      if (history.length === 0) {
         // Add an introductory message to the chat history
         const msg = this.chat.createMessage(
           AgentType.Knowledge,
@@ -146,6 +144,13 @@ export class ChatViewComponent implements OnInit, OnChanges {
         });
       })
     );
+
+    this.messageInput
+      .asObservable()
+      .pipe(debounceTime(1000))
+      .subscribe((message) => {
+        this.chat.countTokens(message);
+      });
   }
 
   ngOnInit(): void {
@@ -180,30 +185,33 @@ export class ChatViewComponent implements OnInit, OnChanges {
 
   /* Scroll to the end of the #chat-history element */
   scroll() {
-    const elementId = 'chat-history';
-    const element = document.getElementById(elementId);
-    if (element) {
+    // const elementId = 'chat-history';
+    // const element = document.getElementById(elementId);
+    // if (element) {
+    //   setTimeout(() => {
+    //     element.scrollTop = element.scrollHeight;
+    //   }, 250);
+    // }
+
+    console.log('Scrolling to bottom of chat history');
+    const classElement = document.getElementsByClassName(
+      'chat-history-scroll-target'
+    );
+    if (classElement.length > 0) {
       setTimeout(() => {
-        element.scrollTop = element.scrollHeight;
+        classElement[0].scrollIntoView({ behavior: 'smooth' });
       }, 250);
     }
   }
 
-  /* Submit the message in the input field */
-  sendMessage(event: any) {
-    const input = event.target as HTMLInputElement;
-
-    // Only submit if the input is not empty
-    if (input.value) {
-      this.submit.emit(input.value);
-      input.value = '';
+  sendMessage(message: string) {
+    if (!message) {
+      return;
     }
 
-    // Scroll to the bottom of the chat history after a short delay
-    setTimeout(() => {
-      this.scroll();
-      input.value = '';
-    }, 500);
+    this.submit.emit(message);
+    this.chat.countTokens('');
+    this.scroll();
   }
 
   /**
@@ -224,6 +232,7 @@ export class ChatViewComponent implements OnInit, OnChanges {
         take(1),
         tap((response) => {
           this.nextQuestionSuggestions = response;
+          this.scroll();
         })
       )
       .subscribe();
@@ -576,5 +585,9 @@ export class ChatViewComponent implements OnInit, OnChanges {
       acceptButtonStyleClass: `p-button-danger`,
       rejectButtonStyleClass: `p-button-secondary`,
     });
+  }
+
+  countTokens(value: string) {
+    this.messageInput.next(value);
   }
 }
