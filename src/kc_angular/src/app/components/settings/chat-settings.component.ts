@@ -18,7 +18,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ChatSettingsModel } from '@shared/models/settings.model';
 import { SettingsService } from '@services/ipc-services/settings.service';
-import { debounceTime, distinctUntilChanged, map, tap } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
 import { NotificationsService } from '@services/user-services/notifications.service';
 import { ChatService } from '@services/chat-services/chat.service';
 import { ConfirmationService, PrimeIcons } from 'primeng/api';
@@ -51,8 +51,6 @@ import { ConfirmationService, PrimeIcons } from 'primeng/api';
                   ></p-inputSwitch>
                 </app-setting-template>
 
-                <p-divider layout="horizontal"></p-divider>
-
                 <app-setting-template
                   class="w-full"
                   label="Next Question Suggestions"
@@ -67,8 +65,6 @@ import { ConfirmationService, PrimeIcons } from 'primeng/api';
                   ></p-inputSwitch>
                 </app-setting-template>
 
-                <p-divider layout="horizontal"></p-divider>
-
                 <app-setting-template
                   class="w-full"
                   label="Next Question on Input"
@@ -82,8 +78,6 @@ import { ConfirmationService, PrimeIcons } from 'primeng/api';
                     formControlName="suggestionsOnInput"
                   ></p-inputSwitch>
                 </app-setting-template>
-
-                <p-divider layout="horizontal"></p-divider>
 
                 <app-setting-template
                   class="w-full"
@@ -127,8 +121,6 @@ import { ConfirmationService, PrimeIcons } from 'primeng/api';
                   ></p-dropdown>
                 </app-setting-template>
 
-                <p-divider layout="horizontal"></p-divider>
-
                 <app-setting-template
                   label="Temperature"
                   labelHelp="What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic."
@@ -148,8 +140,6 @@ import { ConfirmationService, PrimeIcons } from 'primeng/api';
                   <div class="settings-input-subtext-right">Creative</div>
                 </app-setting-template>
 
-                <p-divider layout="horizontal"></p-divider>
-
                 <app-setting-template
                   label="Top Probability"
                   labelHelp="An alternative to sampling with temperature, called nucleus sampling, where the model considers the results of the tokens with top_p probability mass. So 0.1 means only the tokens comprising the top 10% probability mass are considered."
@@ -167,8 +157,6 @@ import { ConfirmationService, PrimeIcons } from 'primeng/api';
                   ></p-slider>
                 </app-setting-template>
 
-                <p-divider layout="horizontal"></p-divider>
-
                 <app-setting-template
                   label="Max Tokens"
                   labelHelp="The maximum number of tokens to generate in the completion. The token count of your prompt plus max_tokens cannot exceed the model's context length."
@@ -179,14 +167,12 @@ import { ConfirmationService, PrimeIcons } from 'primeng/api';
                 >
                   <p-slider
                     class="w-16rem settings-input"
-                    [min]="64"
-                    [max]="512"
-                    [step]="16"
+                    [min]="32"
+                    [max]="2048"
+                    [step]="32"
                     formControlName="max_tokens"
                   ></p-slider>
                 </app-setting-template>
-
-                <p-divider layout="horizontal"></p-divider>
 
                 <app-setting-template
                   label="Presence Penalty"
@@ -205,8 +191,6 @@ import { ConfirmationService, PrimeIcons } from 'primeng/api';
                   ></p-slider>
                 </app-setting-template>
 
-                <p-divider layout="horizontal"></p-divider>
-
                 <app-setting-template
                   label="Frequency Penalty"
                   labelHelp="Number between -2.0 and 2.0. Positive values penalize new tokens based on their existing frequency in the text so far, decreasing the model's likelihood to repeat the same line verbatim."
@@ -223,8 +207,6 @@ import { ConfirmationService, PrimeIcons } from 'primeng/api';
                     formControlName="frequency_penalty"
                   ></p-slider>
                 </app-setting-template>
-
-                <p-divider layout="horizontal"></p-divider>
 
                 <app-setting-template
                   label="Delete API Key"
@@ -307,6 +289,7 @@ export class ChatSettingsComponent {
               temperature: formValue.temperature,
               top_p: formValue.top_p,
               max_tokens: formValue.max_tokens,
+              token_limit: this.chatSettings.model.token_limit, // This value is not user configurable
               presence_penalty: formValue.presence_penalty,
               frequency_penalty: formValue.frequency_penalty,
             },

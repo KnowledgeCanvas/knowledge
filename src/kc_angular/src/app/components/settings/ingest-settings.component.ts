@@ -58,8 +58,6 @@ export type SelectButtonOption = {
                   ></p-inputSwitch>
                 </app-setting-template>
 
-                <p-divider layout="horizontal"></p-divider>
-
                 <app-setting-template
                   label="Autoscan Location"
                   labelHelp="Files saved to this location will automatically be added to your Inbox."
@@ -86,8 +84,6 @@ export type SelectButtonOption = {
                     ></button>
                   </div>
                 </app-setting-template>
-
-                <p-divider layout="horizontal"></p-divider>
 
                 <app-setting-template
                   label="Scan Interval"
@@ -140,8 +136,6 @@ export type SelectButtonOption = {
                     optionDisabled="disabled"
                   ></p-selectButton>
                 </app-setting-template>
-
-                <p-divider layout="horizontal"></p-divider>
 
                 <app-setting-template
                   label="Storage Location"
@@ -200,8 +194,6 @@ export type SelectButtonOption = {
                   ></p-inputSwitch>
                 </app-setting-template>
 
-                <p-divider layout="horizontal"></p-divider>
-
                 <app-setting-template
                   label="Port"
                   labelHelp="The port used to communicate between Knowledge and the browser extension."
@@ -217,8 +209,6 @@ export type SelectButtonOption = {
                     [max]="65535"
                   ></p-inputNumber>
                 </app-setting-template>
-
-                <p-divider layout="horizontal"></p-divider>
 
                 <app-setting-template
                   label="Download Extensions"

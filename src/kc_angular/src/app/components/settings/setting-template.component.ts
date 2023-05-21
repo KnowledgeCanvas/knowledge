@@ -50,7 +50,13 @@ import { Component, Input } from '@angular/core';
       </div>
     </div>
   `,
-  styles: [],
+  styles: [
+    `
+      :host {
+        margin-top: 1rem;
+      }
+    `,
+  ],
 })
 export class SettingTemplateComponent {
   @Input() label = '';

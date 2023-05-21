@@ -73,8 +73,6 @@ import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
                   ></p-inputSwitch>
                 </app-setting-template>
 
-                <p-divider layout="horizontal"></p-divider>
-
                 <app-setting-template
                   label="Threshold"
                   labelSubtext="{{

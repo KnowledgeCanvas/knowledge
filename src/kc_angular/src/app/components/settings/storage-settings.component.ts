@@ -44,8 +44,6 @@ import { NotificationsService } from '@services/user-services/notifications.serv
                   </div>
                 </app-setting-template>
 
-                <p-divider layout="horizontal"></p-divider>
-
                 <app-setting-template class="w-full" label="Import from File">
                   <div class="settings-input">
                     <input
