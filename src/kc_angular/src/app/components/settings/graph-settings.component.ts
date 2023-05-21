@@ -50,8 +50,6 @@ import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
                   ></p-inputSwitch>
                 </app-setting-template>
 
-                <p-divider layout="horizontal"></p-divider>
-
                 <app-setting-template
                   class="w-full"
                   label="Auto-fit"
@@ -63,8 +61,6 @@ import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
                     formControlName="autoFit"
                   ></p-inputSwitch>
                 </app-setting-template>
-
-                <p-divider layout="horizontal"></p-divider>
 
                 <app-setting-template
                   class="w-full"
@@ -80,8 +76,6 @@ import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
                   ></p-inputSwitch>
                 </app-setting-template>
 
-                <p-divider layout="horizontal"></p-divider>
-
                 <app-setting-template
                   class="w-full"
                   label="On single-click"
@@ -95,8 +89,6 @@ import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
                     optionValue="action"
                   ></p-dropdown>
                 </app-setting-template>
-
-                <p-divider layout="horizontal"></p-divider>
 
                 <app-setting-template
                   class="w-full"
@@ -135,8 +127,6 @@ import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
                     formControlName="animate"
                   ></p-inputSwitch>
                 </app-setting-template>
-
-                <p-divider layout="horizontal"></p-divider>
 
                 <app-setting-template
                   label="Animation Duration"
@@ -182,8 +172,6 @@ import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
                   ></p-inputSwitch>
                 </app-setting-template>
 
-                <p-divider layout="horizontal"></p-divider>
-
                 <app-setting-template
                   label="Run Forever"
                   labelHelp="Run simulation until it reaches steady state. May cause performance issues and extremely long runtimes."
@@ -196,8 +184,6 @@ import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
                     formControlName="infinite"
                   ></p-inputSwitch>
                 </app-setting-template>
-
-                <p-divider layout="horizontal"></p-divider>
 
                 <app-setting-template
                   label="Simulation Runtime"
@@ -216,8 +202,6 @@ import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
                   <div class="settings-input-subtext-left">Shorter</div>
                   <div class="settings-input-subtext-right">Longer</div>
                 </app-setting-template>
-
-                <p-divider layout="horizontal"></p-divider>
 
                 <app-setting-template
                   label="Delay"

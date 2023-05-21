@@ -65,8 +65,6 @@ import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
                   </div>
                 </app-setting-template>
 
-                <p-divider layout="horizontal"></p-divider>
-
                 <app-setting-template label="Zoom">
                   <input
                     class="settings-input"
@@ -88,8 +86,6 @@ import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
                   <div class="settings-input-subtext-left">Zoom Out</div>
                   <div class="settings-input-subtext-right">Zoom In</div>
                 </app-setting-template>
-
-                <p-divider layout="horizontal"></p-divider>
 
                 <app-setting-template
                   label="Log Notifications"
