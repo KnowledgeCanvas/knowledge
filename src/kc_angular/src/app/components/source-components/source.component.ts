@@ -73,11 +73,6 @@ interface TabDescriptor {
       >
         <i class="{{ tab.icon }} pr-2"></i>
         <span *ngIf="!tab.hidden">{{ tab.label }}</span>
-        <p-progressSpinner
-          *ngIf="tab.loading"
-          class="pl-2"
-          styleClass="w-1rem h-1rem"
-        ></p-progressSpinner>
       </div>
     </div>
 
@@ -172,7 +167,7 @@ export class SourceComponent implements OnInit, OnChanges {
     loading: false,
     component: SourceBrowserComponent,
     tipHeader: 'Web Browsing, Right Here, Right Now!',
-    tipMessage: `Say hello to the browser tab! With our built-in Chromium browser (yes, the same one used by Google Chrome and Microsoft Edge), you can view your Sources without leaving the comfort of the app. Surf's up!`,
+    tipMessage: `Say hello to the browser tab! With our built-in Chromium browser (yes, the same one used by Google Chrome and Microsoft Edge), you can view your Sources without leaving the comfort of the app. Make sure you try highlighting text and right-clicking for more options!`,
   };
 
   documentTab: TabDescriptor = {
@@ -315,8 +310,6 @@ export class SourceComponent implements OnInit, OnChanges {
   }
 
   loadSelectedTab() {
-    // TODO: can we preserve the view if it is still loading (e.g. for chat)? Currently the loading bar is reset with a pending chat request
-    //   Should probably be done using angular router instead
     // Unload the existing view
     this.tabContainer.clear();
 
@@ -370,15 +363,23 @@ export class SourceComponent implements OnInit, OnChanges {
       this.update.emit(source);
     });
 
-    componentRef.instance.chat.subscribe((message: string) => {
-      const chatTabIndex = this.tabs.findIndex(
-        (tab: TabDescriptor) => tab.label === 'Chat'
-      );
-      this.setSelectedTab(chatTabIndex);
+    componentRef.instance.chat.subscribe(
+      (input: { method: string; message: string }) => {
+        const chatTabIndex = this.tabs.findIndex(
+          (tab: TabDescriptor) => tab.label === 'Chat'
+        );
+        this.setSelectedTab(chatTabIndex);
 
-      setTimeout(() => {
-        this.componentRef?.instance.submit(message);
-      }, 1500);
-    });
+        setTimeout(() => {
+          if (input.method === 'ask') {
+            this.componentRef?.instance.showQuestionDialog(
+              input.message.substring(0, 8192)
+            );
+          } else {
+            this.componentRef?.instance.submit(input.message);
+          }
+        }, 1000);
+      }
+    );
   }
 }

@@ -38,6 +38,27 @@ import { BehaviorSubject } from 'rxjs';
         style="height: 100% !important;"
       ></app-chat-view>
     </div>
+    <p-dialog [(visible)]="showQuestion" [modal]="true" header="Source Q&A">
+      <div *ngIf="context">
+        <h3>Context:</h3>
+        <div
+          style="max-width: 64rem; max-height: 16rem;"
+          class="text-500 overflow-y-auto"
+        >
+          {{ context }}
+        </div>
+      </div>
+      <h3>Ask a question:</h3>
+      <div>
+        <input
+          #question
+          pInputText
+          class="w-full p-fluid"
+          placeholder="Type your question here, then press enter..."
+          (keydown.enter)="ask(question.value)"
+        />
+      </div>
+    </p-dialog>
   `,
   styleUrls: ['./source.styles.scss'],
 })
@@ -50,6 +71,10 @@ export class SourceChatComponent implements OnInit {
 
   private _loading = new BehaviorSubject<boolean>(false);
   loading$ = this._loading.asObservable();
+
+  showQuestion = false;
+
+  context?: string;
 
   constructor(
     private chat: ChatService,
@@ -92,6 +117,11 @@ export class SourceChatComponent implements OnInit {
         )
         .subscribe();
     }
+  }
+
+  showQuestionDialog(context?: string) {
+    this.context = context;
+    this.showQuestion = true;
   }
 
   addMessage(from: AgentType, to: AgentType, content: string) {
@@ -148,5 +178,12 @@ export class SourceChatComponent implements OnInit {
     }
 
     this.chat.saveChat(this.history, this.source.id);
+  }
+
+  ask(value: string) {
+    this.showQuestion = false;
+    this.submit(
+      `Context: ${this.context}\n\n\nPlease answer the following question: ${value}`
+    );
   }
 }

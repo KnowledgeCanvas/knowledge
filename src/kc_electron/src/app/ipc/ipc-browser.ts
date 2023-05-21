@@ -408,6 +408,20 @@ openBrowserView = ipcMain.on(
     });
     menu.append(summarizeOption);
 
+    const askOption = new MenuItem({
+      label: "Ask in Chat",
+      click: () => {
+        const data = {
+          text: selectedText,
+          url: args.url,
+          method: "ask",
+        };
+
+        kcMainWindow.webContents.send("E2A:BrowserView:ExtractedText", data);
+      },
+    });
+    menu.append(askOption);
+
     const topicsOption = new MenuItem({
       label: "Detect Topics/Concepts",
       click: () => {

@@ -72,7 +72,7 @@ import { IngestService } from '@services/ingest-services/ingest.service';
 export class SourceBrowserComponent implements OnInit, OnDestroy {
   @Output() update = new EventEmitter<KnowledgeSource>();
 
-  @Output() chat = new EventEmitter<string>();
+  @Output() chat = new EventEmitter<{ method: string; message: string }>();
 
   source!: KnowledgeSource;
 
@@ -206,15 +206,23 @@ export class SourceBrowserComponent implements OnInit, OnDestroy {
         }
 
         break;
+      case 'ask':
+        this.chat.emit({
+          method: 'ask',
+          message: `The following text was extracted from this Source:\n\n\n${text}\n\n\nPlease answer the following question(s):\n\n\n`,
+        });
+        break;
       case 'summarize':
-        this.chat.emit(
-          `The following text was extracted from this Source. Please summarize it for me:\n${text}`
-        );
+        this.chat.emit({
+          method: 'summarize',
+          message: `The following text was extracted from this Source. Please summarize it for me:\n${text}`,
+        });
         break;
       case 'topics':
-        this.chat.emit(
-          `The following text was extracted from this Source. Please list 4-5 topics (succinctly) that describe it:\n${text}`
-        );
+        this.chat.emit({
+          method: 'topics',
+          message: `The following text was extracted from this Source. Please list 4-5 topics (succinctly) that describe it:\n${text}`,
+        });
         break;
     }
   }
