@@ -26,7 +26,7 @@ import { SettingsService } from '@services/ipc-services/settings.service';
 @Component({
   selector: 'app-pro-tips',
   template: `
-    <div class="pro-tip">
+    <div class="pro-tip text-color">
       <div class="text-4xl {{ icon }}"></div>
       <h1>{{ header }}</h1>
       <div class="pro-tip-body">

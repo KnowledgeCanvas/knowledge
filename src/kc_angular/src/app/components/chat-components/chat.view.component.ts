@@ -185,15 +185,6 @@ export class ChatViewComponent implements OnInit, OnChanges {
 
   /* Scroll to the end of the #chat-history element */
   scroll() {
-    // const elementId = 'chat-history';
-    // const element = document.getElementById(elementId);
-    // if (element) {
-    //   setTimeout(() => {
-    //     element.scrollTop = element.scrollHeight;
-    //   }, 250);
-    // }
-
-    console.log('Scrolling to bottom of chat history');
     const classElement = document.getElementsByClassName(
       'chat-history-scroll-target'
     );

@@ -92,7 +92,6 @@ export class SidebarService {
       return i;
     });
     this.items.next(items);
-    console.log('Set items to: ', items);
   }
 
   byLabel(label: string, projectId: UUID) {
