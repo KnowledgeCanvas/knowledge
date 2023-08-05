@@ -96,7 +96,7 @@ import { DragAndDropService } from '@services/ingest-services/drag-and-drop.serv
           (onDragLeave)="nodeLabel.classList.remove('p-draggable-enter')"
           (mouseleave)="nodeLabel.classList.remove('p-draggable-enter')"
         >
-          {{ node.label }}
+          {{ node.label | truncate : [32] }}
         </div>
       </ng-template>
 

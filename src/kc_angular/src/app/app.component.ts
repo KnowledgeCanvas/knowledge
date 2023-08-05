@@ -42,7 +42,8 @@ import {
   SidebarItem,
   SidebarService,
 } from '@services/factory-services/sidebar.service';
-import { MenuItem, PrimeIcons } from 'primeng/api';
+import { ConfirmationService, MenuItem, PrimeIcons } from 'primeng/api';
+import { ProjectUpdateRequest } from '@app/models/project.model';
 
 @Component({
   selector: 'app-root',
@@ -132,21 +133,22 @@ export class AppComponent implements OnInit {
     private settings: SettingsService,
     private notifications: NotificationsService,
     private startup: StartupService,
-    private command: KsCommandService,
-    private pCommand: ProjectCommandService,
     private chat: ChatService,
+    private command: KsCommandService,
+    private confirm: ConfirmationService,
+    private contexts: ChildrenOutletContexts,
     private dialog: DialogService,
     private dnd: DragAndDropService,
     private factory: KsFactoryService,
     private projects: ProjectService,
     private ipc: ElectronIpcService,
     private ingest: IngestService,
-    private tree: ProjectTreeFactoryService,
+    private pCommand: ProjectCommandService,
     private router: Router,
-    private contexts: ChildrenOutletContexts,
     private sidebar: SidebarService,
     private themes: ThemeService,
-    private tips: ProTipService
+    private tips: ProTipService,
+    private tree: ProjectTreeFactoryService
   ) {
     this.sidebarItems$ = sidebar.items$;
 
@@ -479,7 +481,18 @@ export class AppComponent implements OnInit {
           this.factory.many(ksReq).then((ksList) => {
             if (ksList.length > 0) {
               ksList.forEach((ks) => (ks.importMethod = 'dnd'));
-              this.ingest.enqueue(ksList);
+
+              if (this.selectedView === 'Inbox') {
+                // If in the inbox, add to ingest queue
+                this.ingest.enqueue(ksList);
+              } else if (this.projectId) {
+                // Otherwise add directly to the active project
+                const update: ProjectUpdateRequest = {
+                  id: { value: this.projectId },
+                  addKnowledgeSource: ksList,
+                };
+                this.projects.updateProjects([update]);
+              }
             }
           });
         }
