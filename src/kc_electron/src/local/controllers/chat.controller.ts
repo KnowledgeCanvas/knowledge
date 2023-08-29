@@ -15,7 +15,6 @@
  */
 
 import { Request, Response } from "express";
-import { Configuration, OpenAIApi } from "openai";
 import chatEncrypt from "../utils/encrypt.utils";
 import { map } from "rxjs";
 import {
@@ -23,11 +22,12 @@ import {
   SettingsModel,
 } from "../../../../kc_shared/models/settings.model";
 import tokenizerUtils from "../utils/tokenizer.utils";
+import { OpenAI } from "openai";
 
 const settings = require("../../app/services/settings.service");
 
 export default class ChatController {
-  private openai?: OpenAIApi;
+  private openai?: OpenAI;
 
   private settings: ChatSettingsModel = new ChatSettingsModel();
 
@@ -37,15 +37,21 @@ export default class ChatController {
     settings.all
       .pipe(map((s: SettingsModel) => s.app.chat))
       .subscribe((chatSettings: ChatSettingsModel) => {
-        if (chatSettings.model.name !== this.settings.model.name) {
-          tokenizerUtils.setModel(chatSettings.model.name);
-        }
+        tokenizerUtils.setModel(chatSettings.model.name);
         this.settings = chatSettings;
       });
   }
 
+  getSettings() {
+    return this.settings;
+  }
+
+  limitText(text: string) {
+    return tokenizerUtils.limitText(text);
+  }
+
   async chat(req: Request, res: Response): Promise<Response> {
-    if (!this.veryifyApi() || !this.openai) {
+    if (!(await this.veryifyApi()) || !this.openai) {
       return res.status(500).json({
         error: "OpenAI API not initialized",
       });
@@ -55,10 +61,9 @@ export default class ChatController {
     let messages = tokenizerUtils.deduplicate(req.body.messages);
 
     try {
-      // TODO: This should be specified depending on the model
       messages = tokenizerUtils.limitTokens(
         messages,
-        4096 - this.settings.model.max_tokens
+        this.settings.model.token_limit - this.settings.model.max_tokens
       );
     } catch (error) {
       console.error("Error limiting chat history due to token count.");
@@ -72,7 +77,7 @@ export default class ChatController {
 
     console.log("Using chat settings: ", this.settings);
     try {
-      const response = await this.openai.createChatCompletion({
+      const response = await this.openai.chat.completions.create({
         model: this.settings.model.name,
         temperature: this.settings.model.temperature,
         top_p: this.settings.model.top_p,
@@ -81,11 +86,11 @@ export default class ChatController {
         frequency_penalty: this.settings.model.frequency_penalty,
         messages: messages,
       });
-      return res.json(response.data);
+      return res.json(response);
     } catch (error) {
       console.error(error);
       return res.status(500).json({
-        error: "Error calling OpenAI API",
+        error: `Error calling OpenAI API: ${error}`,
       });
     }
   }
@@ -138,22 +143,19 @@ export default class ChatController {
     if (!apiKeyWorks) {
       console.error("API key is invalid");
     } else {
-      this.openai = new OpenAIApi(
-        new Configuration({
-          apiKey: apiKey,
-        })
-      );
+      this.openai = new OpenAI({
+        apiKey: apiKey,
+      });
     }
   }
 
   private async testApiKey(apiKey: string) {
     try {
-      const config = new Configuration({
+      const openaiTest = new OpenAI({
         apiKey: apiKey,
       });
-      const openaiTest = new OpenAIApi(config);
-      const models = await openaiTest.listModels();
-      return models.status === 200;
+      const models = await openaiTest.models.list();
+      return models.data.length > 0;
     } catch (e) {
       return false;
     }

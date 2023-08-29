@@ -16,22 +16,23 @@
 
 import {
   encoding_for_model,
-  get_encoding,
   init,
   Tiktoken,
   TiktokenModel,
 } from "@dqbd/tiktoken/init";
 import fs from "fs";
-import { ChatCompletionRequestMessage } from "openai/api";
 import path from "path";
 import { app } from "electron";
+import { SupportedChatModels } from "../../../../kc_shared/models/chat.model";
+import { Completions } from "openai/resources/chat";
+import CreateChatCompletionRequestMessage = Completions.CreateChatCompletionRequestMessage;
 
 const settingsService = require("../../app/services/settings.service");
 
 class TokenizerUtils {
   private tiktoken!: Tiktoken;
 
-  private model: TiktokenModel = "gpt-3.5-turbo-0301";
+  private model: TiktokenModel = "gpt-3.5-turbo";
 
   constructor() {
     this.initialize();
@@ -41,18 +42,28 @@ class TokenizerUtils {
     const tiktokenWasm = this.getWasmPath();
     const wasm = fs.readFileSync(tiktokenWasm);
     await init((imports) => WebAssembly.instantiate(wasm, imports));
-    this.tiktoken = get_encoding("cl100k_base");
+    this.tiktoken = encoding_for_model(this.model);
   }
 
-  setModel(model: TiktokenModel) {
+  async setModel(model: TiktokenModel) {
+    if (this.model === model) {
+      return;
+    }
+
     try {
       this.tiktoken?.free();
     } catch (err) {
-      console.log(err);
+      console.error("Error freeing tiktoken model: ", err);
     }
 
     this.model = model;
-    this.tiktoken = encoding_for_model(model);
+
+    try {
+      await this.initialize();
+    } catch (e) {
+      console.error("Error setting model to: ", model);
+      console.error(e);
+    }
   }
 
   /**
@@ -60,7 +71,10 @@ class TokenizerUtils {
    * Fails if the last message is longer than the limit.
    * Removes non-system messages first, then removes system messages if necessary.
    */
-  limitTokens(messages: ChatCompletionRequestMessage[], max_tokens: number) {
+  limitTokens(
+    messages: CreateChatCompletionRequestMessage[],
+    max_tokens: number
+  ) {
     if (messages.length === 0) {
       return messages;
     }
@@ -80,9 +94,9 @@ class TokenizerUtils {
       throw new Error("Message is longer than the token limit.");
     }
 
-    // While the token count is greater than the limit, remove messages.
-    // Remove the first non-system message while the token count is greater than the limit.
-    // If no non-system messages are found, remove the first system message.
+    /* While the token count is greater than the limit, remove messages.
+    Remove the first non-system message while the token count is greater than the limit.
+    If no non-system messages are found, remove the first system message. */
     while (tokenCount > max_tokens) {
       const firstNonSystemMessage = messages.find(
         (message) => message.role !== "system"
@@ -108,12 +122,12 @@ class TokenizerUtils {
     return messages;
   }
 
-  deduplicate(messages: ChatCompletionRequestMessage[]) {
+  deduplicate(messages: CreateChatCompletionRequestMessage[]) {
     // Remove duplicate messages using a hash map based on message content.
-    const unique: ChatCompletionRequestMessage[] = [];
+    const unique: CreateChatCompletionRequestMessage[] = [];
     const hash: { [key: string]: boolean } = {};
     messages.forEach((message) => {
-      if (!hash[message.content]) {
+      if (message.content && !hash[message.content]) {
         hash[message.content] = true;
         unique.push(message);
       }
@@ -126,12 +140,43 @@ class TokenizerUtils {
     return this.tiktoken.encode(text).length + 5;
   }
 
-  countMessageTokens(messages: ChatCompletionRequestMessage[]): number {
+  countMessageTokens(messages: CreateChatCompletionRequestMessage[]): number {
     let tokenCount = 0;
-    messages.forEach((message: ChatCompletionRequestMessage) => {
-      tokenCount += this.tiktoken.encode(message.content).length + 5;
+    messages.forEach((message: CreateChatCompletionRequestMessage) => {
+      if (message.content) {
+        tokenCount += this.tiktoken.encode(message.content).length + 5;
+      }
     });
     return tokenCount + (messages.length > 1 ? 3 : 0);
+  }
+
+  limitText(text: string): string {
+    const model = SupportedChatModels.find(
+      (model) => model.name === this.model
+    );
+
+    if (!model) {
+      throw new Error("Model not found.");
+    }
+
+    // TODO: this 512 should be equal to the number of tokens taken by the rest of the messages
+    let maxTokens =
+      model.token_limit - model.max_tokens_upper_bound - model.max_tokens - 512;
+    maxTokens = Math.max(maxTokens, 0);
+
+    let tokenized = this.tiktoken.encode(text);
+    if (tokenized.length > maxTokens) {
+      tokenized = tokenized.slice(0, maxTokens);
+      const decoded = this.tiktoken.decode(tokenized);
+
+      // Decoded is an array of Unit8Array, we need to convert that back into a string
+      text = "";
+      decoded.forEach((unit8) => {
+        text += String.fromCharCode.apply(null, [unit8]);
+      });
+    }
+
+    return text;
   }
 
   private getWasmPath() {

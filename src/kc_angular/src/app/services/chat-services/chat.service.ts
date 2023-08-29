@@ -15,8 +15,6 @@
  */
 
 import { AgentType, ChatMessage } from '@app/models/chat.model';
-import { ChatCompletionRequestMessage } from 'openai/api';
-import { ChatCompletionResponseMessage } from 'openai';
 import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable, LOCALE_ID } from '@angular/core';
 import { KcProject } from '@app/models/project.model';
@@ -31,6 +29,10 @@ import { map } from 'rxjs/operators';
 import { SettingsService } from '@services/ipc-services/settings.service';
 import { ChatSettingsModel } from '@shared/models/settings.model';
 import { ChatApiComponent } from '@components/chat-components/api.component';
+import {
+  ChatCompletionMessage,
+  CreateChatCompletionRequestMessage,
+} from 'openai/resources/chat/completions';
 
 @Injectable({
   providedIn: 'root',
@@ -68,7 +70,7 @@ export class ChatService {
       .subscribe((settings) => {
         this._settings = settings;
         this.tokenLimit.next(
-          settings.model.token_limit - settings.model.max_tokens ?? 4096
+          settings.model.token_limit - settings.model.max_tokens
         );
       });
   }
@@ -159,7 +161,7 @@ export class ChatService {
   elaborate(
     history: ChatMessage[],
     method: 'ELI5' | 'TLDR' | 'Continue'
-  ): Observable<ChatCompletionResponseMessage> {
+  ): Observable<ChatCompletionMessage> {
     const messages = this.convertToOpenAI(history);
     messages.push({
       role: 'user',
@@ -170,9 +172,9 @@ export class ChatService {
   }
 
   intro(
-    messages: ChatCompletionRequestMessage[],
+    messages: CreateChatCompletionRequestMessage[],
     source: KnowledgeSource
-  ): Observable<ChatCompletionResponseMessage> {
+  ): Observable<ChatCompletionMessage> {
     const body = {
       messages: messages,
       source: source,
@@ -185,9 +187,11 @@ export class ChatService {
     );
   }
 
-  convertToOpenAI(messages: ChatMessage[]): ChatCompletionRequestMessage[] {
+  convertToOpenAI(
+    messages: ChatMessage[]
+  ): CreateChatCompletionRequestMessage[] {
     // Convert the chat messages to completion request messages. If a message has a 'thumbs-down' rating, omit it from the request
-    const completions: ChatCompletionRequestMessage[] = [];
+    const completions: CreateChatCompletionRequestMessage[] = [];
     messages.forEach((message) => {
       if (message.rating !== 'thumbs-down') {
         completions.push({
@@ -204,14 +208,14 @@ export class ChatService {
   }
 
   send(
-    messages: ChatCompletionRequestMessage[]
-  ): Observable<ChatCompletionResponseMessage> {
+    messages: CreateChatCompletionRequestMessage[]
+  ): Observable<ChatCompletionMessage> {
     const body = { messages: messages };
     this.notify.debug('Chat Service', 'Sending OpenAI API Request', body);
 
     // Remove any empty messages
     body.messages = body.messages.filter(
-      (message) => message.content.trim() !== ''
+      (message) => message.content?.trim() !== ''
     );
 
     return this.http.post(this.backendUrl + '/chat', body).pipe(

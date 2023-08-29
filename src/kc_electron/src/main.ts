@@ -166,11 +166,10 @@ function setMainWindowListeners() {
     app.quit();
   });
 
-  // Handle event in which a new window is created (i.e. when a user clicks on a link that is meant to open in new tab, etc)
-  kcMainWindow.webContents.on("new-window", (event: any, url: string) => {
+  kcMainWindow.webContents.setWindowOpenHandler(({ url }) => {
     console.log("New window requested: ", url);
-    event.preventDefault();
     shell.openExternal(url);
+    return { action: "deny" };
   });
 
   // Show the window once it's ready

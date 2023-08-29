@@ -22,6 +22,7 @@ import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
 import { NotificationsService } from '@services/user-services/notifications.service';
 import { ChatService } from '@services/chat-services/chat.service';
 import { ConfirmationService, PrimeIcons } from 'primeng/api';
+import { ChatModel, SupportedChatModels } from '@shared/models/chat.model';
 
 @Component({
   selector: 'app-chat-settings',
@@ -109,16 +110,44 @@ import { ConfirmationService, PrimeIcons } from 'primeng/api';
                 <app-setting-template
                   class="w-full"
                   label="Model"
-                  labelHelp="Choose the OpenAI model to use for chat. (Limited to GPT-3.5 Turbo until the next release)."
+                  labelHelp="Choose the OpenAI model to use for chat."
                   labelHelpLink="https://platform.openai.com/docs/models"
                 >
                   <p-dropdown
                     class="settings-input w-12rem"
                     formControlName="modelName"
-                    [options]="openAiModels"
+                    [options]="SupportedChatModels"
                     optionLabel="label"
                     optionValue="name"
                   ></p-dropdown>
+                </app-setting-template>
+
+                <app-setting-template
+                  class="w-full"
+                  label="Token Limit"
+                  labelHelp="The maximum number of tokens that can be processed by the selected model. Includes both input and output tokens."
+                  labelHelpLink="https://platform.openai.com/docs/models"
+                >
+                  <div class="settings-input h-2rem">
+                    {{ chatSettings.model.token_limit | number : '1.0' }}
+                  </div>
+                </app-setting-template>
+
+                <app-setting-template
+                  class="w-full"
+                  label="Estimated Cost Per Message"
+                  labelHelp="An estimate based on the model's token limit, max response tokens, and the cost per 1000 tokens."
+                  labelHelpLink="https://openai.com/pricing"
+                >
+                  <div class="settings-input h-2rem flex-row">
+                    {{
+                      minCostPerMessage | currency : 'USD' : 'symbol' : '1.4'
+                    }}
+                    -
+                    {{
+                      maxCostPerMessage | currency : 'USD' : 'symbol' : '1.4'
+                    }}
+                  </div>
                 </app-setting-template>
 
                 <app-setting-template
@@ -158,7 +187,7 @@ import { ConfirmationService, PrimeIcons } from 'primeng/api';
                 </app-setting-template>
 
                 <app-setting-template
-                  label="Max Tokens"
+                  label="Max Response Tokens"
                   labelHelp="The maximum number of tokens to generate in the completion. The token count of your prompt plus max_tokens cannot exceed the model's context length."
                   labelHelpLink="https://platform.openai.com/docs/api-reference/completions/create#completions/create-max_tokens"
                   labelSubtext="{{
@@ -168,7 +197,7 @@ import { ConfirmationService, PrimeIcons } from 'primeng/api';
                   <p-slider
                     class="w-16rem settings-input"
                     [min]="32"
-                    [max]="2048"
+                    [max]="chatSettings.model.max_tokens_upper_bound"
                     [step]="32"
                     formControlName="max_tokens"
                   ></p-slider>
@@ -234,9 +263,8 @@ export class ChatSettingsComponent {
   chatSettings: ChatSettingsModel = new ChatSettingsModel();
   form: FormGroup;
   canChat = false;
-  openAiModels: { name: string; label: string }[] = [
-    { name: 'gpt-3.5-turbo-0301', label: 'GPT-3.5 Turbo' },
-  ];
+  minCostPerMessage = -1;
+  maxCostPerMessage = -1;
 
   constructor(
     private notify: NotificationsService,
@@ -245,14 +273,16 @@ export class ChatSettingsComponent {
     private settings: SettingsService,
     private formBuilder: FormBuilder
   ) {
-    if (!settings.get().app.chat) {
+    const chatSettings = this.settings.get().app.chat;
+    if (!chatSettings) {
       this.set();
     } else {
       this.chatSettings = {
         ...this.chatSettings,
-        ...settings.get().app.chat,
+        ...chatSettings,
       };
     }
+    this.updateCost();
 
     this.canChat = this.chat.canChat();
 
@@ -275,6 +305,34 @@ export class ChatSettingsComponent {
         debounceTime(500),
         distinctUntilChanged(this.checkChanges),
         tap((formValue) => {
+          let model: ChatModel;
+
+          // If the model has changed, update the local copy with static values from the SupportedChatModels array.
+          if (formValue.modelName !== this.chatSettings.model.name) {
+            model =
+              SupportedChatModels.find((m) => m.name === formValue.modelName) ??
+              this.chatSettings.model;
+
+            model.max_tokens = Math.min(
+              model.max_tokens_upper_bound,
+              formValue.max_tokens
+            );
+
+            setTimeout(() => {
+              this.form
+                .get('max_tokens')
+                ?.setValue(this.chatSettings.model.max_tokens);
+            });
+          } else {
+            model = this.chatSettings.model;
+            model.max_tokens = formValue.max_tokens;
+          }
+
+          model.temperature = formValue.temperature;
+          model.top_p = formValue.top_p;
+          model.presence_penalty = formValue.presence_penalty;
+          model.frequency_penalty = formValue.frequency_penalty;
+
           const chatSettings: ChatSettingsModel = {
             display: {
               introductions: formValue.introductions,
@@ -284,15 +342,7 @@ export class ChatSettingsComponent {
               enabled: formValue.suggestionsEnabled,
               onInput: formValue.suggestionsOnInput,
             },
-            model: {
-              name: formValue.modelName,
-              temperature: formValue.temperature,
-              top_p: formValue.top_p,
-              max_tokens: formValue.max_tokens,
-              token_limit: this.chatSettings.model.token_limit, // This value is not user configurable
-              presence_penalty: formValue.presence_penalty,
-              frequency_penalty: formValue.frequency_penalty,
-            },
+            model: model,
           };
 
           if (!this.validate(chatSettings)) {
@@ -302,11 +352,49 @@ export class ChatSettingsComponent {
           this.chatSettings = chatSettings;
           this.disable();
           this.set();
+
+          setTimeout(() => {
+            this.updateCost();
+          });
         })
       )
       .subscribe();
 
     this.notify.debug('Chat Settings', 'Initialized', this.chatSettings);
+  }
+
+  changeModel(nextModel: string) {
+    const model: ChatModel | undefined = SupportedChatModels.find(
+      (m) => m.name === nextModel
+    );
+
+    if (model) {
+      // Static values should only come from the SupportedChatModels array.
+      this.chatSettings.model = model;
+
+      this.chatSettings.model.max_tokens = Math.min(
+        this.chatSettings.model.token_limit -
+          this.chatSettings.model.max_tokens_upper_bound,
+        this.form.get('max_tokens')?.value
+      );
+
+      setTimeout(() => {
+        this.form
+          .get('max_tokens')
+          ?.setValue(this.chatSettings.model.max_tokens);
+      });
+    }
+    this.updateCost();
+  }
+
+  updateCost() {
+    const model = this.chatSettings.model;
+
+    this.minCostPerMessage = (model.max_tokens / 1000) * model.output_kilo_cost;
+    const maxOutputCost = (model.max_tokens / 1000) * model.output_kilo_cost;
+    const maxInputCost =
+      ((model.token_limit - model.max_tokens) / 1000) * model.input_kilo_cost;
+    this.maxCostPerMessage = maxInputCost + maxOutputCost;
   }
 
   deleteApiKey() {
@@ -353,13 +441,10 @@ export class ChatSettingsComponent {
   }
 
   private validate(chatSettings: ChatSettingsModel): boolean {
-    if (
-      chatSettings.model.temperature !== 1 &&
-      chatSettings.model.top_p !== 1
-    ) {
-      return false;
-    } else {
-      return true;
-    }
+    return !(
+      chatSettings.model.temperature !== 1 && chatSettings.model.top_p !== 1
+    );
   }
+
+  protected readonly SupportedChatModels = SupportedChatModels;
 }

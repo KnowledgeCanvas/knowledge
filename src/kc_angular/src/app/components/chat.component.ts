@@ -24,12 +24,12 @@ import { MenuItem } from 'primeng/api';
 import { ProjectService } from '@services/factory-services/project.service';
 import { ChatService } from '@services/chat-services/chat.service';
 import { ProjectChat } from '@services/chat-services/project';
-import { ChatCompletionResponseMessage } from 'openai';
 import { ChatViewComponent } from './chat-components/chat.view.component';
 import { SourceChat } from '@services/chat-services/source';
 import { AgentType, ChatMessage } from '@app/models/chat.model';
 import { SettingsService } from '@services/ipc-services/settings.service';
 import { combineLatest } from 'rxjs';
+import { ChatCompletionMessage } from 'openai/resources/chat/completions';
 
 @Component({
   selector: 'app-chat',
@@ -219,15 +219,17 @@ export class ChatComponent {
       .send(this.project, this.chatHistory)
       .pipe(
         take(1),
-        tap((response: ChatCompletionResponseMessage) => {
-          this.chatHistory.push(
-            this.chat.createMessage(
-              AgentType.Project,
-              AgentType.User,
-              response.content,
-              this.project
-            )
-          );
+        tap((response: ChatCompletionMessage) => {
+          if (response.content) {
+            this.chatHistory.push(
+              this.chat.createMessage(
+                AgentType.Project,
+                AgentType.User,
+                response.content,
+                this.project
+              )
+            );
+          }
           this.saveHistory();
           this.chatView.scroll();
         }),
@@ -268,11 +270,9 @@ export class ChatComponent {
 
     this.loading = true;
 
-    /**
-     * Use the message index to get the history up to that point
+    /* Use the message index to get the history up to that point
      * Source history should only include messages to/from the same source
-     * Project history should include messages from the project and any sources that are part of the project
-     */
+     * Project history should include messages from the project and any sources that are part of the project */
     const historySlice = this.chat.getHistory(
       message,
       this.chatHistory,
@@ -280,7 +280,7 @@ export class ChatComponent {
       !message.project
     );
 
-    // Create a new message with the same text as the message that was responded to
+    /* Create a new message with the same text as the message that was responded to */
     const promptMessage = historySlice[historySlice.length - 1];
 
     if (message.project) {
@@ -288,10 +288,12 @@ export class ChatComponent {
         .send(message.project, historySlice, promptMessage.text)
         .pipe(
           take(1),
-          tap((response: ChatCompletionResponseMessage) => {
-            message.text = response.content;
-            message.regenerated = true;
-            this.saveHistory();
+          tap((response: ChatCompletionMessage) => {
+            if (response.content) {
+              message.text = response.content;
+              message.regenerated = true;
+              this.saveHistory();
+            }
           }),
           finalize(() => {
             this.loading = false;
@@ -303,10 +305,12 @@ export class ChatComponent {
         .send(message.source, historySlice, promptMessage.text)
         .pipe(
           take(1),
-          tap((response: ChatCompletionResponseMessage) => {
-            message.text = response.content;
-            message.regenerated = true;
-            this.saveHistory();
+          tap((response: ChatCompletionMessage) => {
+            if (response.content) {
+              message.text = response.content;
+              message.regenerated = true;
+              this.saveHistory();
+            }
           }),
           finalize(() => {
             this.loading = false;

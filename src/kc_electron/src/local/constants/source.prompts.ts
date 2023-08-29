@@ -14,12 +14,13 @@
  *  limitations under the License.
  */
 
-import { ChatCompletionRequestMessage } from "openai/api";
+import { Completions } from "openai/resources/chat";
+import CreateChatCompletionRequestMessage = Completions.CreateChatCompletionRequestMessage;
 
 export const introPrompts = (
   concept: any,
   type: "source" | "project"
-): ChatCompletionRequestMessage[] => {
+): CreateChatCompletionRequestMessage[] => {
   const prompts = [
     `Information cutoff: December 2021, Current date: ${new Date().toDateString()}.`,
     `Knowledge is a tool for saving, searching, accessing, and exploring all of your favorite websites, documents and files.`,
@@ -85,7 +86,7 @@ export const introPrompts = (
   }
 
   return prompts.map((prompt) => {
-    const message: ChatCompletionRequestMessage = {
+    const message: CreateChatCompletionRequestMessage = {
       role: "system",
       content: prompt,
     };
@@ -108,7 +109,7 @@ export const mapReducePrompts = () => {
   ];
 
   return prompts.map((prompt) => {
-    const message: ChatCompletionRequestMessage = {
+    const message: CreateChatCompletionRequestMessage = {
       role: "system",
       content: prompt,
     };

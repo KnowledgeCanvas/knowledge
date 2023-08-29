@@ -14,21 +14,22 @@
  *  limitations under the License.
  */
 
-import { ChatCompletionRequestMessage } from "openai/api";
 import tokenizerUtils from "./tokenizer.utils";
+import { Chat } from "openai/resources";
+import CreateChatCompletionRequestMessage = Chat.CreateChatCompletionRequestMessage;
 
 const settings = require("../../app/services/settings.service");
 
 export default class ChatUtils {
   constructor() {}
 
-  /**
+  /** TODO:
    * Reduce the messages to a single message while retaining as much information as possible
    * @param messages
    */
-  async reduce(messages: ChatCompletionRequestMessage[]) {}
+  async reduce(messages: CreateChatCompletionRequestMessage[]) {}
 
-  async refine(messages: ChatCompletionRequestMessage[]) {}
+  async refine(messages: CreateChatCompletionRequestMessage[]) {}
 
   /**
    * Split the text into chunks and summarize each chunk

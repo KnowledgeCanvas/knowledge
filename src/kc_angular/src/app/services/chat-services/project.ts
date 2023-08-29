@@ -14,12 +14,12 @@
  *  limitations under the License.
  */
 
-import { ChatCompletionRequestMessage } from 'openai/api';
 import { AgentType, ChatMessage } from '@app/models/chat.model';
 import { Injectable } from '@angular/core';
 import { KcProject } from '@app/models/project.model';
 import { ProjectService } from '@services/factory-services/project.service';
 import { ChatService } from '@services/chat-services/chat.service';
+import { CreateChatCompletionRequestMessage } from 'openai/resources/chat/completions';
 
 @Injectable({
   providedIn: 'root',
@@ -106,13 +106,12 @@ export class ProjectChat {
    */
   private getProjectPrompts(
     project: KcProject
-  ): ChatCompletionRequestMessage[] {
+  ): CreateChatCompletionRequestMessage[] {
     // Convert the AGENT_PROMPTS into a list of ChatCompletionRequestMessage objects
-    const prompts: ChatCompletionRequestMessage[] = this.AGENT_PROMPTS.map(
-      (prompt) => {
+    const prompts: CreateChatCompletionRequestMessage[] =
+      this.AGENT_PROMPTS.map((prompt) => {
         return { role: 'system', content: prompt };
-      }
-    );
+      });
 
     // Add the project name
     prompts.push({
