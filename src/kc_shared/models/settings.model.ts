@@ -14,6 +14,7 @@
  *  limitations under the License.
  */
 import { KcTheme } from "./style.model";
+import { ChatModel, SupportedChatModels } from "./chat.model";
 
 /**
  * All of these are set to default values inside the Electron Settings Service file under the `defaults()` function.
@@ -255,21 +256,5 @@ export class ChatSettingsModel {
     sourceMessages: true,
   };
 
-  model: {
-    name: "gpt-3.5-turbo" | "gpt-3.5-turbo-0301" | "gpt-4";
-    temperature: number;
-    top_p: number;
-    max_tokens: number;
-    token_limit: number;
-    presence_penalty: number;
-    frequency_penalty: number;
-  } = {
-    name: "gpt-3.5-turbo",
-    temperature: 0.5,
-    top_p: 1,
-    max_tokens: 256,
-    token_limit: 4096,
-    presence_penalty: 0,
-    frequency_penalty: 0,
-  };
+  model: ChatModel = SupportedChatModels[0];
 }

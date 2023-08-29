@@ -14,13 +14,13 @@
  *  limitations under the License.
  */
 
-import { ChatCompletionRequestMessage } from 'openai/api';
 import { AgentType, ChatMessage } from '@app/models/chat.model';
 import { Injectable } from '@angular/core';
 import { KnowledgeSource } from '@app/models/knowledge.source.model';
 import { ChatPrompts } from '@services/chat-services/prompts';
 import { ChatService } from '@services/chat-services/chat.service';
 import { NotificationsService } from '@services/user-services/notifications.service';
+import { CreateChatCompletionRequestMessage } from 'openai/resources/chat/completions';
 
 @Injectable({
   providedIn: 'root',
@@ -53,13 +53,14 @@ export class SourceChat {
    * Get the prompts for the Source Chat
    * @param source
    */
-  getSourcePrompts(source: KnowledgeSource): ChatCompletionRequestMessage[] {
+  getSourcePrompts(
+    source: KnowledgeSource
+  ): CreateChatCompletionRequestMessage[] {
     // Construct system prompts from the SOURCE_PROMPTS array
-    const prompts: ChatCompletionRequestMessage[] = this.SOURCE_PROMPTS.map(
-      (prompt) => {
+    const prompts: CreateChatCompletionRequestMessage[] =
+      this.SOURCE_PROMPTS.map((prompt) => {
         return { role: 'system', content: prompt };
-      }
-    );
+      });
 
     // Add the Source name
     prompts.push({

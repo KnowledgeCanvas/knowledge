@@ -15,7 +15,7 @@
  */
 
 import { Request, Response } from "express";
-import { Configuration, OpenAIApi } from "openai";
+import { OpenAI } from "openai";
 
 import fs from "fs";
 import chatEncrypt from "../utils/encrypt.utils";
@@ -82,12 +82,11 @@ export class ApiKeyController {
 
   private async testApiKey(apiKey: string) {
     try {
-      const config = new Configuration({
+      const openaiTest = new OpenAI({
         apiKey: apiKey,
       });
-      const openaiTest = new OpenAIApi(config);
-      const models = await openaiTest.listModels();
-      return models.status === 200;
+      const models = await openaiTest.models.list();
+      return models.data.length > 0;
     } catch (e) {
       return false;
     }

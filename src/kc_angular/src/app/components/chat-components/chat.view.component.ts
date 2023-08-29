@@ -212,6 +212,10 @@ export class ChatViewComponent implements OnInit, OnChanges {
    * @description The suggestions are generated using the message and the 14 messages prior to it
    */
   generateNextQuestion(message: ChatMessage) {
+    if (!this.settings.get().app.chat.suggestions.enabled) {
+      return;
+    }
+
     // Get the message and the 14 messages prior to it, then send those to the prompt service
     this.chat.getHistory(message, this.history, true);
     const index = this.history.indexOf(message);
@@ -245,10 +249,7 @@ export class ChatViewComponent implements OnInit, OnChanges {
       (s) => s !== suggestion
     );
 
-    if (
-      this.nextQuestionSuggestions.length === 0 &&
-      this.settings.get().app.chat.suggestions.enabled
-    ) {
+    if (this.nextQuestionSuggestions.length === 0) {
       this.generateNextQuestion(this.history[this.history.length - 1]);
     }
   }

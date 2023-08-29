@@ -18,8 +18,9 @@ import { Request, Response } from "express";
 import ChatController from "./chat.controller";
 import axios from "axios";
 import { htmlToText, HtmlToTextOptions } from "html-to-text";
-import { ChatCompletionRequestMessage } from "openai/api";
 import { introPrompts } from "../constants/source.prompts";
+import { Chat } from "openai/resources";
+import CreateChatCompletionRequestMessage = Chat.CreateChatCompletionRequestMessage;
 
 export default class SourceChatController {
   chatController = new ChatController();
@@ -45,7 +46,9 @@ export default class SourceChatController {
     }
 
     // Extract text from web page to feed into the API
-    const text = await this.extractText(accessLink);
+    let text = await this.extractText(accessLink);
+    text = this.chatController.limitText(text);
+
     messages = this.appendText(messages, text);
 
     if (noPrompts) {
@@ -58,7 +61,7 @@ export default class SourceChatController {
     return this.chatController.chat(req, res);
   }
 
-  appendText(messages: ChatCompletionRequestMessage[], text: string) {
+  appendText(messages: CreateChatCompletionRequestMessage[], text: string) {
     messages.push({
       role: "system",
       content: `The following is the text extracted from the Source:\n=========\n"""${text}"""\n=========`,
@@ -73,10 +76,11 @@ export default class SourceChatController {
   async extractText(accessLink: URL) {
     // TODO: Handle remote PDFs
     if (accessLink.href.endsWith(".pdf")) {
-      return "";
+      return "Knowledge is unable to extract text from online-only PDFs at this time.";
     }
 
-    const response = await axios.get(accessLink.toString());
+    const reqUrl = accessLink.toString();
+    const response = await axios.get(reqUrl);
     const h2tOptions: HtmlToTextOptions = {
       wordwrap: false,
       baseElements: {
@@ -101,7 +105,6 @@ export default class SourceChatController {
     };
     let text = htmlToText(response.data, h2tOptions);
     text = this.cleanText(text);
-    text = text.substring(0, 8192);
     return text;
   }
 

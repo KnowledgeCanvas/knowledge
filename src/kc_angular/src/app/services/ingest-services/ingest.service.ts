@@ -49,7 +49,7 @@ export class IngestService implements OnDestroy {
     private ipc: ElectronIpcService,
     private projects: ProjectService,
     private sanitizer: DomSanitizer,
-    private notifications: NotificationsService
+    private notify: NotificationsService
   ) {
     this.autoscanSubscribe();
     this.extensionSubscribe();
@@ -71,14 +71,36 @@ export class IngestService implements OnDestroy {
 
   enqueue(ksList: KnowledgeSource[]) {
     let ksQueue = this._queue.value;
-    ksQueue = ksQueue.concat(ksList);
+    const ksNext: KnowledgeSource[] = [];
+
+    for (const ks of ksList) {
+      if (
+        ksQueue.find(
+          (k) =>
+            k.id.value === ks.id.value ||
+            k.accessLink == ks.accessLink ||
+            k.title === ks.title
+        )
+      ) {
+        this.notify.warn(
+          'Ingest Service',
+          'Ignoring Duplicate',
+          `Source: ${ks.title}`
+        );
+        continue;
+      }
+
+      ksNext.push(ks);
+    }
+
+    ksQueue = ksQueue.concat(ksNext);
     this._queue.next(ksQueue);
 
     if (ksList.length <= 0) {
       return;
     }
 
-    this.notifications.success(
+    this.notify.success(
       'IngestService',
       'Source Imported',
       `Imported ${ksList.length} Source${ksList.length > 1 ? 's' : ''}.`
@@ -205,7 +227,7 @@ export class IngestService implements OnDestroy {
   private extensionSubscribe() {
     this.extension.links.subscribe((webSource) => {
       if (!webSource || !webSource.accessLink) {
-        this.notifications.warn(
+        this.notify.warn(
           'IngestService',
           'Empty Link',
           `Received empty link: ${webSource.accessLink}`
@@ -218,7 +240,7 @@ export class IngestService implements OnDestroy {
         webSource.accessLink
       );
       if (!sanitized) {
-        this.notifications.error(
+        this.notify.error(
           'IngestService',
           'Link Rejected',
           'Unable to sanitize URL received from browser extension.'
@@ -251,7 +273,7 @@ export class IngestService implements OnDestroy {
           this.enqueue([ks]);
         })
         .catch(() => {
-          this.notifications.error(
+          this.notify.error(
             'IngestService',
             'Exception',
             'Unable to sanitize URL received from browser extension.'
@@ -280,14 +302,14 @@ export class IngestService implements OnDestroy {
 
     const task = this.tasks.find((t) => t.id === ks.id.value);
     if (task) {
-      this.notifications.debug(
+      this.notify.debug(
         'IngestService',
         'Finalizing',
         `id: ${ks.id.value}, original import method: ${task.method}, operation: ${operation}`
       );
       task.callback(operation);
     } else {
-      this.notifications.debug(
+      this.notify.debug(
         'IngestService',
         'Task Not Found',
         `Unable to locate task belonging to id ${ks.id.value}`

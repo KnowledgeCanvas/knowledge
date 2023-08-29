@@ -14,14 +14,16 @@
  *  limitations under the License.
  */
 
-import { ChatCompletionRequestMessage } from 'openai/api';
-import { ChatCompletionResponseMessage } from 'openai';
 import { ChatMessage } from '@app/models/chat.model';
 import { Injectable } from '@angular/core';
 import { map } from 'rxjs/operators';
 import { KnowledgeSource } from '@app/models/knowledge.source.model';
 import { KcProject } from '@app/models/project.model';
 import { ChatService } from '@services/chat-services/chat.service';
+import {
+  ChatCompletionMessage,
+  CreateChatCompletionRequestMessage,
+} from 'openai/resources/chat/completions';
 
 @Injectable({
   providedIn: 'root',
@@ -32,7 +34,7 @@ export class ChatPrompts {
   introPrompts = (
     concept: KnowledgeSource | KcProject,
     type: 'Source' | 'Project'
-  ): ChatCompletionRequestMessage[] => {
+  ): CreateChatCompletionRequestMessage[] => {
     const prompts = [
       `Information cutoff: December 2021, Current date: ${new Date().toDateString()}.`,
       `Knowledge is a tool for saving, searching, accessing, and exploring all of your favorite websites, documents and files.`,
@@ -99,7 +101,7 @@ export class ChatPrompts {
     }
 
     const introPrompts = prompts.map((prompt) => {
-      const message: ChatCompletionRequestMessage = {
+      const message: CreateChatCompletionRequestMessage = {
         role: 'system',
         content: prompt,
       };
@@ -120,7 +122,7 @@ export class ChatPrompts {
     );
 
     // Map those messages into a ChatCompletionRequest object
-    const completionRequests: ChatCompletionRequestMessage[] =
+    const completionRequests: CreateChatCompletionRequestMessage[] =
       recentMessages.map((message) => {
         return {
           role: message.sender === 'user' ? 'user' : 'assistant',
@@ -166,8 +168,12 @@ export class ChatPrompts {
 
     // Use pipe to split the response into an array of strings (one for each question, separated by newline characters)
     return this.chat.send(completionRequests).pipe(
-      map((response: ChatCompletionResponseMessage) => {
-        return response.content.split('\n');
+      map((response: ChatCompletionMessage) => {
+        if (response.content) {
+          return response.content.split('\n');
+        } else {
+          return [];
+        }
       }),
       map((response) => {
         // Remove any elements that don't end in a question mark

@@ -109,7 +109,13 @@ export class SourceChatComponent implements OnInit {
         .pipe(
           take(1),
           tap((response) => {
-            this.addMessage(AgentType.Source, AgentType.User, response.content);
+            if (response.content) {
+              this.addMessage(
+                AgentType.Source,
+                AgentType.User,
+                response.content
+              );
+            }
           }),
           finalize(() => {
             this._loading.next(false);
@@ -142,7 +148,9 @@ export class SourceChatComponent implements OnInit {
       .pipe(
         take(1),
         tap((response) => {
-          this.addMessage(AgentType.Source, AgentType.User, response.content);
+          if (response.content) {
+            this.addMessage(AgentType.Source, AgentType.User, response.content);
+          }
         }),
         finalize(() => {
           this._loading.next(false);
@@ -159,7 +167,7 @@ export class SourceChatComponent implements OnInit {
         tap((response) => {
           this.history = this.history.map((m) => {
             if (m.id === message.id) {
-              m.text = response.content;
+              m.text = response.content ?? '';
             }
             return m;
           });
