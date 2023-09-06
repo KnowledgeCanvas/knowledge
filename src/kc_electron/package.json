@@ -21,7 +21,7 @@
     "cors": "^2.8.5",
     "crypto-js": "^4.1.1",
     "dotenv": "^16.0.3",
-    "electron": "^21.2.1",
+    "electron": "^22.3.21",
     "electron-updater": "^5.3.0",
     "express-rate-limit": "^6.7.0",
     "lodash": "^4.17.21",
