@@ -36,9 +36,10 @@ import { BehaviorSubject, tap } from 'rxjs';
       [enableService]="false"
       [closable]="true"
       (valueChange)="messageChange($event)"
+      styleClass="title-bar-interactive"
     ></p-messages>
     <div class="ks-viewport-header" *ngIf="!alerting">
-      <div class="ks-viewport-header-left">
+      <div class="ks-viewport-header-left title-bar-interactive">
         <div *ngIf="config.showNavButtons">
           <button
             pButton
@@ -90,7 +91,7 @@ import { BehaviorSubject, tap } from 'rxjs';
         />
       </div>
 
-      <div class="ks-viewport-header-right">
+      <div class="ks-viewport-header-right title-bar-interactive">
         <div
           *ngIf="config.showActionButtons"
           class="ks-viewport-header-right-contents"
