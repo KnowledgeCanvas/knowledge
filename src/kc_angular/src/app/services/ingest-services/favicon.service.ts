@@ -196,7 +196,14 @@ export class FaviconService {
   iconFromDatabase(ks: KnowledgeSource): SafeUrl | undefined {
     const iconStr = localStorage.getItem(`icon-${ks.id.value}`);
 
-    if (iconStr == 'undefined') {
+    if (iconStr === '[object Object]') {
+      console.error(
+        'knowledge source icon was incorrectly set and cannot be decoded...'
+      );
+      return undefined;
+    }
+
+    if (iconStr == 'undefined' || iconStr == undefined) {
       console.error('knowledge source icon "undefined" with id ', ks.id.value);
       localStorage.removeItem(`icon-${ks.id.value}`);
       return undefined;

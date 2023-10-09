@@ -22,9 +22,9 @@ import { KsCommandService } from '@services/command-services/ks-command.service'
 @Component({
   selector: 'app-details',
   template: `
-    <div class="w-full flex-row-center-between my-2 px-2 sticky">
+    <div class="w-full flex-row-center-between my-2 px-2 sticky title-bar">
       <div class="flex-row-center-start">
-        <app-ks-icon [ks]="ks" class="px-3"></app-ks-icon>
+        <app-ks-icon [ks]="ks" class="px-3 title-bar-interactive"></app-ks-icon>
         <div class="text-xl font-bold">{{ ks.title }}</div>
       </div>
       <div class="flex-row-center-end" style="width: 10rem">
@@ -35,7 +35,7 @@ import { KsCommandService } from '@services/command-services/ks-command.service'
         <div>
           <button
             pButton
-            class="p-button-text p-button-rounded"
+            class="p-button-text p-button-rounded title-bar-interactive"
             icon="pi pi-times"
             (click)="onClose()"
           ></button>
@@ -57,7 +57,7 @@ import { KsCommandService } from '@services/command-services/ks-command.service'
       </app-project-breadcrumb>
     </div>
   `,
-  styles: [''],
+  styles: [],
 })
 export class KsDetailsComponent {
   ks!: KnowledgeSource;
