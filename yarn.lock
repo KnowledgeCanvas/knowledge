@@ -2634,37 +2634,44 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/cytoscape-dagre@npm:^2.3.0":
-  version: 2.3.0
-  resolution: "@types/cytoscape-dagre@npm:2.3.0"
+"@types/cytoscape-dagre@npm:^2.3.1":
+  version: 2.3.1
+  resolution: "@types/cytoscape-dagre@npm:2.3.1"
   dependencies:
     "@types/cytoscape": "*"
-  checksum: c7efab5f01dd8d8ee6a97c17462e663b007ce0b67ae8a32945a8c92189378430c4af0e2e8188761c2d0552f5cd6918a36ddea76e9e2593c6e20636bfa7731216
+  checksum: e363c69b93ffbeb54bb075c4f562351afa6303e4f594e767052e7eea11b90e2564e8238cdb08964b4bc1f2ce460b34c2f92cc58bdd2fa0fd6e67bdbfb8e60644
   languageName: node
   linkType: hard
 
-"@types/cytoscape-fcose@npm:^2.1.0":
-  version: 2.2.0
-  resolution: "@types/cytoscape-fcose@npm:2.2.0"
+"@types/cytoscape-fcose@npm:^2.2.2":
+  version: 2.2.2
+  resolution: "@types/cytoscape-fcose@npm:2.2.2"
   dependencies:
     "@types/cytoscape": "*"
-  checksum: 2104c3704a49096ead437661b04c7fc18a5ae89f7a7cbd2942ec579abaec33a75955cdda4482bc82ca2dfc75f5034438fe1032af16b8e698a44a1f01ca0c9bb2
+  checksum: 6cbc9952adb7d7cc7d002331a074202192824512781d26bfb2868b6e479f7dd0fceda65f2c4c25eeac63934f450a625af36d2d77912c23c49d0ae10afbb9db94
   languageName: node
   linkType: hard
 
-"@types/cytoscape-klay@npm:^3.1.0":
-  version: 3.1.0
-  resolution: "@types/cytoscape-klay@npm:3.1.0"
+"@types/cytoscape-klay@npm:^3.1.2":
+  version: 3.1.2
+  resolution: "@types/cytoscape-klay@npm:3.1.2"
   dependencies:
     "@types/cytoscape": "*"
-  checksum: 331a8174a888b79190e612a2d7bf2f90d1caaaaec49251dbc3d7efda12ad38b98dfd5d9427d1b3e6aba6c980d12f507da087087c49c54cfacd61608758c58380
+  checksum: e22d8e5e4e800e6890ed194302efb72f75d98d37a00bbb76ec1b44e6403a671fcd3d1dec8f0b9d37958f68c052498d796c6d55aa94bf36ea4515f6c0ebe5c8e3
   languageName: node
   linkType: hard
 
-"@types/cytoscape@npm:*, @types/cytoscape@npm:^3.19.9":
+"@types/cytoscape@npm:*":
   version: 3.19.9
   resolution: "@types/cytoscape@npm:3.19.9"
   checksum: 773e7c73198a0dc9fe8fe708aca47af5e1fc47ba6e3138e37e3de23cd336441dd79d2a0215473c755a6bdd9842e3ed83e2e6d51abd128a34a5680fc10b3402b5
+  languageName: node
+  linkType: hard
+
+"@types/cytoscape@npm:^3.19.12":
+  version: 3.19.12
+  resolution: "@types/cytoscape@npm:3.19.12"
+  checksum: b4c4555e6ef11b70cd58ad85e3c75fbf2b47359b06a78af6db9d98f3012ad334eff6225ce51180b2904490fea4b139da9609d9eb04280f139f405a124fe90832
   languageName: node
   linkType: hard
 
@@ -8862,10 +8869,10 @@ __metadata:
     "@fullcalendar/interaction": ^5.11.5
     "@fullcalendar/list": ^5.11.5
     "@fullcalendar/timegrid": ^5.11.5
-    "@types/cytoscape": ^3.19.9
-    "@types/cytoscape-dagre": ^2.3.0
-    "@types/cytoscape-fcose": ^2.1.0
-    "@types/cytoscape-klay": ^3.1.0
+    "@types/cytoscape": ^3.19.12
+    "@types/cytoscape-dagre": ^2.3.1
+    "@types/cytoscape-fcose": ^2.2.2
+    "@types/cytoscape-klay": ^3.1.2
     "@types/marked": ^4.0.8
     "@typescript-eslint/eslint-plugin": 5.37.0
     "@typescript-eslint/parser": 5.37.0
