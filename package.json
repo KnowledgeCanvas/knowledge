@@ -62,8 +62,8 @@
     "url": "^0.11.0"
   },
   "devDependencies": {
-    "@angular-devkit/architect": "^0.1402.7",
-    "@angular/cli": "^14.2.7",
+    "@angular-devkit/architect": "^0.1402.13",
+    "@angular/cli": "^14.2.13",
     "@types/async": "^3.2.15",
     "@types/ejs": "^3.1.1",
     "@types/eslint": "^8",
@@ -77,7 +77,7 @@
     "@types/plist": "^3.0.2",
     "@types/prettier": "^2",
     "@types/uuid": "^9.0.1",
-    "electron-builder": "^23.6.0",
+    "electron-builder": "^24.6.4",
     "electron-notarize": "^1.2.2",
     "eslint": "^8.38.0",
     "eslint-plugin-html": "^7.1.0",
