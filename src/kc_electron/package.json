@@ -1,6 +1,6 @@
 {
   "name": "kc_electron",
-  "version": "0.8.1",
+  "version": "0.8.4",
   "description": "This package contains the Electron portion of the Knowledge desktop application.",
   "main": "dist/main.js",
   "author": "Rob Royce <robertris2@gmail.com> (https://robroyce.dev)",
