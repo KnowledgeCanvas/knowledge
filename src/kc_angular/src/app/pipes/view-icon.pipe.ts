@@ -25,6 +25,8 @@ export class ViewIconPipe implements PipeTransform {
         return 'pi pi-inbox';
       case 'projects':
         return 'pi pi-list';
+      case 'chat':
+        return 'pi pi-comments';
       case 'table':
         return 'pi pi-table';
       case 'grid':
