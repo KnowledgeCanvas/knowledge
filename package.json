@@ -1,6 +1,6 @@
 {
   "name": "knowledge-canvas",
-  "version": "0.8.4",
+  "version": "0.8.5",
   "description": "Knowledge is a tool for saving, searching, accessing, and exploring all of your favorite websites, documents and files.",
   "author": "Rob Royce <robertris2@gmail.com> (https://robroyce.dev)",
   "license": "Apache-2.0",
@@ -46,6 +46,7 @@
     "@adobe/css-tools": "^4.3.1",
     "async": "^3.2.4",
     "axios": "^1.3.4",
+    "canvas": "^2.11.2",
     "ejs": "^3.1.8",
     "express": "^4.18.2",
     "follow-redirects": "^1.15.2",
@@ -56,6 +57,7 @@
     "multer": "^1.4.5-lts.1",
     "node-fetch": "^3.3.1",
     "node-forge": "^1.3.1",
+    "pdfjs-dist": "^3.11.174",
     "plist": "^3.0.6",
     "postcss": "^8.4.31",
     "terser": "^5.15.1",
@@ -82,8 +84,10 @@
     "eslint": "^8.38.0",
     "eslint-plugin-html": "^7.1.0",
     "loader-utils": "^3.2.1",
+    "node-loader": "^2.0.0",
     "prettier": "^2.8.7",
-    "standard-version": "^9.5.0"
+    "standard-version": "^9.5.0",
+    "worker-loader": "^3.0.8"
   },
   "build": {
     "appId": "com.knowledge.canvas.app",
