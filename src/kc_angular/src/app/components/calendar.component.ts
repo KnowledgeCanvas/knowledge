@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 Rob Royce
+ * Copyright (c) 2022-2024 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -51,9 +51,11 @@ import { take, tap } from 'rxjs/operators';
           (onRemove)="onRemove($event)"
           (onEdit)="onEdit($event)"
           (onOpen)="onOpen($event)"
+          (onChat)="onChat($event)"
           (onPreview)="onPreview($event)"
           (onTopicClick)="onTopicClick($event)"
           [ks]="selectedKs"
+          [showChat]="true"
         >
         </app-ks-card>
         <app-project-card
@@ -153,6 +155,10 @@ export class CalendarComponent implements OnDestroy {
 
   onOpen(ks: KnowledgeSource) {
     this.command.open(ks);
+  }
+
+  onChat(ks: KnowledgeSource) {
+    this.command.chat(ks);
   }
 
   onPreview(ks: KnowledgeSource) {
