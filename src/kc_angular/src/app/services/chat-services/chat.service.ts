@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Rob Royce
+ * Copyright (c) 2023-2024 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -73,6 +73,10 @@ export class ChatService {
           settings.model.token_limit - settings.model.max_tokens
         );
       });
+  }
+
+  get serverUrl() {
+    return this.backendUrl;
   }
 
   checkConnection() {

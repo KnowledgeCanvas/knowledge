@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Rob Royce
+ * Copyright (c) 2023-2024 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import CreateChatCompletionRequestMessage = Completions.CreateChatCompletionRequ
 
 const settingsService = require("../../app/services/settings.service");
 
-class TokenizerUtils {
+export default class TokenizerUtils {
   private tiktoken!: Tiktoken;
 
   private model: TiktokenModel = "gpt-3.5-turbo";
@@ -42,6 +42,7 @@ class TokenizerUtils {
     const tiktokenWasm = this.getWasmPath();
     const wasm = fs.readFileSync(tiktokenWasm);
     await init((imports) => WebAssembly.instantiate(wasm, imports));
+    console.debug(`[Knowledge]: Initializing ${this.model} tokenizer...`);
     this.tiktoken = encoding_for_model(this.model);
   }
 
@@ -51,9 +52,13 @@ class TokenizerUtils {
     }
 
     try {
+      console.debug(`[Knowledge]: Freeing ${this.model} tokenizer...`);
       this.tiktoken?.free();
     } catch (err) {
-      console.error("Error freeing tiktoken model: ", err);
+      console.error(
+        `[Knowledge]: Trying to free ${this.model} tokenizer...`,
+        err
+      );
     }
 
     this.model = model;
@@ -150,6 +155,45 @@ class TokenizerUtils {
     return tokenCount + (messages.length > 1 ? 3 : 0);
   }
 
+  chunkLimitText(text: string): string[] {
+    /**
+     * Given a text, chunk it into pieces that are within the token limit.
+     */
+    const model = SupportedChatModels.find(
+      (model) => model.name === this.model
+    );
+
+    if (!model) {
+      throw new Error("Model not found.");
+    }
+
+    const maxTokens = model.token_limit - model.max_tokens - 512;
+
+    const tokenized = this.tiktoken.encode(text);
+    if (tokenized.length <= maxTokens) {
+      return [text];
+    }
+
+    const chunks = [];
+
+    // Split the tokenized array into arrays of maxTokens length
+    for (let i = 0; i < tokenized.length; i += maxTokens) {
+      chunks.push(tokenized.slice(i, i + maxTokens));
+    }
+
+    // Convert each chunk back into a string
+    const chunkedText: string[] = [];
+    chunks.forEach((chunk) => {
+      let text = "";
+      chunk.forEach((unit8) => {
+        text += String.fromCharCode.apply(null, [unit8]);
+      });
+      chunkedText.push(text);
+    });
+
+    return chunkedText;
+  }
+
   limitText(text: string): string {
     const model = SupportedChatModels.find(
       (model) => model.name === this.model
@@ -160,12 +204,15 @@ class TokenizerUtils {
     }
 
     // TODO: this 512 should be equal to the number of tokens taken by the rest of the messages
-    let maxTokens =
-      model.token_limit - model.max_tokens_upper_bound - model.max_tokens - 512;
+    let maxTokens = model.token_limit - model.max_tokens - 512;
+
     maxTokens = Math.max(maxTokens, 0);
 
     let tokenized = this.tiktoken.encode(text);
     if (tokenized.length > maxTokens) {
+      console.warn(
+        `[Knowledge]: Tokenized length (${tokenized.length}) greater than max tokens (${maxTokens}), truncating.`
+      );
       tokenized = tokenized.slice(0, maxTokens);
       const decoded = this.tiktoken.decode(tokenized);
 
@@ -203,6 +250,3 @@ class TokenizerUtils {
     throw new Error("Could not find tiktoken wasm file.");
   }
 }
-
-const tokenizerUtils = new TokenizerUtils();
-export default tokenizerUtils;

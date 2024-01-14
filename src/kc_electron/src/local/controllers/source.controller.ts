@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Rob Royce
+ * Copyright (c) 2023-2024 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -15,41 +15,65 @@
  */
 
 import { Request, Response } from "express";
-import ChatController from "./chat.controller";
-import axios from "axios";
-import { htmlToText, HtmlToTextOptions } from "html-to-text";
 import { introPrompts } from "../constants/source.prompts";
-import { Chat } from "openai/resources";
-import CreateChatCompletionRequestMessage = Chat.CreateChatCompletionRequestMessage;
+import { GlobalWorkerOptions } from "pdfjs-dist";
+import ChatController from "./chat.controller";
+import TokenizerUtils from "../utils/tokenizer.utils";
+
+GlobalWorkerOptions.workerSrc = require("pdfjs-dist/build/pdf.worker.entry");
 
 export default class SourceChatController {
-  chatController = new ChatController();
+  constructor(
+    private tokenizerUtils: TokenizerUtils,
+    private chatController: ChatController
+  ) {}
+
+  getChatController() {
+    return this.chatController;
+  }
 
   async chat(req: Request, res: Response): Promise<Response> {
-    console.warn("/sources/chat is acting as a pass through to /chat.");
     return this.chatController.chat(req, res);
   }
 
   async intro(req: Request, res: Response): Promise<Response> {
+    // If the summary already exists, simply return it as a ChatCompletion
+    if (req.body.summary) {
+      console.debug(
+        "[Knowledge]: Source summary already exists, returning it..."
+      );
+      return res.json({
+        choices: [
+          {
+            message: {
+              content: req.body.summary,
+              role: "assistant",
+            },
+          },
+        ],
+      });
+    }
+
     const source = req.body.source;
-    const accessLink = new URL(source.accessLink);
-    let messages = req.body.messages || [];
+    const messages = req.body.messages || [];
     const noPrompts = messages.length === 0;
-    console.log("Messages before extracting text: ", req.body.messages);
 
     // Get Source prompts based on this specific source, prepend them to messages
     if (noPrompts) {
       const sourceIntroPrompts = introPrompts(source, "source");
-      sourceIntroPrompts.forEach((message: any) => {
+      sourceIntroPrompts.forEach((message) => {
         messages.push(message);
       });
     }
 
     // Extract text from web page to feed into the API
-    let text = await this.extractText(accessLink);
-    text = this.chatController.limitText(text);
+    const text = this.tokenizerUtils.limitText(req.body.text);
 
-    messages = this.appendText(messages, text);
+    // Append the extracted text to the messages before sending
+    messages.push({
+      role: "system",
+      content: `The following is the text extracted from the Source: "${source.title}":\n=========\n"""${text}"""\n=========`,
+    });
 
     if (noPrompts) {
       messages.push({
@@ -57,64 +81,10 @@ export default class SourceChatController {
         content: `Can you introduce me to "${source.title}"?`,
       });
     }
-    console.log("Messages after extracting text: ", messages);
     return this.chatController.chat(req, res);
   }
 
-  appendText(messages: CreateChatCompletionRequestMessage[], text: string) {
-    messages.push({
-      role: "system",
-      content: `The following is the text extracted from the Source:\n=========\n"""${text}"""\n=========`,
-    });
-    messages.push({
-      role: "system",
-      content: `The text might include information that isn't relevant to the Source. You should attempt to use only relevant information.`,
-    });
-    return messages;
-  }
-
-  async extractText(accessLink: URL) {
-    // TODO: Handle remote PDFs
-    if (accessLink.href.endsWith(".pdf")) {
-      return "Knowledge is unable to extract text from online-only PDFs at this time.";
-    }
-
-    const reqUrl = accessLink.toString();
-    const response = await axios.get(reqUrl);
-    const h2tOptions: HtmlToTextOptions = {
-      wordwrap: false,
-      baseElements: {
-        selectors: [
-          "article",
-          "p",
-          "blockquote",
-          "ol",
-          "ul",
-          "h1",
-          "h2",
-          "code",
-          "mark",
-          "table",
-          "h3",
-          "h4",
-          "h5",
-          "h6",
-        ],
-        orderBy: "selectors",
-      },
-    };
-    let text = htmlToText(response.data, h2tOptions);
-    text = this.cleanText(text);
-    return text;
-  }
-
-  private cleanText(text: string) {
-    text = text.replace(/(https?:\/\/[^\s]+)/g, "");
-    text = text.replace(/(\s{2,})/g, " ");
-    text = text.replace(/(\r\n|\n|\r)/gm, "");
-    text = text.replace(/(\t)/gm, "");
-    text = text.replace(/(\s{2,})/g, " ");
-    text = text.replace(/[^a-zA-Z0-9 ]/g, "");
-    return text;
+  async regenerate(req: Request, res: Response) {
+    return undefined;
   }
 }
