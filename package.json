@@ -43,8 +43,8 @@
   },
   "packageManager": "yarn@3.2.4",
   "dependencies": {
-    "@adobe/css-tools": "^4.3.1",
-    "async": "^3.2.4",
+    "@adobe/css-tools": "^4.3.2",
+    "async": "^3.2.5",
     "axios": "^1.5.1",
     "canvas": "^2.11.2",
     "ejs": "^3.1.9",
@@ -66,7 +66,7 @@
   "devDependencies": {
     "@angular-devkit/architect": "^0.1402.13",
     "@angular/cli": "^14.2.13",
-    "@types/async": "^3.2.22",
+    "@types/async": "^3.2.24",
     "@types/ejs": "^3.1.4",
     "@types/eslint": "^8",
     "@types/express": "^4.17.20",
