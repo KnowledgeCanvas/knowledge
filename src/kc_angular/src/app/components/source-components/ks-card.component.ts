@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 Rob Royce
+ * Copyright (c) 2022-2024 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -158,11 +158,13 @@ import { DragAndDropService } from '@services/ingest-services/drag-and-drop.serv
               [showOpen]="showOpen"
               [showRemove]="showRemove"
               [showFlag]="showFlag"
+              [showChat]="showChat"
               [showSavePdf]="showSavePdf"
               (edit)="onEdit.emit(this.ks)"
               (preview)="onPreview.emit(this.ks)"
               (open)="onOpen.emit(this.ks)"
               (remove)="onRemove.emit(this.ks)"
+              (chat)="onChat.emit(this.ks)"
               (flag)="onFlagged(this.ks, $event.checked)"
             >
             </app-action-bar>
@@ -231,6 +233,9 @@ export class KsCardComponent implements OnDestroy, OnChanges {
   /* Determines whether to display the "Important" button (default: true) */
   @Input() showFlag = true;
 
+  /* Determines whether to display the "Chat" button (default: true) */
+  @Input() showChat = false;
+
   /* Determines whether to show Content Type property (default: true) */
   @Input() showContentType = true;
 
@@ -257,6 +262,9 @@ export class KsCardComponent implements OnDestroy, OnChanges {
 
   /* EventEmitter that is triggered when the "Open" button is pressed */
   @Output() onOpen = new EventEmitter<KnowledgeSource>();
+
+  /* EventEmitter that is triggered when the "Chat" button is pressed */
+  @Output() onChat = new EventEmitter<KnowledgeSource>();
 
   /* EventEmitter that is triggered when the "Edit" button is pressed */
   @Output() onEdit = new EventEmitter<KnowledgeSource>();

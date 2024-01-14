@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Rob Royce
+ * Copyright (c) 2023-2024 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -14,15 +14,37 @@
  *  limitations under the License.
  */
 
+import ApiKeyController from "../controllers/api.controller";
 import express from "express";
-import { ApiKeyController } from "../controllers/api.controller";
-
-const apiKeyController = new ApiKeyController();
 
 const router = express.Router();
 
-router.post("/key", apiKeyController.setApiKey.bind(apiKeyController));
-router.get("/key", apiKeyController.hasApiKey.bind(apiKeyController));
-router.delete("/key", apiKeyController.deleteApiKey.bind(apiKeyController));
+export default class ApiRoutes {
+  private apiKeyController: ApiKeyController;
 
-export default router;
+  constructor(controller: ApiKeyController) {
+    this.apiKeyController = controller;
+    this.getRouter();
+  }
+
+  get controller() {
+    return this.apiKeyController;
+  }
+
+  getRouter() {
+    router.post(
+      "/key",
+      this.apiKeyController.setApiKey.bind(this.apiKeyController)
+    );
+    router.get(
+      "/key",
+      this.apiKeyController.hasApiKey.bind(this.apiKeyController)
+    );
+    router.delete(
+      "/key",
+      this.apiKeyController.deleteApiKey.bind(this.apiKeyController)
+    );
+
+    return router;
+  }
+}

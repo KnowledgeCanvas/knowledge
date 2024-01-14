@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Rob Royce
+ * Copyright (c) 2023-2024 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ const autoUpdater = share.autoUpdater;
 import { IpcMessage } from "../../../../kc_shared/models/electron.ipc.model";
 
 console.log(
-  `AutoUpdate - Knowledge Version ${autoUpdater.currentVersion.version} - Initializing...`
+  `[AutoUpdate] - Knowledge Version ${autoUpdater.currentVersion.version} - Initializing...`
 );
 
 autoUpdater.on("checking-for-update", () => {

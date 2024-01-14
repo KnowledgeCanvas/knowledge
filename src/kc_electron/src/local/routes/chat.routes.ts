@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Rob Royce
+ * Copyright (c) 2023-2024 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -17,11 +17,27 @@
 import express from "express";
 import ChatController from "../controllers/chat.controller";
 
-const chatController = new ChatController();
-
 const router = express.Router();
 
-router.post("/", chatController.chat.bind(chatController));
-router.post("/tokens", chatController.tokens.bind(chatController));
+export default class ChatRoutes {
+  private chatController: ChatController;
 
-export default router;
+  constructor(chatController: ChatController) {
+    this.chatController = chatController;
+    this.getRouter();
+  }
+
+  get controller() {
+    return this.chatController;
+  }
+
+  getRouter() {
+    router.post("/", this.chatController.chat.bind(this.chatController));
+    router.post(
+      "/tokens",
+      this.chatController.tokens.bind(this.chatController)
+    );
+
+    return router;
+  }
+}

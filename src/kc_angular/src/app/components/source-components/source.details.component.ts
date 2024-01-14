@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Rob Royce
+ * Copyright (c) 2023-2024 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -40,7 +40,9 @@ import { skip } from 'rxjs';
                 (remove)="removeSource()"
                 [ks]="source"
                 [showEdit]="false"
+                [showPreview]="false"
                 [showFlag]="true"
+                [showChat]="false"
                 class="w-full p-fluid"
               >
               </app-action-bar>

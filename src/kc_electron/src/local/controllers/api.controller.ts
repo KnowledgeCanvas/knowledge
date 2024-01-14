@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Rob Royce
+ * Copyright (c) 2023-2024 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import chatEncrypt from "../utils/encrypt.utils";
 
 const settings = require("../../app/services/settings.service");
 
-export class ApiKeyController {
+export default class ApiKeyController {
   async checkApiKey(req: Request, res: Response): Promise<Response> {
     // Returns true if API key is set and works as expected, otherwise false
     const apiKey = await this.loadApiKey();
