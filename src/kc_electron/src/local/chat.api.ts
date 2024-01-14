@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Rob Royce
+ * Copyright (c) 2023-2024 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -17,15 +17,62 @@
 import express, { Express } from "express";
 import cors from "cors";
 import { ErrorHandler } from "./middleware/ErrorHandler";
+import ChatController from "./controllers/chat.controller";
+import ChatRoutes from "./routes/chat.routes";
+import ApiKeyController from "./controllers/api.controller";
+import SourceRoutes from "./routes/source.routes";
+import ApiRoutes from "./routes/api.routes";
+import SourceChatController from "./controllers/source.controller";
+import TokenizerUtils from "./utils/tokenizer.utils";
+import { debounceTime, map, tap } from "rxjs";
+import {
+  ChatSettingsModel,
+  SettingsModel,
+} from "../../../kc_shared/models/settings.model";
 
-import chatRoutes from "./routes/chat.routes";
-import apiRoutes from "./routes/api.routes";
-import sourceRoutes from "./routes/source.routes";
+const settings = require("../app/services/settings.service");
 
 export default class ChatServer {
   private app: Express;
 
+  private tokenizerUtils: TokenizerUtils;
+
+  private chatController;
+  private apiController;
+  private sourceController;
+
+  private chatRouter;
+  private apiRouter;
+  private sourceRouter;
+
   constructor() {
+    this.tokenizerUtils = new TokenizerUtils();
+
+    settings.all
+      .pipe(
+        debounceTime(1000),
+        map((s: SettingsModel) => s.app.chat),
+        tap((chatSettings: ChatSettingsModel) => {
+          this.tokenizerUtils.setModel(chatSettings.model.name);
+        })
+      )
+      .subscribe();
+
+    this.chatController = new ChatController(this.tokenizerUtils);
+    this.apiController = new ApiKeyController();
+    this.sourceController = new SourceChatController(
+      this.tokenizerUtils,
+      this.chatController
+    );
+
+    const chatRoutes = new ChatRoutes(this.chatController);
+    const apiRoutes = new ApiRoutes(this.apiController);
+    const sourceRoutes = new SourceRoutes(this.sourceController);
+
+    this.chatRouter = chatRoutes.getRouter();
+    this.apiRouter = apiRoutes.getRouter();
+    this.sourceRouter = sourceRoutes.getRouter();
+
     this.app = express();
     this.setupMiddleware();
     this.setupRoutes();
@@ -33,7 +80,7 @@ export default class ChatServer {
 
   start(port: number) {
     this.app.listen(port, () => {
-      console.log(`Chat server listening on port ${port}`);
+      console.log(`[Knowledge]: chat server listening on port ${port}`);
     });
   }
 
@@ -43,8 +90,8 @@ export default class ChatServer {
   }
 
   private setupRoutes() {
-    this.app.use("/api", ErrorHandler.catchErrors(apiRoutes));
-    this.app.use("/sources", ErrorHandler.catchErrors(sourceRoutes));
-    this.app.use("/chat", ErrorHandler.catchErrors(chatRoutes));
+    this.app.use("/api", ErrorHandler.catchErrors(this.apiRouter));
+    this.app.use("/sources", ErrorHandler.catchErrors(this.sourceRouter));
+    this.app.use("/chat", ErrorHandler.catchErrors(this.chatRouter));
   }
 }

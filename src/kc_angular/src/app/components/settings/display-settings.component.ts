@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 Rob Royce
+ * Copyright (c) 2022-2024 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -255,6 +255,10 @@ export class DisplaySettingsComponent {
             this.send(this.channels.zoomOut, this.displaySettings.zoom);
           }
 
+          const themeSettings = this.themeService.findTheme(
+            formValue.theme.code
+          );
+
           this.displaySettings = {
             autoplay: formValue.autoplay,
             logging: {
@@ -263,7 +267,7 @@ export class DisplaySettingsComponent {
               warn: warn ?? this.displaySettings.logging.warn,
             },
             syncTheme: formValue.syncTheme,
-            theme: formValue.theme,
+            theme: themeSettings,
             zoom: formValue.zoom,
             animations: formValue.animations,
           };

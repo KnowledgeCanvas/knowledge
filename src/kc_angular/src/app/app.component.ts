@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 Rob Royce
+ * Copyright (c) 2022-2024 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -210,9 +210,15 @@ export class AppComponent implements OnInit {
           if (ks?.force && this.sourceInfoDialog) {
             this.sourceInfoDialog.close();
           }
+
+          let view = 'details';
+          if (ks?.view) {
+            view = ks.view;
+          }
+
           if (ks && !this.sourceInfoDialog) {
             this.sourceInfoDialog = this.dialog.open(KsDetailsComponent, {
-              data: { ks: ks },
+              data: { ks: ks, view: view },
               width: '100vw !important',
               height: '100vh !important',
               styleClass: 'min-h-screen',

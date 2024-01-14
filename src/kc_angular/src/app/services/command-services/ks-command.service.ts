@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Rob Royce
+ * Copyright (c) 2023-2024 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ import { ProjectUpdateRequest } from '@app/models/project.model';
 })
 export class KsCommandService {
   private _ksDetailEvent = new BehaviorSubject<
-    (KnowledgeSource & { force: boolean }) | undefined
+    (KnowledgeSource & { force: boolean; view?: string }) | undefined
   >(undefined);
   ksDetailEvent = this._ksDetailEvent.asObservable();
 
@@ -115,6 +115,10 @@ export class KsCommandService {
 
   share(ksList: KnowledgeSource[]) {
     this._ksShareEvent.next(ksList);
+  }
+
+  chat(ks: KnowledgeSource) {
+    this._ksDetailEvent.next({ ...ks, ...{ force: true, view: 'chat' } });
   }
 
   open(ks: Partial<KnowledgeSource>) {

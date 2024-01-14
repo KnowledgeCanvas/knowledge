@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Rob Royce
+ * Copyright (c) 2023-2024 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -16,8 +16,11 @@
 
 import { Component, EventEmitter, Output } from '@angular/core';
 import { BehaviorSubject, skip } from 'rxjs';
-import { debounceTime, tap } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
 import { SettingsService } from '@services/ipc-services/settings.service';
+import { ChatModel, SupportedChatModels } from '@shared/models/chat.model';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { ChatSettingsModel } from '@shared/models/settings.model';
 
 @Component({
   selector: 'chat-toolbar',
@@ -26,7 +29,17 @@ import { SettingsService } from '@services/ipc-services/settings.service';
       class="flex flex-row justify-content-between top-0 pb-2"
       id="chat-toolbar"
     >
-      <div></div>
+      <div class="chat-toolbar-model-selector">
+        <form [formGroup]="form">
+          <p-dropdown
+            class="settings-input w-12rem"
+            formControlName="modelName"
+            [options]="SupportedChatModels"
+            optionLabel="label"
+            optionValue="name"
+          ></p-dropdown>
+        </form>
+      </div>
 
       <div class="chat-toolbar-filter">
         <div class="p-inputgroup p-fluid mr-3 ml-3 w-24rem">
@@ -92,13 +105,75 @@ export class ChatToolbarComponent {
   private _filter$ = new BehaviorSubject<string>('');
   filter$ = this._filter$.asObservable();
 
-  constructor(private settings: SettingsService) {
+  form: FormGroup;
+
+  settingsModel: ChatSettingsModel = new ChatSettingsModel();
+
+  constructor(private settings: SettingsService, private fb: FormBuilder) {
+    const chatSettings = this.settings.get().app.chat;
+    if (!chatSettings) {
+      this.set();
+    } else {
+      this.settingsModel = {
+        ...this.chatSettings,
+        ...chatSettings,
+      };
+    }
+
+    // Create form group for chat model selector
+    this.form = this.fb.group({
+      modelName: [this.settingsModel.model.name],
+    });
+
     this.filter$
       .pipe(
         skip(1),
         debounceTime(500),
         tap((filterValue: string) => {
           this.onFilter.emit(filterValue);
+        })
+      )
+      .subscribe();
+
+    // Listen for changes in the chat model setting, update if there are any
+    this.form.valueChanges
+      .pipe(
+        debounceTime(500),
+        distinctUntilChanged(),
+        tap((formValue) => {
+          let model: ChatModel;
+
+          // If the model has changed, update the local copy with static values from the SupportedChatModels array.
+          if (formValue.modelName !== this.settingsModel.model.name) {
+            model =
+              SupportedChatModels.find((m) => m.name === formValue.modelName) ??
+              this.settingsModel.model;
+          } else {
+            return;
+          }
+
+          this.settingsModel = {
+            display: this.settingsModel.display,
+            suggestions: this.settingsModel.suggestions,
+            model: model,
+          };
+          this.set();
+        })
+      )
+      .subscribe();
+
+    this.settings.all
+      .pipe(
+        tap((settings) => {
+          if (settings.app.chat) {
+            this.settingsModel = {
+              ...this.settingsModel,
+              ...settings.app.chat,
+            };
+            this.form.patchValue({
+              modelName: this.settingsModel.model.name,
+            });
+          }
         })
       )
       .subscribe();
@@ -109,6 +184,14 @@ export class ChatToolbarComponent {
     this._filter$.next(value);
   }
 
+  private set() {
+    this.settings.set({
+      app: {
+        chat: this.settingsModel,
+      },
+    });
+  }
+
   chatSettings() {
     this.settings.show('chat');
   }
@@ -116,4 +199,6 @@ export class ChatToolbarComponent {
   clearChat() {
     this.onClear.emit();
   }
+
+  protected readonly SupportedChatModels = SupportedChatModels;
 }

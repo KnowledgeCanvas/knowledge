@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Rob Royce
+ * Copyright (c) 2023-2024 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ export default class Autoscan {
     try {
       await fs.move(filePath, pendingFilePath);
       this.fileLocationMap.set(fileName, pendingFilePath);
-      console.log(`Moved ${filePath} to ${pendingFilePath}`);
+      console.debug(`Moved ${filePath} to ${pendingFilePath}`);
       await this.saveFileLocationMap();
     } catch (err) {
       console.error(`Failed to move ${filePath} to ${pendingFilePath}`, err);
@@ -57,7 +57,7 @@ export default class Autoscan {
     });
 
     watcher.on("add", (filePath) => {
-      console.log(`New file detected: ${filePath}`);
+      console.debug(`New file detected: ${filePath}`);
       this.handleNewFile(filePath);
     });
 
@@ -67,7 +67,7 @@ export default class Autoscan {
   async saveFileLocationMap() {
     const data = JSON.stringify(Array.from(this.fileLocationMap.entries()));
     await fs.writeFile(this.locationMapFile, data, "utf8");
-    console.log(`Saved file location map to ${this.locationMapFile}`);
+    console.debug(`Saved file location map to ${this.locationMapFile}`);
   }
 
   async loadFileLocationMap() {
@@ -78,7 +78,7 @@ export default class Autoscan {
       for (const [key, value] of entries) {
         this.fileLocationMap.set(key, value);
       }
-      console.log(`Loaded file location map from ${this.locationMapFile}`);
+      console.debug(`Loaded file location map from ${this.locationMapFile}`);
     }
   }
 

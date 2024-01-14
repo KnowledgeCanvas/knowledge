@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 Rob Royce
+ * Copyright (c) 2022-2024 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -115,8 +115,9 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
   @Input() ksCardOptions: CardOptions = {
     showContentType: true,
     showDescription: false,
-    showEdit: true,
-    showOpen: true,
+    showChat: true,
+    showEdit: false,
+    showOpen: false,
     showSavePdf: true,
     showPreview: true,
     showIcon: true,
@@ -340,6 +341,10 @@ export class KsCardListComponent implements OnInit, OnChanges, OnDestroy {
 
   _onKsOpen($event: KnowledgeSource) {
     this.command.open($event);
+  }
+
+  _onKsChat($event: KnowledgeSource) {
+    this.command.chat($event);
   }
 
   _onKsDetail($event: KnowledgeSource) {
