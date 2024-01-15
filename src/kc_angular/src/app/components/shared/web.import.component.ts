@@ -14,7 +14,13 @@
  *  limitations under the License.
  */
 
-import { Component, HostListener, ViewChild } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  HostListener,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import {
   KnowledgeSourceFactoryRequest,
@@ -25,6 +31,7 @@ import { KsCommandService } from '@services/command-services/ks-command.service'
 import { IngestService } from '@services/ingest-services/ingest.service';
 import { ProjectService } from '@services/factory-services/project.service';
 import { tap } from 'rxjs';
+import { ProjectUpdateRequest } from '@app/models/project.model';
 
 @Component({
   selector: 'app-import-web',
@@ -112,7 +119,8 @@ import { tap } from 'rxjs';
   `,
 })
 export class WebImportComponent {
-  // Handle for form input
+  @Output() close = new EventEmitter();
+
   @ViewChild('linkInput', { static: false }) linkInput: any;
 
   linkForm: FormGroup;
@@ -219,10 +227,18 @@ export class WebImportComponent {
     if (destination === 'Inbox') {
       this.ingest.enqueue(this.sources);
     } else {
-      // TODO: Implement project import
+      const project = this.projects.getCurrentProjectId();
+      if (project) {
+        const req: ProjectUpdateRequest = {
+          id: project,
+          addKnowledgeSource: this.sources,
+        };
+        this.projects.updateProjects([req]);
+      }
     }
 
     this.linkForm.reset();
     this.sources = [];
+    this.close.emit();
   }
 }

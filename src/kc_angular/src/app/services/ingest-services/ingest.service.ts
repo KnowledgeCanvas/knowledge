@@ -108,7 +108,7 @@ export class IngestService implements OnDestroy {
     this.notify.success(
       'IngestService',
       'Source Imported',
-      `Imported ${ksList.length} Source${ksList.length > 1 ? 's' : ''}.`
+      `Imported ${ksNext.length} Source${ksNext.length > 1 ? 's' : ''}.`
     );
   }
 

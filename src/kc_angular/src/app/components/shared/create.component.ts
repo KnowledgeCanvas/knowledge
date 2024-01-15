@@ -136,7 +136,7 @@ import { ConfirmationService } from 'primeng/api';
       header="Import Sources"
       [(visible)]="showImportDialog"
     >
-      <app-import-web></app-import-web>
+      <app-import-web (close)="showImportDialog = false"></app-import-web>
     </p-dialog>
   `,
   styles: [],
