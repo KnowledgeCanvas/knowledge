@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 Rob Royce
+ * Copyright (c) 2022-2024 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -162,6 +162,7 @@ import { SourceNotesComponent } from '@components/source-components/source.notes
 import { ProTipDirective } from './directives/pro-tip.directive';
 import { ProTipsComponent } from '@components/shared/pro-tips.component';
 import { ChatInputComponent } from '@components/chat-components/chat.input.component';
+import { WebImportComponent } from '@components/shared/web.import.component';
 
 @NgModule({
   declarations: [
@@ -240,6 +241,7 @@ import { ChatInputComponent } from '@components/chat-components/chat.input.compo
     SanitizeHtmlPipe,
     ProTipDirective,
     ProTipsComponent,
+    WebImportComponent,
   ],
   imports: [
     A11yModule,

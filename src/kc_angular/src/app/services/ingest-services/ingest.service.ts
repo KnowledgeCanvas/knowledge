@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Rob Royce
+ * Copyright (c) 2023-2024 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -85,12 +85,17 @@ export class IngestService implements OnDestroy {
         this.notify.warn(
           'Ingest Service',
           'Ignoring Duplicate',
-          `Source: ${ks.title}`
+          `Source: ${ks.title}`,
+          'toast'
         );
         continue;
       }
 
       ksNext.push(ks);
+    }
+
+    if (ksNext.length <= 0) {
+      return;
     }
 
     ksQueue = ksQueue.concat(ksNext);
