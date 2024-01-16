@@ -33,6 +33,12 @@ export class SourceLoader {
       filename
     );
 
+    // Make sure the directory exists, if not create it
+    const dirname = path.dirname(filepath);
+    if (!fs.existsSync(dirname)) {
+      fs.mkdirSync(dirname, { recursive: true });
+    }
+
     // Check for the Source in local JSON files. Append to req.body if found.
     if (fs.existsSync(filepath)) {
       const json = fs.readFileSync(filepath, "utf8");
@@ -70,6 +76,12 @@ export class SourceLoader {
       "sources",
       filename
     );
+
+    // Make sure the directory exists, if not create it
+    const dirname = path.dirname(filepath);
+    if (!fs.existsSync(dirname)) {
+      fs.mkdirSync(dirname, { recursive: true });
+    }
 
     console.debug("Storing source text and summary at: ", filepath);
 
