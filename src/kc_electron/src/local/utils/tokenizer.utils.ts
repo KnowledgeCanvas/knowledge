@@ -23,7 +23,10 @@ import {
 import fs from "fs";
 import path from "path";
 import { app } from "electron";
-import { SupportedChatModels } from "../../../../kc_shared/models/chat.model";
+import {
+  ChatModel,
+  SupportedChatModels,
+} from "../../../../kc_shared/models/chat.model";
 import { Completions } from "openai/resources/chat";
 import CreateChatCompletionRequestMessage = Completions.CreateChatCompletionRequestMessage;
 
@@ -159,14 +162,7 @@ export default class TokenizerUtils {
     /**
      * Given a text, chunk it into pieces that are within the token limit.
      */
-    const model = SupportedChatModels.find(
-      (model) => model.name === this.model
-    );
-
-    if (!model) {
-      throw new Error("Model not found.");
-    }
-
+    const model = this.verifiedModel();
     const maxTokens = model.token_limit - model.max_tokens - 512;
 
     const tokenized = this.tiktoken.encode(text);
@@ -195,14 +191,7 @@ export default class TokenizerUtils {
   }
 
   limitText(text: string): string {
-    const model = SupportedChatModels.find(
-      (model) => model.name === this.model
-    );
-
-    if (!model) {
-      throw new Error("Model not found.");
-    }
-
+    const model = this.verifiedModel();
     // TODO: this 512 should be equal to the number of tokens taken by the rest of the messages
     let maxTokens = model.token_limit - model.max_tokens - 512;
 
@@ -248,5 +237,18 @@ export default class TokenizerUtils {
       }
     }
     throw new Error("Could not find tiktoken wasm file.");
+  }
+
+  private verifiedModel(): ChatModel {
+    const model = SupportedChatModels.find(
+      (model) => model.name === this.model
+    );
+    if (!model) {
+      throw new Error(
+        `Model ${this.model} not found. You may need to check your settings and restart the app.`
+      );
+    } else {
+      return model;
+    }
   }
 }
