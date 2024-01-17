@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Rob Royce
+ * Copyright (c) 2023-2024 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -303,10 +303,25 @@ export class KsFactoryService {
     });
   }
 
+  private getLink(link: URL): string {
+    // If the link is a PDF file from arxiv.org, set the link to `https://arxiv.org/abs/${arxivId}` instead of the PDF link
+    if (
+      link.hostname === 'arxiv.org' &&
+      link.pathname.split('/')[1] === 'pdf'
+    ) {
+      const arxivId = link.pathname.split('/')[2];
+      if (arxivId) {
+        return `https://arxiv.org/abs/${arxivId}`;
+      }
+    }
+
+    // Otherwise, return the original link
+    return link.href;
+  }
+
   private getWebsiteMetadata(ks: KnowledgeSource): Promise<KnowledgeSource> {
     return new Promise<KnowledgeSource>((resolve) => {
-      const link =
-        typeof ks.accessLink === 'string' ? ks.accessLink : ks.accessLink.href;
+      const link = this.getLink(new URL(ks.accessLink));
       this.extractor
         .extractWebsiteMetadata(link)
         .then((metadata) => {
