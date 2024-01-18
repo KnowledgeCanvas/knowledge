@@ -28,6 +28,9 @@ export class DocumentSummarizer {
     return async (req: Request, res: Response, next: NextFunction) => {
       // If the request already contains a summary, skip this middleware
       if (req.body.summary) {
+        console.log(
+          "[DocumentSummarizer]: Summary already exists, skipping DocumentSummarizer"
+        );
         return next();
       }
 

@@ -62,7 +62,10 @@ export default class ChatController {
 
   async summarize(text: string, succinct = true, verbose = false) {
     if (!(await this.veryifyApi()) || !this.openai) {
-      return text;
+      console.warn(
+        "[ChatController]: OpenAI API not initialized or unavailable, skipping summarization..."
+      );
+      return "";
     }
 
     const limited = this.tokenizerUtils.limitText.bind(this.tokenizerUtils);
@@ -118,6 +121,10 @@ export default class ChatController {
         const limitedChunksText = limitedChunks(text);
         let chunkedResponse = "";
 
+        console.log(
+          `[ChatController]: Limiting text to ${limitedChunksText.length} chunks...`
+        );
+
         for (let i = 0; i < limitedChunksText.length; i++) {
           // If the last message is a user message, remove it from the array
           // This is to ensure that each chunk is removed from the previous query
@@ -129,7 +136,7 @@ export default class ChatController {
 
           messages.push({
             role: "user",
-            content: `=========\n"""${chunk}"""\n=========`,
+            content: `===\n"""${chunk}"""\n===`,
           });
 
           // Sleep for 0.25 seconds to avoid rate limiting
