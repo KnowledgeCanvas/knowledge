@@ -32,6 +32,13 @@ export class SourceParser {
     }
 
     const source = req.body.source;
+
+    try {
+      const type = source.ingestType;
+    } catch (err) {
+      next();
+    }
+
     const ingestType = source.ingestType;
 
     if (ingestType === "file") {
