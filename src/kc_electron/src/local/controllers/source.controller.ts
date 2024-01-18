@@ -87,4 +87,30 @@ export default class SourceChatController {
   async regenerate(req: Request, res: Response) {
     return undefined;
   }
+
+  async categorize(req: Request, res: Response) {
+    // The request body should contain a source title and the entire project tree in YAML format
+    const sourceTitle = req.body.title;
+    const projectTree = req.body.yaml.replace("\n", "\\n");
+
+    req.body.messages = [
+      {
+        role: "user",
+        content:
+          "List of projects and their subprojects:\n\n" +
+          "```yaml\n" +
+          `${projectTree}` +
+          "```\n" +
+          "---\n" +
+          "Title of newly import Source:\n" +
+          `> ${sourceTitle}\n` +
+          "---\n" +
+          "Please provide a comma separated list of the top 3 projects that this source is most likely to fit into. Do not explain your reasoning. Do not return anything other than the list of 3 projects.",
+      },
+    ];
+
+    const response = await this.chatController.passthrough(req, res);
+
+    console.log("Response: ", response);
+  }
 }

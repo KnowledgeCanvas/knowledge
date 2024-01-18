@@ -55,6 +55,11 @@ export default class SourceRoutes {
     // Intro chat with the source (basically a summary)
     router.post("/intro", this.controller.intro.bind(this.controller));
 
+    router.post(
+      "/categorize",
+      this.controller.categorize.bind(this.controller)
+    );
+
     // An endpoint to regenerate previous responses
     router.post(
       "/regenerate",
