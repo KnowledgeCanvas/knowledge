@@ -48,13 +48,17 @@ import { ProjectUpdateRequest } from '@app/models/project.model';
         type="url"
         (keyup.enter)="onSubmit(linkInput.value)"
         style="min-width: 35vw;"
-        placeholder="Enter a URL and press enter/return"
+        placeholder="Enter a URL or a list of URLs and press enter/return..."
       />
     </form>
 
-    <div *ngIf="sources.length > 0" class="">
-      <div style="max-height: 50vh; overflow: overlay">
-        <p-table [value]="sources" [tableStyle]="{ 'min-width': '50rem' }">
+    <div class="">
+      <div style="height: 26rem; max-height: 26rem; overflow: overlay">
+        <p-table
+          *ngIf="sources.length > 0; else noSources"
+          [value]="sources"
+          [tableStyle]="{ 'min-width': '50rem' }"
+        >
           <ng-template pTemplate="header">
             <tr>
               <th style="width: 32px"></th>
@@ -98,6 +102,14 @@ import { ProjectUpdateRequest } from '@app/models/project.model';
             </tr>
           </ng-template>
         </p-table>
+
+        <ng-template #noSources>
+          <div class="flex-col-center-center h-full">
+            <div class="text-500">
+              <b>No Sources</b>
+            </div>
+          </div>
+        </ng-template>
       </div>
 
       <div class="flex-row-center-between mt-6">
@@ -112,6 +124,7 @@ import { ProjectUpdateRequest } from '@app/models/project.model';
           pButton
           label="Import"
           class="p-button p-button-sm w-8rem"
+          [disabled]="sources.length === 0"
           (click)="import(destination.name)"
         ></button>
       </div>

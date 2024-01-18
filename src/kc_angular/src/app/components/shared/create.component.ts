@@ -131,11 +131,7 @@ import { ConfirmationService } from 'primeng/api';
       </ng-template>
     </p-overlayPanel>
 
-    <p-dialog
-      #importDialog
-      header="Import Sources"
-      [(visible)]="showImportDialog"
-    >
+    <p-dialog #importDialog header="Web Import" [(visible)]="showImportDialog">
       <app-import-web (close)="showImportDialog = false"></app-import-web>
     </p-dialog>
   `,
