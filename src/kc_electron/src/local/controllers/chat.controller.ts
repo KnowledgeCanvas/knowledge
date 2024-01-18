@@ -23,10 +23,15 @@ import {
 } from "../../../../kc_shared/models/settings.model";
 import TokenizerUtils from "../utils/tokenizer.utils";
 import { OpenAI } from "openai";
-import { CreateChatCompletionRequestMessage } from "openai/resources";
+import { SummarizationPrompts } from "../ai/prompts/summarization.prompts";
 
 const settings = require("../../app/services/settings.service");
 
+/**
+ * The ChatController is the only controller that interacts directly with the OpenAI API.
+ * All other controllers should interact with the ChatController to access the API.
+ * This makes it easier to manage the API key and other settings.
+ */
 export default class ChatController {
   private openai?: OpenAI;
 
@@ -34,11 +39,16 @@ export default class ChatController {
 
   private tokenizerUtils: TokenizerUtils;
 
+  /**
+   * @param tokenizerUtils The tokenizer utils to use for this controller
+   */
   constructor(tokenizerUtils: TokenizerUtils) {
     this.tokenizerUtils = tokenizerUtils;
 
+    // Initialize the OpenAI API
     this.init();
 
+    // Listen for changes to the chat settings and update the settings as necessary
     settings.all
       .pipe(
         skip(1),
@@ -56,56 +66,98 @@ export default class ChatController {
     return this.settings;
   }
 
-  limitText(text: string) {
-    return this.tokenizerUtils.limitText(text);
+  async succinct(text: string) {
+    return this.summarize(text, true, false);
   }
 
-  async summarize(text: string, succinct = true, verbose = false) {
-    if (!(await this.veryifyApi()) || !this.openai) {
+  async verbose(text: string) {
+    return this.summarize(text, false, true);
+  }
+
+  async summarize(
+    text: string,
+    succinct = true,
+    verbose = false
+  ): Promise<string> {
+    if (!(await this.verifyAPI()) || !this.openai) {
       console.warn(
         "[ChatController]: OpenAI API not initialized or unavailable, skipping summarization..."
       );
       return "";
     }
 
+    // Bind the tokenizer utils to this class, so that we can use them in the
+    // async function below without having to pass them in as a parameter
     const limited = this.tokenizerUtils.limitText.bind(this.tokenizerUtils);
     const limitedChunks = this.tokenizerUtils.chunkLimitText.bind(
       this.tokenizerUtils
     );
+    const countTokens = this.tokenizerUtils.countTokens.bind(
+      this.tokenizerUtils
+    );
+
+    const tokenCount = countTokens(text);
+    console.log(
+      `[ChatController]: Summarizing text (succinct: ${succinct}), (verbose: ${verbose}) with ${tokenCount} tokens...`
+    );
+
+    // Create standard set of messages common to both succinct and verbose modes
+    const messages = SummarizationPrompts.Common();
+
+    // Verify that the message is short enough to be succinct (if succinct mode)
+    if (succinct) {
+      console.log(
+        `[ChatController]: Verifying text length for succinct mode...`
+      );
+
+      console.log(
+        `[ChatController]: Text length: ${text.length}, tokens: ${tokenCount}, limit: ${this.settings.model.token_limit}`
+      );
+      if (tokenCount > this.settings.model.token_limit) {
+        console.warn(
+          `[ChatController]: Text is too long (${tokenCount} tokens > ${this.settings.model.token_limit} tokens), truncating...`
+        );
+        text = limited(text);
+      }
+    }
+
+    if (succinct && !verbose) {
+      // Join with SummarizationPrompts.Succinct()
+      SummarizationPrompts.Succinct().forEach((message) => {
+        messages.push(message);
+      });
+
+      // Push the text into the messages
+      const limitedText = limited(text);
+      messages.push({
+        role: "user",
+        content: `===\n"""${limitedText}"""\n===`,
+      });
+
+      try {
+        const response = await this.openai.chat.completions.create({
+          model: this.settings.model.name,
+          temperature: this.settings.model.temperature,
+          top_p: this.settings.model.top_p,
+          max_tokens: this.settings.model.max_tokens,
+          presence_penalty: this.settings.model.presence_penalty,
+          frequency_penalty: this.settings.model.frequency_penalty,
+          messages: messages,
+        });
+
+        return response.choices[0].message.content ?? "";
+      } catch (error) {
+        console.error("Could not get response from OpenAI API...");
+        console.error(error);
+        return "";
+      }
+    }
+
+    // Otherwise, verbose mode
 
     try {
-      const messages: CreateChatCompletionRequestMessage[] = [
-        {
-          role: "system",
-          content:
-            "Your goal is to help the user understand the text by summarzing, paraphrasing, and quoting it as necessary.",
-        },
-        {
-          role: "system",
-          content: `Use groupings instead of listing lots of named entities (e.g. use et al. instead of listing 10 different people.).`,
-        },
-        {
-          role: "system",
-          content: `If the text does not make sense, simply return an empty string (e.g. "").`,
-        },
-      ];
-
       if (succinct && !verbose) {
-        messages.push({
-          role: "user",
-          content: `It is important to be as succinct as possible.`,
-        });
-        messages.push({
-          role: "system",
-          content: "The text is a small excerpt from a larger document.",
-        });
-
-        const limitedText = limited(text);
-
-        messages.push({
-          role: "user",
-          content: `\n=========\n"""${limitedText}"""\n=========`,
-        });
+        messages.push();
       } else if (verbose) {
         messages.push({
           role: "system",
@@ -161,12 +213,12 @@ export default class ChatController {
 
           messages.push({
             role: "system",
-            content: `It is important to be as detailed as possible. Your summary should be 2-3 paragraphs in length.`,
+            content: `It is important to be as detailed as possible.`,
           });
 
           messages.push({
             role: "user",
-            content: `=========\n"""${chunkedResponse}"""\n=========`,
+            content: `===\n"""${chunkedResponse}"""\n===`,
           });
         }
       }
@@ -181,7 +233,7 @@ export default class ChatController {
         messages: messages,
       });
 
-      return response.choices[0].message.content;
+      return response.choices[0].message.content ?? "";
     } catch (error) {
       console.error("Error limiting text...");
       console.error(error);
@@ -189,8 +241,40 @@ export default class ChatController {
     }
   }
 
+  async passthrough(req: Request, res: Response): Promise<Response> {
+    if (!req.body.messages) {
+      return res.status(400).json({
+        error: "Missing messages",
+      });
+    }
+
+    if (!(await this.verifyAPI()) || !this.openai) {
+      return res.status(500).json({
+        error: "OpenAI API not initialized",
+      });
+    }
+
+    try {
+      const response = await this.openai.chat.completions.create({
+        model: this.settings.model.name,
+        temperature: this.settings.model.temperature,
+        top_p: this.settings.model.top_p,
+        max_tokens: this.settings.model.max_tokens,
+        presence_penalty: this.settings.model.presence_penalty,
+        frequency_penalty: this.settings.model.frequency_penalty,
+        messages: req.body.messages,
+      });
+      return res.json(response);
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({
+        error: `Error calling OpenAI API: ${error}`,
+      });
+    }
+  }
+
   async chat(req: Request, res: Response): Promise<Response> {
-    if (!(await this.veryifyApi()) || !this.openai) {
+    if (!(await this.verifyAPI()) || !this.openai) {
       return res.status(500).json({
         error: "OpenAI API not initialized",
       });
@@ -257,9 +341,17 @@ export default class ChatController {
     });
   }
 
-  private async veryifyApi() {
+  private async verifyAPI() {
     if (!this.openai) {
-      await this.init();
+      try {
+        await this.init();
+      } catch (e) {
+        console.error(
+          `Unable to initialize OpenAI API upon verification... something is wrong.`
+        );
+        console.error(e);
+        return false;
+      }
     }
     return true;
   }
