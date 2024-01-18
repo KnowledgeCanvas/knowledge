@@ -23,6 +23,13 @@ const settingsService = require("../../app/services/settings.service");
 export class SourceLoader {
   static async load(req: Request, res: Response, next: NextFunction) {
     const source = req.body.source;
+
+    try {
+      const sourceId = source.id;
+    } catch (err) {
+      next();
+    }
+
     const id = source.id;
     const filename = `${id.value}.json`;
 
@@ -32,6 +39,12 @@ export class SourceLoader {
       "sources",
       filename
     );
+
+    // Make sure the directory exists, if not create it
+    const dirname = path.dirname(filepath);
+    if (!fs.existsSync(dirname)) {
+      fs.mkdirSync(dirname, { recursive: true });
+    }
 
     // Check for the Source in local JSON files. Append to req.body if found.
     if (fs.existsSync(filepath)) {
@@ -61,6 +74,12 @@ export class SourceLoader {
     const text = req.body.text;
     const summary = req.body.summary;
 
+    try {
+      const sourceId = source.id;
+    } catch (err) {
+      next();
+    }
+
     const id = source.id;
     const filename = `${id.value}.json`;
 
@@ -70,6 +89,12 @@ export class SourceLoader {
       "sources",
       filename
     );
+
+    // Make sure the directory exists, if not create it
+    const dirname = path.dirname(filepath);
+    if (!fs.existsSync(dirname)) {
+      fs.mkdirSync(dirname, { recursive: true });
+    }
 
     console.debug("Storing source text and summary at: ", filepath);
 
