@@ -1,5 +1,5 @@
 /*!
- * Copyright (c) 2023 Rob Royce
+ * Copyright (c) 2023-2024 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -46,4 +46,13 @@
 .html2canvas-container {
   width: 3000px !important;
   height: 3000px !important;
+}
+
+.chat-history-active {
+  // If the command bar is active, make the chat history slightly opaque and transparent
+  opacity: 0.5;
+  background-color: var(--surface-ground);
+
+  // Make it blurry
+  filter: blur(5px);
 }

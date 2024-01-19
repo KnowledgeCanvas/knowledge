@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Rob Royce
+ * Copyright (c) 2023-2024 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -40,6 +40,7 @@ import { ChatCompletionMessage } from 'openai/resources/chat/completions';
         *appRecreateView="chatHistory"
         [history]="chatHistory"
         [loading]="loading"
+        [target]="'Project'"
         (submit)="onSubmit($event)"
         (delete)="onDeleteMessage($event)"
         (regenerate)="regenerateMessage($event)"

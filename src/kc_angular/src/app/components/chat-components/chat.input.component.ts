@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Rob Royce
+ * Copyright (c) 2023-2024 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,14 +18,20 @@ import {
   Component,
   ElementRef,
   EventEmitter,
+  HostListener,
   Input,
   Output,
   ViewChild,
 } from '@angular/core';
 import { ChatService } from '@services/chat-services/chat.service';
-import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
-import { NotificationsService } from '@services/user-services/notifications.service';
+import { BehaviorSubject, combineLatest, Observable, tap } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import {
+  ChatCommand,
+  ChatCommandService,
+  CommandArgs,
+} from '@services/chat-services/commands.service';
+import { Message } from 'primeng/api';
 
 @Component({
   selector: 'chat-input',
@@ -43,11 +49,46 @@ import { NotificationsService } from '@services/user-services/notifications.serv
           tooltipPosition="top"
           proTip
           tipHeader="Out of Questions? We've Got Your Back!"
-          tipMessage="Check out our recommended next questions, thoughtfully crafted by our LLM agents. They're here to kickstart your curiosity and keep the knowledge flowing. So, what's your next question?"
+          tipMessage="Explore our suggested follow-up questions, carefully created by our AI experts. Designed to spark your curiosity and continue your learning journey."
           [tipGroups]="['chat']"
           tipIcon="pi pi-question"
         >
           {{ question | truncate : [84] }}
+        </div>
+      </div>
+      <div class="px-2">
+        <p-messages
+          [value]="bannerMessages"
+          [enableService]="false"
+          [closable]="true"
+          (valueChange)="bannerChange($event)"
+          styleClass="chat-command-banner"
+        ></p-messages>
+      </div>
+      <div
+        class="chat-command-box surface-overlay border-1 border-primary border-bottom-none"
+        [hidden]="(chatCommands | async)!.length === 0"
+        [style.bottom]="commandBottom"
+        [style.width]="commandWidth"
+        [style.left]="commandLeft"
+      >
+        <div
+          *ngFor="let command of chatCommands | async; let i = index"
+          class="flex-row-center-start cursor-pointer h-3rem hover:bg-primary-reverse hover:text-primary text-800 px-3 py-1"
+          [class.bg-primary]="i === commandIndex"
+          [class.active-command]="i === commandIndex"
+          (click)="
+            clickSelect(command, chatInput.value, $event); chatInput.focus()
+          "
+        >
+          <span class="font-bold">{{ command.command }} </span>
+          <span *ngIf="command.args.length" class="font-bold">
+            <span *ngFor="let arg of command.args">
+              &nbsp;<code>{{ arg.label }}</code>
+            </span>
+          </span>
+          :&nbsp;
+          <span>{{ command.description }}</span>
         </div>
       </div>
       <div class="px-2">
@@ -57,15 +98,19 @@ import { NotificationsService } from '@services/user-services/notifications.serv
             pInputTextarea
             pAutoFocus
             [autofocus]="true"
-            (focus)="focus()"
-            (keydown.enter)="enter(chatInput.value)"
+            (focus)="focusEvent.emit()"
             (input)="input(chatInput.value)"
-            [autoResize]="true"
+            (keydown.escape)="reset()"
+            (keydown.enter)="enter(chatInput.value, $event)"
+            (keydown.arrowUp)="arrowSelectCommand(commandIndex - 1, $event)"
+            (keydown.arrowDown)="arrowSelectCommand(commandIndex + 1, $event)"
+            (keydown.tab)="tabSelectCommand($event)"
+            [autoResize]="!chatInput.value.startsWith('/')"
             [disabled]="loading"
             [rows]="2"
-            class="w-full flex-row border-round-2xl shadow-2 max-h-12rem overflow-y-auto"
+            class="chat-input w-full flex-row shadow-2 max-h-12rem overflow-y-auto"
             id="chat-input"
-            placeholder="Type your questions here..."
+            placeholder="Ask your questions here, or type / to see a list of commands"
           ></textarea>
         </div>
         <div class="w-full relative px-3 h-2rem select-none">
@@ -88,42 +133,111 @@ import { NotificationsService } from '@services/user-services/notifications.serv
       </div>
     </div>
   `,
-  styles: [],
+  styles: [
+    `
+      .chat-command-box {
+        max-height: 24rem;
+        overflow-y: auto;
+        border-radius: 1.5rem 1.5rem 0 0;
+        position: fixed;
+      }
+
+      .chat-input {
+        width: 100%;
+        border-bottom-left-radius: 1.5rem !important;
+        border-bottom-right-radius: 1.5rem !important;
+        border-top-right-radius: 0 !important;
+        border-top-left-radius: 0 !important;
+      }
+    `,
+  ],
 })
 export class ChatInputComponent {
-  @ViewChild('chatInput', { static: true }) chatInput!: ElementRef;
+  @ViewChild('chatInput', { static: false }) chatInput!: ElementRef;
+
+  @ViewChild('commandBox', { static: false }) commandBox!: ElementRef;
 
   @Input() loading = false;
 
   @Input() questions: string[] = [];
 
+  @Input() target: 'Source' | 'Project' = 'Source';
+
+  @Output() showCommands = new EventEmitter<boolean>();
+
   @Output() send = new EventEmitter<string>();
 
   @Output() focusEvent = new EventEmitter<void>();
+
+  @HostListener('document:click', ['$event'])
+  // Listen for click events and close the command palette if the user clicks outside of it
+  clickout() {
+    this.commands.reset();
+  }
 
   tokenCount$: Observable<number>;
 
   tokenLimit$: Observable<number>;
 
+  chatCommands: Observable<ChatCommand[]>;
+
+  commandWidth = '0';
+
+  commandBottom = '0';
+
+  commandLeft = '0';
+
+  commandIndex = 0;
+
+  commandCount = 0;
+
   private userInput = new BehaviorSubject<string>('');
 
-  private canSend = true;
+  private tokensWithinLimit = true;
+  bannerMessages: Message[] = [];
 
-  constructor(private chat: ChatService, private notify: NotificationsService) {
+  constructor(private chat: ChatService, private commands: ChatCommandService) {
     this.tokenCount$ = chat.tokenCount$;
     this.tokenLimit$ = chat.tokenLimit$;
+    this.chatCommands = commands.commands$;
+
+    /* When either count or limit change, set flag accordingly */
     combineLatest([this.tokenCount$, this.tokenLimit$]).subscribe(
       ([count, limit]) => {
-        this.canSend = count <= limit;
+        this.tokensWithinLimit = count <= limit;
       }
     );
 
+    /* When the user input changes, trigger a token count update */
     this.userInput
       .asObservable()
-      .pipe(debounceTime(500))
+      .pipe(debounceTime(250), distinctUntilChanged())
       .subscribe((value) => {
         this.chat.countTokens(value);
       });
+
+    /* Handle changes to available commands based on user input */
+    this.chatCommands
+      .pipe(
+        tap((commands) => {
+          this.commandCount = commands.length;
+
+          // If the index is out of bounds, reset it
+          if (this.commandIndex >= this.commandCount) {
+            this.commandIndex = 0;
+          }
+
+          // If there are commands to display, show the command box
+          if (commands.length > 0) {
+            this.bannerMessages = [];
+            this.showCommands.emit(true);
+            this.scroll(0);
+          } else {
+            this.showCommands.emit(false);
+          }
+        })
+      )
+      .subscribe();
   }
 
   ask(question: string) {
@@ -132,25 +246,215 @@ export class ChatInputComponent {
   }
 
   input(value: string) {
+    // Set the command box position whenever input changes (required for responsive behavior)
+    this.setCommandBox();
+
+    // Required to get rid of command palette when user erases the chat
+    if (value.trim() === '') {
+      this.reset();
+    }
+
+    // If the input starts with a slash, trigger command palette update
+    if (value.startsWith('/')) {
+      this.commands.filter(value, this.target);
+    } else {
+      // Otherwise, ensure the command palette is hidden
+      this.commands.reset();
+    }
+
     this.userInput.next(value);
   }
 
-  focus() {
-    this.focusEvent.emit();
+  enter(value: string, event: Event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    // Handle commands
+    if (value.startsWith('/')) {
+      const cmd = this.commands.lookup(value.split(' ')[0]);
+
+      if (cmd) {
+        // If the full command is entered, and it exists, execute it
+        this.execute(cmd, value);
+      } else {
+        // Otherwise, assume the user wants to execute the indexed command
+        const indexed = this.commands.indexed(this.commandIndex);
+
+        if (indexed) {
+          this.execute(indexed, value);
+        } else {
+          this.bannerMessage({
+            severity: 'warn',
+            summary: 'Invalid Command',
+            life: 5000,
+            detail: `The command ${value} is not valid. Type / to see a list of available commands.`,
+          });
+
+          this.reset();
+        }
+      }
+      return;
+    }
+
+    if (this.tokensWithinLimit) {
+      this.send.emit(value);
+      this.reset();
+    } else {
+      this.bannerMessage({
+        severity: 'warn',
+        summary: 'Woah there!',
+        life: 5000,
+        detail: `The current Chat model has reached its token limit. Please shorten your message and try again.`,
+      });
+    }
   }
 
-  enter(value: string) {
-    if (this.canSend) {
-      this.send.emit(value);
-      this.chatInput.nativeElement.value = '';
-      this.userInput.next('');
+  clickSelect(command: ChatCommand, input: string, $event: Event) {
+    // If the command requires arguments, set the input to the command and filter the commands list
+    $event.preventDefault();
+    $event.stopPropagation();
+
+    this.setInputText(command.command + ' ');
+
+    if (command.args.length > 0) {
+      this.chatInput.nativeElement.value = command.command + ' ';
+      this.commands.filter(this.chatInput.nativeElement.value, this.target);
+      return;
     } else {
-      this.notify.warn(
-        'Chat Input',
-        'Uh-oh!',
-        'Your message is too long! Please shorten it and try again.',
-        'toast'
-      );
+      this.execute(command, input);
     }
+  }
+
+  execute(command: ChatCommand, input: string) {
+    // Check if all args are optional
+    const argsAllOptional = command.args.every((arg) => arg.optional);
+
+    // For any non-optional args, make sure their values are not undefined
+    const parsedArgs = command.argParse ? command.argParse(input) : [];
+    const requiredArgsAreValid = parsedArgs.every(
+      (arg) => arg.optional || (!arg.optional && arg.value !== undefined)
+    );
+
+    // Execute no-arg commands or commands with optional args if no args are provided
+    if (!requiredArgsAreValid) {
+      this.bannerMessage({
+        severity: 'warn',
+        summary: 'Forget something?',
+        life: 5000,
+        detail: `The ${command.command} command requires additional arguments. Please try again.`,
+      });
+    } else if (command.args.length === 0 || argsAllOptional) {
+      command.execute([]);
+    } else {
+      // Otherwise, parse the arguments (verify) and execute the command
+      let args: CommandArgs[] = [];
+
+      if (command.argParse) {
+        args = command.argParse(input);
+      }
+
+      if (args.length !== command.args.length) {
+        this.bannerMessage({
+          severity: 'warn',
+          summary: 'Forget something?',
+          life: 5000,
+          detail: `The ${command.command} command requires additional arguments. Please try again.`,
+        });
+      } else {
+        // Execute the command
+        command.execute(args);
+      }
+    }
+    this.reset();
+  }
+
+  arrowSelectCommand(newIndex: number, event: Event) {
+    /* Handle arrow key navigation of command palette */
+
+    if (this.commandCount === 0) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (newIndex < 0) {
+      // If the index is out of bounds, wrap around
+      newIndex = this.commandCount - 1;
+    } else if (newIndex >= this.commandCount) {
+      newIndex = 0;
+    }
+
+    this.commandIndex = newIndex;
+    this.scroll(0);
+  }
+
+  tabSelectCommand($event: Event) {
+    /* Handle when the user presses tab in the chat input */
+    $event.preventDefault();
+    $event.stopPropagation();
+    const command = this.commands.indexed(this.commandIndex);
+    if (!command) {
+      return;
+    }
+    this.setInputText(command.command + ' ');
+  }
+
+  reset() {
+    /* Convenience function for procedurally clearing the chat input */
+    this.setInputText('');
+  }
+
+  private bannerMessage(message: Message) {
+    /* Convenience function for procedurally setting the banner message */
+    this.bannerMessages = [message];
+    setTimeout(() => {
+      this.bannerMessages = [];
+    }, message.life ?? 5000);
+  }
+
+  private scroll(timeoutms = 100) {
+    /* Make sure the currently selected command is in view */
+    setTimeout(() => {
+      const classElement = document.getElementsByClassName('active-command');
+      if (classElement.length > 0) {
+        classElement[0].scrollIntoView({ behavior: 'smooth' });
+      }
+    }, timeoutms);
+  }
+
+  private setInputText(text: string) {
+    /* Handle the procedural tasks that need to happen when the input changes */
+    this.chatInput.nativeElement.value = text;
+    this.commands.filter(text, this.target);
+    setTimeout(() => {
+      this.userInput.next(text);
+    });
+  }
+
+  private setCommandBox() {
+    /* Ensures visual consistency between the command palette and the chat input element */
+    const bodyRect = document.body.getBoundingClientRect();
+    const inputRect = this.chatInput.nativeElement.getBoundingClientRect();
+    const commandHeight = this.chatInput.nativeElement.offsetHeight;
+    const commandBottom = bodyRect.height - inputRect.top;
+
+    // If the command box would extend beyond the bottom of the window, move it up
+    if (commandBottom + commandHeight > bodyRect.height) {
+      this.commandBottom = `${bodyRect.height - commandHeight}px`;
+    } else {
+      this.commandBottom = `${commandBottom}px`;
+    }
+
+    // The command box should be the same width as the input element
+    const chatBar = document.getElementById('chat-bar');
+    this.commandWidth = `calc(${chatBar?.offsetWidth}px - 1rem)`;
+
+    // Center the command box above the chat input element
+    this.commandLeft = `${inputRect.left}px`;
+  }
+
+  bannerChange($event: Message[]) {
+    console.log('Chat input banner changes: ', $event);
   }
 }

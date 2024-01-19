@@ -163,6 +163,7 @@ import { ProTipDirective } from './directives/pro-tip.directive';
 import { ProTipsComponent } from '@components/shared/pro-tips.component';
 import { ChatInputComponent } from '@components/chat-components/chat.input.component';
 import { WebImportComponent } from '@components/shared/web.import.component';
+import { MessageModule } from 'primeng/message';
 
 @NgModule({
   declarations: [
@@ -310,6 +311,7 @@ import { WebImportComponent } from '@components/shared/web.import.component';
     TreeSelectModule,
     YouTubePlayerModule,
     DragDropModule,
+    MessageModule,
   ],
   providers: [
     ConfirmationService,

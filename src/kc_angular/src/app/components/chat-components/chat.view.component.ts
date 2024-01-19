@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Rob Royce
+ * Copyright (c) 2023-2024 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -29,9 +29,6 @@ import { ChatService } from '@app/services/chat-services/chat.service';
 import { debounceTime, finalize, map, take, tap } from 'rxjs/operators';
 import { ConfirmationService, MenuItem, PrimeIcons } from 'primeng/api';
 import { ContextMenu } from 'primeng/contextmenu';
-import { DialogService } from 'primeng/dynamicdialog';
-import { Clipboard } from '@angular/cdk/clipboard';
-import { MarkdownService } from '@app/services/factory-services/markdown.service';
 import {
   KcNotification,
   NotificationsService,
@@ -62,6 +59,9 @@ export class ChatViewComponent implements OnInit, OnChanges {
 
   /* Whether to apply a height restriction to the chat history */
   @Input() heightRestricted = false;
+
+  /* Special handling for target-specific functionality required */
+  @Input() target: 'Source' | 'Project' = 'Source';
 
   /* The event emitted when the user submits a message */
   @Output() submit: EventEmitter<string> = new EventEmitter<string>();
@@ -100,12 +100,9 @@ export class ChatViewComponent implements OnInit, OnChanges {
   private messageInput = new BehaviorSubject<string>('');
 
   constructor(
-    private clipboard: Clipboard,
     private chat: ChatService,
     private context: ChatContextMenuService,
     private confirm: ConfirmationService,
-    private dialog: DialogService,
-    private markdown: MarkdownService,
     private notify: NotificationsService,
     private prompts: ChatPrompts,
     private settings: SettingsService
@@ -581,5 +578,18 @@ export class ChatViewComponent implements OnInit, OnChanges {
 
   countTokens(value: string) {
     this.messageInput.next(value);
+  }
+
+  blurHistory($event: boolean) {
+    // If the command bar is active, make the chat history slightly opaque and transparent
+    if ($event) {
+      document
+        .getElementsByClassName('chat-history')[0]
+        .classList.add('chat-history-active');
+    } else {
+      document
+        .getElementsByClassName('chat-history')[0]
+        .classList.remove('chat-history-active');
+    }
   }
 }
