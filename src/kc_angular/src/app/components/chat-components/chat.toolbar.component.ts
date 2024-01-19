@@ -14,7 +14,13 @@
  *  limitations under the License.
  */
 
-import { Component, EventEmitter, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  Output,
+} from '@angular/core';
 import { BehaviorSubject, skip } from 'rxjs';
 import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
 import { SettingsService } from '@services/ipc-services/settings.service';
@@ -26,7 +32,7 @@ import { ChatSettingsModel } from '@shared/models/settings.model';
   selector: 'chat-toolbar',
   template: `
     <div
-      class="flex flex-row justify-content-between top-0 pb-2"
+      class="flex flex-row justify-content-between top-0 pb-2 px-2"
       id="chat-toolbar"
     >
       <div class="chat-toolbar-model-selector">
@@ -77,7 +83,7 @@ import { ChatSettingsModel } from '@shared/models/settings.model';
           tipIcon="pi pi-trash"
           icon="pi pi-trash"
           class="p-button-rounded p-button-text p-button-danger"
-          tooltip="Clear Chat"
+          pTooltip="Clear Chat"
           (click)="clearChat()"
         ></div>
         <div
@@ -88,7 +94,7 @@ import { ChatSettingsModel } from '@shared/models/settings.model';
           tipMessage="Click the chat settings button to spice up your chat experience! Customize away and make the chat truly yours. Your chat room, your rules!"
           [tipGroups]="['chat']"
           tipIcon="pi pi-cog"
-          tooltip="Chat Settings"
+          pTooltip="Chat Settings"
           class="p-button-rounded p-button-text"
           (click)="chatSettings()"
         ></div>
@@ -97,7 +103,9 @@ import { ChatSettingsModel } from '@shared/models/settings.model';
   `,
   styles: [],
 })
-export class ChatToolbarComponent {
+export class ChatToolbarComponent implements OnChanges {
+  @Input() loading = true;
+
   @Output() onFilter = new EventEmitter<string>();
 
   @Output() onClear = new EventEmitter<void>();
@@ -179,9 +187,19 @@ export class ChatToolbarComponent {
       .subscribe();
   }
 
+  ngOnChanges() {
+    this.disable();
+  }
+
   /* Filter the chat based on the value of the filter input */
   filter(value: string) {
     this._filter$.next(value);
+  }
+
+  private disable() {
+    this.loading
+      ? this.form.get('modelName')?.disable()
+      : this.form.get('modelName')?.enable();
   }
 
   private set() {
