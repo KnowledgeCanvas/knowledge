@@ -34,21 +34,6 @@ export class DocumentSummarizer {
         return next();
       }
 
-      // If the request does not contain text, skip this middleware
-      try {
-        const length = req.body.text.length;
-      } catch (err) {
-        next();
-      }
-
-      // Absolute limit of text length is 100,000 characters, truncate anything above
-      if (req.body.text.length > 100000) {
-        console.warn(
-          `[DocumentSummarizer]: truncating text of size ${req.body.text.length} to 100,000 characters`
-        );
-        req.body.text = req.body.text.substring(0, 100000);
-      }
-
       // Break the text into chunks under the assumption that each token represents approximately 3 characters
       const CHUNK_SIZE =
         (this.chatController.getSettings().model.token_limit -
@@ -56,17 +41,37 @@ export class DocumentSummarizer {
         3;
       const chunks = req.body.text.match(new RegExp(`.{1,${CHUNK_SIZE}}`, "g"));
 
-      if (chunks) {
+      console.log(
+        `[DocumentSummarizer]: Splitting text into ${chunks.length} chunks of size ${CHUNK_SIZE}...`
+      );
+
+      if (chunks && chunks.length > 0) {
+        const meta = await this.chatController.getDateAndAuthors(chunks[0]);
         const summaries = await Promise.all(
-          chunks.map(this.chatController.succinct.bind(this.chatController))
+          chunks.map(
+            this.chatController.summarizeChunk.bind(this.chatController)
+          )
         );
-        const initialSummaries = summaries.join("\n").trim();
-        req.body.summary = await this.chatController.verbose(initialSummaries);
-        next();
+
+        // Insert meta data the first and last summaries
+        summaries[0] = `${meta}\n${summaries[0]}`;
+        summaries[summaries.length - 1] = `${
+          summaries[summaries.length - 1]
+        }\n${meta}`;
+
+        if (summaries.length === 1) {
+          req.body.summary = summaries[0];
+        } else {
+          req.body.summary = await this.chatController.summarizeChunkResponses(
+            summaries
+          );
+        }
       } else {
         console.warn("DocumentSummarizer: unable to split text into chunks...");
-        next();
+        req.body.summary = "";
       }
+
+      next();
     };
   }
 }

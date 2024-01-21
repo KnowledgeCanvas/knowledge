@@ -63,6 +63,13 @@ export default class TextUtils {
     return chunks;
   }
 
+  static limit(text: string, limit: number): string {
+    if (text.length > limit) {
+      text = text.substring(0, limit);
+    }
+    return text;
+  }
+
   static clean(text: string): string {
     text = text.replace(/(https?:\/\/[^\s]+)/g, ""); // Remove URLs
     text = text.replace(/(\r\n|\n|\r)/gm, ""); // Remove newlines

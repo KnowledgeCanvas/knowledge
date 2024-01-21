@@ -83,43 +83,6 @@ export class SourceChatComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Check if the source is a supported file type (PDF or other plain-text)
-    const supportedFileTypes = [
-      '.pdf',
-      '.txt',
-      '.md',
-      '.html',
-      '.htm',
-      '.py',
-      '.js',
-      '.ts',
-      '.java',
-      '.c',
-      '.cpp',
-      '.h',
-      '.hpp',
-      '.cs',
-      '.go',
-      '.rs',
-      '.sh',
-    ];
-
-    // Check if the file is supported
-    if (
-      this.source.ingestType === 'file' &&
-      !supportedFileTypes.some((type) =>
-        this.source.accessLink.toString().endsWith(type)
-      )
-    ) {
-      this.notify.warn(
-        'Source Chat',
-        'File Chat',
-        'Knowledge does not know how to read this file type.  Chat features will be limited.',
-        'toast',
-        6000
-      );
-    }
-
     // Load history
     this.history = this.chat.loadChat(this.source.id, undefined, this.source);
     if (this.history.length === 0) {
@@ -127,7 +90,7 @@ export class SourceChatComponent implements OnInit {
       this.addMessage(
         AgentType.User,
         AgentType.Source,
-        `Can you introduce me to "${this.source.title}"?`
+        `Summarize "${this.source.title}"`
       );
 
       this.sourceChat

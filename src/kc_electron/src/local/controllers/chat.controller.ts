@@ -24,6 +24,7 @@ import {
 import TokenizerUtils from "../utils/tokenizer.utils";
 import { OpenAI } from "openai";
 import { SummarizationPrompts } from "../ai/prompts/summarization.prompts";
+import { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 
 const settings = require("../../app/services/settings.service");
 
@@ -66,19 +67,7 @@ export default class ChatController {
     return this.settings;
   }
 
-  async succinct(text: string) {
-    return this.summarize(text, true, false);
-  }
-
-  async verbose(text: string) {
-    return this.summarize(text, false, true);
-  }
-
-  async summarize(
-    text: string,
-    succinct = true,
-    verbose = false
-  ): Promise<string> {
+  async summarizeChunk(text: string) {
     if (!(await this.verifyAPI()) || !this.openai) {
       console.warn(
         "[ChatController]: OpenAI API not initialized or unavailable, skipping summarization..."
@@ -86,53 +75,133 @@ export default class ChatController {
       return "";
     }
 
-    // Bind the tokenizer utils to this class, so that we can use them in the
-    // async function below without having to pass them in as a parameter
     const limited = this.tokenizerUtils.limitText.bind(this.tokenizerUtils);
-    const limitedChunks = this.tokenizerUtils.chunkLimitText.bind(
-      this.tokenizerUtils
-    );
-    const countTokens = this.tokenizerUtils.countTokens.bind(
-      this.tokenizerUtils
-    );
+    text = limited(text.replace("\n", " ")).replace("\n", " ");
 
-    const tokenCount = countTokens(text);
-    console.log(
-      `[ChatController]: Summarizing text (succinct: ${succinct}), (verbose: ${verbose}) with ${tokenCount} tokens...`
+    const messages = ([] as ChatCompletionMessageParam[]).concat(
+      SummarizationPrompts.Common(),
+      SummarizationPrompts.Excerpt()
     );
 
-    // Create standard set of messages common to both succinct and verbose modes
-    const messages = SummarizationPrompts.Common();
+    messages.push({
+      role: "user",
+      content: text,
+    });
 
-    // Verify that the message is short enough to be succinct (if succinct mode)
-    if (succinct) {
-      console.log(
-        `[ChatController]: Verifying text length for succinct mode...`
+    try {
+      const response = await this.openai.chat.completions.create({
+        model: this.settings.model.name,
+        temperature: this.settings.model.temperature,
+        top_p: this.settings.model.top_p,
+        max_tokens: this.settings.model.max_tokens,
+        presence_penalty: this.settings.model.presence_penalty,
+        frequency_penalty: this.settings.model.frequency_penalty,
+        messages: messages,
+      });
+      return response.choices[0].message.content;
+    } catch (error) {
+      console.error("Failed to summarize chunk...");
+      console.error(error);
+      return "";
+    }
+  }
+
+  async getDateAndAuthors(text: string) {
+    if (!(await this.verifyAPI()) || !this.openai) {
+      console.warn(
+        "[ChatController]: OpenAI API not initialized or unavailable, skipping summarization..."
       );
-
-      console.log(
-        `[ChatController]: Text length: ${text.length}, tokens: ${tokenCount}, limit: ${this.settings.model.token_limit}`
-      );
-      if (tokenCount > this.settings.model.token_limit) {
-        console.warn(
-          `[ChatController]: Text is too long (${tokenCount} tokens > ${this.settings.model.token_limit} tokens), truncating...`
-        );
-        text = limited(text);
-      }
+      return "";
     }
 
-    if (succinct && !verbose) {
-      // Join with SummarizationPrompts.Succinct()
-      SummarizationPrompts.Succinct().forEach((message) => {
-        messages.push(message);
+    const limited = this.tokenizerUtils.limitText.bind(this.tokenizerUtils);
+    text = limited(text.replace("\n", " ")).replace("\n", " ");
+
+    const messages: ChatCompletionMessageParam[] = [
+      {
+        role: "system",
+        content:
+          "Do not return anything other than the authors and date of publication.",
+      },
+      {
+        role: "system",
+        content: `If you are not sure about the date or authors, please leave the fields blank.`,
+      },
+      {
+        role: "system",
+        content: `If there are more than 2 authors, return the first author followed by "et. al".`,
+      },
+      {
+        role: "user",
+        content:
+          `Text:\n\n===${text}\n\n===` +
+          `{{Author name(s) or Unknown}}\n` +
+          `{{Publication Date or Unknown}}\n`,
+      },
+    ];
+
+    try {
+      const response = await this.openai.chat.completions.create({
+        model: this.settings.model.name,
+        temperature: this.settings.model.temperature,
+        top_p: this.settings.model.top_p,
+        max_tokens: this.settings.model.max_tokens,
+        presence_penalty: this.settings.model.presence_penalty,
+        frequency_penalty: this.settings.model.frequency_penalty,
+        messages: messages,
       });
 
-      // Push the text into the messages
-      const limitedText = limited(text);
-      messages.push({
-        role: "user",
-        content: `===\n"""${limitedText}"""\n===`,
-      });
+      return response.choices[0].message.content;
+    } catch (error) {
+      console.error("Failed to summarize chunk...");
+      console.error(error);
+      return "";
+    }
+  }
+
+  async summarizeChunkResponses(responses: string[], windowSize = 3) {
+    if (!(await this.verifyAPI()) || !this.openai) {
+      console.warn(
+        "[ChatController]: OpenAI API not initialized or unavailable, skipping summarization..."
+      );
+      return "";
+    }
+
+    /**
+     * At this point, we have an array of responses, each one summarizing a small chunk of the text.
+     * We want to summarize all of these responses into a single summary.
+     * It is important for there to be some overlap between the chunks, in order to provide context
+     * to the summarizer. We will create a sliding window of 3 chunks, where the 3rd chunk of array
+     * N is the 1st chunk of array N+1. After all of the chunks have been summarized, we will
+     * summarize the resulting array of summaries.
+     */
+
+    // Create the sliding windows
+    const limited = this.tokenizerUtils.limitText.bind(this.tokenizerUtils);
+    const windows: string[] = [];
+    for (
+      let i = 0;
+      i <= responses.length - windowSize + 1;
+      i += windowSize - 1
+    ) {
+      const endIndex =
+        i + windowSize - 1 > responses.length - 1
+          ? responses.length - 1
+          : i + windowSize - 1;
+      const window = responses.slice(i, endIndex);
+      const windowText = limited(window.join("\n> "));
+      windows.push(windowText);
+    }
+
+    // Summarize each window
+    const summaries: string[] = [];
+
+    for (let i = 0; i < windows.length; i++) {
+      const messages = ([] as ChatCompletionMessageParam[]).concat(
+        SummarizationPrompts.Common(),
+        SummarizationPrompts.Verbose(),
+        { role: "user", content: windows[i] }
+      );
 
       try {
         const response = await this.openai.chat.completions.create({
@@ -145,99 +214,77 @@ export default class ChatController {
           messages: messages,
         });
 
-        return response.choices[0].message.content ?? "";
+        const summary = response.choices[0].message.content;
+
+        if (summary) {
+          summaries.push(summary);
+        }
       } catch (error) {
         console.error("Could not get response from OpenAI API...");
         console.error(error);
-        return "";
       }
     }
 
-    // Otherwise, verbose mode
+    // Summarize the summaries
+    const messages = ([] as ChatCompletionMessageParam[]).concat(
+      SummarizationPrompts.Common(),
+      SummarizationPrompts.Verbose(),
+      {
+        role: "user",
+        content: limited(summaries.join(" ")),
+      },
+      {
+        role: "user",
+        content:
+          "Make sure you include the headings (# and ##) and markdown in your summary!",
+      }
+    );
+
+    const sectionPrompts = [
+      "# (<h1>) {{paraphrase a title for the overall summary}}\n" +
+        "\n**Publication Date:** {{Publication Date if known, otherwise Unknown}}\n" +
+        "\n**Author(s):** {{Author(s) if known, otherwise Unknown}}\n" +
+        "\n**Topics:** {{comma separated list of topics in succinct (short) hashtag (#topic) form}}\n" +
+        "\n## (<h2>) Brief\n{{tl;dr and explain like I'm 5, in 1-2 sentences}}\n",
+      "# (<h1>) {{a title that describes the summary without repeating the source title}}\n" +
+        "\n{{2-3 paragraph introduction to the Source}}\n",
+      "\n# (<h1>) {{important concepts}}\n" +
+        "\n{{2-3 bullet points on important concepts, starting with **bold**}}\n",
+      "\n# (<h1>) {{follow up questions}}\n" +
+        "\n{{2-3 recommended questions AND answers that will help dive deeper into the topics}}\n",
+    ];
+
+    // Create 4 calls to the API for each of the 4 sections of the summary
+    const config = {
+      model: this.settings.model.name,
+      temperature: this.settings.model.temperature,
+      top_p: this.settings.model.top_p,
+      max_tokens: this.settings.model.max_tokens,
+      presence_penalty: this.settings.model.presence_penalty,
+      frequency_penalty: this.settings.model.frequency_penalty,
+    };
+    const promises = [];
+    for (let i = 0; i < sectionPrompts.length; i++) {
+      promises.push(
+        this.openai.chat.completions.create({
+          ...config,
+          messages: messages.concat([
+            {
+              role: "user",
+              content: sectionPrompts[i],
+            },
+          ]),
+        })
+      );
+    }
 
     try {
-      if (succinct && !verbose) {
-        messages.push();
-      } else if (verbose) {
-        messages.push({
-          role: "system",
-          content:
-            "The text is a concatenation of your previous responses to the user.",
-        });
-        messages.push({
-          role: "system",
-          content:
-            "For each section of your response, consider all of the relevant information from your previous responses.",
-        });
-
-        const limitedChunksText = limitedChunks(text);
-        let chunkedResponse = "";
-
-        console.log(
-          `[ChatController]: Limiting text to ${limitedChunksText.length} chunks...`
-        );
-
-        for (let i = 0; i < limitedChunksText.length; i++) {
-          // If the last message is a user message, remove it from the array
-          // This is to ensure that each chunk is removed from the previous query
-          if (messages[messages.length - 1].role === "user") {
-            messages.pop();
-          }
-
-          const chunk = limited(limitedChunksText[i]);
-
-          messages.push({
-            role: "user",
-            content: `===\n"""${chunk}"""\n===`,
-          });
-
-          // Sleep for 0.25 seconds to avoid rate limiting
-          await new Promise((resolve) => setTimeout(resolve, 250));
-
-          const response = await this.openai.chat.completions.create({
-            model: this.settings.model.name,
-            temperature: this.settings.model.temperature,
-            top_p: this.settings.model.top_p,
-            max_tokens: this.settings.model.max_tokens,
-            presence_penalty: this.settings.model.presence_penalty,
-            frequency_penalty: this.settings.model.frequency_penalty,
-            messages: messages,
-          });
-
-          const summary = response.choices[0].message.content;
-          chunkedResponse += summary + "\n\n";
-
-          if (messages[messages.length - 1].role === "user") {
-            messages.pop();
-          }
-
-          messages.push({
-            role: "system",
-            content: `It is important to be as detailed as possible.`,
-          });
-
-          messages.push({
-            role: "user",
-            content: `===\n"""${chunkedResponse}"""\n===`,
-          });
-        }
-      }
-
-      const response = await this.openai.chat.completions.create({
-        model: this.settings.model.name,
-        temperature: this.settings.model.temperature,
-        top_p: this.settings.model.top_p,
-        max_tokens: this.settings.model.max_tokens,
-        presence_penalty: this.settings.model.presence_penalty,
-        frequency_penalty: this.settings.model.frequency_penalty,
-        messages: messages,
-      });
-
-      return response.choices[0].message.content ?? "";
+      const responses = await Promise.all(promises);
+      return responses.map((r) => r.choices[0].message.content).join("\n\n");
     } catch (error) {
-      console.error("Error limiting text...");
+      console.error("Could not get response from OpenAI API...");
       console.error(error);
-      return text;
+      return "";
     }
   }
 
@@ -286,7 +333,7 @@ export default class ChatController {
     // Insert the existing summary into the messages
     if (req.body.summary) {
       messages.push({
-        role: "assistant",
+        role: "user",
         content: `Here's a summary of the source:\n===\n${req.body.summary}"""\n===\n`,
       });
     }
@@ -354,11 +401,6 @@ export default class ChatController {
       }
     }
     return true;
-  }
-
-  private async getApiKey() {
-    const apiKeyPath = this.getApiKeyPath();
-    return await chatEncrypt.readAndDecryptApiKey(apiKeyPath, "unsecured");
   }
 
   private getApiKeyPath(): string {

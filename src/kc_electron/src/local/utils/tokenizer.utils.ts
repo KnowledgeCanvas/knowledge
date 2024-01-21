@@ -28,6 +28,7 @@ import {
   SupportedChatModels,
 } from "../../../../kc_shared/models/chat.model";
 import { Completions } from "openai/resources/chat";
+import { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 import CreateChatCompletionRequestMessage = Completions.CreateChatCompletionRequestMessage;
 
 const settingsService = require("../../app/services/settings.service");
@@ -72,6 +73,28 @@ export default class TokenizerUtils {
       console.error("Error setting model to: ", model);
       console.error(e);
     }
+  }
+
+  shortenText(text: string, maxTokens: number): string {
+    const tokenized = this.tiktoken.encode(text);
+    if (tokenized.length <= maxTokens) {
+      return text;
+    }
+    const model = this.verifiedModel();
+
+    // If the current model has a lower token limit, use that instead
+    maxTokens = Math.min(maxTokens, model.token_limit);
+
+    const shortened = tokenized.slice(0, maxTokens);
+    const decoded = this.tiktoken.decode(shortened);
+
+    // Decoded is an array of Unit8Array, we need to convert that back into a string
+    let shortenedText = "";
+    decoded.forEach((unit8) => {
+      shortenedText += String.fromCharCode.apply(null, [unit8]);
+    });
+
+    return shortenedText;
   }
 
   /**
@@ -130,9 +153,9 @@ export default class TokenizerUtils {
     return messages;
   }
 
-  deduplicate(messages: CreateChatCompletionRequestMessage[]) {
+  deduplicate(messages: ChatCompletionMessageParam[]) {
     // Remove duplicate messages using a hash map based on message content.
-    const unique: CreateChatCompletionRequestMessage[] = [];
+    const unique: ChatCompletionMessageParam[] = [];
     const hash: { [key: string]: boolean } = {};
     messages.forEach((message) => {
       if (message.content && !hash[message.content]) {
@@ -192,10 +215,7 @@ export default class TokenizerUtils {
 
   limitText(text: string): string {
     const model = this.verifiedModel();
-    // TODO: this 512 should be equal to the number of tokens taken by the rest of the messages
-    let maxTokens = model.token_limit - model.max_tokens - 512;
-
-    maxTokens = Math.max(maxTokens, 0);
+    const maxTokens = Math.max(model.token_limit - model.max_tokens - 256, 0);
 
     let tokenized = this.tiktoken.encode(text);
     if (tokenized.length > maxTokens) {

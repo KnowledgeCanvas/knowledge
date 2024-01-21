@@ -19,6 +19,7 @@ import { introPrompts } from "../constants/source.prompts";
 import { GlobalWorkerOptions } from "pdfjs-dist";
 import ChatController from "./chat.controller";
 import TokenizerUtils from "../utils/tokenizer.utils";
+import { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 
 GlobalWorkerOptions.workerSrc = require("pdfjs-dist/build/pdf.worker.entry");
 
@@ -39,9 +40,6 @@ export default class SourceChatController {
   async intro(req: Request, res: Response): Promise<Response> {
     // If the summary already exists, simply return it as a ChatCompletion
     if (req.body.summary) {
-      console.debug(
-        "[Knowledge]: Source summary already exists, returning it..."
-      );
       return res.json({
         choices: [
           {
@@ -55,32 +53,17 @@ export default class SourceChatController {
     }
 
     const source = req.body.source;
-    const messages = req.body.messages || [];
-    const noPrompts = messages.length === 0;
-
-    // Get Source prompts based on this specific source, prepend them to messages
-    if (noPrompts) {
-      const sourceIntroPrompts = introPrompts(source, "source");
-      sourceIntroPrompts.forEach((message) => {
-        messages.push(message);
-      });
-    }
-
-    // Extract text from web page to feed into the API
     const text = this.tokenizerUtils.limitText(req.body.text);
+    req.body.messages = ([] as ChatCompletionMessageParam[]).concat(
+      introPrompts(source, "source", text),
+      [
+        {
+          role: "user",
+          content: `Can you please summarize the Source for me?`,
+        },
+      ]
+    );
 
-    // Append the extracted text to the messages before sending
-    messages.push({
-      role: "system",
-      content: `The following is the text extracted from the Source: "${source.title}":\n=========\n"""${text}"""\n=========`,
-    });
-
-    if (noPrompts) {
-      messages.push({
-        role: "user",
-        content: `Can you introduce me to "${source.title}"?`,
-      });
-    }
     return this.chatController.chat(req, res);
   }
 

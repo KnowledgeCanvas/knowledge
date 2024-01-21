@@ -19,6 +19,7 @@ import SourceChatController from "../controllers/source.controller";
 import { SourceParser } from "../middleware/SourceParser";
 import { SourceLoader } from "../middleware/SourceLoader";
 import { DocumentSummarizer } from "../middleware/DocumentSummarizer";
+import { SourceValidator } from "../middleware/SourceValidator";
 
 const router = express.Router();
 
@@ -37,11 +38,15 @@ export default class SourceRoutes {
   }
 
   getRouter() {
+    router.use(SourceValidator.validate);
+
     // Load the source from the database
     router.use(SourceLoader.load);
 
     // Parse the source into text (if necessary)
     router.use(SourceParser.getText);
+
+    router.use(SourceValidator.hasText);
 
     // Summarize the text (if necessary)
     router.use(this.summarizer.summarize());

@@ -98,7 +98,7 @@ import { Message } from 'primeng/api';
             pInputTextarea
             pAutoFocus
             [autofocus]="true"
-            (focus)="focusEvent.emit()"
+            (focus)="focus()"
             (input)="input(chatInput.value)"
             (keydown.escape)="reset()"
             (keydown.enter)="enter(chatInput.value, $event)"
@@ -456,5 +456,9 @@ export class ChatInputComponent {
 
   bannerChange($event: Message[]) {
     console.log('Chat input banner changes: ', $event);
+  }
+
+  focus() {
+    this.focusEvent.emit();
   }
 }
