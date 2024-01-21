@@ -78,7 +78,7 @@ export class IngestService implements OnDestroy {
         ksQueue.find(
           (k) =>
             k.id.value === ks.id.value ||
-            k.accessLink == ks.accessLink ||
+            k.accessLink.toString() == ks.accessLink.toString() ||
             k.title === ks.title
         )
       ) {
@@ -99,6 +99,24 @@ export class IngestService implements OnDestroy {
     }
 
     ksQueue = ksQueue.concat(ksNext);
+
+    ksQueue.forEach((ks) => {
+      ks.dateCreated = new Date(ks.dateCreated);
+    });
+
+    // Sort by date created
+    ksQueue.sort((a, b) => {
+      if (a.dateCreated < b.dateCreated) {
+        return -1;
+      }
+      if (a.dateCreated > b.dateCreated) {
+        return 1;
+      }
+      return 0;
+    });
+
+    console.log('Sorted: ', ksQueue);
+
     this._queue.next(ksQueue);
 
     if (ksList.length <= 0) {
