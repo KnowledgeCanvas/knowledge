@@ -121,22 +121,64 @@ export default class ChatController {
       {
         role: "system",
         content:
-          "Do not return anything other than the authors and date of publication.",
+          "From the following text, extract both the author's name and the publication date, even if the formatting is irregular.",
       },
       {
         role: "system",
-        content: `If you are not sure about the date or authors, please leave the fields blank.`,
+        content:
+          "Analyze the text and provide the author's name followed by the publication date.",
       },
       {
         role: "system",
-        content: `If there are more than 2 authors, return the first author followed by "et. al".`,
+        content:
+          "Identify and list the author's name and the publication date from this unstructured text.",
+      },
+      {
+        role: "system",
+        content:
+          "Parse the text for the author's name and publication date, adapting to any formatting issues.",
+      },
+      {
+        role: "system",
+        content:
+          "Extract the name of the first author and the date of publication from the given text, considering potential formatting irregularities.",
+      },
+      {
+        role: "system",
+        content:
+          "Extract the author's name and publication date from the following text, considering any formatting issues.",
+      },
+      {
+        role: "system",
+        content:
+          "Identify the writer and the date of publication in this text, and provide both in a single response.",
+      },
+      {
+        role: "system",
+        content:
+          "Analyze the given text to find the author's name and publication date, despite potential formatting challenges.",
+      },
+      {
+        role: "system",
+        content:
+          "From this text, list the author's name followed by the publication date, addressing any irregular formatting.",
+      },
+      {
+        role: "system",
+        content:
+          "Parse the text and provide both the name of the first author and the date it was published, taking into account formatting irregularities.",
+      },
+      {
+        role: "system",
+        content:
+          "If there is more than one author, use the et al. convention (e.g. Smith et al.)",
       },
       {
         role: "user",
         content:
-          `Text:\n\n===${text}\n\n===` +
-          `{{Author name(s) or Unknown}}\n` +
-          `{{Publication Date or Unknown}}\n`,
+          `Text:\n ===\n${text}\n===\n\n` +
+          `===\nAuthor(s): {{author(s) if known, otherwise Unknown}}\n` +
+          `Publication Date: {{publication date if known, otherwise Unknown}}\n===\n`,
       },
     ];
 
@@ -230,28 +272,27 @@ export default class ChatController {
       SummarizationPrompts.Common(),
       SummarizationPrompts.Verbose(),
       {
-        role: "user",
-        content: limited(summaries.join(" ")),
+        role: "system",
+        content:
+          "Make sure you include the headings (# and ##) and markdown in your summary!",
       },
       {
         role: "user",
-        content:
-          "Make sure you include the headings (# and ##) and markdown in your summary!",
+        content: limited(summaries.join(" ")),
       }
     );
 
     const sectionPrompts = [
-      "# (<h1>) {{paraphrase a title for the overall summary}}\n" +
-        "\n**Publication Date:** {{Publication Date if known, otherwise Unknown}}\n" +
-        "\n**Author(s):** {{Author(s) if known, otherwise Unknown}}\n" +
-        "\n**Topics:** {{comma separated list of topics in succinct (short) hashtag (#topic) form}}\n" +
-        "\n## (<h2>) Brief\n{{tl;dr and explain like I'm 5, in 1-2 sentences}}\n",
-      "# (<h1>) {{a title that describes the summary without repeating the source title}}\n" +
-        "\n{{2-3 paragraph introduction to the Source}}\n",
-      "\n# (<h1>) {{important concepts}}\n" +
-        "\n{{2-3 bullet points on important concepts, starting with **bold**}}\n",
-      "\n# (<h1>) {{follow up questions}}\n" +
-        "\n{{2-3 recommended questions AND answers that will help dive deeper into the topics}}\n",
+      "# (<h1>) {{paraphrased title for the overall summary}}\n" +
+        "**Topics:** {{Comma separated list of topics in succinct hashtag (#topic) form}}\n" +
+        "## (<h2>) Brief\n" +
+        "{{Explain like I'm 5 in 1 to 2 sentences}}\n" +
+        "## (<h2>) Summary\n" +
+        "{{2 paragraphs summarizing the Source}}\n" +
+        "## (<h2>) Important Concepts\n" +
+        "{{2 to 3 succinct bullet points on the most important concepts in the Source}}\n" +
+        "## (<h2>) Follow Up Questions\n" +
+        "{{2 to 3 questions with answers to help dive deeper into the topics and concepts}}\n",
     ];
 
     // Create 4 calls to the API for each of the 4 sections of the summary
@@ -259,7 +300,7 @@ export default class ChatController {
       model: this.settings.model.name,
       temperature: this.settings.model.temperature,
       top_p: this.settings.model.top_p,
-      max_tokens: this.settings.model.max_tokens,
+      max_tokens: 1024,
       presence_penalty: this.settings.model.presence_penalty,
       frequency_penalty: this.settings.model.frequency_penalty,
     };

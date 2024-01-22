@@ -39,6 +39,7 @@ export const codeMarkdownMap = {
   ".liquid": "liquid",
   ".m": "objc",
   ".md": "markdown",
+  ".ml": "ocaml",
   ".php": "php",
   ".pl": "perl",
   ".py": "python",

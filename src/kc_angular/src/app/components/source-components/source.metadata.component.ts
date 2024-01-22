@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Rob Royce
+ * Copyright (c) 2023-2024 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,8 +19,6 @@ import { KnowledgeSource } from '@app/models/knowledge.source.model';
 import { WebsiteMetaTagsModel } from '@shared/models/web.source.model';
 import { NotificationsService } from '@services/user-services/notifications.service';
 import { Clipboard } from '@angular/cdk/clipboard';
-import { ElectronIpcService } from '@services/ipc-services/electron-ipc.service';
-import { KsCommandService } from '@services/command-services/ks-command.service';
 
 @Component({
   selector: 'source-metadata',
@@ -97,8 +95,6 @@ export class SourceMetadataComponent implements OnInit {
 
   constructor(
     private clipboard: Clipboard,
-    private command: KsCommandService,
-    private ipc: ElectronIpcService,
     private notify: NotificationsService
   ) {}
 

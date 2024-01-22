@@ -21,7 +21,7 @@ export class SummarizationPrompts {
     role: "system" | "user" = "system"
   ): ChatCompletionMessageParam[] {
     const prompts = [
-      'You are a "mapreduce" document summarizer.',
+      "You are a document summarizer.",
       "Your goal is to help the user understand the text by summarizing, paraphrasing, and quoting it as necessary.",
       "Use groupings instead of listing lots of named entities (e.g. use et al. instead of listing 10 different people.).",
       'If the text does not make sense, simply return an empty string (e.g. "").',
@@ -31,16 +31,6 @@ export class SummarizationPrompts {
       `You hold the integrity of truthful and accurate information in the highest regard.`,
       `Use Markdown formatting to make the introduction more readable.`,
       `Use lists and bullet points whenever appropriate.`,
-      `Specify the date the source was published using {{pubished_date = <date published>}}.`,
-      `Specify the authors of the source using {{authors = <author(s)> et. al.}}.`,
-      "Example:" +
-        "\n---\n" +
-        "Question: What are some topics covered by this Source?\n" +
-        "Answer:\n" +
-        "- **France**: France is...\n" +
-        "- **Europe**: ...\n" +
-        "- **European Union**: The European Union is ..." +
-        "\n---\n",
     ];
 
     return prompts.map((prompt) => {

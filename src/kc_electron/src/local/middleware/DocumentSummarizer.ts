@@ -20,7 +20,6 @@ import ChatController from "../controllers/chat.controller";
 export class DocumentSummarizer {
   private chatController: ChatController;
   constructor(chatController: ChatController) {
-    console.log("DocumentSummarizer initializing...");
     this.chatController = chatController;
   }
 
@@ -47,27 +46,25 @@ export class DocumentSummarizer {
 
       if (chunks && chunks.length > 0) {
         const meta = await this.chatController.getDateAndAuthors(chunks[0]);
+
         const summaries = await Promise.all(
           chunks.map(
             this.chatController.summarizeChunk.bind(this.chatController)
           )
         );
 
-        // Insert meta data the first and last summaries
-        summaries[0] = `${meta}\n${summaries[0]}`;
-        summaries[summaries.length - 1] = `${
-          summaries[summaries.length - 1]
-        }\n${meta}`;
-
         if (summaries.length === 1) {
-          req.body.summary = summaries[0];
+          req.body.summary = `${meta}\n\n${summaries[0]}`;
         } else {
-          req.body.summary = await this.chatController.summarizeChunkResponses(
+          const response = await this.chatController.summarizeChunkResponses(
             summaries
           );
+          req.body.summary = `${meta}\n\n${response}`;
         }
       } else {
-        console.warn("DocumentSummarizer: unable to split text into chunks...");
+        console.warn(
+          "[DocumentSummarizer]: unable to split text into chunks..."
+        );
         req.body.summary = "";
       }
 
