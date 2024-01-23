@@ -15,7 +15,6 @@
  */
 
 import { Component, ViewChild } from '@angular/core';
-import { DataService } from '@services/user-services/data.service';
 import { finalize, map, take, tap } from 'rxjs/operators';
 import { KnowledgeSource } from '../models/knowledge.source.model';
 import { KcProject } from '../models/project.model';
@@ -84,7 +83,6 @@ export class ChatComponent {
   showSources = true;
 
   constructor(
-    private data: DataService,
     private chat: ChatService,
     private projects: ProjectService,
     private projectChat: ProjectChat,

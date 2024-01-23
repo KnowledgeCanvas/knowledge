@@ -16,14 +16,13 @@
 
 import { AgentType, ChatMessage } from '@app/models/chat.model';
 import { HttpClient } from '@angular/common/http';
-import { Inject, Injectable, LOCALE_ID } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { KcProject } from '@app/models/project.model';
 import { KnowledgeSource } from '@app/models/knowledge.source.model';
 import { NotificationsService } from '@services/user-services/notifications.service';
 import { BehaviorSubject, Observable, tap, timeout } from 'rxjs';
 import { UUID } from '@shared/models/uuid.model';
 import { UuidService } from '@services/ipc-services/uuid.service';
-import { ElectronIpcService } from '@services/ipc-services/electron-ipc.service';
 import { DialogService } from 'primeng/dynamicdialog';
 import { map } from 'rxjs/operators';
 import { SettingsService } from '@services/ipc-services/settings.service';
@@ -31,7 +30,7 @@ import { ChatSettingsModel } from '@shared/models/settings.model';
 import { ChatApiComponent } from '@components/chat-components/api.component';
 import {
   ChatCompletionMessage,
-  CreateChatCompletionRequestMessage,
+  ChatCompletionMessageParam,
 } from 'openai/resources/chat/completions';
 
 @Injectable({
@@ -57,9 +56,7 @@ export class ChatService {
   constructor(
     private dialog: DialogService,
     private http: HttpClient,
-    @Inject(LOCALE_ID) private locale: string,
     private notify: NotificationsService,
-    private ipc: ElectronIpcService,
     private settings: SettingsService,
     private uuid: UuidService
   ) {
@@ -176,7 +173,7 @@ export class ChatService {
   }
 
   intro(
-    messages: CreateChatCompletionRequestMessage[],
+    messages: ChatCompletionMessageParam[],
     source: KnowledgeSource
   ): Observable<ChatCompletionMessage> {
     const body = {
@@ -191,11 +188,9 @@ export class ChatService {
     );
   }
 
-  convertToOpenAI(
-    messages: ChatMessage[]
-  ): CreateChatCompletionRequestMessage[] {
+  convertToOpenAI(messages: ChatMessage[]): ChatCompletionMessageParam[] {
     // Convert the chat messages to completion request messages. If a message has a 'thumbs-down' rating, omit it from the request
-    const completions: CreateChatCompletionRequestMessage[] = [];
+    const completions: ChatCompletionMessageParam[] = [];
     messages.forEach((message) => {
       if (message.rating !== 'thumbs-down') {
         completions.push({
@@ -212,14 +207,15 @@ export class ChatService {
   }
 
   send(
-    messages: CreateChatCompletionRequestMessage[]
+    messages: ChatCompletionMessageParam[]
   ): Observable<ChatCompletionMessage> {
     const body = { messages: messages };
     this.notify.debug('Chat Service', 'Sending OpenAI API Request', body);
 
     // Remove any empty messages
     body.messages = body.messages.filter(
-      (message) => message.content?.trim() !== ''
+      (message) =>
+        typeof message.content === 'string' && message.content?.trim() !== ''
     );
 
     return this.http.post(this.backendUrl + '/chat', body).pipe(
@@ -239,6 +235,7 @@ export class ChatService {
     let history: ChatMessage[] = [];
 
     const chatHistory = localStorage.getItem(`chat-${id.value}`);
+
     if (chatHistory) {
       history = JSON.parse(chatHistory);
       for (const msg of history) {

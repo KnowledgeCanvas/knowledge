@@ -27,9 +27,7 @@ import {
   ChatModel,
   SupportedChatModels,
 } from "../../../../kc_shared/models/chat.model";
-import { Completions } from "openai/resources/chat";
 import { ChatCompletionMessageParam } from "openai/resources/chat/completions";
-import CreateChatCompletionRequestMessage = Completions.CreateChatCompletionRequestMessage;
 
 const settingsService = require("../../app/services/settings.service");
 
@@ -102,10 +100,7 @@ export default class TokenizerUtils {
    * Fails if the last message is longer than the limit.
    * Removes non-system messages first, then removes system messages if necessary.
    */
-  limitTokens(
-    messages: CreateChatCompletionRequestMessage[],
-    max_tokens: number
-  ) {
+  limitTokens(messages: ChatCompletionMessageParam[], max_tokens: number) {
     if (messages.length === 0) {
       return messages;
     }
@@ -158,7 +153,11 @@ export default class TokenizerUtils {
     const unique: ChatCompletionMessageParam[] = [];
     const hash: { [key: string]: boolean } = {};
     messages.forEach((message) => {
-      if (message.content && !hash[message.content]) {
+      if (
+        message.content &&
+        typeof message.content === "string" &&
+        !hash[message.content]
+      ) {
         hash[message.content] = true;
         unique.push(message);
       }
@@ -171,10 +170,10 @@ export default class TokenizerUtils {
     return this.tiktoken.encode(text).length + 5;
   }
 
-  countMessageTokens(messages: CreateChatCompletionRequestMessage[]): number {
+  countMessageTokens(messages: ChatCompletionMessageParam[]): number {
     let tokenCount = 0;
-    messages.forEach((message: CreateChatCompletionRequestMessage) => {
-      if (message.content) {
+    messages.forEach((message: ChatCompletionMessageParam) => {
+      if (message.content && typeof message.content === "string") {
         tokenCount += this.tiktoken.encode(message.content).length + 5;
       }
     });
