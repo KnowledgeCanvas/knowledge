@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Rob Royce
+ * Copyright (c) 2023-2024 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -258,6 +258,10 @@ export class ThemeService {
       lt = JSON.parse(lts);
     }
     return lt;
+  }
+
+  findTheme(theme: string): KcTheme {
+    return this._themes.filter((t) => t.code === theme || t.name === theme)[0];
   }
 
   async switchTheme(theme: string) {

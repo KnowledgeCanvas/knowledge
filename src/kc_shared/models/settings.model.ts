@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 Rob Royce
+ * Copyright (c) 2022-2024 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -120,6 +120,7 @@ export type CardOptions = {
   showDescription: boolean;
   showProjectSelection: boolean;
   showTopics: boolean;
+  showChat: boolean;
   showIcon: boolean;
   showRemove: boolean;
   showPreview: boolean;

@@ -3,6 +3,42 @@
 All notable changes to this project will be documented in this file.
 See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# 0.8.5 - PDF and Code Chat (2024-01-14)
+
+### Features
+
+- **Chat** with local and remote PDF files!
+- **Chat** with text and code files, including (but not limited to):
+
+```
+".txt", 
+".md", 
+".html", 
+".htm"
+".py",
+".js",
+".ts",
+".java",
+".c",
+".cpp",
+".h",
+".hpp",
+".cs",
+".go",
+".rs",
+".sh",
+```
+
+- Added Chat button in right-click menus and action bars
+- Model selection (GPT3.5, GPT4) is now available in the Chat toolbar
+- Summarizations are dramatically improved, especially for larger documents
+
+
+
+### Fixes and Improvements
+* Fixed a bug where theme settings were not saved to file correctly.
+
+
 # 0.8.0 (2023-04-30)
 
 This is our biggest release yet!

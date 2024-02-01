@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Rob Royce
+ * Copyright (c) 2023-2024 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -61,6 +61,13 @@ export class KsContextMenuService {
       {
         label: 'Open',
         icon: PrimeIcons.EXTERNAL_LINK,
+      },
+      {
+        label: 'Chat',
+        icon: PrimeIcons.COMMENTS,
+        command: () => {
+          this.ksCommandService.chat(target);
+        },
       },
       {
         label: '',
