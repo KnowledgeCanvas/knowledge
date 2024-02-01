@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Rob Royce
+ * Copyright (c) 2023-2024 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -66,7 +66,7 @@ const MAIN_ENTRY: string = path.join(
   uuid,
 };
 
-console.log("Dirname: ", __dirname);
+console.log("[Knowledge]: running from directory with dirname: ", __dirname);
 
 // Setup auto update
 require("./app/services/auto.update.service");
@@ -82,9 +82,6 @@ require("./app/services/index");
 
 const browserIpc = require("./app/ipc").browserIpc;
 
-// Get application settings
-const appEnv = settingsService.getSettings();
-
 // Declare main window for later use
 let kcMainWindow: BrowserWindow;
 
@@ -94,6 +91,8 @@ require("./local/chat.api");
  * Main Window Functions
  */
 function createMainWindow() {
+  // Get application settings
+  const appEnv = settingsService.getSettings();
   const darkMode = appEnv.display.theme.isDark;
   const backgroundColor = darkMode ? "#1E1E1E" : "#F9F9F9";
   console.log("Theme: ", appEnv.display.theme);

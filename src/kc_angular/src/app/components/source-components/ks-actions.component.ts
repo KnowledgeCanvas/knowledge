@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 Rob Royce
+ * Copyright (c) 2022-2024 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -50,12 +50,12 @@ import { ExtractorService } from '@services/ingest-services/extractor.service';
       ></button>
       <button
         pButton
-        *ngIf="showRemove"
+        *ngIf="showChat"
         class="m-1 p-button-text"
-        icon="pi pi-trash"
-        pTooltip="Remove"
+        icon="pi pi-comments"
+        pTooltip="Chat"
         [tooltipOptions]="actionButtonTooltipOptions"
-        (click)="remove.emit()"
+        (click)="chat.emit()"
       ></button>
       <button
         *ngIf="showSavePdf && ks.ingestType !== 'file'"
@@ -68,8 +68,17 @@ import { ExtractorService } from '@services/ingest-services/extractor.service';
       ></button>
       <button
         pButton
+        *ngIf="showRemove"
+        class="m-1 p-button-text p-button-danger"
+        icon="pi pi-trash"
+        pTooltip="Remove"
+        [tooltipOptions]="actionButtonTooltipOptions"
+        (click)="remove.emit()"
+      ></button>
+      <button
+        pButton
         [icon]="ks.flagged ? 'pi pi-flag-fill' : 'pi pi-flag'"
-        class="m-1 p-button-text"
+        class="m-1 p-button-text p-button-outlined"
         (click)="flag.emit({ checked: !ks.flagged })"
       ></button>
     </div>
@@ -94,6 +103,8 @@ export class KsActionsComponent {
 
   @Input() showRemove = true;
 
+  @Input() showChat = true;
+
   @Input() showSavePdf = true;
 
   @Output() edit = new EventEmitter<any>();
@@ -103,6 +114,8 @@ export class KsActionsComponent {
   @Output() open = new EventEmitter<any>();
 
   @Output() remove = new EventEmitter<any>();
+
+  @Output() chat = new EventEmitter<any>();
 
   @Output() flag = new EventEmitter<any>();
 

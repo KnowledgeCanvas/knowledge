@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Rob Royce
+ * Copyright (c) 2023-2024 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  *  limitations under the License.
  */
 
-import tokenizerUtils from "./tokenizer.utils";
 import { Chat } from "openai/resources";
 import CreateChatCompletionRequestMessage = Chat.CreateChatCompletionRequestMessage;
 
@@ -36,14 +35,14 @@ export default class ChatUtils {
    * @param text
    */
   async mapReduce(text: string) {
-    const tokenizer = this.getTokenizer();
-    const tokenCount = tokenizer.countTokens(text);
-    console.log("Token count: ", tokenCount);
+    // const tokenizer = this.getTokenizer();
+    // const tokenCount = tokenizer.countTokens(text);
+    // console.log("Token count: ", tokenCount);
   }
 
   private getTokenizer() {
-    const model = settings.getSettings().app.chat.model.name;
-    tokenizerUtils.setModel(model);
-    return tokenizerUtils;
+    // const model = settings.getSettings().app.chat.model.name;
+    // tokenizerUtils.setModel(model);
+    // return tokenizerUtils;
   }
 }

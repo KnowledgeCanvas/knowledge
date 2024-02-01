@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Rob Royce
+ * Copyright (c) 2023-2024 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -16,13 +16,51 @@
 
 import express from "express";
 import SourceChatController from "../controllers/source.controller";
-
-const sourceController = new SourceChatController();
+import { SourceParser } from "../middleware/SourceParser";
+import { SourceLoader } from "../middleware/SourceLoader";
+import { DocumentSummarizer } from "../middleware/DocumentSummarizer";
 
 const router = express.Router();
 
-router.post("/", sourceController.chat.bind(sourceController));
-router.post("/intro", sourceController.intro.bind(sourceController));
-// router.post("/pdf", sourceController.pdf.bind(sourceController));
+export default class SourceRoutes {
+  private sourceController: SourceChatController;
+  private summarizer: DocumentSummarizer;
 
-export default router;
+  constructor(controller: SourceChatController) {
+    this.sourceController = controller;
+    this.summarizer = new DocumentSummarizer(controller.getChatController());
+    this.getRouter();
+  }
+
+  get controller() {
+    return this.sourceController;
+  }
+
+  getRouter() {
+    // Load the source from the database
+    router.use(SourceLoader.load);
+
+    // Parse the source into text (if necessary)
+    router.use(SourceParser.getText);
+
+    // Summarize the text (if necessary)
+    router.use(this.summarizer.summarize());
+
+    // Store the source in the database
+    router.use(SourceLoader.store);
+
+    // Regular chat with the source
+    router.post("/", this.controller.chat.bind(this.controller));
+
+    // Intro chat with the source (basically a summary)
+    router.post("/intro", this.controller.intro.bind(this.controller));
+
+    // An endpoint to regenerate previous responses
+    router.post(
+      "/regenerate",
+      this.controller.regenerate.bind(this.controller)
+    );
+
+    return router;
+  }
+}

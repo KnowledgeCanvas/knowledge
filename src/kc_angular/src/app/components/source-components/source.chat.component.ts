@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Rob Royce
+ * Copyright (c) 2023-2024 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -83,14 +83,40 @@ export class SourceChatComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    if (this.source.ingestType === 'file') {
-      // Alert the user that chat doesn't work well on local files (it has no text)
+    // Check if the source is a supported file type (PDF or other plain-text)
+    const supportedFileTypes = [
+      '.pdf',
+      '.txt',
+      '.md',
+      '.html',
+      '.htm',
+      '.py',
+      '.js',
+      '.ts',
+      '.java',
+      '.c',
+      '.cpp',
+      '.h',
+      '.hpp',
+      '.cs',
+      '.go',
+      '.rs',
+      '.sh',
+    ];
+
+    // Check if the file is supported
+    if (
+      this.source.ingestType === 'file' &&
+      !supportedFileTypes.some((type) =>
+        this.source.accessLink.toString().endsWith(type)
+      )
+    ) {
       this.notify.warn(
         'Source Chat',
         'File Chat',
-        'Chat does not work well on local files yet. We will be improving this feature soon.',
+        'Knowledge does not know how to read this file type.  Chat features will be limited.',
         'toast',
-        10000
+        6000
       );
     }
 

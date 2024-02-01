@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Rob Royce
+ * Copyright (c) 2023-2024 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -17,6 +17,11 @@
 export default class TextUtils {
   constructor() {
     throw new Error("TextUtils is a static class and cannot be instantiated");
+  }
+
+  static isPlainText(str: string) {
+    // Verify that the string is plain text (i.e. ASCII characters only)
+    return /^[\x00-\x7F]*$/.test(str);
   }
 
   static isNullOrWhitespace(text: string): boolean {
@@ -56,5 +61,20 @@ export default class TextUtils {
       chunks.push(text.substring(i, i + size - 1));
     }
     return chunks;
+  }
+
+  static clean(text: string): string {
+    text = text.replace(/(https?:\/\/[^\s]+)/g, ""); // Remove URLs
+    text = text.replace(/(\r\n|\n|\r)/gm, ""); // Remove newlines
+    text = text.replace(/(\t)/gm, ""); // Remove tabs
+    text = text.replace(/(\s{2,})/g, " "); // Remove any double spaces
+    text = text.replace(/[^a-zA-Z0-9 ]/g, ""); // Remove any non-alphanumeric characters
+
+    // Remove any non-whitespace substrings longer than 32 characters
+    // (this is to prevent the API from returning an error)
+    text = text.replace(/(\S{32,})/g, " ");
+    text = text.trim();
+
+    return text;
   }
 }
