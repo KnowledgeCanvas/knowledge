@@ -52,7 +52,7 @@ interface ProjectSuggestion {
       >
         <p-radioButton
           [(ngModel)]="selectedSuggestion"
-          (ngModelChange)="setLabel($event, p)"
+          (ngModelChange)="setLabel(p)"
           [inputId]="p.details"
           [value]="p.lineage.join(' > ')"
           class="cursor-pointer"
@@ -237,7 +237,7 @@ export class CategorizeMessage implements OnInit {
     }
   }
 
-  setLabel($event: any, project: ProjectSuggestion) {
+  setLabel(project: ProjectSuggestion) {
     this.buttonLabel = project.project
       ? `Add to ${project.project.name}`
       : 'Create and Add';

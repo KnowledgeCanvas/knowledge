@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Rob Royce
+ * Copyright (c) 2023-2024 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -439,6 +439,9 @@ export class KsTableComponent implements OnInit, OnChanges {
           return nA < nB ? 1 : nA > nB ? -1 : 0;
         });
       });
+
+      // Set pagination to first page
+      this.first = 0;
     }
   }
 

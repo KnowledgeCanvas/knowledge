@@ -36,7 +36,6 @@ import { SourceDocumentComponent } from '@components/source-components/source.do
 import { SourceVideoComponent } from '@components/source-components/source.video.component';
 import { SourceTimelineComponent } from './source.timeline.component';
 import { ChatService } from '@services/chat-services/chat.service';
-import { NotificationsService } from '@services/user-services/notifications.service';
 import { SourceBrowserComponent } from '@components/source-components/source.browser.component';
 
 interface TabDescriptor {
@@ -233,7 +232,7 @@ export class SourceComponent implements OnInit, OnChanges {
 
   private componentRef?: ComponentRef<any>;
 
-  constructor(private chat: ChatService, private notify: NotificationsService) {
+  constructor(private chat: ChatService) {
     this.chat.loading$.subscribe((loading: boolean) => {
       this.chatTab.loading = loading;
     });
@@ -251,6 +250,7 @@ export class SourceComponent implements OnInit, OnChanges {
     if (changes.source) {
       this.views(changes.source.currentValue);
       this.loadSelectedTab();
+      this.chat.setTarget({ source: this.source });
     }
 
     if (changes.reset && changes.reset.currentValue) {
@@ -338,7 +338,6 @@ export class SourceComponent implements OnInit, OnChanges {
     // Special handling for components with outputs and other special cases
     switch (component) {
       case SourceChatComponent:
-        this.loadChat(this.componentRef);
         break;
       case SourceDetailsComponent:
         this.loadDetails(this.componentRef);
@@ -358,8 +357,6 @@ export class SourceComponent implements OnInit, OnChanges {
       this.update.emit(source);
     });
   }
-
-  private loadChat(componentRef: ComponentRef<SourceChatComponent>) {}
 
   private loadBrowser(componentRef: ComponentRef<SourceBrowserComponent>) {
     componentRef.instance.update.subscribe((source: KnowledgeSource) => {

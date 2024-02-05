@@ -17,7 +17,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { KnowledgeSource } from '@app/models/knowledge.source.model';
 import { ChatService } from '@services/chat-services/chat.service';
-import { SourceChat } from '@services/chat-services/source';
 import { ChatViewComponent } from '@components/chat-components/chat.view.component';
 
 @Component({
@@ -58,7 +57,7 @@ export class SourceChatComponent implements OnInit {
 
   context?: string;
 
-  constructor(private chat: ChatService, private sourceChat: SourceChat) {}
+  constructor(private chat: ChatService) {}
 
   ngOnInit() {
     this.chat.setTarget({ source: this.source });

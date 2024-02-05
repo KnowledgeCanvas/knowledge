@@ -15,7 +15,6 @@
  */
 
 import { Component, EventEmitter, Output } from '@angular/core';
-import { BehaviorSubject, skip } from 'rxjs';
 import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
 import { SettingsService } from '@services/ipc-services/settings.service';
 import { ChatModel, SupportedChatModels } from '@shared/models/chat.model';
@@ -30,6 +29,8 @@ import { ChatService } from '@services/chat-services/chat.service';
       class="flex flex-row justify-content-between px-2 py-2 top-0"
       id="chat-toolbar"
     >
+      <div></div>
+
       <div class="chat-toolbar-model-selector">
         <form [formGroup]="form">
           <p-dropdown
@@ -42,32 +43,6 @@ import { ChatService } from '@services/chat-services/chat.service';
         </form>
       </div>
 
-      <div class="chat-toolbar-filter">
-        <div class="p-inputgroup p-fluid mr-3 ml-3 w-24rem">
-          <span class="p-inputgroup-addon">
-            <i class="pi pi-filter"></i>
-          </span>
-          <input
-            #tableFilter
-            proTip
-            tipHeader="Find the Needle in the Chat Haystack!"
-            tipMessage="Looking for a specific chat message? Use our filter input to sift through the chatter. Just type in what you're looking for, and voila! Your chat haystack just got a whole lot smaller."
-            [tipGroups]="['chat']"
-            tipIcon="pi pi-filter"
-            pInputText
-            type="text"
-            placeholder="Filter by keyword"
-            (input)="filter(tableFilter.value)"
-          />
-          <span
-            class="p-inputgroup-addon"
-            [style.cursor]="tableFilter.value.length ? 'pointer' : 'unset'"
-            (click)="tableFilter.value = ''; filter('')"
-          >
-            <i class="pi pi-times"></i>
-          </span>
-        </div>
-      </div>
       <div class="chat-toolbar-actions">
         <div
           pButton
@@ -99,13 +74,7 @@ import { ChatService } from '@services/chat-services/chat.service';
   styles: [],
 })
 export class ChatToolbarComponent {
-  @Output() onFilter = new EventEmitter<string>();
-
   @Output() onClear = new EventEmitter<void>();
-
-  private _filter$ = new BehaviorSubject<string>('');
-
-  filter$ = this._filter$.asObservable();
 
   form: FormGroup;
 
@@ -130,16 +99,6 @@ export class ChatToolbarComponent {
     this.form = this.fb.group({
       modelName: [this.settingsModel.model.name],
     });
-
-    this.filter$
-      .pipe(
-        skip(1),
-        debounceTime(500),
-        tap((filterValue: string) => {
-          this.onFilter.emit(filterValue);
-        })
-      )
-      .subscribe();
 
     // Listen for changes in the chat model setting, update if there are any
     this.form.valueChanges
@@ -193,11 +152,6 @@ export class ChatToolbarComponent {
         })
       )
       .subscribe();
-  }
-
-  /* Filter the chat based on the value of the filter input */
-  filter(value: string) {
-    this._filter$.next(value);
   }
 
   private set() {

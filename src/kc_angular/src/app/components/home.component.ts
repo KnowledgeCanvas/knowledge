@@ -174,7 +174,7 @@ import { finalize, map, take, takeUntil, tap } from 'rxjs/operators';
                 <app-ks-message
                   class="cursor-pointer hover:surface-hover"
                   (click)="loadExamples()"
-                  status="Surprise Me"
+                  status="Surprise Me!"
                 >
                 </app-ks-message>
               </div>

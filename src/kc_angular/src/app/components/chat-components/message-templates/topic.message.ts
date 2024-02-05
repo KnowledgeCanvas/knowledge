@@ -18,7 +18,6 @@ import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { fadeIn } from '@app/animations';
 import { ChatMessage } from '@app/models/chat.model';
 import { ChatService } from '@services/chat-services/chat.service';
-import { SearchService } from '@services/user-services/search.service';
 import { KcProject } from '@app/models/project.model';
 
 export interface TopicDetails {
@@ -27,7 +26,6 @@ export interface TopicDetails {
   added?: boolean;
   keywords?: string[];
   passages?: string[];
-  sources?: any[];
   projects?: KcProject[];
 }
 
@@ -111,9 +109,7 @@ export class TopicMessage implements OnChanges {
 
   description?: string = '';
 
-  sources: any[] = [];
-
-  constructor(private chat: ChatService, private search: SearchService) {}
+  constructor(private chat: ChatService) {}
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes.message) {

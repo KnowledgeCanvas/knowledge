@@ -17,7 +17,7 @@ import { ElectronIpcService } from '@services/ipc-services/electron-ipc.service'
 import { ExtractorService } from '@services/ingest-services/extractor.service';
 import { FaviconService } from '@services/ingest-services/favicon.service';
 import { FileSourceModel } from '@shared/models/file.source.model';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import {
   IngestType,
   KnowledgeSource,
@@ -67,15 +67,19 @@ export class KsFactoryService {
 
   examples(): Observable<KnowledgeSource[]> {
     return this.http
-      .get(
-        'https://knowledge-app.s3.us-west-1.amazonaws.com/examples_v3.json',
-        { responseType: 'json' }
-      )
+      .get('https://knowledge-app.s3.us-west-1.amazonaws.com/examples.json', {
+        responseType: 'json',
+        headers: new HttpHeaders({
+          'Cache-Control': 'no-cache',
+          Pragma: 'no-cache',
+          Expires: 'Sat, 01 Jan 2000 00:00:00 GMT',
+        }),
+      })
       .pipe(
         map((example: any) => {
           let examples: ExampleSource[] = example;
           this.shuffleArray(examples);
-          examples = examples.slice(0, 5);
+          examples = examples.slice(0, 6);
           const requests: KnowledgeSourceFactoryRequest = {
             ingestType: 'website',
             links: examples.map((example) => example.accessLink),

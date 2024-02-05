@@ -117,7 +117,7 @@ export default class SourceChatController {
     choices = choices.replace(/"subprojects":/g, "  subprojects:");
 
     // Remove all brackets, quotes, commas, and visible newlines
-    choices = choices.replace(/[\[\]{}"']/g, "");
+    choices = choices.replace(/[[\]{}"']/g, "");
     choices = choices.replace(/,/g, "");
     choices = choices.replace(/\n\s*\n/g, "\n");
     choices = choices.replace(/\n/g, "\n-");
@@ -224,7 +224,7 @@ ${choices}
     choices: string[],
     input: string
   ): ChatCompletionMessageParam[] {
-    const messages: ChatCompletionMessageParam[] = [
+    return [
       {
         role: "system",
         content:
@@ -269,8 +269,6 @@ ${choices}
           "Please select the most appropriate categories for this Source.",
       },
     ];
-
-    return messages;
   }
 
   async tutor(req: Request, res: Response) {

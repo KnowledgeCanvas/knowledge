@@ -24,7 +24,7 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import { KsCommandService } from '@services/command-services/ks-command.service';
-import { KnowledgeSource } from '../../models/knowledge.source.model';
+import { KnowledgeSource } from '@app/models/knowledge.source.model';
 import { AgentType, ChatMessage, MessageRating } from '@app/models/chat.model';
 
 @Component({
