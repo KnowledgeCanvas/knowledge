@@ -45,19 +45,6 @@ export const introPrompts = (
     `You must never lie to or mislead the user.`,
     `Use Markdown formatting to make the introduction more readable.`,
     `Use lists and bullet points whenever appropriate.`,
-    "Example:" +
-      "\n===\n" +
-      "Question: What is the population of France?\n" +
-      "Answer: **67 million**" +
-      "\n===\n",
-    "Example:" +
-      "\n===\n" +
-      "Question: What are some topics covered by this Source?\n" +
-      "Answer:\n" +
-      "- **France**: France is...\n" +
-      "- **Europe**: ...\n" +
-      "- **European Union**: The European Union is ..." +
-      "\n===\n",
   ];
 
   if (type === "project") {
@@ -105,11 +92,7 @@ export const introPrompts = (
     sourceIntro.push(
       "Please organize your response as follows:" +
         "# Summary of the Source" +
-        "\n{{succinct summary}}" +
-        "# Important Ideas" +
-        "\n{{important ideas and topics}}" +
-        "# Follow-up Questions and Recommended Topics" +
-        "\n{{2-3 recommendations for further reading}}"
+        "\n{{succinct summary}}"
     );
 
     sourceIntro.forEach((prompt) => prompts.push(prompt));

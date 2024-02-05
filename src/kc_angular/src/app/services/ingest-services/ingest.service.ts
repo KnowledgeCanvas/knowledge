@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 import { AutoscanService } from './autoscan.service';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, skip } from 'rxjs';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ElectronIpcService } from '../ipc-services/electron-ipc.service';
 import { ExtensionService } from './extension.service';
@@ -114,8 +114,6 @@ export class IngestService implements OnDestroy {
       }
       return 0;
     });
-
-    console.log('Sorted: ', ksQueue);
 
     this._queue.next(ksQueue);
 
@@ -248,7 +246,7 @@ export class IngestService implements OnDestroy {
    * @private
    */
   private extensionSubscribe() {
-    this.extension.links.subscribe((webSource) => {
+    this.extension.links.pipe(skip(1)).subscribe((webSource) => {
       if (!webSource || !webSource.accessLink) {
         this.notify.warn(
           'IngestService',

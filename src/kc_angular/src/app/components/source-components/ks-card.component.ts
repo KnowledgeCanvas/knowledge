@@ -45,7 +45,7 @@ import { DragAndDropService } from '@services/ingest-services/drag-and-drop.serv
       tipMessage="A perfect blend of style and substance, Source Cards are all about visual appeal! With thumbnails, icons, action buttons, and topics all in one place, you can see the type of Source and its Project at a glance. Your data never looked so good!"
       [tipGroups]="['source']"
       tipIcon="pi pi-id-card"
-      class="hover:shadow-1 border-round-2xl border-1 border-dotted border-400 h-full flex flex-column overflow-hidden justify-content-between surface-card source-drag-handle"
+      class="hover:shadow-1 border-round-2xl border-1 surface-border border-400 h-full flex flex-column overflow-hidden justify-content-between surface-card source-drag-handle"
     >
       <div class="flex flex-grow-1">
         <app-ks-thumbnail
@@ -183,6 +183,14 @@ import { DragAndDropService } from '@services/ingest-services/drag-and-drop.serv
         .p-chips-token {
           cursor: pointer;
         }
+      }
+
+      app-action-bar {
+        opacity: 0.35;
+      }
+
+      :host:hover app-action-bar {
+        opacity: 1;
       }
     `,
   ],

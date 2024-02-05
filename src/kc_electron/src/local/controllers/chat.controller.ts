@@ -106,101 +106,6 @@ export default class ChatController {
     }
   }
 
-  async getDateAndAuthors(text: string) {
-    if (!(await this.verifyAPI()) || !this.openai) {
-      console.warn(
-        "[ChatController]: OpenAI API not initialized or unavailable, skipping summarization..."
-      );
-      return "";
-    }
-
-    const limited = this.tokenizerUtils.limitText.bind(this.tokenizerUtils);
-    text = limited(text.replace("\n", " ")).replace("\n", " ");
-
-    const messages: ChatCompletionMessageParam[] = [
-      {
-        role: "system",
-        content:
-          "From the following text, extract both the author's name and the publication date, even if the formatting is irregular.",
-      },
-      {
-        role: "system",
-        content:
-          "Analyze the text and provide the author's name followed by the publication date.",
-      },
-      {
-        role: "system",
-        content:
-          "Identify and list the author's name and the publication date from this unstructured text.",
-      },
-      {
-        role: "system",
-        content:
-          "Parse the text for the author's name and publication date, adapting to any formatting issues.",
-      },
-      {
-        role: "system",
-        content:
-          "Extract the name of the first author and the date of publication from the given text, considering potential formatting irregularities.",
-      },
-      {
-        role: "system",
-        content:
-          "Extract the author's name and publication date from the following text, considering any formatting issues.",
-      },
-      {
-        role: "system",
-        content:
-          "Identify the writer and the date of publication in this text, and provide both in a single response.",
-      },
-      {
-        role: "system",
-        content:
-          "Analyze the given text to find the author's name and publication date, despite potential formatting challenges.",
-      },
-      {
-        role: "system",
-        content:
-          "From this text, list the author's name followed by the publication date, addressing any irregular formatting.",
-      },
-      {
-        role: "system",
-        content:
-          "Parse the text and provide both the name of the first author and the date it was published, taking into account formatting irregularities.",
-      },
-      {
-        role: "system",
-        content:
-          "If there is more than one author, use the et al. convention (e.g. Smith et al.)",
-      },
-      {
-        role: "user",
-        content:
-          `Text:\n ===\n${text}\n===\n\n` +
-          `===\nAuthor(s): {{author(s) if known, otherwise Unknown}}\n` +
-          `Publication Date: {{publication date if known, otherwise Unknown}}\n===\n`,
-      },
-    ];
-
-    try {
-      const response = await this.openai.chat.completions.create({
-        model: this.settings.model.name,
-        temperature: this.settings.model.temperature,
-        top_p: this.settings.model.top_p,
-        max_tokens: this.settings.model.max_tokens,
-        presence_penalty: this.settings.model.presence_penalty,
-        frequency_penalty: this.settings.model.frequency_penalty,
-        messages: messages,
-      });
-
-      return response.choices[0].message.content;
-    } catch (error) {
-      console.error("Failed to summarize chunk...");
-      console.error(error);
-      return "";
-    }
-  }
-
   async summarizeChunkResponses(responses: string[], windowSize = 3) {
     if (!(await this.verifyAPI()) || !this.openai) {
       console.warn(
@@ -264,6 +169,7 @@ export default class ChatController {
       } catch (error) {
         console.error("Could not get response from OpenAI API...");
         console.error(error);
+        return null;
       }
     }
 
@@ -277,23 +183,21 @@ export default class ChatController {
           "Make sure you include the headings (# and ##) and markdown in your summary!",
       },
       {
+        role: "system",
+        content: `Required sections
+        ## (<h2>) Brief
+        {{Explain like I'm 5, in 2 to 3 sentences}}
+        ## (<h2>) Summary
+        {{2 to 3 paragraphs summarizing the Source}}
+        `,
+      },
+      {
         role: "user",
-        content: limited(summaries.join(" ")),
+        content: `Text to summarize:\n===\n${limited(
+          summaries.join(" ")
+        )}\n===\n`,
       }
     );
-
-    const sectionPrompts = [
-      "# (<h1>) {{paraphrased title for the overall summary}}\n" +
-        "**Topics:** {{Comma separated list of topics in succinct hashtag (#topic) form}}\n" +
-        "## (<h2>) Brief\n" +
-        "{{Explain like I'm 5 in 1 to 2 sentences}}\n" +
-        "## (<h2>) Summary\n" +
-        "{{2 paragraphs summarizing the Source}}\n" +
-        "## (<h2>) Important Concepts\n" +
-        "{{2 to 3 succinct bullet points on the most important concepts in the Source}}\n" +
-        "## (<h2>) Follow Up Questions\n" +
-        "{{2 to 3 questions with answers to help dive deeper into the topics and concepts}}\n",
-    ];
 
     // Create 4 calls to the API for each of the 4 sections of the summary
     const config = {
@@ -304,28 +208,17 @@ export default class ChatController {
       presence_penalty: this.settings.model.presence_penalty,
       frequency_penalty: this.settings.model.frequency_penalty,
     };
-    const promises = [];
-    for (let i = 0; i < sectionPrompts.length; i++) {
-      promises.push(
-        this.openai.chat.completions.create({
-          ...config,
-          messages: messages.concat([
-            {
-              role: "user",
-              content: sectionPrompts[i],
-            },
-          ]),
-        })
-      );
-    }
 
     try {
-      const responses = await Promise.all(promises);
-      return responses.map((r) => r.choices[0].message.content).join("\n\n");
+      const response = await this.openai.chat.completions.create({
+        ...config,
+        messages: messages,
+      });
+      return response.choices[0].message.content;
     } catch (error) {
       console.error("Could not get response from OpenAI API...");
       console.error(error);
-      return "";
+      return null;
     }
   }
 
@@ -352,6 +245,14 @@ export default class ChatController {
         frequency_penalty: this.settings.model.frequency_penalty,
         messages: req.body.messages,
       });
+
+      // If the query fails, return an error
+      if (!response || !response.choices || response.choices.length === 0) {
+        return res.status(500).json({
+          error: "OpenAI API returned no response",
+        });
+      }
+
       return res.json(response);
     } catch (error) {
       console.error(error);
@@ -372,12 +273,12 @@ export default class ChatController {
     let messages = this.tokenizerUtils.deduplicate(req.body.messages);
 
     // Insert the existing summary into the messages
-    if (req.body.summary) {
-      messages.push({
-        role: "user",
-        content: `Here's a summary of the source:\n===\n${req.body.summary}"""\n===\n`,
-      });
-    }
+    // if (req.body.summary) {
+    //   messages.push({
+    //     role: "user",
+    //     content: `Here's a summary of the source:\n===\n${req.body.summary}"""\n===\n`,
+    //   });
+    // }
 
     try {
       messages = this.tokenizerUtils.limitTokens(
@@ -406,12 +307,48 @@ export default class ChatController {
         frequency_penalty: this.settings.model.frequency_penalty,
         messages: messages,
       });
+
+      // If the query fails, return an error
+      if (!response || !response.choices || response.choices.length === 0) {
+        return res.status(500).json({
+          error: "OpenAI API returned no response",
+        });
+      }
+
       return res.json(response);
     } catch (error) {
       console.error(error);
       return res.status(500).json({
         error: `Error calling OpenAI API: ${error}`,
       });
+    }
+  }
+
+  async send(messages: ChatCompletionMessageParam[]) {
+    if (!(await this.verifyAPI()) || !this.openai) {
+      return null;
+    }
+
+    try {
+      const response = await this.openai.chat.completions.create({
+        model: this.settings.model.name,
+        temperature: this.settings.model.temperature,
+        top_p: this.settings.model.top_p,
+        max_tokens: this.settings.model.max_tokens,
+        presence_penalty: this.settings.model.presence_penalty,
+        frequency_penalty: this.settings.model.frequency_penalty,
+        messages: messages,
+      });
+
+      // If the query fails, return an error
+      if (!response || !response.choices || response.choices.length === 0) {
+        return null;
+      }
+
+      return response;
+    } catch (error) {
+      console.error(error);
+      return null;
     }
   }
 

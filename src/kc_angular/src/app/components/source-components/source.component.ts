@@ -56,6 +56,7 @@ interface TabDescriptor {
     <div class="tabs">
       <div
         proTip
+        *ngFor="let tab of tabs; index as i"
         [tipHeader]="tab.tipHeader"
         [tipMessage]="tab.tipMessage"
         [tipGroups]="['source', 'intro']"
@@ -63,15 +64,18 @@ interface TabDescriptor {
         [tipIcon]="tab.icon"
         [tipShowOnHover]="true"
         class="tab text-center flex-row-center-center border-round-top-2xl font-bold"
-        *ngFor="let tab of tabs; index as i"
         [ngClass]="{
           active: selectedTabIndex === i,
           disabled: tab.disabled,
-          hidden: tab.hidden
+          hidden: tab.hidden,
+          loading: tab.loading
         }"
         (click)="setSelectedTab(i)"
       >
-        <i class="{{ tab.icon }} pr-2"></i>
+        <i *ngIf="!tab.loading; else loading" class="{{ tab.icon }} pr-2"></i>
+        <ng-template #loading>
+          <i class="pi pi-spin pi-spinner font-bold mr-2 text-red-600"></i>
+        </ng-template>
         <span *ngIf="!tab.hidden">{{ tab.label }}</span>
       </div>
     </div>
@@ -90,13 +94,11 @@ interface TabDescriptor {
       .tabs {
         display: flex;
         width: 100%;
-        padding-left: 0.25rem !important;
-        padding-right: 0.25rem !important;
       }
 
       .tab {
         flex: 1;
-        padding: 10px;
+        padding: 1rem !important;
         cursor: pointer;
         background-color: var(--surface-ground);
       }
@@ -109,6 +111,10 @@ interface TabDescriptor {
         color: var(--primary-color);
         border-bottom: 1px solid var(--primary-color);
         background-color: var(--surface-card) !important;
+      }
+
+      .tab.loading {
+        cursor: wait;
       }
 
       .tab.disabled {
@@ -133,8 +139,8 @@ export class SourceComponent implements OnInit, OnChanges {
     disabled: false,
     loading: false,
     component: SourceDetailsComponent,
-    tipHeader: 'Craving the Deets?',
-    tipMessage: `Head over to the details tab! It's got all the juicy details about the Source, including title, description, and topics. Information galore, right at your fingertips!`,
+    tipHeader: 'Ready for the Details?',
+    tipMessage: `Head over to the details tab! It will tell you everything you need to know about the Source, including title, description, and topics.`,
   };
 
   chatTab: TabDescriptor = {
@@ -227,10 +233,11 @@ export class SourceComponent implements OnInit, OnChanges {
 
   private componentRef?: ComponentRef<any>;
 
-  constructor(
-    private chat: ChatService,
-    private notify: NotificationsService
-  ) {}
+  constructor(private chat: ChatService, private notify: NotificationsService) {
+    this.chat.loading$.subscribe((loading: boolean) => {
+      this.chatTab.loading = loading;
+    });
+  }
 
   ngOnInit() {
     this.loadSelectedTab();
@@ -281,7 +288,6 @@ export class SourceComponent implements OnInit, OnChanges {
       this.documentTab.disabled = this.documentTab.hidden = true;
 
       // If document, enable document table and disable video tab
-      const fileType = source.reference.source.file?.type;
       if (
         `${source.accessLink}`.endsWith('pdf') ||
         `${source.accessLink}`.endsWith('gif') ||
@@ -353,13 +359,7 @@ export class SourceComponent implements OnInit, OnChanges {
     });
   }
 
-  private loadChat(componentRef: ComponentRef<SourceChatComponent>) {
-    componentRef.instance.loading$.subscribe((loading: boolean) => {
-      setTimeout(() => {
-        this.chatTab.loading = loading;
-      });
-    });
-  }
+  private loadChat(componentRef: ComponentRef<SourceChatComponent>) {}
 
   private loadBrowser(componentRef: ComponentRef<SourceBrowserComponent>) {
     componentRef.instance.update.subscribe((source: KnowledgeSource) => {

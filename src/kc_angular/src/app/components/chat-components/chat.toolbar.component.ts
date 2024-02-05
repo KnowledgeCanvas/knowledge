@@ -14,25 +14,20 @@
  *  limitations under the License.
  */
 
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  Output,
-} from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { BehaviorSubject, skip } from 'rxjs';
 import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
 import { SettingsService } from '@services/ipc-services/settings.service';
 import { ChatModel, SupportedChatModels } from '@shared/models/chat.model';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ChatSettingsModel } from '@shared/models/settings.model';
+import { ChatService } from '@services/chat-services/chat.service';
 
 @Component({
   selector: 'chat-toolbar',
   template: `
     <div
-      class="flex flex-row justify-content-between top-0 pb-2 px-2"
+      class="flex flex-row justify-content-between px-2 py-2 top-0"
       id="chat-toolbar"
     >
       <div class="chat-toolbar-model-selector">
@@ -103,21 +98,24 @@ import { ChatSettingsModel } from '@shared/models/settings.model';
   `,
   styles: [],
 })
-export class ChatToolbarComponent implements OnChanges {
-  @Input() loading = true;
-
+export class ChatToolbarComponent {
   @Output() onFilter = new EventEmitter<string>();
 
   @Output() onClear = new EventEmitter<void>();
 
   private _filter$ = new BehaviorSubject<string>('');
+
   filter$ = this._filter$.asObservable();
 
   form: FormGroup;
 
   settingsModel: ChatSettingsModel = new ChatSettingsModel();
 
-  constructor(private settings: SettingsService, private fb: FormBuilder) {
+  constructor(
+    private settings: SettingsService,
+    private fb: FormBuilder,
+    private chat: ChatService
+  ) {
     const chatSettings = this.settings.get().app.chat;
     if (!chatSettings) {
       this.set();
@@ -185,21 +183,21 @@ export class ChatToolbarComponent implements OnChanges {
         })
       )
       .subscribe();
-  }
 
-  ngOnChanges() {
-    this.disable();
+    this.chat.loading$
+      .pipe(
+        tap((loading) => {
+          loading
+            ? this.form.get('modelName')?.disable()
+            : this.form.get('modelName')?.enable();
+        })
+      )
+      .subscribe();
   }
 
   /* Filter the chat based on the value of the filter input */
   filter(value: string) {
     this._filter$.next(value);
-  }
-
-  private disable() {
-    this.loading
-      ? this.form.get('modelName')?.disable()
-      : this.form.get('modelName')?.enable();
   }
 
   private set() {

@@ -217,6 +217,12 @@ export class AppComponent implements OnInit {
           }
 
           if (ks && !this.sourceInfoDialog) {
+            // Hide all other elements on the page so they don't show through the dialog
+            const elements = document.getElementsByClassName('app-body');
+            for (let i = 0; i < elements.length; i++) {
+              elements[i].classList.add('hidden');
+            }
+
             this.sourceInfoDialog = this.dialog.open(KsDetailsComponent, {
               data: { ks: ks, view: view },
               width: '100vw !important',
@@ -238,13 +244,26 @@ export class AppComponent implements OnInit {
                 this.sourceInfoDialog.maximize({});
               }
             });
-            this.sourceInfoDialog.onClose
-              .pipe(
-                tap(() => {
-                  this.sourceInfoDialog = undefined;
-                })
-              )
-              .subscribe();
+            this.sourceInfoDialog.onClose.subscribe(() => {
+              this.sourceInfoDialog = undefined;
+
+              // Show all other elements on the page
+              const elements = document.getElementsByClassName('app-body');
+              for (let i = 0; i < elements.length; i++) {
+                elements[i].classList.remove('hidden');
+              }
+
+              /**
+               * If we're on the chat view, make sure the chat service target is the current project
+               * Required because the chat service will set the target to the source if the user goes
+               * to the Source chat in the dialog
+               */
+              if (this.selectedView === 'Chat') {
+                this.chat.setTarget({
+                  project: this.projects.getProject(this.projectId),
+                });
+              }
+            });
           }
         })
       )

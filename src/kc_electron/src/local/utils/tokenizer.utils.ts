@@ -100,9 +100,15 @@ export default class TokenizerUtils {
    * Fails if the last message is longer than the limit.
    * Removes non-system messages first, then removes system messages if necessary.
    */
-  limitTokens(messages: ChatCompletionMessageParam[], max_tokens: number) {
+  limitTokens(messages: ChatCompletionMessageParam[], max_tokens = 0) {
     if (messages.length === 0) {
       return messages;
+    }
+
+    // If max_tokens is 0, use the model's parameters
+    if (max_tokens === 0) {
+      const model = this.verifiedModel();
+      max_tokens = model.token_limit - model.max_tokens - 512;
     }
 
     // If the messages are already within the token limit, return them.
@@ -212,9 +218,12 @@ export default class TokenizerUtils {
     return chunkedText;
   }
 
-  limitText(text: string): string {
+  limitText(text: string, padding = 350): string {
     const model = this.verifiedModel();
-    const maxTokens = Math.max(model.token_limit - model.max_tokens - 256, 0);
+    const maxTokens = Math.max(
+      model.token_limit - model.max_tokens - padding,
+      0
+    );
 
     let tokenized = this.tiktoken.encode(text);
     if (tokenized.length > maxTokens) {
@@ -223,7 +232,6 @@ export default class TokenizerUtils {
       );
       tokenized = tokenized.slice(0, maxTokens);
       const decoded = this.tiktoken.decode(tokenized);
-
       // Decoded is an array of Unit8Array, we need to convert that back into a string
       text = "";
       decoded.forEach((unit8) => {

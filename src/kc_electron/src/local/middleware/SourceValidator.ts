@@ -62,14 +62,6 @@ export class SourceValidator {
       return res.status(400).send("Invalid Source Access link");
     }
 
-    try {
-      if (!req.body.messages || req.body.messages.length === 0) {
-        return res.status(400).send("Missing message history");
-      }
-    } catch (err) {
-      return res.status(400).send("Invalid message history");
-    }
-
     next();
   }
 

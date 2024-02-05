@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 Rob Royce
+ * Copyright (c) 2022-2024 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -47,8 +47,7 @@ import { NotificationsService } from '@services/user-services/notifications.serv
     <ng-template #loading>
       <div
         [@fadeIn]="animate"
-        [class.bg-pan-left]="animate"
-        class="h-full flex-col-center-center select-none"
+        class="h-full flex-col-center-center select-none bg-primary-reverse text-color-secondary"
         style="min-height: 12rem"
       >
         <app-ks-icon [ks]="ks"></app-ks-icon>

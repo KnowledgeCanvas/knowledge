@@ -122,11 +122,30 @@
 @keyframes bg-pan-left {
   0% {
     background-position: 100% 50%;
-    background: var(--surface-ground);
+    background: var(--surface-d);
   }
   100% {
     background-position: 0 50%;
+    background: var(--primary-color-text);
+  }
+}
+
+.bg-color-warp {
+  animation: bg-color-warp 6s ease-in-out infinite alternate both;
+}
+
+@keyframes bg-color-warp {
+  0% {
     background: var(--surface-a);
+  }
+  33.3333% {
+    background: var(--surface-b);
+  }
+  66.666% {
+    background: var(--surface-c);
+  }
+  100% {
+    background: var(--primary-color-text);
   }
 }
 

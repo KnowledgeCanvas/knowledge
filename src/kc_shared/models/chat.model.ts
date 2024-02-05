@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Rob Royce
+ * Copyright (c) 2023-2024 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -14,12 +14,14 @@
  *  limitations under the License.
  */
 
+export type ChatModelName = "gpt-3.5-turbo" | "gpt-4";
+
 /**
  * Used for user settings and for the back-end chat controller.
  */
 export interface ChatModel {
   /* The name of the model to use for the API call (see OpenAI API) */
-  name: "gpt-3.5-turbo" | "gpt-4";
+  name: ChatModelName;
 
   /* The name of the model to display to the user */
   label: string;

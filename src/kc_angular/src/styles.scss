@@ -1,5 +1,5 @@
 /*!
- * Copyright (c) 2022-2023 Rob Royce
+ * Copyright (c) 2022-2024 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@
 
 
 * {
-  font-size: 12px;
+  font-size: 13px;
 }
 
 html, body {
@@ -79,6 +79,9 @@ app-ks-ingest {
     min-width: min(100%, 20rem);
     height: 100%;
     flex-basis: 20%;
+    border-right-width: 1px !important;
+    border-right-style: solid;
+    border-color: var(--surface-border) !important;
   }
 
   .app-splitter-divider {
@@ -155,6 +158,43 @@ app-ks-ingest {
   font-size: 0.875rem;
   font-weight: 500;
   margin: 0.5rem 0;
+}
+
+.user-message {
+  background-color: var(--primary-color) !important;
+  color: var(--primary-color-text) !important;
+  border-radius: 10px;
+  padding: 0 10px 0 10px;
+  margin: 0.5rem;
+  text-align: right;
+  max-width: 80%;
+}
+
+.agent-message {
+  color: var(--primary-color) !important;
+  background-color: var(--primary-color-text) !important;
+  border-radius: 10px;
+  padding: 0 10px 0 10px;
+  margin: 1.5rem;
+  text-align: left;
+}
+
+.next-question-suggestion:hover {
+  opacity: 1 !important;
+}
+
+.html2canvas-container {
+  width: 3000px !important;
+  height: 3000px !important;
+}
+
+.chat-history-active {
+  // If the command bar is active, make the chat history slightly opaque and transparent
+  opacity: 0.5;
+  background-color: var(--surface-ground);
+
+  // Make it blurry
+  filter: blur(5px);
 }
 
 .topic-markdown {
@@ -397,7 +437,6 @@ source-chat, source-details, source-document, source-metadata, source-timeline, 
   height: 100% !important;
   width: 100% !important;
   overflow: auto !important;
-  padding: 1.5rem !important;
   max-height: 100% !important;
   @include styleclass('surface-hover fadein');
 }

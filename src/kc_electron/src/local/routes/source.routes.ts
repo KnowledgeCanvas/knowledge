@@ -30,7 +30,6 @@ export default class SourceRoutes {
   constructor(controller: SourceChatController) {
     this.sourceController = controller;
     this.summarizer = new DocumentSummarizer(controller.getChatController());
-    this.getRouter();
   }
 
   get controller() {
@@ -58,18 +57,25 @@ export default class SourceRoutes {
     router.post("/", this.controller.chat.bind(this.controller));
 
     // Intro chat with the source (basically a summary)
-    router.post("/intro", this.controller.intro.bind(this.controller));
+    router.post("/summarize", this.controller.summarize.bind(this.controller));
 
     router.post(
       "/categorize",
       this.controller.categorize.bind(this.controller)
     );
 
+    // Get customized advice on how to read the Source
+    router.post("/tutor", this.controller.tutor.bind(this.controller));
+
+    router.post("/quiz", this.controller.quiz.bind(this.controller));
+
+    router.post("/topics", this.controller.topics.bind(this.controller));
+
     // An endpoint to regenerate previous responses
-    router.post(
-      "/regenerate",
-      this.controller.regenerate.bind(this.controller)
-    );
+    // router.post(
+    //   "/regenerate",
+    //   this.controller.regenerate.bind(this.controller)
+    // );
 
     return router;
   }

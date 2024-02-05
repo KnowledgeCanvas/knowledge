@@ -14,8 +14,24 @@
  *  limitations under the License.
  */
 
-export type UuidModel = {
-  value: string;
-};
+import express from "express";
+import ProjectChatController from "../controllers/project.controller";
 
-export type UUID = UuidModel;
+const router = express.Router();
+
+export default class ProjectRoutes {
+  private projectController: ProjectChatController;
+
+  constructor(controller: ProjectChatController) {
+    this.projectController = controller;
+  }
+
+  getRouter() {
+    router.post(
+      "/quiz",
+      this.projectController.quiz.bind(this.projectController)
+    );
+
+    return router;
+  }
+}

@@ -45,8 +45,6 @@ export class DocumentSummarizer {
       );
 
       if (chunks && chunks.length > 0) {
-        const meta = await this.chatController.getDateAndAuthors(chunks[0]);
-
         const summaries = await Promise.all(
           chunks.map(
             this.chatController.summarizeChunk.bind(this.chatController)
@@ -54,12 +52,18 @@ export class DocumentSummarizer {
         );
 
         if (summaries.length === 1) {
-          req.body.summary = `${meta}\n\n${summaries[0]}`;
+          req.body.summary = summaries[0];
         } else {
           const response = await this.chatController.summarizeChunkResponses(
             summaries
           );
-          req.body.summary = `${meta}\n\n${response}`;
+
+          if (response === "" || response === undefined || response === null) {
+            return res.status(500).send({
+              message: "OpenAI API Error - Unable to summarize text.",
+            });
+          }
+          req.body.summary = response;
         }
       } else {
         console.warn(
@@ -69,6 +73,14 @@ export class DocumentSummarizer {
       }
 
       next();
+    };
+  }
+
+  topics() {
+    return async (req: Request, res: Response, next: NextFunction) => {
+      if (req.body.topcs) {
+        return next();
+      }
     };
   }
 }

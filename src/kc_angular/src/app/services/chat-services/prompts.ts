@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Rob Royce
+ * Copyright (c) 2023-2024 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -167,7 +167,7 @@ export class ChatPrompts {
     }
 
     // Use pipe to split the response into an array of strings (one for each question, separated by newline characters)
-    return this.chat.send(completionRequests).pipe(
+    return this.chat.sendChat(completionRequests).pipe(
       map((response: ChatCompletionMessage) => {
         if (response.content) {
           return response.content.split('\n');

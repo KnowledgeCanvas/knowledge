@@ -164,6 +164,12 @@ import { ProTipsComponent } from '@components/shared/pro-tips.component';
 import { ChatInputComponent } from '@components/chat-components/chat.input.component';
 import { WebImportComponent } from '@components/shared/web.import.component';
 import { MessageModule } from 'primeng/message';
+import { QuizMessage } from '@components/chat-components/message-templates/quiz.message';
+import { CategorizeMessage } from '@components/chat-components/message-templates/categorize.message';
+import { TreeTableModule } from 'primeng/treetable';
+import { TopicMessage } from '@components/chat-components/message-templates/topic.message';
+import { ChatMessageDirective } from './directives/chat-message.directive';
+import { CarouselModule } from 'primeng/carousel';
 
 @NgModule({
   declarations: [
@@ -243,6 +249,10 @@ import { MessageModule } from 'primeng/message';
     ProTipDirective,
     ProTipsComponent,
     WebImportComponent,
+    QuizMessage,
+    CategorizeMessage,
+    TopicMessage,
+    ChatMessageDirective,
   ],
   imports: [
     A11yModule,
@@ -312,6 +322,8 @@ import { MessageModule } from 'primeng/message';
     YouTubePlayerModule,
     DragDropModule,
     MessageModule,
+    TreeTableModule,
+    CarouselModule,
   ],
   providers: [
     ConfirmationService,

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023 Rob Royce
+ * Copyright (c) 2022-2024 Rob Royce
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ import { DragAndDropService } from '@services/ingest-services/drag-and-drop.serv
       class="h-full"
       emptyMessage=" "
       selectionMode="single"
-      styleClass="border-1"
+      styleClass="border-1 bg-primary-reverse text-color"
       scrollHeight="flex"
       [draggableNodes]="true"
       [droppableNodes]="true"
@@ -246,7 +246,7 @@ export class ProjectsTreeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.scrollToActive(1000);
+    this.projects.scrollToActive(1000);
   }
 
   ngOnDestroy() {
@@ -293,21 +293,10 @@ export class ProjectsTreeComponent implements OnInit, OnDestroy {
     }
   }
 
-  scrollToActive(timeout = 0) {
-    setTimeout(() => {
-      const classElement = document.getElementsByClassName(
-        'p-treenode-content p-treenode-selectable p-highlight'
-      );
-      if (classElement.length > 0) {
-        classElement[0].scrollIntoView({ behavior: 'smooth' });
-      }
-    }, timeout);
-  }
-
   showSelected() {
     if (this.currentProject) {
       this.expandPath(this.currentProject);
-      this.scrollToActive();
+      this.projects.scrollToActive();
     }
   }
 

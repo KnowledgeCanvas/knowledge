@@ -29,9 +29,9 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import {
   ChatCommand,
   ChatCommandService,
-  CommandArgs,
 } from '@services/chat-services/commands.service';
 import { Message } from 'primeng/api';
+import { KnowledgeSource } from '@app/models/knowledge.source.model';
 
 @Component({
   selector: 'chat-input',
@@ -61,7 +61,6 @@ import { Message } from 'primeng/api';
           [value]="bannerMessages"
           [enableService]="false"
           [closable]="true"
-          (valueChange)="bannerChange($event)"
           styleClass="chat-command-banner"
         ></p-messages>
       </div>
@@ -82,7 +81,7 @@ import { Message } from 'primeng/api';
           "
         >
           <span class="font-bold">{{ command.command }} </span>
-          <span *ngIf="command.args.length" class="font-bold">
+          <span *ngIf="command.args?.length" class="font-bold">
             <span *ngFor="let arg of command.args">
               &nbsp;<code>{{ arg.label }}</code>
             </span>
@@ -91,7 +90,13 @@ import { Message } from 'primeng/api';
           <span>{{ command.description }}</span>
         </div>
       </div>
-      <div class="px-2">
+      <div class="px-4">
+        <p-progressBar
+          *ngIf="loading$ | async"
+          [style]="{ height: '2px' }"
+          class="w-full flex-col-between"
+          mode="indeterminate"
+        ></p-progressBar>
         <div class="w-full">
           <textarea
             #chatInput
@@ -106,21 +111,15 @@ import { Message } from 'primeng/api';
             (keydown.arrowDown)="arrowSelectCommand(commandIndex + 1, $event)"
             (keydown.tab)="tabSelectCommand($event)"
             [autoResize]="!chatInput.value.startsWith('/')"
-            [disabled]="loading"
+            [disabled]="loading$ | async"
             [rows]="2"
-            class="chat-input w-full flex-row shadow-2 max-h-12rem overflow-y-auto"
+            class="chat-input w-full flex-row shadow-2 max-h-12rem overflow-y-auto bg-primary-reverse"
             id="chat-input"
             placeholder="Ask your questions here, or type / to see a list of commands"
           ></textarea>
         </div>
         <div class="w-full relative px-3 h-2rem select-none">
-          <p-progressBar
-            *ngIf="loading; else notLoading"
-            [style]="{ height: '2px' }"
-            class="w-full px-3 flex-col-between"
-            mode="indeterminate"
-          ></p-progressBar>
-          <ng-template #notLoading class="pl-2 text-500">
+          <div *ngIf="!(loading$ | async)" class="pl-2 text-500">
             <div
               [class.text-red-500]="
                 (tokenCount$ | async)! > (tokenLimit$ | async)!
@@ -128,7 +127,7 @@ import { Message } from 'primeng/api';
             >
               {{ tokenCount$ | async }} / {{ tokenLimit$ | async }}
             </div>
-          </ng-template>
+          </div>
         </div>
       </div>
     </div>
@@ -157,15 +156,11 @@ export class ChatInputComponent {
 
   @ViewChild('commandBox', { static: false }) commandBox!: ElementRef;
 
-  @Input() loading = false;
-
   @Input() questions: string[] = [];
 
-  @Input() target: 'Source' | 'Project' = 'Source';
+  @Input() source: KnowledgeSource | undefined;
 
   @Output() showCommands = new EventEmitter<boolean>();
-
-  @Output() send = new EventEmitter<string>();
 
   @Output() focusEvent = new EventEmitter<void>();
 
@@ -191,6 +186,8 @@ export class ChatInputComponent {
 
   commandCount = 0;
 
+  loading$: Observable<boolean>;
+
   private userInput = new BehaviorSubject<string>('');
 
   private tokensWithinLimit = true;
@@ -200,6 +197,7 @@ export class ChatInputComponent {
     this.tokenCount$ = chat.tokenCount$;
     this.tokenLimit$ = chat.tokenLimit$;
     this.chatCommands = commands.commands$;
+    this.loading$ = chat.loading$;
 
     /* When either count or limit change, set flag accordingly */
     combineLatest([this.tokenCount$, this.tokenLimit$]).subscribe(
@@ -213,7 +211,7 @@ export class ChatInputComponent {
       .asObservable()
       .pipe(debounceTime(250), distinctUntilChanged())
       .subscribe((value) => {
-        this.chat.countTokens(value);
+        this.chat.processInput(value);
       });
 
     /* Handle changes to available commands based on user input */
@@ -238,10 +236,23 @@ export class ChatInputComponent {
         })
       )
       .subscribe();
+
+    this.commands.questions$.subscribe((questions) => {
+      this.questions = questions;
+      setTimeout(() => {
+        this.commands.scrollView$.next(true);
+      });
+    });
+
+    this.chat.messages$
+      .pipe(distinctUntilChanged((a, b) => a[0]?.id === b[0]?.id))
+      .subscribe(() => {
+        this.questions = [];
+      });
   }
 
   ask(question: string) {
-    this.send.emit(question);
+    this.chat.submit(question);
     this.questions = this.questions.filter((q) => q !== question);
   }
 
@@ -256,7 +267,7 @@ export class ChatInputComponent {
 
     // If the input starts with a slash, trigger command palette update
     if (value.startsWith('/')) {
-      this.commands.filter(value, this.target);
+      this.commands.filter(value);
     } else {
       // Otherwise, ensure the command palette is hidden
       this.commands.reset();
@@ -297,7 +308,7 @@ export class ChatInputComponent {
     }
 
     if (this.tokensWithinLimit) {
-      this.send.emit(value);
+      this.chat.submit(value);
       this.reset();
     } else {
       this.bannerMessage({
@@ -316,54 +327,32 @@ export class ChatInputComponent {
 
     this.setInputText(command.command + ' ');
 
-    if (command.args.length > 0) {
+    if (command.args?.length && command.args?.length > 0) {
       this.chatInput.nativeElement.value = command.command + ' ';
-      this.commands.filter(this.chatInput.nativeElement.value, this.target);
-      return;
+      this.commands.filter(this.chatInput.nativeElement.value);
     } else {
       this.execute(command, input);
     }
   }
 
   execute(command: ChatCommand, input: string) {
-    // Check if all args are optional
-    const argsAllOptional = command.args.every((arg) => arg.optional);
-
     // For any non-optional args, make sure their values are not undefined
     const parsedArgs = command.argParse ? command.argParse(input) : [];
     const requiredArgsAreValid = parsedArgs.every(
       (arg) => arg.optional || (!arg.optional && arg.value !== undefined)
     );
 
-    // Execute no-arg commands or commands with optional args if no args are provided
     if (!requiredArgsAreValid) {
+      // Display a warning if required args are missing
       this.bannerMessage({
         severity: 'warn',
         summary: 'Forget something?',
         life: 5000,
         detail: `The ${command.command} command requires additional arguments. Please try again.`,
       });
-    } else if (command.args.length === 0 || argsAllOptional) {
-      command.execute([]);
     } else {
-      // Otherwise, parse the arguments (verify) and execute the command
-      let args: CommandArgs[] = [];
-
-      if (command.argParse) {
-        args = command.argParse(input);
-      }
-
-      if (args.length !== command.args.length) {
-        this.bannerMessage({
-          severity: 'warn',
-          summary: 'Forget something?',
-          life: 5000,
-          detail: `The ${command.command} command requires additional arguments. Please try again.`,
-        });
-      } else {
-        // Execute the command
-        command.execute(args);
-      }
+      // Otherwise execute the command
+      command.execute(parsedArgs);
     }
     this.reset();
   }
@@ -426,7 +415,7 @@ export class ChatInputComponent {
   private setInputText(text: string) {
     /* Handle the procedural tasks that need to happen when the input changes */
     this.chatInput.nativeElement.value = text;
-    this.commands.filter(text, this.target);
+    this.commands.filter(text);
     setTimeout(() => {
       this.userInput.next(text);
     });
@@ -452,10 +441,6 @@ export class ChatInputComponent {
 
     // Center the command box above the chat input element
     this.commandLeft = `${inputRect.left}px`;
-  }
-
-  bannerChange($event: Message[]) {
-    console.log('Chat input banner changes: ', $event);
   }
 
   focus() {
