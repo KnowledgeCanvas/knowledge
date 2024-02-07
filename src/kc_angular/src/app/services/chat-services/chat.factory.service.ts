@@ -112,8 +112,9 @@ export class ChatFactoryService {
         msg.sender === AgentType.Source ||
         msg.recipient === AgentType.Source ||
         msg.sender === AgentType.Topic
-      )
+      ) {
         msg.source = source;
+      }
     }
 
     return messages;

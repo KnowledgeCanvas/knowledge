@@ -103,7 +103,7 @@ interface TabDescriptor {
       }
 
       .tab:not(.active) {
-        background-color: var(--surface-a);
+        background-color: var(--primary-color-text);
       }
 
       .tab.active {

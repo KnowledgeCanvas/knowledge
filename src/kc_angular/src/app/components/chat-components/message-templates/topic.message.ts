@@ -96,7 +96,6 @@ export interface TopicDetails {
     `
       :host {
         width: 100%;
-        max-width: 100rem !important;
       }
     `,
   ],

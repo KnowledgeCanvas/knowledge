@@ -40,7 +40,7 @@ import { finalize, map, take, takeUntil, tap } from 'rxjs/operators';
   template: `
     <p-contextMenu
       #cm
-      styleClass="shadow-7"
+      styleClass="shadow-7 bg-primary-reverse"
       [model]="ksMenuItems"
       [baseZIndex]="999999"
       [autoZIndex]="true"

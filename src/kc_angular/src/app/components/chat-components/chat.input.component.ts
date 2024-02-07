@@ -113,7 +113,7 @@ import { KnowledgeSource } from '@app/models/knowledge.source.model';
             [autoResize]="!chatInput.value.startsWith('/')"
             [disabled]="loading$ | async"
             [rows]="2"
-            class="chat-input w-full flex-row shadow-2 max-h-12rem overflow-y-auto bg-primary-reverse"
+            class="chat-input w-full flex-row shadow-2 max-h-12rem overflow-y-auto bg-primary-reverse text-color"
             id="chat-input"
             placeholder="Ask your questions here, or type / to see a list of commands"
           ></textarea>

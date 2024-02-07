@@ -149,15 +149,14 @@ export class ChatCommandService {
       command: '/topics',
       description:
         'Get a list of the most common Topics in a Source or Project',
-      targets: 'Both',
-      args: [],
+      targets: 'Source',
       execute: () => this.topics(),
     },
     {
       command: '/tutor',
       description:
         'Decide what to learn next based on your Chat history and goals',
-      targets: 'Both',
+      targets: 'Source',
       args: [],
       execute: () => this.tutor(),
     },

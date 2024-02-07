@@ -31,7 +31,7 @@ import { ChatMessage } from '@app/models/chat.model';
     </div>
     <p-contextMenu
       #cm
-      styleClass="shadow-7"
+      styleClass="shadow-7 bg-primary-reverse"
       [model]="menuItems"
       [baseZIndex]="999999"
       [autoZIndex]="true"

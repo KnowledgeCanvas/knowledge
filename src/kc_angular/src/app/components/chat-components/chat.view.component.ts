@@ -72,7 +72,7 @@ import { distinctUntilChanged, tap } from 'rxjs/operators';
       [baseZIndex]="999999"
       [model]="messageMenu"
       appendTo="body"
-      styleClass="shadow-7"
+      styleClass="shadow-7 bg-primary-reverse"
     >
     </p-contextMenu>
   `,

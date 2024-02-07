@@ -323,7 +323,7 @@ import { DragAndDropService } from '@services/ingest-services/drag-and-drop.serv
     <p-contextMenu
       #cm
       [model]="ksMenuItems"
-      styleClass="shadow-7"
+      styleClass="shadow-7 bg-primary-reverse"
       (onShow)="onKsContextMenu()"
       appendTo="body"
     >
