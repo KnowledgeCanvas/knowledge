@@ -272,14 +272,6 @@ export default class ChatController {
     // Remove any duplicate messages
     let messages = this.tokenizerUtils.deduplicate(req.body.messages);
 
-    // Insert the existing summary into the messages
-    // if (req.body.summary) {
-    //   messages.push({
-    //     role: "user",
-    //     content: `Here's a summary of the source:\n===\n${req.body.summary}"""\n===\n`,
-    //   });
-    // }
-
     try {
       messages = this.tokenizerUtils.limitTokens(
         messages,
@@ -293,10 +285,6 @@ export default class ChatController {
       });
     }
 
-    // console.log("After token limit: ", messages);
-
-    console.log("Using chat settings: ", this.settings);
-    console.log("Using messages: ", messages);
     try {
       const response = await this.openai.chat.completions.create({
         model: this.settings.model.name,

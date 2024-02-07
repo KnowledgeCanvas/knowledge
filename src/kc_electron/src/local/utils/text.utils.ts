@@ -75,7 +75,6 @@ export default class TextUtils {
     text = text.replace(/(\r\n|\n|\r)/gm, ""); // Remove newlines
     text = text.replace(/(\t)/gm, ""); // Remove tabs
     text = text.replace(/(\s{2,})/g, " "); // Remove any double spaces
-    text = text.replace(/[^a-zA-Z0-9 ]/g, ""); // Remove any non-alphanumeric characters
 
     // Remove any non-whitespace substrings longer than 32 characters
     // (this is to prevent the API from returning an error)

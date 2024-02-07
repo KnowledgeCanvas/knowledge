@@ -34,6 +34,15 @@ export default class SourceChatController {
   }
 
   async chat(req: Request, res: Response): Promise<Response> {
+    // Insert the summary into the messages array
+    if (req.body.summary) {
+      req.body.messages = req.body.messages.concat([
+        {
+          role: "system",
+          content: `Summary: ${req.body.summary}`,
+        },
+      ]);
+    }
     return this.chatController.chat(req, res);
   }
 
@@ -212,7 +221,8 @@ ${choices}
         content:
           `Source: "${sourceTitle}"\n` +
           `Summary:\n===\n${this.tokenizerUtils.limitText(
-            req.body.summary
+            req.body.summary,
+            500
           )}\n===\n`,
       },
     ];
@@ -257,7 +267,10 @@ ${choices}
       },
       {
         role: "system",
-        content: `Source:\n===\n${this.tokenizerUtils.limitText(input)}\n===`,
+        content: `Source:\n===\n${this.tokenizerUtils.limitText(
+          input,
+          500
+        )}\n===`,
       },
       {
         role: "system",
@@ -424,7 +437,7 @@ ${choices}
   }
 
   topics(req: Request, res: Response) {
-    const text = this.tokenizerUtils.limitText(req.body.text);
+    const text = this.tokenizerUtils.limitText(req.body.text, 500);
 
     const prompts = [
       ...(req.body.messages || []),
