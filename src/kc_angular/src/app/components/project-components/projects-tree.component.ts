@@ -61,8 +61,6 @@ import { DragAndDropService } from '@services/ingest-services/drag-and-drop.serv
       [selection]="currentProject"
       (onNodeSelect)="selectionChange($event)"
       (onNodeContextMenuSelect)="onContextMenu($event)"
-      (onNodeCollapse)="onNodeCollapse($event, true)"
-      (onNodeExpand)="onNodeCollapse($event, false)"
     >
       <ng-template pTemplate="header">
         <div class="flex-row-center-between">
@@ -161,8 +159,6 @@ import { DragAndDropService } from '@services/ingest-services/drag-and-drop.serv
   ],
 })
 export class ProjectsTreeComponent implements OnInit, OnDestroy {
-  @ViewChild('projectTreeElement', { static: true }) projectTreeElement: any;
-
   @ViewChild('nodeLabel', { static: true }) nodeLabel!: ElementRef;
 
   projectId = '';
@@ -273,13 +269,13 @@ export class ProjectsTreeComponent implements OnInit, OnDestroy {
     }
   }
 
-  expandAll = async (root: TreeNode[], expand: boolean) => {
+  expandAll(root: TreeNode[], expand: boolean) {
     for (const t of root) {
       t.expanded = expand;
       if (t.children && t.children.length > 0)
-        await this.expandAll(t.children, expand);
+        this.expandAll(t.children, expand);
     }
-  };
+  }
 
   onContextMenu($event: any) {
     if ($event.node) {
@@ -297,21 +293,6 @@ export class ProjectsTreeComponent implements OnInit, OnDestroy {
     if (this.currentProject) {
       this.expandPath(this.currentProject);
       this.projects.scrollToActive();
-    }
-  }
-
-  onNodeCollapse($event: any, collapsed: boolean) {
-    const node = $event.node;
-    if (node?.key) {
-      const project = this.projects.getProject(node.key);
-      if (project) {
-        this.projects.updateProjects([
-          {
-            id: project.id,
-            expanded: !collapsed,
-          },
-        ]);
-      }
     }
   }
 

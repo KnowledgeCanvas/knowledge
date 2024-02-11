@@ -272,9 +272,6 @@ export class ProjectService {
         target.name = update.name;
       }
 
-      // If the update changes the expanded status, update it.
-      target.expanded = update.expanded ?? target.expanded;
-
       // Handle parentId update
       if (update.parentId) {
         const next = this.projectSource.find(
