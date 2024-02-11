@@ -14,13 +14,13 @@
  *  limitations under the License.
  */
 
-import { Component, ViewChild } from '@angular/core';
+import { Component, OnDestroy, ViewChild } from '@angular/core';
 import { ContextMenu } from 'primeng/contextmenu';
 import { MenuItem } from 'primeng/api';
 import { ProjectService } from '@services/factory-services/project.service';
 import { ChatService } from '@services/chat-services/chat.service';
 import { ChatViewComponent } from './chat-components/chat.view.component';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { ChatMessage } from '@app/models/chat.model';
 
 @Component({
@@ -41,7 +41,7 @@ import { ChatMessage } from '@app/models/chat.model';
   `,
   styles: [``],
 })
-export class ChatComponent {
+export class ChatComponent implements OnDestroy {
   /* The context menu for the chat view */
   @ViewChild('cm') cm!: ContextMenu;
 
@@ -55,10 +55,16 @@ export class ChatComponent {
 
   messages$: Observable<ChatMessage[]>;
 
+  subscription: Subscription;
+
   constructor(private chat: ChatService, private projects: ProjectService) {
     this.messages$ = this.chat.messages$;
-    this.projects.currentProject.subscribe((project) => {
+    this.subscription = this.projects.currentProject.subscribe((project) => {
       this.chat.setTarget({ project: project });
     });
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 }

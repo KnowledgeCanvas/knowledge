@@ -544,7 +544,6 @@ export class ChatCommandService {
             );
             if (projectTree) {
               const treeText = this.tree.generateTree(projectTree, 0, false);
-              console.log('Project Tree:\n\n', treeText);
               this.chat.displayText(treeText, AgentType.Project);
             }
           }

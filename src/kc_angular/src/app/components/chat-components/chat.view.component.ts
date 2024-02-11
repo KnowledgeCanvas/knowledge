@@ -18,7 +18,7 @@ import { Component, Input, ViewChild } from '@angular/core';
 import { ChatService } from '@app/services/chat-services/chat.service';
 import { MenuItem } from 'primeng/api';
 import { ContextMenu } from 'primeng/contextmenu';
-import { AgentType, ChatMessage, MessageRating } from '@app/models/chat.model';
+import { AgentType, ChatMessage } from '@app/models/chat.model';
 import { Observable } from 'rxjs';
 import { ChatContextMenuService } from '@services/factory-services/chat-context-menu.service';
 import { ChatCommandService } from '@services/chat-services/commands.service';
@@ -204,9 +204,5 @@ export class ChatViewComponent {
     );
 
     this.cm.show($event);
-  }
-
-  setRating($event: MessageRating, message: ChatMessage) {
-    this.chat.rateMessage(message, $event);
   }
 }

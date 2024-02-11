@@ -25,7 +25,8 @@ import {
 } from '@angular/core';
 import { KsCommandService } from '@services/command-services/ks-command.service';
 import { KnowledgeSource } from '@app/models/knowledge.source.model';
-import { AgentType, ChatMessage, MessageRating } from '@app/models/chat.model';
+import { AgentType, ChatMessage } from '@app/models/chat.model';
+import { ChatService } from '@services/chat-services/chat.service';
 
 @Component({
   selector: 'chat-message',
@@ -201,7 +202,6 @@ import { AgentType, ChatMessage, MessageRating } from '@app/models/chat.model';
         padding: 0 10px 0 10px;
         margin: 0.5rem;
         text-align: right;
-        max-width: 70%;
       }
 
       .agent-action {
@@ -223,12 +223,10 @@ export class ChatMessageComponent implements OnChanges {
   /* Event emitted when the message is edited. */
   @Output() onMessageEdited = new EventEmitter<string>();
 
-  @Output() rating = new EventEmitter<MessageRating>();
-
   /* The text of the message being edited. */
   editText = '';
 
-  constructor(private command: KsCommandService) {}
+  constructor(private command: KsCommandService, private chat: ChatService) {}
 
   @HostBinding('class.user-message') get isUserMessage() {
     return this.message && this.message.sender === AgentType.User;
@@ -270,14 +268,8 @@ export class ChatMessageComponent implements OnChanges {
     message: ChatMessage,
     rating: 'thumbs-up' | 'thumbs-down' | 'none'
   ) {
-    if (!message.rating || message.rating === 'none') {
-      this.rating.emit(rating);
-    } else if (rating === 'thumbs-up') {
-      this.rating.emit(message.rating === 'thumbs-up' ? 'none' : 'thumbs-up');
-    } else if (rating === 'thumbs-down') {
-      this.rating.emit(
-        message.rating === 'thumbs-down' ? 'none' : 'thumbs-down'
-      );
-    }
+    rating = message.rating === rating ? 'none' : rating;
+    message.rating = rating;
+    this.chat.rateMessage(message, rating);
   }
 }

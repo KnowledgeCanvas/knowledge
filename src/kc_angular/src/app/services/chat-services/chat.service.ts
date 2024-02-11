@@ -125,8 +125,6 @@ export class ChatService {
             target.project
           );
 
-          console.log('Project history: ', history);
-
           for (const source of target.project.knowledgeSource) {
             const sourceHistory = this.factory.loadSourceMessages(
               source.id,
@@ -160,7 +158,6 @@ export class ChatService {
 
     this.messages$
       .pipe(
-        debounceTime(500),
         distinctUntilChanged((a, b) => {
           // Determine if the messages are the same
           if (a.length !== b.length) {
@@ -168,6 +165,8 @@ export class ChatService {
           }
           for (let i = 0; i < a.length; i++) {
             if (a[i].id !== b[i].id) {
+              return false;
+            } else if (a[i].rating !== b[i].rating) {
               return false;
             }
           }
@@ -588,6 +587,12 @@ export class ChatService {
         // Update the message rating
         messages[index].rating = rating;
         this._messages$.next(messages);
+
+        if (this._target$.value.source) {
+          this.saveChat(messages, this._target$.value.source.id);
+        } else if (this._target$.value.project) {
+          this.saveChat(messages, this._target$.value.project.id);
+        }
       }
     });
   }
