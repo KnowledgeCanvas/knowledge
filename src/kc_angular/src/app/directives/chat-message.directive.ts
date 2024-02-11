@@ -50,12 +50,7 @@ export class ChatMessageDirective implements OnChanges {
     switch (message.sender) {
       case AgentType.Category:
         componentRef = this.viewContainerRef.createComponent(CategorizeMessage);
-        componentRef.location.nativeElement.classList.add(
-          'p-4',
-          'shadow-1',
-          'hover:shadow-3',
-          'text-color'
-        );
+        componentRef.location.nativeElement.classList.add('p-4', 'text-color');
         parentDiv.classList.add(
           'bg-primary-reverse',
           'border-1',
