@@ -56,7 +56,7 @@ import { KnowledgeSource } from '@app/models/knowledge.source.model';
           {{ question | truncate : [84] }}
         </div>
       </div>
-      <div class="px-2">
+      <div class="px-4" [hidden]="bannerMessages.length === 0">
         <p-messages
           [value]="bannerMessages"
           [enableService]="false"
