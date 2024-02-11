@@ -15,7 +15,6 @@
  */
 
 import { Request, Response } from "express";
-import { introPrompts } from "../constants/source.prompts";
 import { GlobalWorkerOptions } from "pdfjs-dist";
 import ChatController from "./chat.controller";
 import TokenizerUtils from "../utils/tokenizer.utils";
@@ -59,26 +58,12 @@ export default class SourceChatController {
           },
         ],
       });
+    } else {
+      return res.status(500).json({
+        error: "Could not generate a summary. Please try again later.",
+      });
     }
-
-    const source = req.body.source;
-    const text = this.tokenizerUtils.limitText(req.body.text);
-    req.body.messages = ([] as ChatCompletionMessageParam[]).concat(
-      introPrompts(source, "source", text),
-      [
-        {
-          role: "user",
-          content: `Can you please summarize the Source for me?`,
-        },
-      ]
-    );
-
-    return this.chatController.chat(req, res);
   }
-
-  // async regenerate(req: Request, res: Response) {
-  //   return undefined;
-  // }
 
   async categorize(req: Request, res: Response) {
     // The request body should contain a source title and the entire project tree in YAML format

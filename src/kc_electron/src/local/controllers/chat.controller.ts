@@ -75,12 +75,15 @@ export default class ChatController {
       return "";
     }
 
-    const limited = this.tokenizerUtils.limitText.bind(this.tokenizerUtils);
-    text = limited(text.replace("\n", " ")).replace("\n", " ");
-
     const messages = ([] as ChatCompletionMessageParam[]).concat(
       SummarizationPrompts.Common(),
       SummarizationPrompts.Excerpt()
+    );
+    const messageTokens = this.tokenizerUtils.countMessageTokens(messages);
+    const limited = this.tokenizerUtils.limitText.bind(this.tokenizerUtils);
+    text = limited(text.replace("\n", " "), messageTokens + 100).replace(
+      "\n",
+      " "
     );
 
     messages.push({
