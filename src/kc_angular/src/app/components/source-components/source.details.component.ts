@@ -188,7 +188,7 @@ import { Clipboard } from '@angular/cdk/clipboard';
               </td>
               <td
                 class="ks-info-table w-full select-text"
-                style="text-wrap: inherit"
+                style="text-wrap: inherit; overflow-wrap: anywhere"
               >
                 <p-cellEditor>
                   <ng-template pTemplate="input">
