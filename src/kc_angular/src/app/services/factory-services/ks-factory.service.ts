@@ -220,6 +220,8 @@ export class KsFactoryService {
         },
         link: '',
       },
+      meta: [],
+      notes: [],
       ingestType: 'website',
       associatedProject: { value: '' },
       // TODO: remove these to align with new model...
@@ -356,6 +358,15 @@ export class KsFactoryService {
 
           if (ks.reference.source.website)
             ks.reference.source.website.metadata = metadata;
+
+          ks.meta = [];
+          if (metadata.meta) {
+            for (const meta of metadata.meta) {
+              if (meta.key && meta.value) {
+                ks.meta.push({ key: meta.key, value: meta.value });
+              }
+            }
+          }
         })
         .catch((reason) => {
           console.warn('Unable to extract website metadata because: ', reason);

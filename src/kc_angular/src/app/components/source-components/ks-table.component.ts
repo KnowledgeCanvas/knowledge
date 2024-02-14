@@ -215,32 +215,6 @@ import { DragAndDropService } from '@services/ingest-services/drag-and-drop.serv
                     {{ rowData[col.field] | date : 'mediumDate' }}
                   </div>
                 </div>
-
-                <div *ngIf="col.field === 'dateDue'">
-                  <div *ngIf="!rowData[col.field]">-</div>
-                  <div *ngIf="rowData[col.field]">
-                    <div
-                      *ngIf="pastDue(rowData[col.field]); else dueDate"
-                      style="color: red"
-                    >
-                      <div *ngIf="!ksTableShowCountdownInsteadOfDates">
-                        {{ rowData[col.field] | date : 'mediumDate' }}
-                      </div>
-                      <div *ngIf="ksTableShowCountdownInsteadOfDates">
-                        {{ rowData[col.field] | countdown }}
-                      </div>
-                    </div>
-                    <ng-template #dueDate>
-                      <div *ngIf="!ksTableShowCountdownInsteadOfDates">
-                        {{ rowData[col.field] | date : 'mediumDate' }}
-                      </div>
-                      <div *ngIf="ksTableShowCountdownInsteadOfDates">
-                        {{ rowData[col.field] | countdown }}
-                      </div>
-                    </ng-template>
-                  </div>
-                </div>
-
                 <div
                   *ngIf="
                     col.field === 'dateModified' || col.field === 'dateAccessed'
@@ -348,7 +322,6 @@ export class KsTableComponent implements OnInit, OnChanges {
     { field: 'icon', header: '' },
     { field: 'title', header: 'Title' },
     { field: 'associatedProject', header: 'Project' },
-    { field: 'dateDue', header: 'Due Date' },
     { field: 'dateCreated', header: 'Created' },
     { field: 'dateAccessed', header: 'Accessed' },
     { field: 'dateModified', header: 'Modified' },
@@ -479,7 +452,6 @@ export class KsTableComponent implements OnInit, OnChanges {
         });
         break;
       case 'dateCreated':
-      case 'dateDue':
         event.data.sort((d1, d2) => {
           if (!event.field || !event.order) {
             return 0;

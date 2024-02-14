@@ -104,7 +104,6 @@ import { ProjectAsTreeNodePipe } from '@pipes/project-as-tree-node.pipe';
 import { ProjectBreadcrumbComponent } from '@components/project-components/project-breadcrumb.component';
 import { ProjectBreadcrumbPipe } from '@pipes/project-breadcrumb.pipe';
 import { ProjectCalendarComponent } from '@components/project-components/project-calendar.component';
-import { ProjectCardComponent } from '@components/project-components/project-card.component';
 import { ProjectCreationDialogComponent } from '@components/project-components/project-creation-dialog.component';
 import { ProjectDetailsComponent } from '@components/project-components/project-details.component';
 import { ProjectNamePipe } from '@pipes/project-name.pipe';
@@ -150,7 +149,6 @@ import { RecreateViewDirective } from './directives/recreate-view.directive';
 import { SourceComponent } from '@components/source-components/source.component';
 import { SourceDetailsComponent } from '@components/source-components/source.details.component';
 import { SourceChatComponent } from '@components/source-components/source.chat.component';
-import { SourceMetadataComponent } from '@components/source-components/source.metadata.component';
 import { SourceVideoComponent } from '@components/source-components/source.video.component';
 import { SourceDocumentComponent } from '@components/source-components/source.document.component';
 import { SourceTimelineComponent } from '@components/source-components/source.timeline.component';
@@ -158,7 +156,7 @@ import { IconComponent } from '@components/shared/icon.component';
 import { DragDropModule } from 'primeng/dragdrop';
 import { SanitizeHtmlPipe } from '@pipes/sanitize-html.pipe';
 import { SourceBrowserComponent } from '@components/source-components/source.browser.component';
-import { SourceNotesComponent } from '@components/source-components/source.notes.component';
+import { SourceNoteComponent } from '@components/source-components/source-note.component';
 import { ProTipDirective } from './directives/pro-tip.directive';
 import { ProTipsComponent } from '@components/shared/pro-tips.component';
 import { ChatInputComponent } from '@components/chat-components/chat.input.component';
@@ -215,7 +213,6 @@ import { CarouselModule } from 'primeng/carousel';
     ProjectBreadcrumbComponent,
     ProjectBreadcrumbPipe,
     ProjectCalendarComponent,
-    ProjectCardComponent,
     ProjectCreationDialogComponent,
     ProjectDetailsComponent,
     ProjectNamePipe,
@@ -238,10 +235,9 @@ import { CarouselModule } from 'primeng/carousel';
     SourceComponent,
     SourceDetailsComponent,
     SourceChatComponent,
-    SourceMetadataComponent,
     SourceVideoComponent,
     SourceBrowserComponent,
-    SourceNotesComponent,
+    SourceNoteComponent,
     SourceDocumentComponent,
     SourceTimelineComponent,
     IconComponent,

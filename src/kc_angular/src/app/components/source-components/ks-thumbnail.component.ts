@@ -152,7 +152,7 @@ export class KsThumbnailComponent implements OnDestroy, OnChanges {
         this._thumbnail$.next(this.ks.thumbnail);
       }
 
-      const meta = this.ks.reference.source.website?.metadata?.meta;
+      const meta = this.ks.meta;
       if (meta) {
         const ogImage = meta.find((m) => m.key === 'og:image');
         if (ogImage && ogImage.value) {

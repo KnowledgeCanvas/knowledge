@@ -30,7 +30,6 @@ import {
 import { SourceChatComponent } from '@components/source-components/source.chat.component';
 import { SourceDetailsComponent } from '@components/source-components/source.details.component';
 import { KnowledgeSource } from '@app/models/knowledge.source.model';
-import { SourceMetadataComponent } from '@components/source-components/source.metadata.component';
 import { PrimeIcons } from 'primeng/api';
 import { SourceDocumentComponent } from '@components/source-components/source.document.component';
 import { SourceVideoComponent } from '@components/source-components/source.video.component';
@@ -132,14 +131,14 @@ export class SourceComponent implements OnInit, OnChanges {
   tabContainer!: ViewContainerRef;
 
   detailsTab: TabDescriptor = {
-    label: 'Details',
+    label: 'Source',
     icon: PrimeIcons.INFO_CIRCLE,
     hidden: false,
     disabled: false,
     loading: false,
     component: SourceDetailsComponent,
-    tipHeader: 'Ready for the Details?',
-    tipMessage: `Head over to the details tab! It will tell you everything you need to know about the Source, including title, description, and topics.`,
+    tipHeader: 'Source Details',
+    tipMessage: `This tab shows you all the details about the Source. It's like the Source's personal ID card, with all the important information you need to know.`,
   };
 
   chatTab: TabDescriptor = {
@@ -197,17 +196,6 @@ export class SourceComponent implements OnInit, OnChanges {
     tipMessage: `Meet the video tab! Your personal movie theater, playing Source videos straight from YouTube using the video ID in the Source link. Sit back, relax, and enjoy the show!`,
   };
 
-  metadataTab: TabDescriptor = {
-    label: 'Metadata',
-    icon: PrimeIcons.HASHTAG,
-    hidden: false,
-    disabled: false,
-    loading: false,
-    component: SourceMetadataComponent,
-    tipHeader: 'Ready to go Meta?',
-    tipMessage: `Step into the metadata tab! It's your personal viewing deck for all things meta about the Source. And guess what? You can easily copy any of the metadata to your clipboard with a single click!`,
-  };
-
   tabs: TabDescriptor[] = [
     this.detailsTab,
     this.chatTab,
@@ -215,7 +203,6 @@ export class SourceComponent implements OnInit, OnChanges {
     this.browserTab,
     this.documentTab,
     this.videoTab,
-    this.metadataTab,
   ];
 
   selectedTabIndex = 0;
@@ -261,10 +248,6 @@ export class SourceComponent implements OnInit, OnChanges {
   }
 
   views(source: KnowledgeSource) {
-    // Metadata is disabled if no metadata exists
-    this.metadataTab.disabled =
-      !this.source.reference.source.website?.metadata?.meta;
-
     // If video, enable video tab and disable document tab
     if (source.ingestType === 'website') {
       source.accessLink = new URL(source.accessLink);

@@ -444,7 +444,7 @@ source-chat, source-details, source-document, source-metadata, source-timeline, 
   @include styleclass('w-full flex flex-wrap p-2 max-h-full');
 
   .source-header-div {
-    @include styleclass('col-12 lg:col-6 flex flex-column max-h-full');
+    @include styleclass('flex flex-column max-h-full w-full');
 
     .source-thumbnail {
       @include styleclass('w-full flex flex-column flex-auto');
@@ -476,29 +476,15 @@ source-chat, source-details, source-document, source-metadata, source-timeline, 
 }
 
 .source-model {
-  @include styleclass('w-full flex col-12 flex-wrap p-2 flex-column');
+  @include styleclass('w-full flex col-12 flex-wrap flex-column');
 }
 
 .source-youtube-player {
   @include styleclass('w-full h-full');
 }
 
-.source-metadata {
-  @media (min-width: 0px) and (max-width: 999px) {
-    max-width: min(45vw, 70rem) !important;
-  }
-
-  @media (min-width: 1000px) and (max-width: 1199px) {
-    max-width: min(50vw, 80rem) !important;
-  }
-
-  @media (min-width: 1200px) and (max-width: 1599px) {
-    max-width: min(45vw, 70rem) !important;
-  }
-
-  @media (min-width: 1600px) {
-    max-width: min(60vw, 1000rem) !important;
-  }
+.source-metadata, .source-notes {
+  @include styleclass('w-full flex flex-wrap p-2 max-h-full');
 }
 
 .title-bar {
