@@ -437,7 +437,7 @@ export class ChatInputComponent {
 
     // The command box should be the same width as the input element
     const chatBar = document.getElementById('chat-bar');
-    this.commandWidth = `calc(${chatBar?.offsetWidth}px - 1rem)`;
+    this.commandWidth = `calc(${chatBar?.offsetWidth}px - 3rem)`;
 
     // Center the command box above the chat input element
     this.commandLeft = `${inputRect.left}px`;
