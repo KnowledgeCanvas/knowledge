@@ -26,7 +26,7 @@
     "clean": "rm -rf dist && yarn workspaces foreach run clean",
     "purge": "yarn workspaces foreach run purge && rm -rf node_modules && yarn cache clean",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder --publish never",
+    "dist": "electron-builder --publish never --x64 --arm64",
     "dist-all": "electron-builder -mwl --x64 --arm64 --publish never",
     "interactive-upgrade": "yarn upgrade-interactive",
     "publish": "electron-builder --publish always",

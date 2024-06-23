@@ -154,8 +154,11 @@ export default class TokenizerUtils {
     return messages;
   }
 
+  /**
+   * Remove duplicate messages from a list of messages.
+   * @param messages
+   */
   deduplicate(messages: ChatCompletionMessageParam[]) {
-    // Remove duplicate messages using a hash map based on message content.
     const unique: ChatCompletionMessageParam[] = [];
     const hash: { [key: string]: boolean } = {};
     messages.forEach((message) => {
@@ -172,10 +175,18 @@ export default class TokenizerUtils {
     return unique;
   }
 
+  /**
+   * Count the number of tokens in a text for the current model.
+   * @param text
+   */
   countTokens(text: string) {
     return this.tiktoken.encode(text).length + 5;
   }
 
+  /**
+   * Count the number of tokens in a list of messages for the current model.
+   * @param messages
+   */
   countMessageTokens(messages: ChatCompletionMessageParam[]): number {
     let tokenCount = 0;
     messages.forEach((message: ChatCompletionMessageParam) => {
@@ -186,10 +197,11 @@ export default class TokenizerUtils {
     return tokenCount + (messages.length > 1 ? 3 : 0);
   }
 
+  /**
+   * Given a text, chunk it into smaller pieces that fit within the token limit.
+   * @param text
+   */
   chunkLimitText(text: string): string[] {
-    /**
-     * Given a text, chunk it into pieces that are within the token limit.
-     */
     const model = this.verifiedModel();
     const maxTokens = model.token_limit - model.max_tokens - 512;
 
@@ -218,6 +230,11 @@ export default class TokenizerUtils {
     return chunkedText;
   }
 
+  /**
+   * Given a text, limit it to the token limit of the model.
+   * @param text The text to limit
+   * @param padding The number of tokens to pad the limit with
+   */
   limitText(text: string, padding = 350): string {
     const model = this.verifiedModel();
     const maxTokens = Math.max(
@@ -242,6 +259,10 @@ export default class TokenizerUtils {
     return text;
   }
 
+  /**
+   * Get the path to the tiktoken wasm file. This is used to initialize the tokenizer.
+   * @private
+   */
   private getWasmPath() {
     // TODO: Figure out how to do this in a cleaner way
     const possiblePaths = [
@@ -266,6 +287,9 @@ export default class TokenizerUtils {
     throw new Error("Could not find tiktoken wasm file.");
   }
 
+  /**
+   * Get the model object for the current model. Throws an error if the model is not found.
+   */
   private verifiedModel(): ChatModel {
     const model = SupportedChatModels.find(
       (model) => model.name === this.model

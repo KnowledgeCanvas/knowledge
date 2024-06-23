@@ -2117,10 +2117,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@dqbd/tiktoken@npm:^1.0.7":
-  version: 1.0.7
-  resolution: "@dqbd/tiktoken@npm:1.0.7"
-  checksum: 81049797dcffa101c57b68a78be19b11958edf6e6cfffab7ccd3ec2e5290e3b27bc25f1060a1c34e1cb94f22e0f46d9aafa925d383fb4559738b644aa01c0fb1
+"@dqbd/tiktoken@npm:^1.0.15":
+  version: 1.0.15
+  resolution: "@dqbd/tiktoken@npm:1.0.15"
+  checksum: e33259bb3fcb35acf8a897b92e83968a19d9de5cd24fc36068637dee703fe4516db4a7df2adc75411c6567e69d22f9d86b9b41e0c31ac711d4afc8d126e2d05f
   languageName: node
   linkType: hard
 
@@ -9192,7 +9192,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "kc_electron@workspace:src/kc_electron"
   dependencies:
-    "@dqbd/tiktoken": ^1.0.7
+    "@dqbd/tiktoken": ^1.0.15
     "@types/cors": ^2.8.17
     "@types/crypto-js": ^4.2.2
     "@types/lodash": ^4.14.202

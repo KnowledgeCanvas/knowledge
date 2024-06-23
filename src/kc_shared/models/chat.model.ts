@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-export type ChatModelName = "gpt-3.5-turbo" | "gpt-4";
+export type ChatModelName = "gpt-3.5-turbo" | "gpt-4" | "gpt-4o";
 
 /**
  * Used for user settings and for the back-end chat controller.
@@ -68,24 +68,13 @@ const GPT3p5Turbo: ChatModel = {
   name: "gpt-3.5-turbo",
   label: "GPT-3.5 Turbo",
   description: "GPT-3.5 Turbo is optimized for dialogue.",
-  token_limit: 4096,
-  input_kilo_cost: 0.0015,
-  output_kilo_cost: 0.002,
+  token_limit: 16384,
+  input_kilo_cost: 0.0005,
+  output_kilo_cost: 0.0015,
   max_tokens_upper_bound: 2048,
-  max_tokens: 512, // Default
+  max_tokens: 256, // Default
   ...OpenAIDefaults,
 };
-
-/*TODO: not available in tiktoken yet
-  const GPT3p5Turbo16k: ChatModel = {
-  name: "gpt-3.5-turbo-16k",
-  label: "GPT-3.5 Turbo 16k",
-  description:
-    "GPT-3.5 Turbo is optimized for dialogue. This model has a larger token limit than GPT-3.5 Turbo, so you can enter more text at once.",
-  tokenLimit: 16384,
-  inputCostPer1k: 0.003,
-  outputCostPer1k: 0.004,
-};*/
 
 const GPT4: ChatModel = {
   name: "gpt-4",
@@ -96,8 +85,21 @@ const GPT4: ChatModel = {
   input_kilo_cost: 0.03,
   output_kilo_cost: 0.06,
   max_tokens_upper_bound: 4096,
+  max_tokens: 512,
+  ...OpenAIDefaults,
+};
+
+const GPT4o: ChatModel = {
+  name: "gpt-4o",
+  label: "GPT-4o",
+  description:
+    "OpenAI's most advanced, multimodal flagship model that’s cheaper and faster than GPT-4 Turbo.",
+  token_limit: 128000,
+  input_kilo_cost: 0.005,
+  output_kilo_cost: 0.015,
+  max_tokens_upper_bound: 8192,
   max_tokens: 1024,
   ...OpenAIDefaults,
 };
 
-export const SupportedChatModels: ChatModel[] = [GPT3p5Turbo, GPT4];
+export const SupportedChatModels: ChatModel[] = [GPT3p5Turbo, GPT4, GPT4o];
