@@ -277,7 +277,11 @@ export class AppComponent implements OnInit {
           this.projectInfoDialog = this.dialog.open(ProjectDetailsComponent, {
             data: { project: project },
             showHeader: false,
-            contentStyle: { 'border-radius': '10px' },
+            contentStyle: {
+              'border-radius': '10px',
+              width: '50vw',
+              'max-width': '60rem',
+            },
             closeOnEscape: true,
           });
           this.projectInfoDialog.onClose

@@ -63,7 +63,10 @@ import { distinctUntilChanged, tap } from 'rxjs/operators';
         <div class="chat-history-scroll-target"></div>
       </div>
 
-      <chat-input (showCommands)="blurHistory($event)"></chat-input>
+      <chat-input
+        class="w-full"
+        (showCommands)="blurHistory($event)"
+      ></chat-input>
     </div>
 
     <p-contextMenu

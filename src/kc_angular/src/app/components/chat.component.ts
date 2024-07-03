@@ -14,14 +14,10 @@
  *  limitations under the License.
  */
 
-import { Component, OnDestroy, ViewChild } from '@angular/core';
-import { ContextMenu } from 'primeng/contextmenu';
-import { MenuItem } from 'primeng/api';
+import { Component, OnDestroy } from '@angular/core';
 import { ProjectService } from '@services/factory-services/project.service';
 import { ChatService } from '@services/chat-services/chat.service';
-import { ChatViewComponent } from './chat-components/chat.view.component';
-import { Observable, Subscription } from 'rxjs';
-import { ChatMessage } from '@app/models/chat.model';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-chat',
@@ -29,36 +25,13 @@ import { ChatMessage } from '@app/models/chat.model';
     <div class="width-constrained flex flex-column w-full h-full">
       <app-chat-view #chatView class="overflow-y-auto h-full"></app-chat-view>
     </div>
-    <p-contextMenu
-      #cm
-      styleClass="shadow-7 bg-primary-reverse"
-      [model]="menuItems"
-      [baseZIndex]="999999"
-      [autoZIndex]="true"
-      appendTo="body"
-    >
-    </p-contextMenu>
   `,
   styles: [``],
 })
 export class ChatComponent implements OnDestroy {
-  /* The context menu for the chat view */
-  @ViewChild('cm') cm!: ContextMenu;
-
-  /* The chat view component */
-  @ViewChild('chatView') chatView!: ChatViewComponent;
-
-  /* The context menu items */
-  menuItems: MenuItem[] = [];
-
-  showSources = true;
-
-  messages$: Observable<ChatMessage[]>;
-
   subscription: Subscription;
 
   constructor(private chat: ChatService, private projects: ProjectService) {
-    this.messages$ = this.chat.messages$;
     this.subscription = this.projects.currentProject.subscribe((project) => {
       this.chat.setTarget({ project: project });
     });

@@ -80,7 +80,7 @@ import { ConfirmationService } from 'primeng/api';
         pButton
         proTip
         tipHeader="Web Surfer? Turn URLs into Sources"
-        tipMessage="Got a cool web link? Turn it into a Source! Not only will Knowledge store the link for you to access anytime, but it'll also try to gather some handy metadata. Ready for some surfing?"
+        tipMessage="Got a cool web link? Turn it into a Source! Not only will Knowledge store the link for you to access anytime, but it'll also extract relevant and useful metadata."
         [tipGroups]="['source', 'intro']"
         tipIcon="pi pi-link"
         [tipShowOnHover]="true"

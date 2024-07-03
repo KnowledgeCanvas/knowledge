@@ -105,10 +105,20 @@ import { Clipboard } from '@angular/cdk/clipboard';
     </div>
 
     <div class="source-metadata">
-      <h3 class="text-2xl font-bold mt-4">Metadata</h3>
+      <h3 class="text-2xl font-bold mt-4 ml-3">Metadata</h3>
       <div
         class="add-metadata bg-primary-reverse border-round-2xl flex-row-center-between w-full px-2 mb-4 text-color"
       >
+        <div class="">
+          <button
+            pButton
+            pRipple
+            type="button"
+            icon="pi pi-plus"
+            (click)="addMeta(metaEntry)"
+            class="p-button-sm p-button-secondary"
+          ></button>
+        </div>
         <div class="col-2">
           <input
             #tagInput
@@ -129,18 +139,14 @@ import { Clipboard } from '@angular/cdk/clipboard';
             [(ngModel)]="metaEntry.value"
           />
         </div>
-        <div class="">
-          <button
-            pButton
-            pRipple
-            type="button"
-            icon="pi pi-plus"
-            (click)="addMeta(metaEntry)"
-            class="p-button-sm p-button-secondary"
-          ></button>
-        </div>
       </div>
       <p-card class="w-full">
+        <div
+          *ngIf="source.meta.length === 0"
+          class="w-full text-xl flex-row-center-center"
+        >
+          Click the + button to add metadata...
+        </div>
         <p-table
           *ngIf="source.meta.length > 0"
           [breakpoint]="'1200px'"
@@ -211,9 +217,8 @@ import { Clipboard } from '@angular/cdk/clipboard';
                   class="flex align-items-center justify-content-center gap-2"
                 >
                   <button
-                    *ngIf="!editing"
+                    *ngIf="!editing && !meta.key.startsWith('knowledge:')"
                     pButton
-                    pRipple
                     type="button"
                     pInitEditableRow
                     icon="pi pi-pencil"
@@ -221,18 +226,21 @@ import { Clipboard } from '@angular/cdk/clipboard';
                     class="p-button-rounded p-button-text opacity-50 hover:opacity-100"
                   ></button>
                   <button
-                    *ngIf="!editing"
+                    *ngIf="!editing && !meta.key.startsWith('knowledge:')"
                     pButton
-                    pRipple
                     type="button"
                     icon="pi pi-trash"
                     (click)="onRowDelete(meta, ri)"
                     class="p-button-rounded p-button-text p-button-danger opacity-50 hover:opacity-100"
                   ></button>
+                  <div
+                    *ngIf="!editing && meta.key.startsWith('knowledge:')"
+                    class="p-button pi pi-info opacity-0 cursor-auto"
+                    disabled
+                  ></div>
                   <button
                     *ngIf="editing"
                     pButton
-                    pRipple
                     type="button"
                     pSaveEditableRow
                     icon="pi pi-check"

@@ -187,7 +187,7 @@ import { ChatService } from '@services/chat-services/chat.service';
       }
 
       .message-text {
-        white-space: pre-wrap;
+        text-rendering: geometricPrecision;
       }
 
       .user-action {
