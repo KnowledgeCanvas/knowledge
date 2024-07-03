@@ -330,26 +330,34 @@ export class SourceDetailsComponent implements OnInit {
           }
         }
       }
-
-      this.source.meta = [
-        { key: 'knowledge:id', value: this.source.id.value },
-        {
-          key: 'knowledge:method',
-          value: this.source.importMethod ?? 'manual',
-        },
-        {
-          key: 'knowledge:link',
-          value: this.source.accessLink.toString(),
-        },
-        {
-          key: 'knowledge:type',
-          value: this.source.ingestType,
-        },
-        ...this.source.meta,
-      ];
       delete this.source.reference.source.website.metadata.meta;
-      this.update.emit(this.source);
     }
+
+    this.source.meta = [
+      { key: 'knowledge:id', value: this.source.id.value },
+      {
+        key: 'knowledge:method',
+        value: this.source.importMethod ?? 'manual',
+      },
+      {
+        key: 'knowledge:link',
+        value: this.source.accessLink.toString(),
+      },
+      {
+        key: 'knowledge:type',
+        value: this.source.ingestType,
+      },
+      ...this.source.meta,
+    ];
+
+    // Remove any duplicates
+    this.source.meta = this.source.meta.filter(
+      (meta, index, self) =>
+        index ===
+        self.findIndex((m) => m.key === meta.key && m.value === meta.value)
+    );
+
+    this.update.emit(this.source);
 
     for (let i = 0; i < this.source.meta.length; i++) {
       this.source.meta[i].id = i;
@@ -425,6 +433,21 @@ export class SourceDetailsComponent implements OnInit {
     const entry = { ...metaEntry };
 
     if (entry.key && entry.value) {
+      // If the key/value pair already exists, don't add it
+      if (
+        this.source.meta.find(
+          (m) => m.key === entry.key && m.value === entry.value
+        )
+      ) {
+        this.notify.warn(
+          'Source Info',
+          'Ignoring Duplicate',
+          'That key/value pair already exists...',
+          'toast'
+        );
+        return;
+      }
+
       this.source.meta = [
         { key: entry.key, value: entry.value },
         ...this.source.meta,
