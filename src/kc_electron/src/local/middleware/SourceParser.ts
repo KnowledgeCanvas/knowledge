@@ -23,6 +23,17 @@ import TextUtils from "../utils/text.utils";
 import { codeMarkdownMap } from "../../../../kc_shared/constants/supported.file.types";
 
 export class SourceParser {
+  static async isPdf(url: string) {
+    try {
+      const response = await fetch(url, { method: "HEAD" });
+      const contentType = response.headers.get("Content-Type");
+      return contentType === "application/pdf";
+    } catch (error) {
+      console.error("Error fetching the URL:", error);
+      return false;
+    }
+  }
+
   static async getText(req: Request, res: Response, next: NextFunction) {
     if (req.body.text) {
       // If the request already contains text, skip this middleware
@@ -135,7 +146,8 @@ export class SourceParser {
   static async fromWeb(url: URL) {
     const reqUrl = url.toString();
 
-    if (url.href.endsWith(".pdf")) {
+    const isPDF = await SourceParser.isPdf(reqUrl);
+    if (url.href.endsWith(".pdf") || isPDF) {
       // Use http to get the PDF, then use pdfjs to extract the text
       const response = await axios.get(reqUrl, { responseType: "arraybuffer" });
       const data = new Uint8Array(response.data);
