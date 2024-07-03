@@ -95,7 +95,6 @@ export class ChatViewComponent {
   /* Whether to apply a height restriction to the chat history */
   @Input() heightRestricted = false;
 
-  /* The context menu used to display the options for a message */
   messageMenu: MenuItem[] = [];
 
   messages$: Observable<ChatMessage[]>;
@@ -115,9 +114,8 @@ export class ChatViewComponent {
             }
           }
           return true;
-        } else {
-          return false;
         }
+        return false;
       }),
       tap(() => {
         this.scroll();
@@ -177,7 +175,10 @@ export class ChatViewComponent {
     }
 
     // If the user has highlighted text, add a highlight option
-    const highlight = this.context.highlight(message, $event, () => {});
+    const highlight = this.context.highlight(message, $event, () => {
+      this.chat.persistChatHistory();
+    });
+
     if (highlight) {
       this.messageMenu.push(highlight);
     }

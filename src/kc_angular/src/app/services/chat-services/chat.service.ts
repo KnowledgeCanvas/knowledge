@@ -184,20 +184,26 @@ export class ChatService {
     return this.backendUrl;
   }
 
+  canChat() {
+    return this.canConnect.value;
+  }
+
   addMessage(message: ChatMessage) {
     this.messages$.pipe(take(1)).subscribe((messages) => {
       this._messages$.next([...messages, message]);
     });
   }
 
-  canChat() {
-    return this.canConnect.value;
-  }
-
   deleteMessage(message: ChatMessage) {
     // Remove the message from the chat history using the message ID
     this.messages$.pipe(take(1)).subscribe((messages) => {
       this._messages$.next(messages.filter((msg) => msg.id !== message.id));
+    });
+  }
+
+  persistChatHistory() {
+    this.messages$.pipe(take(1)).subscribe((messages) => {
+      this.saveChat(messages);
     });
   }
 
