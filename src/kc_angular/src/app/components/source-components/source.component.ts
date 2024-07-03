@@ -316,6 +316,7 @@ export class SourceComponent implements OnInit, OnChanges {
 
   private loadComponent(component: Type<any>) {
     this.componentRef = this.tabContainer.createComponent(component);
+
     this.componentRef.instance.source = this.source;
 
     // Special handling for components with outputs and other special cases
@@ -360,7 +361,7 @@ export class SourceComponent implements OnInit, OnChanges {
               input.message.substring(0, 8192)
             );
           } else {
-            this.componentRef?.instance.submit(input.message);
+            this.chat.submit(input.message);
           }
         }, 1000);
       }

@@ -79,9 +79,12 @@ export default class ChatController {
       SummarizationPrompts.Common(),
       SummarizationPrompts.Excerpt()
     );
+
     const messageTokens = this.tokenizerUtils.countMessageTokens(messages);
+
     const limited = this.tokenizerUtils.limitText.bind(this.tokenizerUtils);
-    text = limited(text.replace("\n", " "), messageTokens + 100).replace(
+
+    text = limited(text.replace("\n", " "), messageTokens + 400).replace(
       "\n",
       " "
     );

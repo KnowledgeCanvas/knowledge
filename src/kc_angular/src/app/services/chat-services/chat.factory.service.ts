@@ -120,10 +120,15 @@ export class ChatFactoryService {
     return messages;
   }
 
-  loadProjectMessages(id: UUID, project: KcProject) {
-    let messages: ChatMessage[] = this.loadMessages(id);
+  /**
+   * Load messages for a given project
+   * @param project The project to load messages for
+   */
+  loadProjectMessages(project: KcProject) {
+    let messages: ChatMessage[] = this.loadMessages(project.id);
 
     for (const msg of messages) {
+      // If the message is to/from a Project or Topic, set the project
       if (
         msg.sender === AgentType.Project ||
         msg.recipient === AgentType.Project ||

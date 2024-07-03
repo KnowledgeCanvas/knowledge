@@ -120,10 +120,7 @@ export class ChatService {
             target.source
           );
         } else if (target.project) {
-          history = this.factory.loadProjectMessages(
-            target.project.id,
-            target.project
-          );
+          history = this.factory.loadProjectMessages(target.project);
 
           for (const source of target.project.knowledgeSource) {
             const sourceHistory = this.factory.loadSourceMessages(
