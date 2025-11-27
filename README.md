@@ -1,3 +1,6 @@
+> [!Note]
+> Knowledge is no longer being developed. Feel free to reach out if you have any questions!
+
 Knowledge is a tool for saving, searching, accessing, exploring and chatting with all of your favorite websites, documents and files.
 
 ![KnowledgeGraph](https://user-images.githubusercontent.com/19367848/206884085-f73affb8-b94e-4039-beb3-b47f76762d8b.gif)
